@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content_tutorial_draw"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="classact.com.xprize.activity.tutorial.TutorialActivity"
+    android:background="@drawable/tutorial_bg_empty">
+
+    <ImageView
+        android:id="@+id/tutorial_draw_demo"
+        android:src="@drawable/tutorial_draw_demo_animation"
+        android:layout_width="800dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="260dp"
+        android:layout_marginLeft="250dp" />
+
+    <ImageView
+        android:id="@+id/tutorial_draw_demo_cover"
+        android:src="@drawable/ani_hand5"
+        android:layout_width="800dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="260dp"
+        android:layout_marginLeft="250dp" />
+
+    <ImageView
+        android:id="@+id/tutorial_tick_background"
+        android:background="@drawable/draw_tick"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:layout_centerInParent="true" />
+
+    <classact.com.xprize.view.TouchView
+        android:id="@+id/tutorial_draw_surface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"/>
+
+    <View
+        android:id="@+id/tutorial_draw_surface_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>

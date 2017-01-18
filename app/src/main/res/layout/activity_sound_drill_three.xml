@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:background="@drawable/backgroundalphabet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/item_demo"
+        android:layout_width="380dip"
+        android:layout_height="380dip"
+        android:layout_gravity="center"
+        android:layout_marginStart="410dp"
+        android:layout_marginTop="50dip"
+        android:background="#FFFFFF"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/applepic"/>
+
+    <LinearLayout
+        android:background="@drawable/background_choosetheletter"
+        android:id="@+id/items"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <ImageView
+            android:id="@+id/item1"
+            android:layout_width="380dip"
+            android:layout_height="380dip"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="150dp"
+            android:layout_marginLeft="150dp"
+            android:background="#FFFFFF"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/mugpic"/>
+
+        <ImageView
+            android:id="@+id/item2"
+            android:layout_width="380dip"
+            android:layout_height="380dip"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="150dp"
+            android:layout_marginLeft="250dp"
+            android:background="#FFFFFF"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/mugpic"/>
+    </LinearLayout>
+</RelativeLayout>
+

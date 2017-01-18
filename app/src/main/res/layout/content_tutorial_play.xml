@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_tutorial_play"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="classact.com.xprize.activity.tutorial.TutorialActivity"
+    android:background="@drawable/tutorial_bg_empty">
+
+    <ImageView
+        android:id="@+id/tutorial_play_demo"
+        android:src="@drawable/tutorial_play_demo_animation"
+        android:layout_width="450dp"
+        android:layout_height="450dp"
+        android:layout_centerInParent="true" />
+
+    <ImageView
+        android:id="@+id/tutorial_play_demo_cover"
+        android:src="@drawable/playupbuttonfinger"
+        android:layout_width="450dp"
+        android:layout_height="450dp"
+        android:layout_centerInParent="true" />
+
+    <Button
+        android:id="@+id/tutorial_play_button"
+        android:background="@drawable/tutorial_play_practice_button"
+        android:layout_width="380dp"
+        android:layout_height="380dp"
+        android:layout_centerInParent="true" />
+</RelativeLayout>

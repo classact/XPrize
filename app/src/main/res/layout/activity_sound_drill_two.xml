@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_twoframedrill1">
+
+    <LinearLayout
+        android:layout_width="0dip"
+        android:orientation="horizontal"
+        android:layout_weight="5"
+        android:background="@android:color/transparent"
+        android:layout_height="match_parent"
+        android:layout_margin="50dip">
+
+        <ImageView
+            android:id="@+id/item1"
+            android:layout_width="390dip"
+            android:layout_height="390dip"
+            android:layout_gravity="center"
+            android:layout_marginStart="82dip"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/applepic"
+            android:visibility="invisible"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dip"
+        android:layout_margin="50dip"
+        android:orientation="horizontal"
+        android:layout_weight="5"
+        android:background="@android:color/transparent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/item2"
+            android:layout_width="390dip"
+            android:layout_height="390dip"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_marginStart="48dip"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/mugpic"
+            android:visibility="invisible"/>
+    </LinearLayout>
+</LinearLayout>

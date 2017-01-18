@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="classact.com.xprize.activity.tutorial.TutorialActivity">
+
+    <include layout="@layout/content_tutorial_intro" />
+    <include layout="@layout/content_tutorial_start" />
+    <include layout="@layout/content_tutorial_play" />
+    <include layout="@layout/content_tutorial_stop" />
+    <include layout="@layout/content_tutorial_touch" />
+    <include layout="@layout/content_tutorial_drag" />
+    <include layout="@layout/content_tutorial_draw" />
+    <include layout="@layout/content_tutorial_pause" />
+
+    <RelativeLayout
+        android:id="@+id/chapter_01_splash_container"
+        android:background="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ImageView
+            android:id="@+id/chapter_01_splash"
+            android:background="@drawable/tutorial_bg_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

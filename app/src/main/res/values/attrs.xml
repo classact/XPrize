@@ -1,0 +1,29 @@
+<resources>
+
+    <!-- Declare custom theme attributes that allow changing which styles are
+         used for button bars depending on the API level.
+         ?android:attr/buttonBarStyle is new as of API 11 so this is
+         necessary to support previous API levels. -->
+    <declare-styleable name="ButtonBarContainerTheme">
+        <attr name="metaButtonBarStyle" format="reference" />
+        <attr name="metaButtonBarButtonStyle" format="reference" />
+    </declare-styleable>
+	<declare-styleable name="IntroView">
+        <attr name="strokeWidth" format="float" />
+        <attr name="strokeColor" format="color|reference" />
+        <attr name="phase" format="float" />
+        <attr name="duration" format="integer" />
+        <attr name="fadeFactor" format="float" />
+        <attr name="waitRadius" format="dimension" />
+        <attr name="arrowLength" format="dimension" />
+        <attr name="arrowHeight" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="StateView">
+        <attr name="strokeWidth" />
+        <attr name="strokeColor" />
+        <attr name="phase" />
+        <attr name="duration" />
+        <attr name="fadeFactor" />
+    </declare-styleable>
+
+</resources>

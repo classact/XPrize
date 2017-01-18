@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/backgrounddrill5">
+
+
+    <LinearLayout
+        android:layout_marginLeft="50dip"
+        android:layout_width="250dip"
+        android:id="@+id/container3"
+        android:layout_gravity="center_vertical"
+        android:visibility="visible"
+        android:layout_height="250dip"
+        android:background="@android:color/transparent"
+        android:layout_marginStart="0dp"
+        android:weightSum="1"
+        android:layout_alignTop="@+id/container1"
+        android:layout_alignStart="@+id/container4">
+
+        <ImageView
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/item3"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/cuppic"
+            android:layout_weight="0.95"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginLeft="50dp"
+        android:layout_width="250dp"
+        android:id="@+id/container4"
+        android:layout_gravity="center_vertical"
+        android:visibility="visible"
+        android:layout_height="250dp"
+        android:background="@android:color/transparent"
+        android:layout_marginEnd="53dp"
+        android:layout_alignTop="@+id/container2"
+        android:layout_alignParentEnd="true">
+
+        <ImageView
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/item4"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/cuppic"/>
+    </LinearLayout>
+
+    <ImageView
+        android:layout_marginLeft="10dip"
+        android:id="@+id/item_demo"
+        android:src="@drawable/applepic"
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@string/app_name"
+        android:layout_width="450dip"
+        android:layout_height="450dip"
+        android:layout_marginStart="64dp"
+        android:layout_alignTop="@+id/container1"
+        android:layout_alignParentStart="true"/>
+
+    <LinearLayout
+        android:id="@+id/container1"
+        android:layout_marginLeft="00dip"
+        android:layout_width="250dip"
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@string/app_name"
+        android:layout_height="250dip"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="40dp"
+        android:weightSum="1"
+        android:layout_alignParentTop="true"
+        android:layout_alignEnd="@+id/container2"
+        android:layout_marginEnd="0dp">
+
+        <ImageView
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/item1"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/cuppic"
+            android:layout_weight="0.99"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/container2"
+        android:layout_marginLeft="20dp"
+        android:layout_width="250dp"
+        android:layout_gravity="center_vertical"
+        android:visibility="visible"
+        android:layout_height="250dip"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="51dp"
+        android:layout_marginEnd="83dp"
+        android:layout_below="@+id/container1"
+        android:layout_toStartOf="@+id/container4">
+
+        <ImageView
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/item2"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/cuppic"
+            android:layout_marginTop="0dp"/>
+    </LinearLayout>
+</RelativeLayout>
+

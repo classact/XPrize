@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/backgroundtoybox1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_below="@+id/layout1"
+        android:layout_height="530dp"
+        android:layout_toStartOf="@+id/linearLayout"
+        android:weightSum="1">
+        <ImageView
+            android:layout_marginLeft="80dip"
+            android:layout_marginTop="50dp"
+            android:layout_width="200dip"
+            android:id="@+id/item1"
+            android:src="@drawable/cuppic"
+            android:contentDescription="@string/app_name"
+            android:layout_height="200dip" />
+
+        <ImageView
+            android:layout_marginLeft="100dip"
+            android:layout_marginTop="50dp"
+            android:layout_width="200dip"
+            android:id="@+id/item6"
+            android:src="@drawable/cuppic"
+            android:contentDescription="@string/app_name"
+            android:layout_height="200dp" />
+
+        <ImageView
+            android:layout_marginLeft="100dp"
+            android:layout_width="531dp"
+            android:id="@+id/toybox"
+            android:src="@drawable/receptacletoyboxold"
+            android:contentDescription="@string/receptacle"
+            android:layout_height="394dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_weight="0.01"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout1"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="400dip"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <ImageView
+            android:layout_marginLeft="40dip"
+            android:layout_marginTop="100dp"
+            android:layout_width="250dip"
+            android:id="@+id/item2"
+            android:src="@drawable/cuppic"
+            android:contentDescription="@string/app_name"
+            android:layout_height="250dip" />
+
+        <ImageView
+            android:layout_marginLeft="70dip"
+            android:layout_marginTop="50dp"
+            android:layout_width="250dip"
+            android:id="@+id/item3"
+            android:src="@drawable/cuppic"
+            android:contentDescription="@string/app_name"
+            android:layout_height="250dip" />
+
+        <ImageView
+            android:layout_marginLeft="80dip"
+            android:layout_marginTop="50dp"
+            android:layout_width="200dip"
+            android:id="@+id/item4"
+            android:src="@drawable/cuppic"
+            android:contentDescription="@string/app_name"
+            android:layout_height="200dip" />
+
+        <ImageView
+            android:layout_marginLeft="100dip"
+            android:layout_marginTop="100dp"
+            android:layout_width="200dip"
+            android:id="@+id/item5"
+            android:src="@drawable/cuppic"
+            android:contentDescription="@string/app_name"
+            android:layout_height="250dip" />
+    </LinearLayout>
+</RelativeLayout>

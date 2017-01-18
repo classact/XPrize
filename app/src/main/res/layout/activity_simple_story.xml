@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_simple_story"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="za.co.xprize.activity.sounddrill.SimpleStoryActivity">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_marginLeft="100dip"
+        android:layout_marginTop="70dip"
+        android:id="@+id/container_simple_story"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+    </LinearLayout>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:id="@+id/next_button"
+        android:visibility="invisible"
+        android:src="@drawable/simple_story_next"
+        android:layout_height="wrap_content" />
+    <ImageView
+        android:layout_width="600dip"
+        android:layout_centerInParent="true"
+        android:id="@+id/single_image"
+        android:visibility="invisible"
+        android:src="@drawable/monkey_playing19pic"
+        android:layout_height="600dip" />
+    <ImageView
+        android:layout_width="300dip"
+        android:id="@+id/tripple_image_1"
+        android:src="@drawable/monkey_playing19pic"
+        android:layout_marginTop="50dip"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"
+        android:layout_height="300dip" />
+    <ImageView
+        android:layout_width="300dip"
+        android:layout_marginLeft="100dip"
+        android:id="@+id/tripple_image_2"
+        android:layout_below="@+id/tripple_image_1"
+        android:visibility="invisible"
+        android:src="@drawable/monkey_playing19pic"
+        android:layout_height="300dip" />
+    <ImageView
+        android:layout_width="300dip"
+        android:id="@+id/tripple_image_3"
+        android:layout_below="@+id/tripple_image_1"
+        android:src="@drawable/monkey_playing19pic"
+        android:visibility="invisible"
+        android:layout_marginRight="100dp"
+        android:layout_alignParentRight="true"
+        android:layout_height="300dip" />
+</RelativeLayout>

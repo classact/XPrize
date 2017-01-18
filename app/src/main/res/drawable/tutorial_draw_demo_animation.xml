@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tutorial_draw_demo_animation"
+    android:rotation="-16.35"
+    android:oneshot="false" >
+    <item
+        android:drawable="@drawable/ani_hand1"
+        android:duration="1000"/>
+    <item
+        android:drawable="@drawable/ani_hand2"
+        android:duration="1000"/>
+    <item
+        android:drawable="@drawable/ani_hand3"
+        android:duration="1000"/>
+    <item
+        android:drawable="@drawable/ani_hand4"
+        android:duration="1000"/>
+    <item
+        android:drawable="@drawable/ani_hand5"
+        android:duration="1000"/>
+</animation-list>

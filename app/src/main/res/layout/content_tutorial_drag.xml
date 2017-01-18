@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_tutorial_drag"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="classact.com.xprize.activity.tutorial.TutorialActivity"
+    android:background="@drawable/tutorial_bg_fruits">
+
+    <RelativeLayout
+        android:id="@+id/tutorial_drag_demo_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/tutorial_drag_demo"
+            android:src="@drawable/dragbanana"
+            android:layout_width="380dp"
+            android:layout_height="380dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="120dp"/>
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/tutorial_banana"
+        android:src="@drawable/banana"
+        android:layout_width="380dp"
+        android:layout_height="380dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="120dp"/>
+
+</RelativeLayout>

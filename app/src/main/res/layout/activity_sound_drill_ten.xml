@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_sound_drill_ten"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/backgroundrepeat1"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="za.co.xprize.activity.sounddrill.SoundDrillTenActivity">
+    <ImageButton
+        android:layout_width="1000dp"
+        android:layout_height="105dp"
+        android:src="@drawable/cat_black"
+        android:text="@string/first_word"
+        android:textSize="40pt"
+        android:id="@+id/button_word1"
+        android:layout_marginTop="55dp"
+        android:layout_marginLeft="30dp"
+        android:visibility="invisible"
+        android:background="@android:color/transparent"/>
+
+    <ImageButton
+        android:layout_width="1000dp"
+        android:layout_height="105dip"
+        android:layout_below="@id/button_word1"
+        android:text="@string/second_word"
+        android:textSize="40pt"
+        android:id="@+id/button_word2"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="30dp"
+        android:visibility="invisible"
+        android:background="@android:color/transparent"/>
+
+    <ImageButton
+        android:layout_width="1000dp"
+        android:layout_height="105dip"
+        android:layout_below="@id/button_word2"
+        android:text="@string/third_word"
+        android:id="@+id/button_word3"
+        android:textSize="40pt"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="30dp"
+        android:visibility="invisible"
+        android:background="@android:color/transparent"/>
+    <ImageButton
+        android:layout_width="1000dp"
+        android:layout_height="105dip"
+        android:layout_below="@id/button_word3"
+        android:text="@string/third_word"
+        android:id="@+id/button_word4"
+        android:textSize="40pt"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="30dp"
+        android:visibility="invisible"
+        android:background="@android:color/transparent"/>
+    <ImageButton
+        android:layout_width="1000dp"
+        android:layout_height="105dip"
+        android:layout_below="@id/button_word4"
+        android:text="@string/third_word"
+        android:textSize="40pt"
+        android:id="@+id/button_word5"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="30dp"
+        android:visibility="invisible"
+        android:background="@android:color/transparent"/>
+
+    <ImageButton
+        android:layout_width="1000dp"
+        android:layout_height="105dip"
+        android:src="@drawable/cat_black"
+        android:text="@string/first_word"
+        android:textSize="40pt"
+        android:id="@+id/flash_word"
+        android:visibility="visible"
+        android:layout_marginLeft="10dp"
+        android:background="@android:color/transparent"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/button_word1"
+        android:layout_marginTop="330dp"
+        android:gravity="center_vertical|center_horizontal|center" />
+
+</RelativeLayout>
