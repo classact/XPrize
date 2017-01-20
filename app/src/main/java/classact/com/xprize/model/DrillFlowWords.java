@@ -22,7 +22,8 @@ public class DrillFlowWords {
     private String drillSound5;
     private String drillSound6;
     private String drillSound7;
-
+    private String drillSound8;
+    private String drillSound9;
 
     public int getDrillFlowWordID() {
         return drillFlowWordID;
@@ -158,5 +159,21 @@ public class DrillFlowWords {
 
     public void setDrillSound7(String drillSound7) {
         this.drillSound7 = drillSound7;
+    }
+
+    public String getDrillSound8() {
+        return drillSound8;
+    }
+
+    public void setDrillSound8(String drillSound9) {
+        this.drillSound9 = drillSound9;
+    }
+
+    public String getDrillSound9() {
+        return drillSound9;
+    }
+
+    public void setDrillSound9(String drillSound9) {
+        this.drillSound9 = drillSound9;
     }
 }

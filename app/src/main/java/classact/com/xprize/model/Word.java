@@ -8,6 +8,7 @@ public class Word {
     private int languageID;
     private String wordName;
     private String wordPictureURI;
+    private String imagePictureURI;
     private String wordSlowSoundURI;
     private String wordSoundURI;
     private String english;
@@ -42,6 +43,14 @@ public class Word {
 
     public void setWordPictureURI(String wordPictureURI) {
         this.wordPictureURI = wordPictureURI;
+    }
+
+    public String getImagePictureURI() {
+        return imagePictureURI;
+    }
+
+    public void setImagePictureURI(String imagePictureURI) {
+        this.imagePictureURI = imagePictureURI;
     }
 
     public String getWordSlowSoundURI() {

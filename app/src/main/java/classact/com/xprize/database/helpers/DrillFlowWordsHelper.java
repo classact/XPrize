@@ -15,9 +15,9 @@ import classact.com.xprize.model.DrillFlowWords;
 public class DrillFlowWordsHelper {
     public static DrillFlowWords getDrillFlowWords(SQLiteDatabase db, int drillId, int languageID){
         String[] columns = new String[] {"_id","LanguageID","DrillID", "PhonicSoundStart",
-                                         "WordSoundStart", "StorySound", "MathSound", "CorrectSound",
-                                         "WrongSound", "LevelCompleteSound", "DrillSound1", "DrillSound2",
-                                         "DrillSound3", "DrillSound4", "DrillSound5", "DrillSound6", "DrillSound7"};
+                "WordSoundStart", "StorySound", "MathSound", "CorrectSound",
+                "WrongSound", "LevelCompleteSound", "DrillSound1", "DrillSound2",
+                "DrillSound3", "DrillSound4", "DrillSound5", "DrillSound6", "DrillSound7", "DrillSound8", "DrillSound9"};
         String OrderBy = "drillID asc";
         Cursor cursor = db.query("tbl_DrillFlowWords", columns, "DrillID=? and LanguageID=?", new String[]{String.valueOf(drillId),String.valueOf(languageID)}, null, null, OrderBy);
         DrillFlowWords drillFlowWord = new DrillFlowWords();
@@ -41,6 +41,8 @@ public class DrillFlowWordsHelper {
                 drillFlowWord.setDrillSound5(cursor.getString(14));
                 drillFlowWord.setDrillSound6(cursor.getString(15));
                 drillFlowWord.setDrillSound7(cursor.getString(16));
+                drillFlowWord.setDrillSound8(cursor.getString(17));
+                drillFlowWord.setDrillSound9(cursor.getString(18));
             }
             return drillFlowWord;
 
