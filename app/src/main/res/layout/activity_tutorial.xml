@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="classact.com.xprize.activity.tutorial.TutorialActivity">
+    tools:context=".activity.drill.tutorial.Tutorial">
 
     <include layout="@layout/content_tutorial_intro" />
     <include layout="@layout/content_tutorial_start" />

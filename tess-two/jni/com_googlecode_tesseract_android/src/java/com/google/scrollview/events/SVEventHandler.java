@@ -48,7 +48,7 @@ public class SVEventHandler extends PBasicInputEventHandler implements
   /** The window which the event corresponds to. */
   private SVWindow svWindow;
 
-  /** These are used to determine a selection size (for SVET_SELECTION). */
+  /** These are used to determine a menu size (for SVET_SELECTION). */
   private int lastX = 0;
   private int lastY = 0;
 
@@ -59,7 +59,7 @@ public class SVEventHandler extends PBasicInputEventHandler implements
   private int lastXMove = 0;
   private int lastYMove = 0;
 
-  /** For Drawing a rubber-band rectangle for selection */
+  /** For Drawing a rubber-band rectangle for menu */
   private int startX = 0;
   private int startY = 0;
   private float rubberBandTransparency = 0.5f;
@@ -114,7 +114,7 @@ public class SVEventHandler extends PBasicInputEventHandler implements
    * The mouse key is pressed (and keeps getting pressed).
    * Depending on the OS, show a popup menu (if the button pressed is associated
    * with popup menus, like the RMB under windows&linux) or otherwise save the
-   * position (in case it is a selection).
+   * position (in case it is a menu).
    */
   @Override
   public void mousePressed(PInputEvent e) {
@@ -135,7 +135,7 @@ public class SVEventHandler extends PBasicInputEventHandler implements
         .getPosition().getX()
         - lastX, (int) e.getPosition().getY() - lastY, null));
 
-    // Paint a selection rectangle.
+    // Paint a menu rectangle.
     if (selection == null) {
       startX = (int) e.getPosition().getX();
       startY = (int) e.getPosition().getY();

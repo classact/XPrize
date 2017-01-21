@@ -8,7 +8,7 @@ import android.util.Log;
 import java.io.IOException;
 
 import classact.com.xprize.database.DbHelper;
-import classact.com.xprize.model.Unit;
+import classact.com.xprize.database.model.Unit;
 
 public class DbController {
 

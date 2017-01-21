@@ -21,9 +21,9 @@ import com.google.scrollview.ui.SVWindow;
 public class SVEvent {
   SVEventType type; // What kind of event.
   SVWindow window; // Window event relates to.
-  int x; // Coords of click or selection.
+  int x; // Coords of click or menu.
   int y;
-  int xSize; // Size of selection.
+  int xSize; // Size of menu.
   int ySize;
   int commandId;
   String parameter; // Any string that might have been passed as argument.
@@ -36,8 +36,8 @@ public class SVEvent {
    * @param w The window the event corresponds to
    * @param x1 X position of the mouse at the time of the event
    * @param y1 Y position of the mouse at the time of the event
-   * @param x2 X selection size at the time of the event
-   * @param y2 Y selection size at the time of the event
+   * @param x2 X menu size at the time of the event
+   * @param y2 Y menu size at the time of the event
    * @param p A parameter associated with the event (e.g. keyboard input)
    */
   public SVEvent(SVEventType t, SVWindow w, int x1, int y1, int x2, int y2,

@@ -4,17 +4,17 @@ import android.content.Context;
 import android.database.sqlite.*;
 
 
-import classact.com.xprize.database.helpers.DrillControlHelper;
-import classact.com.xprize.database.helpers.DrillFlowWordsHelper;
-import classact.com.xprize.database.helpers.MathDrillFlowWordsHelper;
-import classact.com.xprize.database.helpers.DrillWordHelper;
-import classact.com.xprize.database.helpers.LanguageHelper;
-import classact.com.xprize.database.helpers.LetterHelper;
-import classact.com.xprize.database.helpers.LetterSequenceHelper;
-import classact.com.xprize.database.helpers.SentenceHelper;
-import classact.com.xprize.database.helpers.UnitHelper;
-import classact.com.xprize.database.helpers.WordHelper;
-import classact.com.xprize.model.*;
+import classact.com.xprize.database.helper.DrillControlHelper;
+import classact.com.xprize.database.helper.DrillFlowWordsHelper;
+import classact.com.xprize.database.helper.MathDrillFlowWordsHelper;
+import classact.com.xprize.database.helper.DrillWordHelper;
+import classact.com.xprize.database.helper.LanguageHelper;
+import classact.com.xprize.database.helper.LetterHelper;
+import classact.com.xprize.database.helper.LetterSequenceHelper;
+import classact.com.xprize.database.helper.SentenceHelper;
+import classact.com.xprize.database.helper.UnitHelper;
+import classact.com.xprize.database.helper.WordHelper;
+import classact.com.xprize.database.model.*;
 import java.util.*;
 /**
  * Created by Tseliso on 5/8/2016.

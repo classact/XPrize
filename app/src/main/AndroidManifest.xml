@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="classact.com.xprize">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <application
         android:allowBackup="true"
@@ -21,56 +21,53 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activity.language_select.LanguageSelectActivity">
+        <activity android:name=".activity.menu.LanguageSelect">
         </activity>
-        <activity android:name=".activity.movies.IntroActivity">
+        <activity android:name=".activity.movie.Intro">
         </activity>
-        <activity android:name=".activity.tutorial.TutorialActivity">
+        <activity android:name=".activity.drill.tutorial.Tutorial">
         </activity>
-        <activity android:name=".activity.movies.Chapter_01_Movie">
+        <activity android:name=".activity.movie.Movie">
         </activity>
-        <activity android:name=".activity.links.PhonicsLink">
+        <activity android:name=".activity.link.PhonicsLink">
         </activity>
-        <activity android:name=".activity.movies.Chapter_02_Movie">
+        <activity android:name=".activity.link.StoryLink">
         </activity>
-        <activity android:name=".activity.links.StoryLink">
+        <activity android:name=".activity.link.MathsLink">
         </activity>
-        <activity android:name=".activity.links.MathsLink">
+        <activity android:name=".activity.link.WordsLink">
         </activity>
-        <activity android:name=".activity.links.WordsLink">
+        <activity android:name=".activity.drill.sound.SoundDrillOneActivity"/>
+        <activity android:name=".activity.drill.sound.SoundDrillTwoActivity"/>
+        <activity android:name=".activity.drill.sound.SoundDrillThreeActivity"/>
+        <activity android:name=".activity.drill.sound.SoundDrillFourActivity"/>
+        <activity android:name=".activity.drill.sound.SoundDrillFiveActivity"/>
+        <activity android:name=".activity.drill.sound.SoundDrillSixActivity"/>
+        <activity android:name=".activity.drill.sound.SoundDrillSevenActivity"/>
+        <activity android:name=".activity.drill.sound.SoundDrillEightActivity"/>
+        <activity android:name=".activity.drill.sound.SoundDrillNineActivity"/>
+        <activity android:name=".activity.drill.sound.SoundDrillTenActivity"/>
+        <activity android:name=".activity.drill.sound.SoundDrillElevenActivity"/>
+        <activity android:name=".activity.drill.sound.SoundDrillTwelveActivity"/>
+        <activity android:name=".activity.drill.sound.SoundDrillThirteenActivity"/>
+        <activity android:name=".activity.drill.sound.SoundDrillFourteenActivity"/>
+        <activity android:name=".activity.drill.sound.SoundDrillFifteenActivity"/>
+        <activity android:name=".activity.drill.sound.SimpleStoryActivity"/>
+        <activity android:name=".activity.drill.math.MathsDrillOneActivity"/>
+        <activity android:name=".activity.drill.math.MathsDrillTwoActivity"/>
+        <activity android:name=".activity.drill.math.MathsDrillThreeActivity"/>
+        <activity android:name=".activity.drill.math.MathsDrillFourActivity"/>
+        <activity android:name=".activity.drill.math.MathsDrillFiveActivity"/>
+        <activity android:name=".activity.drill.math.MathsDrillSixActivity"/>
+        <activity android:name=".activity.drill.math.MathsDrillSixAndOneActivity"/>
+        <activity android:name=".activity.drill.math.MathsDrillSixAndTwoActivity"/>
+        <activity android:name=".activity.drill.math.MathsDrillSevenActivity"/>
+        <activity android:name=".activity.drill.math.MathsDrillFiveAndOneActivity"/>
+        <activity android:name=".activity.drill.math.MathsDrillSixAndThreeActivity"/>
+        <activity android:name=".activity.drill.math.MathsDrillSixAndFourActivity"/>
+        <activity android:name=".activity.drill.math.MathsDrillSevenAndOneActivity">
         </activity>
-        <activity android:name=".activity.progress.ShowProgress">
-        </activity>
-        <activity android:name=".activity.sounddrill.SoundDrillOneActivity" />
-        <activity android:name=".activity.sounddrill.SoundDrillTwoActivity" />
-        <activity android:name=".activity.sounddrill.SoundDrillThreeActivity" />
-        <activity android:name=".activity.sounddrill.SoundDrillFourActivity" />
-        <activity android:name=".activity.sounddrill.SoundDrillFiveActivity" />
-        <activity android:name=".activity.sounddrill.SoundDrillSixActivity" />
-        <activity android:name=".activity.sounddrill.SoundDrillSevenActivity" />
-        <activity android:name=".activity.sounddrill.SoundDrillEightActivity" />
-        <activity android:name=".activity.sounddrill.SoundDrillNineActivity" />
-        <activity android:name=".activity.sounddrill.SoundDrillTenActivity" />
-        <activity android:name=".activity.sounddrill.SoundDrillElevenActivity" />
-        <activity android:name=".activity.sounddrill.SoundDrillTwelveActivity" />
-        <activity android:name=".activity.sounddrill.SoundDrillThirteenActivity" />
-        <activity android:name=".activity.sounddrill.SoundDrillFourteenActivity" />
-        <activity android:name=".activity.sounddrill.SoundDrillFifteenActivity" />
-        <activity android:name=".activity.sounddrill.SimpleStoryActivity" />
-        <activity android:name=".activity.mathdrill.MathsDrillOneActivity" />
-        <activity android:name=".activity.mathdrill.MathsDrillTwoActivity" />
-        <activity android:name=".activity.mathdrill.MathsDrillThreeActivity" />
-        <activity android:name=".activity.mathdrill.MathsDrillFourActivity" />
-        <activity android:name=".activity.mathdrill.MathsDrillFiveActivity" />
-        <activity android:name=".activity.mathdrill.MathsDrillSixActivity" />
-        <activity android:name=".activity.mathdrill.MathsDrillSixAndOneActivity" />
-        <activity android:name=".activity.mathdrill.MathsDrillSixAndTwoActivity" />
-        <activity android:name=".activity.mathdrill.MathsDrillSevenActivity" />
-        <activity android:name=".activity.mathdrill.MathsDrillFiveAndOneActivity" />
-        <activity android:name=".activity.mathdrill.MathsDrillSixAndThreeActivity" />
-        <activity android:name=".activity.mathdrill.MathsDrillSixAndFourActivity" />
-        <activity android:name=".activity.mathdrill.MathsDrillSevenAndOneActivity">
-
+        <activity android:name=".activity.link.LevelCompleteLink">
         </activity>
     </application>
 

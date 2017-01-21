@@ -7,5 +7,5 @@
     android:background="@drawable/phonics_link_bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="classact.com.xprize.activity.links.PhonicsLink">
+    tools:context="classact.com.xprize.activity.link.PhonicsLink">
 </RelativeLayout>

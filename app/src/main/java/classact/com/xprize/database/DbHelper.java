@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import classact.com.xprize.database.helpers.SQLiteAssetHelper;
+import classact.com.xprize.database.helper.SQLiteAssetHelper;
 
 /**
  * Created by Tseliso on 5/8/2016.
