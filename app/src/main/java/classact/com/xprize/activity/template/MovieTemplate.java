@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteException;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -17,16 +18,22 @@ import android.widget.VideoView;
 import java.lang.ref.WeakReference;
 import java.util.Date;
 
+import classact.com.xprize.R;
+import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.controller.DbController;
 import classact.com.xprize.database.DbHelper;
 import classact.com.xprize.database.helper.UnitHelper;
 import classact.com.xprize.database.model.Unit;
+import classact.com.xprize.locale.Languages;
+import classact.com.xprize.utils.ResourceDecoder;
 
 public abstract class MovieTemplate extends AppCompatActivity {
 
     /*protected int mRequestCode;
     protected final String REQ_CODE_KEY = "REQ_CODE";*/
+
+    protected final String SWAHILI_PREFIX = "s";
 
     // Views
     protected RelativeLayout mSplashScreenContainer;
@@ -75,9 +82,50 @@ public abstract class MovieTemplate extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         System.out.println("onCreate");
+        setContentView(R.layout.activity_movie);
 
+        mSplashScreenContainer = (RelativeLayout) findViewById(R.id.movie_splash_container);
+        mSplashScreen = (RelativeLayout) findViewById(R.id.movie_splash);
+        mVideo = (VideoView) findViewById(R.id.movie_video);
+        mPlayButton = (Button) findViewById(R.id.movie_play_button);
+        mPauseButton = (Button) findViewById(R.id.movie_pause_button);
+
+        mSplashScreenContainer.setVisibility(View.VISIBLE);
+        mPauseButton.setVisibility(View.INVISIBLE);
+
+        mUnitId = 1;
+        mActivityName = "Movie";
+        mNextActivityClassName = null;
+
+        // Requires data from invoker intent
         Intent intent = getIntent();
-        /*mRequestCode = intent.getIntExtra("REQ_CODE", 0);*/
+
+        // Show hide play/stop buttons
+        mShowVideoControls = intent.getBooleanExtra(Code.SHOW_MV_BUTTONS, false);
+        if (!mShowVideoControls) {
+            mPlayButton.setVisibility(View.INVISIBLE);
+        }
+
+        // Set splash screen delay
+        mSplashScreenFadeOutDelay = intent.getIntExtra(Code.MV_SPLASH_DELAY, 1000);
+
+        // Append appropriate language identifier if required
+        // (Default is English)
+        String resourceName = intent.getStringExtra(Code.RES_NAME);
+        if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
+            resourceName = SWAHILI_PREFIX + resourceName;
+        }
+
+        // Get resource id using resource name
+        int resourceId = ResourceDecoder.getIdentifier(getApplicationContext(), resourceName, "raw");
+
+        // Create video path
+        String videoPath = Environment.getExternalStorageDirectory() + "/Android/media/classact.com.xprize/videos/" + resourceName + ".mp4";
+
+        // Set video URI
+        Uri videoURI = Uri.parse(videoPath);
+        mVideo.setVideoURI(videoURI);
+        
 
         // Init defaults
         initDefaults();
@@ -100,14 +148,13 @@ public abstract class MovieTemplate extends AppCompatActivity {
         if (mState == INIT) {
             // add listeners to views
             addListenersToViews();
-        }
+    }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         System.out.println("onPause");
-        pauseVideo();
     }
 
     @Override
@@ -442,6 +489,7 @@ public abstract class MovieTemplate extends AppCompatActivity {
             mVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
+                    mp.stop();
                     mState = COMPLETE;
                     close(mNextActivityClassName);
                 }
@@ -460,26 +508,22 @@ public abstract class MovieTemplate extends AppCompatActivity {
 
         try {
             // Complete unit in DB
-            if (updateDb()) {
-                // Start new activity
-                if (mNextActivityClassName != null) {
-                    Intent intent = new Intent(this, Class.forName(nextActivityClassName));
-                    startActivity(intent);
-                } else {
-                    finishIntent();
-                }
-                overridePendingTransition(0, android.R.anim.fade_out);
-            } else {
-                System.err.println(mActivityName + " > close: error updating db");
+            if (!updateDb()) {
+                throw new Exception("error updating db");
             }
         } catch (SQLiteException sqlex) {
             System.err.println(" > close: error creating unit updates - " + sqlex.getMessage());
         } catch (ClassNotFoundException cnfex) {
             System.err.println(" > close: cannot find class of next activity - " + cnfex.getMessage());
+        } catch (Exception ex) {
+            System.err.println(" > close: " + ex.getMessage());
+        } finally {
+            Intent intent = new Intent();
+            setResult(Code.MOVIE, intent);
+            finish();
+            overridePendingTransition(0, android.R.anim.fade_out);
         }
     }
-
-    public abstract void finishIntent();
 
     /**
      * UPDATE DB

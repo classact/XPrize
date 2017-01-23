@@ -36,18 +36,14 @@ public class Intro extends AppCompatActivity {
         mVideoCover = (ImageView) findViewById(R.id.intro_video_cover);
         mVideCoverContainer = (RelativeLayout) findViewById(R.id.intro_video_cover_container);
 
-        String introVideoPath = Globals.RESOURCE_PREFIX;
-
-        if (Globals.SELECTED_LANGUAGE == Languages.ENGLISH) {
-            mVideoCover.setBackgroundResource(R.drawable.tutorial_intro_bg_english);
-            introVideoPath += R.raw.intro_movie;
-        } else if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
+        String resourceName = "intro_movie";
+        if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
             mVideoCover.setBackgroundResource(R.drawable.tutorial_intro_bg_swahili);
-            introVideoPath += R.raw.sintro_movie;
+            resourceName = "s" + resourceName;
         } else {
             mVideoCover.setBackgroundResource(R.drawable.tutorial_intro_bg_english);
-            introVideoPath += R.raw.intro_movie;
         }
+        String introVideoPath = "/data/media/classact.com.xprize/videos/" + resourceName + ".mp4";
 
         fadeOut = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out);
         fadeOut.setFillAfter(true);

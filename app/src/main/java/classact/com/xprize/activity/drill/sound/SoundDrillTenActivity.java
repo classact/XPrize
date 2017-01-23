@@ -2,14 +2,16 @@ package classact.com.xprize.activity.drill.sound;
 
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
-import java.util.*;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.utils.ResourceSelector;
@@ -123,6 +125,7 @@ public class SoundDrillTenActivity extends AppCompatActivity {
     private void showWord(){
         try{
             int word = words.getJSONObject(currentWord - 1).getInt("word");
+            System.out.println("SoundDrillTenActivity.showWord > Debug: word is " + word);
             flashButton.setImageResource(word);
             int sound = words.getJSONObject(currentWord - 1).getInt("sound");
             playSoundAndShowNext(sound);

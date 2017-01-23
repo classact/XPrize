@@ -36,7 +36,7 @@ import classact.com.xprize.database.model.Word;
 public class PhonicsDrills {
 
     public static Intent D1(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
-                            int letterId, int limit, int wordType
+                            int subId, int letterId, int limit, int wordType
     ) throws SQLiteException, Exception {
         Intent intent = null;
 
@@ -47,7 +47,7 @@ public class PhonicsDrills {
             ObjectAndSound<String> letterObject = new ObjectAndSound<>(letter.getLetterPictureLowerCaseBlackURI(), letter.getLetterSoundURI(), letter.getPhonicSoundURI());
             ArrayList<ObjectAndSound<String>> drillObjects = new ArrayList<ObjectAndSound<String>>();
             ArrayList<Integer> drillWordIDs = new ArrayList();
-            drillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, Globals.DEFAULT_UNIT_SUB_ID, drillId, wordType, limit);
+            drillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
 
             for (int i=0; i < drillWordIDs.size(); i++ ){
                 Word word = WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(i));
@@ -66,7 +66,7 @@ public class PhonicsDrills {
     }
 
     public static Intent D2(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
-                            int letterId, int limit, int wordType
+                            int subId, int letterId, int limit, int wordType
     ) throws SQLiteException, Exception {
         Intent intent = null;
 
@@ -74,9 +74,9 @@ public class PhonicsDrills {
             DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
             Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
             ArrayList<Integer> rightDrillWordIDs = new ArrayList();
-            rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, Globals.DEFAULT_UNIT_SUB_ID, drillId, wordType, limit);
+            rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
             ArrayList<Integer> wrongDrillWordIDs = new ArrayList();
-            wrongDrillWordIDs = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, Globals.DEFAULT_UNIT_SUB_ID, drillId, wordType, limit);
+            wrongDrillWordIDs = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
             ArrayList<RightWrongPair> pairs = new ArrayList<RightWrongPair>();
             for (int i=0; i < rightDrillWordIDs.size(); i++ ){ // we have the same amount of right and wrong words. So just loop over right words.
                 Word rightWord = WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i));
@@ -113,8 +113,7 @@ public class PhonicsDrills {
             DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
             Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
             ArrayList<SoundDrillThreeObject> sets = new ArrayList<SoundDrillThreeObject>();
-            ArrayList<Integer> wrongLetters = new ArrayList();
-            wrongLetters = LetterHelper.getWrongLetters(dbHelper.getReadableDatabase(), languageId, letterId, limit);
+            ArrayList<Integer> wrongLetters = LetterHelper.getWrongLetters(dbHelper.getReadableDatabase(), languageId, letterId, limit);
             ObjectAndSound<String> objectAndSound = new ObjectAndSound<>(letter.getLetterPictureLowerCaseBlackURI(), letter.getLetterSoundURI(), letter.getPhonicSoundURI());
 
             for (int i=0; i < wrongLetters.size(); i++ ) { //
@@ -139,7 +138,7 @@ public class PhonicsDrills {
     }
 
     public static Intent D4(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
-                            int letterId, int rightlimit, int wronglimit, int wordType
+                            int subId, int letterId, int rightlimit, int wronglimit, int wordType
     ) throws SQLiteException, Exception {
         Intent intent = null;
 
@@ -148,7 +147,7 @@ public class PhonicsDrills {
             ArrayList<DraggableImage<ObjectAndSound>> images = new ArrayList<DraggableImage<ObjectAndSound>>();
             Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
             ArrayList<Integer> rightDrillWordIDs = new ArrayList();
-            rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, Globals.DEFAULT_UNIT_SUB_ID, drillId, wordType, rightlimit);
+            rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, rightlimit);
             int lastPosition=0;
             for (int i=0; i < rightDrillWordIDs.size(); i++ ){
                 Word word = WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i));
@@ -160,7 +159,7 @@ public class PhonicsDrills {
             }
 
             ArrayList<Integer> wrongDrillWordIDs = new ArrayList();
-            wrongDrillWordIDs = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, Globals.DEFAULT_UNIT_SUB_ID, drillId, wordType, wronglimit);
+            wrongDrillWordIDs = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, wronglimit);
             for (int i=0; i < wrongDrillWordIDs.size(); i++ ){
                 Word word = WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(i));
 

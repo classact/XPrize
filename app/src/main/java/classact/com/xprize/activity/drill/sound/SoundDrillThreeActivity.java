@@ -96,15 +96,15 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
             }
             int sound = params.getInt("this_is_the_letter");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            if (mp == null)
-                mp = new MediaPlayer();
-            mp.setDataSource(this, myUri);
-            mp.prepare();
+            if (mp != null) {
+                mp.release();
+            }
+            mp = MediaPlayer.create(this, myUri);
             mp.start();
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                    mp.release();
                     playSound();
                 }
             });
@@ -117,12 +117,15 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
 
     public void playSound(){
         try {
+            if (mp != null) {
+                mp.release();
+            }
             mp = MediaPlayer.create(this, currentSound);
             mp.start();
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                    mp.release();
                     playItMakes();
 
                 }
@@ -145,13 +148,15 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
         try {
             int sound = params.getInt("it_makes_sound");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
+            if (mp != null) {
+                mp.release();
+            }
+            mp = MediaPlayer.create(this, myUri);
             mp.start();
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                    mp.release();
                     playPhonicSound();
                 }
             });
@@ -165,13 +170,15 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
     private void playPhonicSound(){
         try {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + currentPhonicSound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
+            if (mp != null) {
+                mp.release();
+            }
+            mp = MediaPlayer.create(this, myUri);
             mp.start();
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                    mp.release();
                     playNextSound();
                 }
             });
@@ -196,13 +203,15 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
             itemsLayout.setVisibility(View.VISIBLE);
             int sound = params.getInt("touch");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
+            if (mp != null) {
+                mp.release();
+            }
+            mp = MediaPlayer.create(this, myUri);
             mp.start();
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                    mp.release();
                     playSoundAgain();
                 }
             });
@@ -216,13 +225,15 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
     public void playSoundAgain(){
         try {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + currentSound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
+            if (mp != null) {
+                mp.release();
+            }
+            mp = MediaPlayer.create(this, myUri);
             mp.start();
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                    mp.release();
                 }
             });
         }
@@ -235,14 +246,15 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
     private void playSound(int soundid){
         try {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
-            mp.reset();
-            mp.setDataSource(this, myUri);
-            mp.prepare();
+            if (mp != null) {
+                mp.release();
+            }
+            mp = MediaPlayer.create(this, myUri);
             mp.start();
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                    mp.release();
                 }
             });
         }
@@ -283,6 +295,7 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
         }
     };
 
+    /*
     @Override
     public void onPause(){
         super.onPause();
@@ -290,6 +303,7 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
             mp.release();
         }
     }
+    */
 
 //    @Override
 //    public void onBackPressed() {

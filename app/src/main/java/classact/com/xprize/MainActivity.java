@@ -6,33 +6,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-import classact.com.xprize.activity.drill.math.MathsDrillFiveActivity;
-import classact.com.xprize.activity.drill.math.MathsDrillFourActivity;
-import classact.com.xprize.activity.drill.math.MathsDrillOneActivity;
-import classact.com.xprize.activity.drill.math.MathsDrillSevenActivity;
-import classact.com.xprize.activity.drill.math.MathsDrillSevenAndOneActivity;
-import classact.com.xprize.activity.drill.math.MathsDrillSixActivity;
-import classact.com.xprize.activity.drill.math.MathsDrillSixAndThreeActivity;
-import classact.com.xprize.activity.drill.math.MathsDrillThreeActivity;
-import classact.com.xprize.activity.drill.math.MathsDrillTwoActivity;
-import classact.com.xprize.activity.drill.sound.SimpleStoryActivity;
-import classact.com.xprize.activity.drill.sound.SoundDrillEightActivity;
-import classact.com.xprize.activity.drill.sound.SoundDrillElevenActivity;
-import classact.com.xprize.activity.drill.sound.SoundDrillFifteenActivity;
-import classact.com.xprize.activity.drill.sound.SoundDrillFiveActivity;
-import classact.com.xprize.activity.drill.sound.SoundDrillFourActivity;
-import classact.com.xprize.activity.drill.sound.SoundDrillNineActivity;
-import classact.com.xprize.activity.drill.sound.SoundDrillOneActivity;
-import classact.com.xprize.activity.drill.sound.SoundDrillSevenActivity;
-import classact.com.xprize.activity.drill.sound.SoundDrillSixActivity;
-import classact.com.xprize.activity.drill.sound.SoundDrillTenActivity;
-import classact.com.xprize.activity.drill.sound.SoundDrillThirteenActivity;
-import classact.com.xprize.activity.drill.sound.SoundDrillThreeActivity;
-import classact.com.xprize.activity.drill.sound.SoundDrillTwelveActivity;
-import classact.com.xprize.activity.drill.sound.SoundDrillTwoActivity;
 import classact.com.xprize.activity.drill.tutorial.Tutorial;
+import classact.com.xprize.activity.link.LevelCompleteLink;
 import classact.com.xprize.activity.link.MathsLink;
 import classact.com.xprize.activity.link.PhonicsLink;
 import classact.com.xprize.activity.link.StoryLink;
@@ -41,179 +17,260 @@ import classact.com.xprize.activity.menu.LanguageSelect;
 import classact.com.xprize.activity.movie.Movie;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
-import classact.com.xprize.control.ComprehensionQuestion;
-import classact.com.xprize.control.DraggableImage;
-import classact.com.xprize.control.MathDrillJsonBuilder;
-import classact.com.xprize.control.Numeral;
-import classact.com.xprize.control.ObjectAndSound;
-import classact.com.xprize.control.RightWrongPair;
-import classact.com.xprize.control.Sentence;
-import classact.com.xprize.control.SimpleStoryJsonBuilder;
-import classact.com.xprize.control.SimpleStorySentence;
-import classact.com.xprize.control.SoundDrillFiveObject;
-import classact.com.xprize.control.SoundDrillJsonBuilder;
-import classact.com.xprize.control.SoundDrillThreeObject;
-import classact.com.xprize.control.SpelledWord;
+import classact.com.xprize.controller.DrillFetcher;
 import classact.com.xprize.database.DbHelper;
-import classact.com.xprize.database.helper.ComprehensionHelper;
-import classact.com.xprize.database.helper.DrillFlowWordsHelper;
-import classact.com.xprize.database.helper.DrillWordHelper;
-import classact.com.xprize.database.helper.LetterHelper;
-import classact.com.xprize.database.helper.LetterSequenceHelper;
-import classact.com.xprize.database.helper.MathDrillFlowWordsHelper;
-import classact.com.xprize.database.helper.MathImageHelper;
-import classact.com.xprize.database.helper.NumeralHelper;
-import classact.com.xprize.database.helper.SentenceHelper;
-import classact.com.xprize.database.helper.SentenceWordsHelper;
-import classact.com.xprize.database.helper.SimpleStoriesHelper;
-import classact.com.xprize.database.helper.SimpleStoryUnitFileHelper;
-import classact.com.xprize.database.helper.SimpleStoryWordHelper;
 import classact.com.xprize.database.helper.UnitHelper;
-import classact.com.xprize.database.helper.WordHelper;
-import classact.com.xprize.database.model.Comprehension;
-import classact.com.xprize.database.model.DrillFlowWords;
-import classact.com.xprize.database.model.Letter;
-import classact.com.xprize.database.model.MathDrillFlowWords;
-import classact.com.xprize.database.model.MathImages;
-import classact.com.xprize.database.model.Numerals;
-import classact.com.xprize.database.model.SentenceDB;
-import classact.com.xprize.database.model.SentenceDBWords;
-import classact.com.xprize.database.model.SimpleStories;
-import classact.com.xprize.database.model.SimpleStoryUnitFiles;
-import classact.com.xprize.database.model.SimpleStoryWords;
 import classact.com.xprize.database.model.Unit;
-import classact.com.xprize.database.model.Word;
 
 public class MainActivity extends AppCompatActivity {
 
+    private boolean mActivitesInProgress;
+    private boolean mInitialized;
     private DbHelper mDbHelper;
-    private int languageID;
-    private int currentUnitId;
-    private int drillID;
-    private int mathDrillID;
-    private int letterID;
-
-    private boolean firstSectionFinished = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mInitialized = false;
+
         // Establish database connectivity
         if (!dbEstablsh()) {
             // Error handling with no db connection
             /* Error screen activity */
         }
+        System.out.println("MainActivity.onCreate > Debug: Db Connection successful");
 
         Intent intent = new Intent(this, LanguageSelect.class);
-        // intent.putExtra("NEXT_BG_CODE", nextBgCode);
-        startActivityForResult(intent, -1); // result code '-1' = initialization
+        startActivityForResult(intent, Code.LANG);
         overridePendingTransition(0, android.R.anim.fade_out);
     }
 
-    public boolean determineCurrentItem(int unitId) {
-        // Get current unit
-        unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
-        Unit u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);
+    public boolean determineNextItem(int unitId) {
+        try {
+            // Get current unit
+            unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
+            Unit u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);
 
-        // Declare intent
-        Intent intent;
+            // Debug
+            System.out.println("MainActivity.determineNextItem > Debug: UnitId = " + unitId);
 
-        if (unitId == Globals.TUTORIAL_ID) {
-            /* TUTORIAL LOGIC */
+            // Declare intent
+            Intent intent;
 
-            if (u.getUnitFirstTimeMovie() == 0) {
-                // Play intro movie
-                intent = new Intent(this, Movie.class);
-                intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
-                intent.putExtra(Code.SHOW_MV_BUTTONS, false);
-                startActivityForResult(intent, unitId);
-                overridePendingTransition(0, android.R.anim.fade_out);
+            if (unitId == Globals.INTRO_ID) {
+            /* INTRO LOGIC */
 
-            } else if (u.getUnitFirstTime() == 0) {
-                // Start tutorial
-                intent = new Intent(this, Tutorial.class);
-                startActivityForResult(intent, unitId);
-                overridePendingTransition(0, android.R.anim.fade_out);
-            }
-        } else if (unitId < Globals.ENDING_ID) {
-            /* CHAPTER LOGIC */
+                // Debug
+                System.out.println("MainActivity.determineNextItem > Debug: Intro Section");
 
-            if (u.getUnitFirstTimeMovie() == 0) {
-                // Play chapter movie
-                intent = new Intent(this, Movie.class);
-                intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
-                intent.putExtra(Code.SHOW_MV_BUTTONS, true);
+                if (u.getUnitFirstTimeMovie() == 0) {
 
-                startActivityForResult(intent, unitId);
-                overridePendingTransition(0, android.R.anim.fade_out);
+                    // Debug
+                    System.out.println("MainActivity.determineNextItem > Debug: Play Intro Movie");
 
-            } /* else if (u.getUnitFirstTime() == 0) {
-                TUTORIAL LOGIC FOR THE FUTURE? Perhaps
-            } */ else {
-                // Determine if drill splash should be displayed
-                // Splash is displayed when
-                // #1. restarting the application (onRestart() method))
-                // #2. the beginning of each drill type section (ie. 'Phonics section', 'Words section')
-
-                // Determine type of splash by comparing drill last played
-                int drillLastPlayed = u.getUnitDrillLastPlayed();
-
-                if (drillLastPlayed == Globals.PHONICS_STARTING_ID ||
-                    drillLastPlayed == Globals.WORDS_STARTING_ID ||
-                    drillLastPlayed == Globals.STORY_STARTING_ID ||
-                    drillLastPlayed == Globals.MATHS_STARTING_ID) {
-
-                    // Determine drill splash code
-                    Class drillSplashActivity = determineDrillSplash(u);
-
-                    // Show drill splash
-                    if (drillSplashActivity != null) {
-                        intent = new Intent(this, drillSplashActivity);
-                        startActivityForResult(intent, unitId);
-                    }
-
-                // Determine if the chapter ending splash should be played
-                // Ending under the following scenarios:
-                // * Unit has not been completed
-                // * Last drill has been played
-                //   - Determine this by checking <drill last played> is equal to <sum of number of drills (language, maths) in unit >
-                } else if (u.getUnitCompleted() == 0 && drillLastPlayed == (u.getNumberOfLanguageDrills() + u.getNumberOfMathDrills())) {
-                    // Show ending splash
+                    // Play intro movie
                     intent = new Intent(this, Movie.class);
-                    intent.putExtra(Code.RES_NAME, "star_level_" + unitId);
-                    startActivityForResult(intent, unitId);
-                    overridePendingTransition(0, android.R.anim.fade_out);
+                    intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
+                    intent.putExtra(Code.SHOW_MV_BUTTONS, false);
+                    startActivityForResult(intent, Code.INTRO);
+                    overridePendingTransition(android.R.anim.fade_in, 0);
 
-                // Let's roll with the drill
-                } else {
-                    letterID = LetterSequenceHelper.getLetterID(mDbHelper.getReadableDatabase(), Globals.SELECTED_LANGUAGE, currentUnitId, Globals.DEFAULT_UNIT_SUB_ID);
-                    drillID = ++drillLastPlayed;
-                    intent = prepDrill(drillID);
-                    startActivityForResult(intent, unitId);
+                } else if (u.getUnitFirstTime() == 0) {
+
+                    // Debug
+                    System.out.println("MainActivity.determineNextItem > Debug: Play Intro Tutorial");
+
+                    // Start tutorial
+                    intent = new Intent(this, Tutorial.class);
+                    startActivityForResult(intent, Code.TUTORIAL);
                     overridePendingTransition(0, android.R.anim.fade_out);
                 }
-            }
-        } else if (unitId == Globals.ENDING_ID) {
+            } else if (unitId < Globals.FINALE_ID) {
+            /* CHAPTER LOGIC */
+
+                // Debug
+                System.out.println("MainActivity.determineNextItem > Debug: Chapter Section");
+
+                if (u.getUnitFirstTimeMovie() == 0) {
+
+                    // Debug
+                    System.out.println("MainActivity.determineNextItem > Debug: Play Chapter Movie");
+
+                    // Play chapter movie
+                    intent = new Intent(this, Movie.class);
+                    intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
+                    intent.putExtra(Code.SHOW_MV_BUTTONS, true);
+
+                    startActivityForResult(intent, Code.MOVIE);
+                    overridePendingTransition(0, android.R.anim.fade_out);
+
+                } /* else if (u.getUnitFirstTime() == 0) {
+                TUTORIAL LOGIC FOR THE FUTURE? Perhaps
+            } */ else {
+
+                    // Debug
+                    System.out.println("MainActivity.determineNextItem > Debug: Drill section");
+
+                    // Determine if drill splash should be displayed
+                    // Splash is displayed when
+                    // #1. restarting the application (onResume() method))
+                    // #2. the beginning of each drill type section (ie. 'Phonics section', 'Words section')
+
+                    // Determine type of splash by comparing drill last played
+                    int drillLastPlayed = u.getUnitDrillLastPlayed();
+                    int sumOfDrillsPlayed = (u.getNumberOfLanguageDrills() + u.getNumberOfMathDrills());
+
+                    System.out.println("------------- Unit First Time? " + u.getUnitFirstTime());
+                    if (u.getUnitFirstTime() == 0) {
+
+                        // Debug
+                        System.out.println("MainActivity.determineNextItem > Debug: Show drill splash");
+
+                        // Determine drill splash code
+                        Class drillSplashActivity;
+
+                        // Phonics Splash
+                        if (drillLastPlayed + 1 < Globals.WORDS_STARTING_ID) {
+                            drillSplashActivity = PhonicsLink.class;
+                        // Words Splashh
+                        } else if (drillLastPlayed + 1 < Globals.STORY_STARTING_ID) {
+                            drillSplashActivity = WordsLink.class;
+                        // Story Splash
+                        } else if (drillLastPlayed + 1 < Globals.MATHS_STARTING_ID) {
+                            drillSplashActivity = StoryLink.class;
+                        // Maths Splash
+                        } else {
+                            drillSplashActivity = MathsLink.class;
+                        }
+
+                        // Show drill splash
+                        intent = new Intent(this, drillSplashActivity);
+                        startActivityForResult(intent, Code.DRILL_SPLASH);
+
+                        // Determine if the chapter ending splash should be played
+                        // Ending under the following scenarios:
+                        // * Unit has not been completed
+                        // * Last drill has been played
+                        //   - Determine this by checking <drill last played> is equal to <sum of number of drills (language, maths) in unit >
+                    } else if (u.getUnitCompleted() == 0 && drillLastPlayed == sumOfDrillsPlayed) {
+
+                        // Debug
+                        System.out.println("MainActivity.determineNextItem > Debug: Chapter End (" + drillLastPlayed + "/" + sumOfDrillsPlayed + ")");
+
+                        // Show ending splash
+                        intent = new Intent(this, LevelCompleteLink.class);
+                        intent.putExtra(Code.RES_NAME, "star_level_" + unitId);
+                        startActivityForResult(intent, Code.CHAPTER_END);
+                        overridePendingTransition(0, android.R.anim.fade_out);
+
+                        // Let's roll with the drill
+                    } else {
+
+                        // Debug
+                        System.out.println("MainActivity.determineNextItem > Debug: Determine drill");
+
+                        int drillId = drillLastPlayed + 1; // next item to play
+                        int languageId = Globals.SELECTED_LANGUAGE;
+                        int subId = 0;
+
+                        if (drillId < Globals.WORDS_STARTING_ID) {
+                            subId = 1;
+                        } else if (drillId < Globals.STORY_STARTING_ID) {
+                            subId = 0;
+                        }
+
+                        // Debug
+                        System.out.println("MainActivity.determineNextItem > Debug: Running drill for (" + unitId + ", " + drillId + ", " + languageId + ", " + subId + ")");
+
+                        intent = DrillFetcher.fetch(getApplicationContext(), mDbHelper, unitId, drillId, languageId, subId);
+                        startActivityForResult(intent, Code.RUN_DRILL);
+                        overridePendingTransition(0, android.R.anim.fade_out);
+                    }
+                }
+            } else if (unitId == Globals.FINALE_ID) {
             /* ENDING LOGIC */
 
-            if (u.getUnitFirstTimeMovie() == 0) {
-                // Play ending movie
-                intent = new Intent(this, Movie.class);
-                intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
-                intent.putExtra(Code.SHOW_MV_BUTTONS, false);
-                startActivityForResult(intent, Code.FINALE);
-                overridePendingTransition(0, android.R.anim.fade_out);
+                // Debug
+                System.out.println("MainActivity.determineNextItem > Debug: Finale Section ");
+
+                if (u.getUnitFirstTimeMovie() == 0) {
+                    // Play ending movie
+                    intent = new Intent(this, Movie.class);
+                    intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
+                    intent.putExtra(Code.SHOW_MV_BUTTONS, false);
+                    startActivityForResult(intent, Code.FINALE);
+                    overridePendingTransition(0, android.R.anim.fade_out);
+                }
+
+            } else {
+            /* "Whoopsie!" LOGIC */
+                throw new Exception("... And why am I here?");
             }
 
-        } else {
-            /* "Whoopsie!" LOGIC */
-            System.err.println("And why am I here ...");
-            return false;
-        }
+            // Set initialized flag to true
+            if (!mInitialized) {
+                System.out.println("mInitialized!");
+                mInitialized = true;
+            }
 
-        return true;
+            // All happy
+            return true;
+
+        // Otherwise
+        } catch (SQLiteException sqlex) {
+            System.err.println("MainActivity.determineNextItem > Exception: " + sqlex.getMessage());
+        } catch (Exception ex) {
+            System.err.println("MainActivity.determineNextItem > Exception: " + ex.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        try {
+            // Determine current unitId
+            int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
+
+            if (unitId > Globals.INTRO_ID && unitId < Globals.FINALE_ID) {
+
+                // Get unit u
+                Unit u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);
+
+                // Update unit u model
+                u.setUnitFirstTime(0); // Reset all splash
+
+                // Update unit u in database
+                int result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                System.out.println("MainActivity.onStop - Unit u (" + u.getUnitId() + ") successfull updated in database");
+
+                // Close database
+                mDbHelper.close();
+            }
+        } catch (SQLiteException sqlex) {
+            System.out.println("MainActivity.onStop >  SQLiteException: " + sqlex.getMessage());
+        } catch (Exception ex) {
+            System.out.println("MainActivity.onStop >  Exception: " + ex.getMessage());
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("on Resume");
+        try {
+            // Determine current unitId
+            if (!dbEstablsh()) {
+                throw new Exception("Database connection could not be established");
+            }
+        } catch (SQLiteException sqlex) {
+            System.err.println("MainActivity.onResume >  SQLiteException: " + sqlex.getMessage());
+        } catch (Exception ex) {
+            System.err.println("MainActivity.onResume >  Exception: " + ex.getMessage());
+        }
     }
 
     /**
@@ -225,409 +282,233 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Debug
+        System.out.println("MainActivity.onActivityResult > Debug: Request (" + requestCode + ") and Result (" + resultCode + ")");
+        System.out.println("-----------------------------------------------------------------------------");
 
         /* Resolve request completion
          * ==========================
          * - requestCode = finished activity's type (ie. Language-select, movie, drill)
          * - resultCode = unitId of finished activity
          */
-        switch (requestCode) {
-            case Code.LANG:
-                // Store language id
-                languageID = Globals.SELECTED_LANGUAGE;
-                break;
-            case Code.INTRO:
-                break;
-            case Code.TUTORIAL:
-                break;
-            case Code.MOVIE:
-                break;
-            case Code.PHONICS_SPLASH:
-                break;
-            case Code.WORDS_SPLASH:
-                break;
-            case Code.STORY_SPLASH:
-                break;
-            case Code.MATHS_SPLASH:
-                break;
-            case Code.RUN_DRILL:
-                break;
-            case Code.CHAPTER_END:
-                break;
-            case Code.FINALE:
-                break;
-            default:
-                break;
-        }
+        try {
+            // Get current unit
+            int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
+            Unit u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);
+            Unit u2; // next unit
+            int result;
 
-        // Determine current item based on resultCode (a.k.a 'unitId')
-        determineCurrentItem(resultCode);
-    }
+            switch (requestCode) {
+                case Code.LANG:
+                    // Get selected language
+                    int selectedLanguage = data.getIntExtra(Code.SELECT_LANG, 1);
 
-    public Class determineDrillSplash(Unit u) {
-        // Only show splash if we're busy with a unit (and not chapter movie/ending)
-        if (u.getUnitFirstTimeMovie() == 0) {
-            // Determine type of splash by comparing drill last played
-            int drillLastPlayed = u.getUnitDrillLastPlayed();
+                    // Update Globals (if not already)
+                    Globals.SELECTED_LANGUAGE = selectedLanguage;
 
-            // Show phonics splash
-            if (drillLastPlayed <= Globals.PHONICS_STARTING_ID) {
-                return PhonicsLink.class;
+                    // Update database
+                    // TO DO
 
-            // Show words splash
-            } else if (drillLastPlayed <= Globals.WORDS_STARTING_ID) {
-                return WordsLink.class;
+                    break;
 
-            // Show story splash
-            } else if (drillLastPlayed <= Globals.STORY_STARTING_ID) {
-                return StoryLink.class;
+                case Code.INTRO:
+                    // Validate that current unit vs request code
+                    if (unitId != Globals.INTRO_ID) {
+                        throw new Exception("Request Code ("+ requestCode +") - Intro request code detected, but unitId (" + unitId + ") does not match that");
+                    }
 
-            // Show maths splash
-            } else if (drillLastPlayed <= Globals.MATHS_STARTING_ID) {
-                return MathsLink.class;
+                    // Update unit u model
+                    u.setUnitFirstTimeMovie(1); // Intro/Chapter/Ending Movie has been watched
 
-            // Otherwise .. err
-            } else {
-                // Don't show splash
-                /* "Whoopsie!" Logic */
+                    // Update unit u in database
+                    result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                    System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() +") successfull updated in database");
+
+                    break;
+
+                case Code.TUTORIAL:
+                    // Validate that current unit vs request code
+                    if (unitId != Globals.INTRO_ID) {
+                        throw new Exception("Request Code (" + requestCode + ") - Intro request code detected, but unitId (" + unitId + ") does not match that");
+                    }
+
+                    // Update unit u model
+                    u.setUnitFirstTime(1); // Mark tutorial as having completed
+                    u.setUnitCompleted(1); // Mark unit as completed (as we don't have any drills - unless the tutorial is a drill)
+                    u.setUnitInProgress(0); // Flag the unit as no longer being 'in progress'
+
+                    // Update unit u in database
+                    result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                    System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() +") successfull updated in database");
+
+                    // Get next unit u2
+                    u2 = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId + 1);
+
+                    // Validate unit u2
+                    if (u2 == null) {
+                        throw new Exception("Request Code (" + requestCode + ") - Could not retrieve next unit u2 (" + (unitId + 1) + ")");
+                    }
+
+                    // Update unit u2
+                    u2.setUnitUnlocked(1); // Unlock unit
+                    u2.setUnitCompleted(0); // Reset completion if previously completed
+                    u2.setUnitInProgress(1); // Update unit to being in progress
+                    u2.setUnitDrillLastPlayed(0); // Reset drill progress
+                    u2.setUnitSubIDInProgress(0); // Reset subId progress
+                    u2.setUnitFirstTimeMovie(0); // Reset chapter movie
+                    u2.setUnitFirstTime(0); // Reset splash/tutorial
+
+                    // Update unit u2 in database
+                    result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u2);
+                    System.out.println("Request Code (" + requestCode + ") - Unit u2 (" + u2.getUnitId() +") successfull updated in database");
+                    break;
+
+                case Code.MOVIE:
+                    // Update unit u model
+                    u.setUnitFirstTimeMovie(1); // Intro/Chapter/Ending Movie has been watched
+
+                    // Update unit u in database
+                    result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                    System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() +") successfull updated in database");
+
+                    break;
+                case Code.DRILL_SPLASH:
+                    // Update unit u model
+                    u.setUnitFirstTime(1); // Splash/Tutorial has been watched
+
+                    // Update unit u in database
+                    result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                    System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() +") successfull updated in database");
+                    break;
+
+                case Code.RUN_DRILL:
+                    // Hax to avoid bugged drills
+                    int currentDrill = u.getUnitDrillLastPlayed() + 1;
+                    int nextDrill = currentDrill + 1;
+                    int[] buggedDrills = {5, 7, 9};
+
+                    for (int buggedDrill : buggedDrills) {
+                        if (buggedDrill >= nextDrill) {
+                            if (nextDrill == buggedDrill) {
+                                System.err.println("Skipping drill " + nextDrill);
+                                nextDrill++;
+                            } else {
+                                System.out.println("Next drill is " + nextDrill);
+                                break;
+                            }
+                        }
+                    }
+
+                    // Update unit u model
+                    u.setUnitDrillLastPlayed(nextDrill - 1); // Update drill progress. Note that subId update is handled separately
+
+                    // Check if next drill requires splash
+                    // Update unit u model accordingly
+                    if (nextDrill == Globals.PHONICS_STARTING_ID ||
+                        nextDrill == Globals.WORDS_STARTING_ID ||
+                        nextDrill == Globals.STORY_STARTING_ID ||
+                        nextDrill == Globals.MATHS_STARTING_ID) {
+                        // Reset UnitFirstTime 'Splash' Flag
+                        u.setUnitFirstTime(0);
+                    }
+
+                    // Update unit u in database
+                    result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                    System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() +") successfull updated in database");
+                    break;
+
+                case Code.CHAPTER_END:
+                    // Update unit u model
+                    u.setUnitCompleted(1); // Mark unit as completed (as we don't have any drills - unless the tutorial is a drill)
+                    u.setUnitInProgress(0); // Flag the unit as no longer being 'in progress'
+
+                    // Update unit u in database
+                    result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                    System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() +") successfull updated in database");
+
+                    // Get next unit u2
+                    u2 = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId + 1);
+
+                    // Validate unit u2
+                    if (u2 == null) {
+                        throw new Exception("Request Code (" + requestCode + ") - Could not retrieve next unit u2 (" + (unitId + 1) + ")");
+                    }
+
+                    // Update unit u2
+                    u2.setUnitUnlocked(1); // Unlock unit
+                    u2.setUnitCompleted(0); // Reset completion if previously completed
+                    u2.setUnitInProgress(1); // Update unit to being in progress
+                    u2.setUnitDrillLastPlayed(0); // Reset drill progress
+                    u2.setUnitSubIDInProgress(0); // Reset subId progress
+                    u2.setUnitFirstTimeMovie(0); // Reset chapter movie
+                    u2.setUnitFirstTime(0); // Reset splash/tutorial
+
+                    // Update unit u2 in database
+                    result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u2);
+                    System.out.println("Request Code (" + requestCode + ") - Unit u2 (" + u2.getUnitId() +") successfull updated in database");
+
+                    break;
+
+                case Code.FINALE:
+                    // Validate that current unit vs request code
+                    if (unitId != Globals.FINALE_ID) {
+                        throw new Exception("Request Code (" + requestCode + ") - Finale request code detected, but unitId (" + unitId + ") does not match that");
+                    }
+
+                    // Update unit u model
+                    u.setUnitFirstTimeMovie(1); // Mark finale as having completed
+                    u.setUnitCompleted(1); // Mark unit as completed (as we don't have any drills - unless any finale items are added in the future)
+                    u.setUnitInProgress(0); // Flag the unit as no longer being 'in progress'
+
+                    // Update unit u in database
+                    result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                    System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() +") successfull updated in database");
+
+                    // Get next unit u2
+                    u2 = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), Globals.INTRO_ID); // Go back to beginning
+
+                    // Validate unit u2
+                    if (u2 == null) {
+                        throw new Exception("Request Code (" + requestCode + ") - Could not retrieve next unit u2 (" + (Globals.INTRO_ID) + ")");
+                    }
+
+                    // Update unit u2
+                    u2.setUnitUnlocked(1); // Unlock unit
+                    u2.setUnitCompleted(0); // Reset completion if previously completed
+                    u2.setUnitInProgress(1); // Update unit to being in progress
+                    u2.setUnitDrillLastPlayed(0); // Reset drill progress
+                    u2.setUnitSubIDInProgress(0); // Reset subId progress
+                    u2.setUnitFirstTimeMovie(0); // Reset chapter movie
+                    u2.setUnitFirstTime(0); // Reset splash/tutorial
+
+                    // Update unit u2 in database
+                    result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u2);
+                    System.out.println("Request Code (" + requestCode + ") - Unit u2 (" + u2.getUnitId() +") successfull updated in database");
+                    break;
+
+                default:
+                    throw new Exception("Request Code (" + requestCode + ") - Invalid");
+
             }
-        } else {
-            // Don't show splash
-            // Should be showing movie instead
-            /* "Whoopsie!" Logic */
+
+            // After all the above database updates, let's get the unitId of the next unit-to-play
+            unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
+
+            // Debug
+            System.out.println("-----------------------------------------------------------------------------");
+
+            // Determine the next item (a.k.a. 'Activity / Intent') to play
+            determineNextItem(unitId);
+
+        } catch (SQLiteException sqlex) {
+            System.err.println("MainActivity.onActivityResult > SQLiteException: " + sqlex.getMessage());
+        } catch (Exception ex) {
+            System.err.println("MainActivity.onActivityResult > SQLiteException: " + ex.getMessage());
         }
-        return null;
     }
 
     public int determineNextSplashBg() {
         return 0;
-    }
-
-    private Intent fetchDrill (int dbHelper, int unitId, int drillId, int languageId){
-        try {
-            // let's check which drill we are running and send through params for the json builder
-            switch (drillId) {
-                case 1: {
-
-                    return playDrill1(limit, wordType);
-                }
-                case 2: {
-
-
-                    return playDrill2(limit, wordType);
-                }
-                case 3: {
-
-
-                    return playDrill3(limit);
-                }
-                case 4: {
-
-
-                    return playDrill4(rightLimit, wrongLimit, wordType);
-                }
-
-                case 5: {
-
-
-                    return playDrill5(rightLimit, wrongLimit, wordType);
-                }
-                case 6: {
-
-
-                    return playDrill6(LetterHelper.getLetter(mDbHelper.getReadableDatabase(), languageId, letterID),
-                            drillFlowWord.getDrillSound1(),
-                            drillFlowWord.getDrillSound2(),
-                            drillFlowWord.getDrillSound3(),
-                            drillFlowWord.getDrillSound4(),
-                            drillFlowWord.getDrillSound5());
-                }
-                case 7: {
-
-
-                    return playDrill7(mDbHelper,
-                            languageId,
-                            LetterHelper.getLetter(mDbHelper.getReadableDatabase(), languageId, letterID),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(0)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(1)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(2)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(0)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(1)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(2)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(3)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(4)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(5)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(6)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(7)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(8)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(9)),
-                            drillFlowWord.getDrillSound1()
-                    );
-                }
-                case 8: {
-                    return playDrill8();
-                }
-                case 9: {
-                    DrillFlowWords drillFlowWord;
-                    drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(mDbHelper.getReadableDatabase(), drillId, languageId);
-
-                    return playDrill9(LetterHelper.getLetter(mDbHelper.getReadableDatabase(), languageId, letterID),
-                            drillFlowWord.getDrillSound1(),
-                            drillFlowWord.getDrillSound2(),
-                            drillFlowWord.getDrillSound3());
-                }
-                case 10: {
-
-
-                    return playDrill10(WordHelper.getWord(mDbHelper.getReadableDatabase(), drillWordIDs.get(0)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), drillWordIDs.get(1)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), drillWordIDs.get(2)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), drillWordIDs.get(3)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), drillWordIDs.get(4)),
-                            drillFlowWord.getDrillSound1(),
-                            drillFlowWord.getDrillSound2());
-                }
-                case 11: {
-                    int wordType = 2; // drill 11 only uses sight words, which is WordType 2
-                    int rightLimit = 5; // limit the words to 4 for this drill
-                    DrillFlowWords drillFlowWord;
-
-                    //This will get 3 random words based on the specific unit ID
-
-                    ArrayList<Integer> drillWordIDs = new ArrayList();
-                    drillWordIDs = DrillWordHelper.getDrillWords(mDbHelper.getReadableDatabase(), languageId, unitId, Globals.DEFAULT_UNIT_SUB_ID, drillId, wordType, rightLimit);
-
-                    drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(mDbHelper.getReadableDatabase(), drillId, languageId);
-
-                    return playDrill11(LetterHelper.getLetter(mDbHelper.getReadableDatabase(), languageId, letterID),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), drillWordIDs.get(0)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), drillWordIDs.get(1)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), drillWordIDs.get(2)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), drillWordIDs.get(3)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), drillWordIDs.get(4)),
-                            drillFlowWord.getDrillSound1(),
-                            drillFlowWord.getDrillSound2());
-                }
-                case 12: {
-                    int wordType = 2; // drill 12 only uses sight words, which is WordType 2
-                    int rightLimit = 4; // number of correct words
-                    int wrongLimit = 8; // number of incorrect words
-                    int numberLimit = 6; // Limit numbers to 8
-                    int boyGirl = 1;
-                    DrillFlowWords drillFlowWord;
-
-                    ArrayList<Integer>  numerals = new ArrayList();
-                    numerals = NumeralHelper.getNumeralsBelowLimit(mDbHelper.getReadableDatabase(), languageId, numberLimit, boyGirl);
-
-                    ArrayList<Integer> rightDrillWordIDs = new ArrayList();
-                    rightDrillWordIDs = DrillWordHelper.getDrillWords(mDbHelper.getReadableDatabase(), languageId, unitId, Globals.DEFAULT_UNIT_SUB_ID, drillId, wordType, rightLimit);
-
-                    ArrayList<Integer> wrongDrillWordIDs = new ArrayList();
-                    wrongDrillWordIDs = DrillWordHelper.getWrongDrillWords(mDbHelper.getReadableDatabase(), languageId, unitId, Globals.DEFAULT_UNIT_SUB_ID, drillId, wordType, wrongLimit);
-
-                    drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(mDbHelper.getReadableDatabase(), drillId, languageId);
-
-                    return playDrill12(LetterHelper.getLetter(mDbHelper.getReadableDatabase(), languageId, letterID),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(0)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(1)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(2)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(3)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(0)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(1)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(2)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(3)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(4)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(5)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(6)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), wrongDrillWordIDs.get(7)),
-                            drillFlowWord.getDrillSound1(),
-                            drillFlowWord.getDrillSound2(),
-                            drillFlowWord.getDrillSound3(),
-                            drillFlowWord.getDrillSound4(),
-                            NumeralHelper.getNumeral(mDbHelper.getReadableDatabase(), languageId, numerals.get(0)),
-                            NumeralHelper.getNumeral(mDbHelper.getReadableDatabase(), languageId, numerals.get(1)),
-                            NumeralHelper.getNumeral(mDbHelper.getReadableDatabase(), languageId, numerals.get(2)),
-                            NumeralHelper.getNumeral(mDbHelper.getReadableDatabase(), languageId, numerals.get(3)),
-                            NumeralHelper.getNumeral(mDbHelper.getReadableDatabase(), languageId, numerals.get(4)),
-                            NumeralHelper.getNumeral(mDbHelper.getReadableDatabase(), languageId, numerals.get(5)));
-                }
-                case 13: {
-
-                    int wordType = 2; // drill 1 only uses phonic words, which is WordType 1
-                    int limit = 3; // 5 words for this drill
-                    DrillFlowWords drillFlowWord;
-
-                    //This will get 5 random words based on the specific unit ID
-                    ArrayList<Integer>  rightDrillWordIDs = new ArrayList();
-                    rightDrillWordIDs = DrillWordHelper.getDrillWords(mDbHelper.getReadableDatabase(), languageId, unitId, Globals.DEFAULT_UNIT_SUB_ID, drillId, wordType, limit);
-
-                    drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(mDbHelper.getReadableDatabase(), drillId, languageId);
-
-                    return playDrill13(
-                            languageId,
-                            LetterHelper.getLetter(mDbHelper.getReadableDatabase(), languageId, letterID),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(0)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(1)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(2)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(3)),
-                            drillFlowWord.getDrillSound1(),
-                            drillFlowWord.getDrillSound2()
-                    );
-                }
-                case 14: {
-                    int wordType = 2; // drill 1 only uses phonic words, which is WordType 1
-                    int limit = 3; // 5 words for this drill
-                    DrillFlowWords drillFlowWord;
-
-                    //This will get 5 random words based on the specific unit ID
-                    ArrayList<Integer>  rightDrillWordIDs = new ArrayList();
-                    rightDrillWordIDs = DrillWordHelper.getDrillWords(mDbHelper.getReadableDatabase(), languageId, unitId, Globals.DEFAULT_UNIT_SUB_ID, drillId, wordType, limit);
-
-                    drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(mDbHelper.getReadableDatabase(), drillId, languageId);
-
-                    return playDrill14(languageId,
-                            LetterHelper.getLetter(mDbHelper.getReadableDatabase(), languageId, letterID),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(0)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(1)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(2)),
-                            WordHelper.getWord(mDbHelper.getReadableDatabase(), rightDrillWordIDs.get(3)),
-                            drillFlowWord.getDrillSound1(),
-                            drillFlowWord.getDrillSound2(),
-                            drillFlowWord.getDrillSound3()
-                    );
-                }
-                case 15: {
-                    return playDrill15();
-                }
-                case 16: {
-                    return playSimpleStory();
-                }
-                case 17: {
-                    switch (unitId) {
-                        case 1: {
-                            int limit = 5; // Limit numbers to 5
-                            int subId = 0; // this runs the subIDs for the drillflow table
-                            int boyGirl;
-                            if (languageId == 1)
-                                boyGirl = 2;
-                            else
-                                boyGirl = 1;
-                            return playMathDrill1(limit, boyGirl, subId);
-                        }
-                        case 2: {
-
-                            int limit = 3; // Limit numbers to 3
-                            int subId = 0; // this runs the subIDs for the drillflow table
-                            int boyGirl;
-                            if (languageId == 1)
-                                boyGirl = 2;
-                            else
-                                boyGirl = 1;
-
-                            return playMathDrill2(limit, subId, boyGirl);
-                        }
-                        case 3: {
-                            int limit = 10; // Limit numbers to 10
-                            int boyGirl = 1;
-                            int subId = 0; // this runs the subIDs for the drillflow table
-
-                            return playMathDrill3(limit, subId, boyGirl);
-                        }
-                        case 4: {
-                            int limit = 5; // Limit numbers to 5
-                            int subId = 0; // this runs the subIDs for the drillflow table
-                            int boyGirl;
-                            if (languageId == 1)
-                                boyGirl = 2;
-                            else
-                                boyGirl = 1;
-
-                            return playMathDrill4(limit, subId, boyGirl);
-                        }
-                        case 5: {
-                            int subId = 0; // this runs the subIDs for the drillflow table
-                            int boyGirl = 1;
-
-                            if (unitId < 9) {
-                                int limit = 10; // Limit numbers to 10
-                                return playMathDrill5(limit, subId, boyGirl);
-                            } else {
-                                int limit = 20; // Limit numbers to 20
-                                subId = 1; // this runs the subIDs for the drillflow table
-                                return playMathDrill5And1(limit, subId, boyGirl);
-
-                            }
-                        }
-                        case 6: {
-                            int subId = 0; // this runs the subIDs for the drillflow table
-                            int boyGirl;
-                            if (languageId == 1)
-                                boyGirl = 2;
-                            else
-                                boyGirl = 1;
-                            if (unitId < 6) { // drill 1 - 5
-
-                                if (languageId == 1)
-                                    boyGirl = 2;
-                                else
-                                    boyGirl = 1;
-                                return playMathDrill6(subId, boyGirl);
-
-                            } else if ((unitId >= 6) && (unitId < 10)) { //six and one
-                                subId=1;
-                                return playMathDrill6And1(subId);
-
-                            } else if (unitId == 10) { // six and two
-                                subId=2;
-                                return playMathDrill6And2(subId);
-
-                            } else if ((unitId > 10) && (unitId < 16)) { // six and three
-                                subId=3;
-                                int limit = 3; // Limit numbers to 5
-                                return playMathDrill6And3(subId, boyGirl);
-
-                            } else if (unitId > 15) {  // six and four
-                                subId=4;
-                                int limit = 5; // Limit numbers to 5
-                                return playMathDrill6And4(subId, boyGirl);
-                            } else {
-                                System.err.println("Error sdelecting maths drill");
-                                break;
-                            }
-                        }
-
-                        case 7: {
-                            int subId = 0;
-                            int boyGirl = 1;
-                            if (unitId < 10) {
-                                return playMathDrill7(subId);
-                            } else {
-                                subId=1;
-                                return playMathDrill7And1(subId);
-                            }
-                        }
-                        default: {
-                            System.err.println("Wee Math drill is this?!");
-                            break;
-                        }
-                    }
-                    break;
-                }
-                default: {
-                    System.err.println();
-                    break;
-                }
-            }
-        } catch (SQLiteException sqle) {
-            throw sqle;
-        }
-        return null;
-    }
-
-    private void updateStatus () {
-        Unit UnitInfo = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), currentUnitId);
-        UnitInfo.setUnitDrillLastPlayed(drillID);
-        int dbUpdateResult = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), UnitInfo);
     }
 
     /**
@@ -635,26 +516,27 @@ public class MainActivity extends AppCompatActivity {
      * @return Returns true/false if db connection has been established
      */
     protected boolean dbEstablsh() {
-        // Try create database or connect to existing
-        mDbHelper = new DbHelper(this);
         try {
-            mDbHelper.createDatabase();
-        } catch (IOException ioex) {
-            System.err.println("Main: error connecting to database - " + ioex.getMessage());
-            // Failed
-            return false;
-        }
+            // Initialize DbHelper
+            mDbHelper = new DbHelper(this);
 
-        // Test opening database
-        try {
+            // Try create database or connect to existing
+            mDbHelper.createDatabase(!mInitialized);
+
+            // Test opening database
             mDbHelper.openDatabase();
-        } catch (SQLiteException sqlex) {
-            System.err.println("Main: error opening database - " + sqlex.getMessage());
-            // Failed
-            return false;
-        }
 
-        // Success
-        return true;
+            // All good
+            return true;
+
+        // Otherwise
+        } catch (IOException ioex) {
+            System.err.println("MainActivity.dbEstablish > IOException: " + ioex.getMessage());
+        } catch (SQLiteException sqlex) {
+            System.err.println("MainActivity.dbEstablish > SQLiteException: " + sqlex.getMessage());
+        } catch (Exception ex) {
+            System.err.println("MainActivity.dbEstablish > Exception: " + ex.getMessage());
+        }
+        return false;
     }
 }

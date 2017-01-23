@@ -15,6 +15,8 @@ import classact.com.xprize.database.model.Unit;
 public class UnitHelper {
     public static int updateUnitInfo (SQLiteDatabase db, Unit unit) throws SQLiteException {
         ContentValues contentValues = new ContentValues();
+        contentValues.put("NumberOfLanguageDrills", unit.getNumberOfLanguageDrills());
+        contentValues.put("NumberOfMathDrills", unit.getNumberOfMathDrills());
         contentValues.put("UnitUnlocked", unit.getUnitUnlocked());
         contentValues.put("UnitDateLastPlayed", unit.getUnitDateLastPlayed());
         contentValues.put("UnitCompleted", unit.getUnitCompleted());
@@ -29,11 +31,13 @@ public class UnitHelper {
 
     public static Unit getUnitInfo (SQLiteDatabase db, int ID) throws SQLiteException {
         // this will return only one row
-        Cursor unitInfo = db.rawQuery("select UnitUnlocked, UnitDateLastPlayed, UnitCompleted, UnitFirstTime, UnitFirstTimeMovie, UnitFirstTimeMovieFile, " +
+        Cursor unitInfo = db.rawQuery("select NumberOfLanguageDrills, NumberOfMathDrills, UnitUnlocked, UnitDateLastPlayed, UnitCompleted, UnitFirstTime, UnitFirstTimeMovie, UnitFirstTimeMovieFile, " +
                 "            UnitInProgress, UnitSubIDInProgress, DrillLastPlayed from tbl_UnitControl where _id="+ID+"", null);
         unitInfo.moveToFirst();
         Unit unit = new Unit();
         unit.setUnitId(ID);
+        unit.setNumberOfLanguageDrills(unitInfo.getInt(unitInfo.getColumnIndex("NumberOfLanguageDrills")));
+        unit.setNumberOfMathDrills(unitInfo.getInt(unitInfo.getColumnIndex("NumberOfMathDrills")));
         unit.setUnitUnlocked(unitInfo.getInt(unitInfo.getColumnIndex("UnitUnlocked")));
         unit.setUnitDateLastPlayed(unitInfo.getString(unitInfo.getColumnIndex("UnitDateLastPlayed")));
         unit.setUnitCompleted(unitInfo.getInt(unitInfo.getColumnIndex("UnitCompleted")));
@@ -53,6 +57,8 @@ public class UnitHelper {
         Cursor unitInfo = db.rawQuery("select * from tbl_UnitControl", null);
         for(unitInfo.moveToFirst(); !unitInfo.isAfterLast(); unitInfo.moveToNext()) {
             Unit unit = new Unit();
+            unit.setNumberOfLanguageDrills(unitInfo.getInt(unitInfo.getColumnIndex("NumberOfLanguageDrills")));
+            unit.setNumberOfMathDrills(unitInfo.getInt(unitInfo.getColumnIndex("NumberOfMathDrills")));
             unit.setUnitUnlocked(unitInfo.getInt(unitInfo.getColumnIndex("UnitUnlocked")));
             unit.setUnitDateLastPlayed(unitInfo.getString(unitInfo.getColumnIndex("UnitDateLastPlayed")));
             unit.setUnitInProgress(unitInfo.getInt(unitInfo.getColumnIndex("UnitProgress")));

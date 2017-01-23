@@ -12,10 +12,10 @@ public class Globals {
     public static final String RESOURCE_PREFIX = "android.resource://";
 
     // Unit/Drill-based constants
-    public static final int TUTORIAL_ID = 0;
-    public static final int ENDING_ID = 21;
+    public static final int INTRO_ID = 0;
+    public static final int FINALE_ID = 21;
 
-    public static final int PHONICS_STARTING_ID = 0;
+    public static final int PHONICS_STARTING_ID = 1;
     public static final int WORDS_STARTING_ID = 10;
     public static final int STORY_STARTING_ID = 16;
     public static final int MATHS_STARTING_ID = 17;

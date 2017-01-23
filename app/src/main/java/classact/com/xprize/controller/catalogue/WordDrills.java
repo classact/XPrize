@@ -39,6 +39,12 @@ public class WordDrills {
         Intent intent = null;
 
         try {
+            System.out.println("Word ids: " + word1.getWordID() + ", " + word2.getWordID() + ", " + word3.getWordID() + ", " + word4.getWordID() + ", " + word5.getWordID());
+            System.out.println("Word picture1: " + word1.getWordPictureURI());
+            System.out.println("Word picture2: " + word2.getWordPictureURI());
+            System.out.println("Word picture3: " + word3.getWordPictureURI());
+            System.out.println("Word picture4: " + word4.getWordPictureURI());
+            System.out.println("Word picture5: " +  word5.getWordPictureURI());
             ArrayList<SpelledWord> words = new ArrayList<>();
             //One
             SpelledWord word = new SpelledWord();

@@ -10,6 +10,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import classact.com.xprize.MainActivity;
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
@@ -20,6 +21,7 @@ public class LanguageSelect extends AppCompatActivity {
     Activity activity;
     RelativeLayout layoutContainer;
     int nextBGCode;
+    int mSelectedLanguage;
 
     Button selectEnglishButton;
     Button selectKiswahiliButton;
@@ -30,6 +32,7 @@ public class LanguageSelect extends AppCompatActivity {
         setContentView(R.layout.activity_language_select);
 
         activity = this;
+        mSelectedLanguage = 1; // English by default
 
         Intent intent = getIntent();
         nextBGCode = intent.getIntExtra("NEXT_BG_CODE", -1);
@@ -47,8 +50,6 @@ public class LanguageSelect extends AppCompatActivity {
             public void onClick(View v) {
                 setSelectedLanguage(Languages.ENGLISH);
                 fadeOutCurrentUI();
-                selectEnglishButton.setOnClickListener(null);
-                selectKiswahiliButton.setOnClickListener(null);
             }
         });
 
@@ -57,8 +58,6 @@ public class LanguageSelect extends AppCompatActivity {
             public void onClick(View v) {
                 setSelectedLanguage(Languages.SWAHILI);
                 fadeOutCurrentUI();
-                selectKiswahiliButton.setOnClickListener(null);
-                selectEnglishButton.setOnClickListener(null);
             }
         });
     }
@@ -77,6 +76,10 @@ public class LanguageSelect extends AppCompatActivity {
         RelativeLayout bg = (RelativeLayout) findViewById(R.id.activity_language_select);
 
         if (language == Languages.SWAHILI) {
+            // Update selected language
+            mSelectedLanguage = Languages.SWAHILI;
+
+            // Update bg 'illusory splash' image
             switch (nextBGCode) {
                 case Code.INTRO:
                     bg.setBackgroundResource(R.drawable.tutorial_intro_bg_swahili);
@@ -87,14 +90,15 @@ public class LanguageSelect extends AppCompatActivity {
                 case Code.MOVIE:
                     bg.setBackgroundResource(R.drawable.language_select_bg);
                     break;
-                case Code.PHONICS_SPLASH:
-                    bg.setBackgroundResource(R.drawable.phonics_link_bg);
-                    break;
                 default:
                     bg.setBackgroundResource(R.drawable.language_select_bg);
                     break;
             }
         } else {
+            // Update selected language
+            mSelectedLanguage = Languages.ENGLISH;
+
+            // Update bg 'illusory splash' image
             switch (nextBGCode) {
                 case Code.INTRO:
                     bg.setBackgroundResource(R.drawable.tutorial_intro_bg_english);
@@ -104,9 +108,6 @@ public class LanguageSelect extends AppCompatActivity {
                     break;
                 case Code.MOVIE:
                     bg.setBackgroundResource(R.drawable.language_select_bg);
-                    break;
-                case Code.PHONICS_SPLASH:
-                    bg.setBackgroundResource(R.drawable.phonics_link_bg);
                     break;
                 default:
                     bg.setBackgroundResource(R.drawable.language_select_bg);
@@ -123,7 +124,7 @@ public class LanguageSelect extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                startIntro();
+                finishIntent();
             }
 
             @Override
@@ -133,8 +134,12 @@ public class LanguageSelect extends AppCompatActivity {
         layoutContainer.startAnimation(fadeOut);
     }
 
-    public void startIntro() {
-        Intent intent = new Intent();
+    public void finishIntent() {
+        // Debug
+        System.out.println("LanguageSelect.finishIntent > Debug: Executing Intent finish logic");
+
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(Code.SELECT_LANG, mSelectedLanguage);
         setResult(Code.LANG, intent);
         finishAfterTransition();
         overridePendingTransition(0, android.R.anim.fade_out);

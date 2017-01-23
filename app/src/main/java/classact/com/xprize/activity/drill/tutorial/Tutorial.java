@@ -1057,6 +1057,9 @@ public class Tutorial extends AppCompatActivity {
     }
 
     public void transitionToChapter01(String state) {
+        // Debug
+        System.out.println("Tutorial.transitionToChapter01 > Debug: Executing Intent finish logic");
+
         // Update current state
         currentState = state;
 
@@ -1069,7 +1072,7 @@ public class Tutorial extends AppCompatActivity {
         overridePendingTransition(0, android.R.anim.fade_out);
         */
         Intent intent = new Intent();
-        setResult(Code.MOVIE, intent);
+        setResult(Code.TUTORIAL, intent);
         finishAfterTransition();
         overridePendingTransition(0, android.R.anim.fade_out);
     }
