@@ -7,5 +7,5 @@
     android:background="@drawable/en_words_link_bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="classact.com.xprize.activity.links.WordsLink">
+    tools:context="classact.com.xprize.activity.link.WordsLink">
 </RelativeLayout>

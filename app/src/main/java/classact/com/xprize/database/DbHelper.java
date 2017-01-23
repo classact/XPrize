@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import classact.com.xprize.database.helpers.SQLiteAssetHelper;
+import classact.com.xprize.database.helper.SQLiteAssetHelper;
 
 /**
  * Created by Tseliso on 5/8/2016.
@@ -31,6 +31,33 @@ public class DbHelper extends SQLiteAssetHelper {
 		this.myContext = c;
 		this.DATABASE_PATH = c.getApplicationInfo().dataDir + "/databases/";
 	}
+
+    public void createDatabase(boolean recopy) throws IOException {
+        boolean dbExist = checkDatabase();
+        if(dbExist){
+            // do nothing here, the database exists already
+            if (recopy) {
+                System.out.println("------------ Recopy DB");
+                copyDatabase();
+            } else {
+                System.out.println("------------ Use existing DB");
+            }
+        }else{
+            //by doing this we will be able to copy our existing db over the blank db that is
+            //created when the app first ran
+            try {
+                this.getReadableDatabase();
+            } catch (SQLiteException sqle) {
+            }
+
+            try {
+                copyDatabase();
+            } catch (IOException e) {
+                throw new Error("Error copying database");
+            }
+        }
+
+    }
 
 	public void createDatabase() throws IOException {
 		boolean dbExist = checkDatabase();

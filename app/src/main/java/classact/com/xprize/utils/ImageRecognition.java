@@ -2,8 +2,6 @@ package classact.com.xprize.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.Environment;
-import android.util.Log;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 

@@ -5,7 +5,7 @@
     android:id="@+id/content_tutorial_play"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="classact.com.xprize.activity.tutorial.TutorialActivity"
+    tools:context=".activity.drill.tutorial.Tutorial"
     android:background="@drawable/tutorial_bg_empty">
 
     <ImageView

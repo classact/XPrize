@@ -358,7 +358,7 @@ public class SoundDrillJsonBuilder {
         int i = 0;
         for (SpelledWord word: words) {
             if (i == 0)
-                drillData += "{\"word\":" + ResourceDecoder.getIdentifier(context, word.getWord().getSpelling(),"drawable");
+                drillData += "{\"word\":" + ResourceDecoder.getIdentifier(context, word.getWord().getObjectImage(),"drawable");
             else
                 drillData += ",{\"word\":" +  ResourceDecoder.getIdentifier(context,word.getWord().getSpelling(),"drawable") ;
 

@@ -13,7 +13,6 @@ package com.google.scrollview;
 import com.google.scrollview.events.SVEvent;
 import com.google.scrollview.ui.SVImageHandler;
 import com.google.scrollview.ui.SVWindow;
-
 import org.piccolo2d.nodes.PImage;
 
 import java.io.BufferedReader;
