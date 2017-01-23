@@ -521,7 +521,7 @@ public class MainActivity extends AppCompatActivity {
             mDbHelper = new DbHelper(this);
 
             // Try create database or connect to existing
-            mDbHelper.createDatabase(!mInitialized);
+            mDbHelper.createDatabase();
 
             // Test opening database
             mDbHelper.openDatabase();
