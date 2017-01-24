@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.VideoView;
 
@@ -26,7 +27,6 @@ import classact.com.xprize.database.DbHelper;
 import classact.com.xprize.database.helper.UnitHelper;
 import classact.com.xprize.database.model.Unit;
 import classact.com.xprize.locale.Languages;
-import classact.com.xprize.utils.ResourceDecoder;
 
 public class Movie extends AppCompatActivity {
 
@@ -38,6 +38,7 @@ public class Movie extends AppCompatActivity {
     // Views
     protected RelativeLayout mSplashScreenContainer;
     protected RelativeLayout mSplashScreen;
+    protected ImageView mSplashImage;
     protected MediaPlayer mVideoPlayer;
     protected VideoView mVideo;
     protected Uri mVideoURI;
@@ -58,6 +59,7 @@ public class Movie extends AppCompatActivity {
     protected int mUnitId;
     protected String mActivityName;
     protected boolean mShowVideoControls;
+    protected int mNextBgCode;
 
     // Keys to hold non-persistent data
     protected final String FADE_OUT_DELAY_KEY = "FADE_OUT_DELAY";
@@ -67,6 +69,7 @@ public class Movie extends AppCompatActivity {
     protected final String ACTIVITY_NAME_KEY = "ACTIVITY_NAME";
     protected final String NEXT_ACTIVITY_KEY = "NEXT_ACTIVITY";
     protected final String SHOW_MV_CONTROLS = "SHOW_MV_CONTROLS";
+    protected final String NEXT_BG = "NEXT_BG_CODE";
 
     // States
     protected final int INIT = 0;
@@ -84,28 +87,42 @@ public class Movie extends AppCompatActivity {
         setContentView(R.layout.activity_movie);
         System.out.println("onCreate");
 
+        int bg;
+
         mSplashScreenContainer = (RelativeLayout) findViewById(R.id.movie_splash_container);
         mSplashScreen = (RelativeLayout) findViewById(R.id.movie_splash);
+        mSplashImage = (ImageView) findViewById(R.id.movie_splash_image);
         mVideo = (VideoView) findViewById(R.id.movie_video);
         mPauseButton = (Button) findViewById(R.id.movie_pause_button);
         mPlayButton = (Button) findViewById(R.id.movie_play_button);
 
-        mPauseButton.setVisibility(View.INVISIBLE);
-        mPlayButton.setVisibility(View.INVISIBLE);
-        mSplashScreenContainer.setVisibility(View.VISIBLE);
+        // Requires data from invoker intent
+        Intent intent = getIntent();
+        mShowVideoControls = intent.getBooleanExtra(Code.SHOW_MV_BUTTONS, false);
+        mNextBgCode = intent.getIntExtra(Code.NEXT_BG_CODE, -1);
+
+        if (mNextBgCode == Code.INTRO) {
+            if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
+                mSplashImage.setBackgroundResource(R.drawable.sw_intro_bg);
+            } else {
+                mSplashImage.setBackgroundResource(R.drawable.en_intro_bg);
+            }
+        }
+
+        // Show hide play/stop buttons
+        if (mShowVideoControls) {
+            mPauseButton.setVisibility(View.VISIBLE);
+            mPlayButton.setVisibility(View.INVISIBLE);
+        } else {
+            mPauseButton.setVisibility(View.GONE);
+            mPauseButton.invalidate();
+            mPlayButton.setVisibility(View.GONE);
+            mPlayButton.invalidate();
+        }
 
         mUnitId = 1;
         mActivityName = "Movie";
         mNextActivityClassName = null;
-
-        // Requires data from invoker intent
-        Intent intent = getIntent();
-
-        // Show hide play/stop buttons
-        mShowVideoControls = intent.getBooleanExtra(Code.SHOW_MV_BUTTONS, false);
-        if (mShowVideoControls) {
-            mPauseButton.setVisibility(View.VISIBLE);
-        }
 
         // Set splash screen delay
         mSplashScreenFadeOutDelay = intent.getIntExtra(Code.MV_SPLASH_DELAY, 3000);
@@ -118,9 +135,6 @@ public class Movie extends AppCompatActivity {
         if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
             resourceName = SWAHILI_PREFIX + resourceName;
         }
-
-        // Get resource id using resource name
-        int resourceId = ResourceDecoder.getIdentifier(getApplicationContext(), resourceName, "raw");
 
         // Create video path
         String videoPath = Environment.getExternalStorageDirectory() + "/Android/media/classact.com.xprize/videos/" + resourceName + ".mp4";
@@ -135,7 +149,7 @@ public class Movie extends AppCompatActivity {
     /**
      * ANDROID ACTIVITY LIFECYCLE METHODS
      */
-    /*
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -146,11 +160,6 @@ public class Movie extends AppCompatActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         System.out.println("onPostCreate");
-
-        if (mState == INIT) {
-            // add listeners to views
-
-        }
     }
 
     @Override
@@ -163,7 +172,6 @@ public class Movie extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         System.out.println("onResume");
-        // resumeVideo();
     }
 
     @Override
@@ -188,6 +196,10 @@ public class Movie extends AppCompatActivity {
         outState.putInt(UNIT_ID_KEY, mUnitId);
         outState.putString(ACTIVITY_NAME_KEY, mActivityName);
         outState.putBoolean(SHOW_MV_CONTROLS, mShowVideoControls);
+        outState.putInt(NEXT_BG, mNextBgCode);
+        if (!(mState == INIT || mState == COMPLETE)) {
+            pauseVideo();
+        }
         super.onSaveInstanceState(outState);
     }
 
@@ -202,13 +214,13 @@ public class Movie extends AppCompatActivity {
         mUnitId = savedInstanceState.getInt(UNIT_ID_KEY);
         mActivityName = savedInstanceState.getString(ACTIVITY_NAME_KEY);
         mShowVideoControls = savedInstanceState.getBoolean(SHOW_MV_CONTROLS);
+        mNextBgCode = savedInstanceState.getInt(NEXT_BG);
         if (!(mState == INIT || mState == COMPLETE)) {
             resumeVideo();
         } else if (mState == COMPLETE) {
             close(mNextActivityClassName);
         }
     }
-    */
 
     /**
      * ADD LISTENERS TO VIEWS

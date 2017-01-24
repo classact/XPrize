@@ -10,6 +10,8 @@ public class Code {
     public final static String UNIT = "UNIT_CODE";
     public final static String DRILL = "DRILL_CODE";
     public final static String SELECT_LANG = "SELECT_LANGUAGE";
+    public final static String NEXT_BG_CODE = "NEXT_BG_CODE";
+    public final static String NEXT_BG_RES = "NEXT_BG_RESOURCE";
 
     // ADMIN / EXTRA ACTIVITIES
     public final static int LANG = 0;
@@ -20,4 +22,11 @@ public class Code {
     public final static int RUN_DRILL = 5;
     public final static int CHAPTER_END = 6;
     public final static int FINALE = 7;
+
+    // SPLASH SPECIFIC CODES
+    public final static int PHONICS_SPLASH = 8;
+    public final static int WORDS_SPLASH = 9;
+    public final static int STORY_SPLASH = 10;
+    public final static int MATHS_SPLASH = 11;
+    public final static int CHAPTER_END_SPLASH = 12;
 }

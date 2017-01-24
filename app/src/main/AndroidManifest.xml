@@ -14,61 +14,202 @@
         android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activity.menu.LanguageSelect">
+        <activity 
+            android:name=".activity.menu.LanguageSelect"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">>
         </activity>
-        <activity android:name=".activity.movie.Intro">
+        <activity 
+            android:name=".activity.movie.Intro"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">>
         </activity>
-        <activity android:name=".activity.drill.tutorial.Tutorial">
+        <activity android:name=".activity.drill.tutorial.Tutorial"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">>
         </activity>
-        <activity android:name=".activity.movie.Movie">
+        <activity android:name=".activity.movie.Movie"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">>
         </activity>
-        <activity android:name=".activity.link.PhonicsLink">
+        <activity 
+            android:name=".activity.link.PhonicsLink"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
-        <activity android:name=".activity.link.StoryLink">
+        <activity 
+            android:name=".activity.link.StoryLink"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
-        <activity android:name=".activity.link.MathsLink">
+        <activity 
+            android:name=".activity.link.MathsLink"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
-        <activity android:name=".activity.link.WordsLink">
+        <activity 
+            android:name=".activity.link.WordsLink"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
-        <activity android:name=".activity.drill.sound.SoundDrillOneActivity"/>
-        <activity android:name=".activity.drill.sound.SoundDrillTwoActivity"/>
-        <activity android:name=".activity.drill.sound.SoundDrillThreeActivity"/>
-        <activity android:name=".activity.drill.sound.SoundDrillFourActivity"/>
-        <activity android:name=".activity.drill.sound.SoundDrillFiveActivity"/>
-        <activity android:name=".activity.drill.sound.SoundDrillSixActivity"/>
-        <activity android:name=".activity.drill.sound.SoundDrillSevenActivity"/>
-        <activity android:name=".activity.drill.sound.SoundDrillEightActivity"/>
-        <activity android:name=".activity.drill.sound.SoundDrillNineActivity"/>
-        <activity android:name=".activity.drill.sound.SoundDrillTenActivity"/>
-        <activity android:name=".activity.drill.sound.SoundDrillElevenActivity"/>
-        <activity android:name=".activity.drill.sound.SoundDrillTwelveActivity"/>
-        <activity android:name=".activity.drill.sound.SoundDrillThirteenActivity"/>
-        <activity android:name=".activity.drill.sound.SoundDrillFourteenActivity"/>
-        <activity android:name=".activity.drill.sound.SoundDrillFifteenActivity"/>
-        <activity android:name=".activity.drill.sound.SimpleStoryActivity"/>
-        <activity android:name=".activity.drill.math.MathsDrillOneActivity"/>
-        <activity android:name=".activity.drill.math.MathsDrillTwoActivity"/>
-        <activity android:name=".activity.drill.math.MathsDrillThreeActivity"/>
-        <activity android:name=".activity.drill.math.MathsDrillFourActivity"/>
-        <activity android:name=".activity.drill.math.MathsDrillFiveActivity"/>
-        <activity android:name=".activity.drill.math.MathsDrillSixActivity"/>
-        <activity android:name=".activity.drill.math.MathsDrillSixAndOneActivity"/>
-        <activity android:name=".activity.drill.math.MathsDrillSixAndTwoActivity"/>
-        <activity android:name=".activity.drill.math.MathsDrillSevenActivity"/>
-        <activity android:name=".activity.drill.math.MathsDrillFiveAndOneActivity"/>
-        <activity android:name=".activity.drill.math.MathsDrillSixAndThreeActivity"/>
-        <activity android:name=".activity.drill.math.MathsDrillSixAndFourActivity"/>
-        <activity android:name=".activity.drill.math.MathsDrillSevenAndOneActivity">
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillOneActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
-        <activity android:name=".activity.link.LevelCompleteLink">
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillTwoActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillThreeActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillFourActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillFiveActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillSixActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillSevenActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillEightActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillNineActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillTenActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillElevenActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillTwelveActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillThirteenActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillFourteenActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.sound.SoundDrillFifteenActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.sound.SimpleStoryActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.math.MathsDrillOneActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity android:name=".activity.drill.math.MathsDrillTwoActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.math.MathsDrillThreeActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.math.MathsDrillFourActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.math.MathsDrillFiveActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.math.MathsDrillSixActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.math.MathsDrillSixAndOneActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.math.MathsDrillSixAndTwoActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.math.MathsDrillSevenActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.math.MathsDrillFiveAndOneActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.math.MathsDrillSixAndThreeActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.math.MathsDrillSixAndFourActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.drill.math.MathsDrillSevenAndOneActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+        <activity 
+            android:name=".activity.link.LevelCompleteLink"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
     </application>
-
 </manifest>

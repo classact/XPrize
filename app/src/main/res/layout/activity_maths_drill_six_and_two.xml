@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/background_shapes"
-    tools:context="za.co.xprize.activity.mathdrill.MathsDrillSixAndTwoActivity">
+    tools:context="classact.com.xprize.activity.drill.math.MathsDrillSixAndTwoActivity">
     <ImageView
         android:layout_width="320dip"
         android:layout_height="320dip"
