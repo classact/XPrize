@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/background_dama_monkey_outside"
-    tools:context="za.co.xprize.activity.mathdrill.MathsDrillSixAndFourActivity">
+    tools:context="classact.com.xprize.activity.drill.math.MathsDrillSixAndFourActivity">
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_marginTop="500dip"

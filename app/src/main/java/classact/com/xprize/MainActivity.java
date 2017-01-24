@@ -21,6 +21,7 @@ import classact.com.xprize.controller.DrillFetcher;
 import classact.com.xprize.database.DbHelper;
 import classact.com.xprize.database.helper.UnitHelper;
 import classact.com.xprize.database.model.Unit;
+import classact.com.xprize.utils.ResourceDecoder;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,29 +36,46 @@ public class MainActivity extends AppCompatActivity {
 
         mInitialized = false;
 
-        // Establish database connectivity
-        if (!dbEstablsh()) {
-            // Error handling with no db connection
-            /* Error screen activity */
-        }
-        System.out.println("MainActivity.onCreate > Debug: Db Connection successful");
-
         Intent intent = new Intent(this, LanguageSelect.class);
+
+        // Determine next splash bg
+        int[] nextSplashBg = determineNextSplashBg();
+
+        if (nextSplashBg != null) {
+            if (nextSplashBg[0] != -1) {
+                intent.putExtra(Code.NEXT_BG_CODE, nextSplashBg[0]);
+            }
+            if (nextSplashBg[1] != -1) {
+                intent.putExtra(Code.NEXT_BG_RES, nextSplashBg[1]);
+            }
+        }
+
         startActivityForResult(intent, Code.LANG);
         overridePendingTransition(0, android.R.anim.fade_out);
     }
 
-    public boolean determineNextItem(int unitId) {
+    public boolean determineNextItem() {
+
+        // Initialize success boolean to see if everything is A-OK
+        boolean success = false;
+
+        // Declare intent
+        Intent intent = null;
+        int resultCode = 0;
+
         try {
+            // Establish database connectivity
+            if (!dbEstablsh()) {
+                throw new Exception("Db Connection unsuccessful");
+            }
+            System.out.println("MainActivity.determineNextItem > Debug: Db Connection successful");
+
             // Get current unit
-            unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
+            int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
             Unit u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);
 
             // Debug
             System.out.println("MainActivity.determineNextItem > Debug: UnitId = " + unitId);
-
-            // Declare intent
-            Intent intent;
 
             if (unitId == Globals.INTRO_ID) {
             /* INTRO LOGIC */
@@ -74,8 +92,8 @@ public class MainActivity extends AppCompatActivity {
                     intent = new Intent(this, Movie.class);
                     intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
                     intent.putExtra(Code.SHOW_MV_BUTTONS, false);
-                    startActivityForResult(intent, Code.INTRO);
-                    overridePendingTransition(android.R.anim.fade_in, 0);
+                    intent.putExtra(Code.NEXT_BG_CODE, Code.INTRO);
+                    resultCode = Code.INTRO;
 
                 } else if (u.getUnitFirstTime() == 0) {
 
@@ -84,8 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
                     // Start tutorial
                     intent = new Intent(this, Tutorial.class);
-                    startActivityForResult(intent, Code.TUTORIAL);
-                    overridePendingTransition(0, android.R.anim.fade_out);
+                    resultCode = Code.TUTORIAL;
                 }
             } else if (unitId < Globals.FINALE_ID) {
             /* CHAPTER LOGIC */
@@ -102,9 +119,8 @@ public class MainActivity extends AppCompatActivity {
                     intent = new Intent(this, Movie.class);
                     intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
                     intent.putExtra(Code.SHOW_MV_BUTTONS, true);
-
-                    startActivityForResult(intent, Code.MOVIE);
-                    overridePendingTransition(0, android.R.anim.fade_out);
+                    intent.putExtra(Code.NEXT_BG_CODE, Code.MOVIE);
+                    resultCode = Code.MOVIE;
 
                 } /* else if (u.getUnitFirstTime() == 0) {
                 TUTORIAL LOGIC FOR THE FUTURE? Perhaps
@@ -147,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // Show drill splash
                         intent = new Intent(this, drillSplashActivity);
-                        startActivityForResult(intent, Code.DRILL_SPLASH);
+                        resultCode = Code.DRILL_SPLASH;
 
                         // Determine if the chapter ending splash should be played
                         // Ending under the following scenarios:
@@ -162,8 +178,7 @@ public class MainActivity extends AppCompatActivity {
                         // Show ending splash
                         intent = new Intent(this, LevelCompleteLink.class);
                         intent.putExtra(Code.RES_NAME, "star_level_" + unitId);
-                        startActivityForResult(intent, Code.CHAPTER_END);
-                        overridePendingTransition(0, android.R.anim.fade_out);
+                        resultCode = Code.CHAPTER_END;
 
                         // Let's roll with the drill
                     } else {
@@ -185,8 +200,7 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("MainActivity.determineNextItem > Debug: Running drill for (" + unitId + ", " + drillId + ", " + languageId + ", " + subId + ")");
 
                         intent = DrillFetcher.fetch(getApplicationContext(), mDbHelper, unitId, drillId, languageId, subId);
-                        startActivityForResult(intent, Code.RUN_DRILL);
-                        overridePendingTransition(0, android.R.anim.fade_out);
+                        resultCode = Code.RUN_DRILL;
                     }
                 }
             } else if (unitId == Globals.FINALE_ID) {
@@ -200,8 +214,8 @@ public class MainActivity extends AppCompatActivity {
                     intent = new Intent(this, Movie.class);
                     intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
                     intent.putExtra(Code.SHOW_MV_BUTTONS, false);
-                    startActivityForResult(intent, Code.FINALE);
-                    overridePendingTransition(0, android.R.anim.fade_out);
+                    intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
+                    resultCode = Code.FINALE;
                 }
 
             } else {
@@ -216,15 +230,29 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // All happy
-            return true;
+            success = true;
 
         // Otherwise
         } catch (SQLiteException sqlex) {
             System.err.println("MainActivity.determineNextItem > Exception: " + sqlex.getMessage());
         } catch (Exception ex) {
             System.err.println("MainActivity.determineNextItem > Exception: " + ex.getMessage());
+        } finally {
+
+            // Close database connection
+            if (mDbHelper != null) {
+                mDbHelper.close();
+            }
+
+            // Launch new intent if success
+            if (success) {
+                if (intent != null) {
+                    startActivityForResult(intent, resultCode);
+                    overridePendingTransition(0, android.R.anim.fade_out);
+                }
+            }
         }
-        return false;
+        return success;
     }
 
     @Override
@@ -232,6 +260,12 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
 
         try {
+            // Establish database connectivity
+            if (!dbEstablsh()) {
+                throw new Exception("Db Connection unsuccessful");
+            }
+            System.out.println("MainActivity.onDestroy > Debug: Db Connection successful");
+
             // Determine current unitId
             int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
 
@@ -246,30 +280,17 @@ public class MainActivity extends AppCompatActivity {
                 // Update unit u in database
                 int result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
                 System.out.println("MainActivity.onStop - Unit u (" + u.getUnitId() + ") successfull updated in database");
-
-                // Close database
-                mDbHelper.close();
             }
+
         } catch (SQLiteException sqlex) {
             System.out.println("MainActivity.onStop >  SQLiteException: " + sqlex.getMessage());
         } catch (Exception ex) {
             System.out.println("MainActivity.onStop >  Exception: " + ex.getMessage());
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        System.out.println("on Resume");
-        try {
-            // Determine current unitId
-            if (!dbEstablsh()) {
-                throw new Exception("Database connection could not be established");
+        } finally {
+            // Close database connection
+            if (mDbHelper != null) {
+                mDbHelper.close();
             }
-        } catch (SQLiteException sqlex) {
-            System.err.println("MainActivity.onResume >  SQLiteException: " + sqlex.getMessage());
-        } catch (Exception ex) {
-            System.err.println("MainActivity.onResume >  Exception: " + ex.getMessage());
         }
     }
 
@@ -286,12 +307,21 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("MainActivity.onActivityResult > Debug: Request (" + requestCode + ") and Result (" + resultCode + ")");
         System.out.println("-----------------------------------------------------------------------------");
 
+        // Flag if everything processed 100%
+        boolean success = false;
+
         /* Resolve request completion
          * ==========================
          * - requestCode = finished activity's type (ie. Language-select, movie, drill)
          * - resultCode = unitId of finished activity
          */
         try {
+            // Establish database connectivity
+            if (!dbEstablsh()) {
+                throw new Exception("Db Connection unsuccessful");
+            }
+            System.out.println("MainActivity.onActivityResult > Debug: Db Connection successful");
+
             // Get current unit
             int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
             Unit u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);
@@ -497,18 +527,162 @@ public class MainActivity extends AppCompatActivity {
             // Debug
             System.out.println("-----------------------------------------------------------------------------");
 
-            // Determine the next item (a.k.a. 'Activity / Intent') to play
-            determineNextItem(unitId);
+            // Flag success
+            success = true;
 
         } catch (SQLiteException sqlex) {
             System.err.println("MainActivity.onActivityResult > SQLiteException: " + sqlex.getMessage());
         } catch (Exception ex) {
             System.err.println("MainActivity.onActivityResult > SQLiteException: " + ex.getMessage());
+        } finally {
+            // Close database connection
+            if (mDbHelper != null) {
+                mDbHelper.close();
+            }
+
+            if (success) {
+                // Determine the next item (a.k.a. 'Activity / Intent') to play
+                determineNextItem();
+            }
         }
     }
 
-    public int determineNextSplashBg() {
-        return 0;
+    public int[] determineNextSplashBg() {
+
+        // Index 0: the Code according to commons.Code
+        // Index 1: custom bg resource
+        int[] nextSplashBg = new int[2];
+
+        nextSplashBg[0] = -1;
+        nextSplashBg[1] = -1;
+
+        try {
+            // Establish database connectivity
+            if (!dbEstablsh()) {
+                throw new Exception("Db Connection unsuccessful");
+            }
+            System.out.println("MainActivity.determineNextSplashBg > Debug: Db Connection successful");
+
+            // Get current unit
+            int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
+            Unit u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);
+
+            // Debug
+            System.out.println("MainActivity.determineNextSplashBg > Debug: UnitId = " + unitId);
+
+            if (unitId == Globals.INTRO_ID) {
+            /* INTRO LOGIC */
+
+                // Debug
+                System.out.println("MainActivity.determineNextSplashBg > Debug: Intro Section");
+
+                if (u.getUnitFirstTimeMovie() == 0) {
+
+                    // Debug
+                    System.out.println("MainActivity.determineNextSplashBg > Debug: Select Intro Movie");
+
+                    // Select Intro Movie
+                    nextSplashBg[0] = Code.INTRO;
+
+                } else if (u.getUnitFirstTime() == 0) {
+
+                    // Debug
+                    System.out.println("MainActivity.determineNextSplashBg > Debug: Select Intro Tutorial");
+
+                    // Select Intro Tutorial
+                    nextSplashBg[0] = Code.TUTORIAL;
+                }
+            } else if (unitId < Globals.FINALE_ID) {
+            /* CHAPTER LOGIC */
+
+                // Debug
+                System.out.println("MainActivity.determineNextSplashBg > Debug: Chapter Section");
+
+                if (u.getUnitFirstTimeMovie() == 0) {
+
+                    // Debug
+                    System.out.println("MainActivity.determineNextSplashBg > Debug: Select Chapter Movie");
+
+                    // Select Chapter Movie
+                    nextSplashBg[0] = Code.MOVIE;
+
+                } /* else if (u.getUnitFirstTime() == 0) {
+                TUTORIAL LOGIC FOR THE FUTURE? Perhaps
+            } */ else {
+
+                    // Debug
+                    System.out.println("MainActivity.determineNextSplashBg > Debug: Drill section");
+
+                    // Determine type of splash by comparing drill last played
+                    int drillLastPlayed = u.getUnitDrillLastPlayed();
+                    int sumOfDrillsPlayed = (u.getNumberOfLanguageDrills() + u.getNumberOfMathDrills());
+
+                    // Determine if the chapter ending splash should be played
+                    // Ending under the following scenarios:
+                    // * Unit has not been completed
+                    // * Last drill has been played
+                    //   - Determine this by checking <drill last played> is equal to <sum of number of drills (language, maths) in unit >
+                    if (u.getUnitCompleted() == 0 && drillLastPlayed == sumOfDrillsPlayed) {
+
+                        // Debug
+                        System.out.println("MainActivity.determineNextSplashBg > Debug: Chapter End (" + drillLastPlayed + "/" + sumOfDrillsPlayed + ")");
+
+                        // Select Chapter End Splash
+                        nextSplashBg[0] = Code.CHAPTER_END_SPLASH;
+
+                        // Select Custom Resource
+                        nextSplashBg[1] = ResourceDecoder.getIdentifier(getApplicationContext(), ("star_level_" + unitId), "drawable");
+
+                        // Let's roll with the drill
+                    } else {
+
+                        // Debug
+                        System.out.println("MainActivity.determineNextSplashBg > Select Drill Splash");
+
+                        // Phonics Splash
+                        if (drillLastPlayed + 1 < Globals.WORDS_STARTING_ID) {
+                            nextSplashBg[0] = Code.PHONICS_SPLASH;
+
+                            // Words Splash
+                        } else if (drillLastPlayed + 1 < Globals.STORY_STARTING_ID) {
+                            nextSplashBg[0] = Code.WORDS_SPLASH;
+
+                            // Story Splash
+                        } else if (drillLastPlayed + 1 < Globals.MATHS_STARTING_ID) {
+                            nextSplashBg[0] = Code.STORY_SPLASH;
+
+                            // Maths Splash
+                        } else {
+                            nextSplashBg[0] = Code.MATHS_SPLASH;
+                        }
+                    }
+                }
+            } else if (unitId == Globals.FINALE_ID) {
+            /* ENDING LOGIC */
+
+                // Debug
+                System.out.println("MainActivity.determineNextSplashBg > Debug: Finale Section ");
+
+                nextSplashBg[0] = Code.FINALE;
+
+            } else {
+            /* "Whoopsie!" LOGIC */
+                throw new Exception("... And why am I here?");
+            }
+
+        // Otherwise
+        } catch (SQLiteException sqlex) {
+            System.err.println("MainActivity.determineNextSplashBg > Exception: " + sqlex.getMessage());
+        } catch (Exception ex) {
+            System.err.println("MainActivity.determineNextSplashBg > Exception: " + ex.getMessage());
+        } finally {
+            // Close database connection
+            if (mDbHelper != null) {
+                mDbHelper.close();
+            }
+        }
+
+        return nextSplashBg;
     }
 
     /**

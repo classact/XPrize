@@ -6,7 +6,7 @@
     android:background="@drawable/backgroundcards"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="za.co.xprize.activity.sounddrill.SoundDrillElevenActivity"
+    tools:context="classact.com.xprize.activity.drill.sound.SoundDrillElevenActivity"
     android:gravity="center_vertical">
 
     <ImageButton

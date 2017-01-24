@@ -20,7 +20,8 @@ public class LanguageSelect extends AppCompatActivity {
 
     Activity activity;
     RelativeLayout layoutContainer;
-    int nextBGCode;
+    int mNextBgCode;
+    int mNextBgResource;
     int mSelectedLanguage;
 
     Button selectEnglishButton;
@@ -35,7 +36,8 @@ public class LanguageSelect extends AppCompatActivity {
         mSelectedLanguage = 1; // English by default
 
         Intent intent = getIntent();
-        nextBGCode = intent.getIntExtra("NEXT_BG_CODE", -1);
+        mNextBgCode = intent.getIntExtra(Code.NEXT_BG_CODE, -1);
+        mNextBgResource = intent.getIntExtra(Code.NEXT_BG_RES, -1);
 
         // get buttons
         selectEnglishButton = (Button) findViewById(R.id.language_select_english_button);
@@ -80,7 +82,7 @@ public class LanguageSelect extends AppCompatActivity {
             mSelectedLanguage = Languages.SWAHILI;
 
             // Update bg 'illusory splash' image
-            switch (nextBGCode) {
+            switch (mNextBgCode) {
                 case Code.INTRO:
                     bg.setBackgroundResource(R.drawable.tutorial_intro_bg_swahili);
                     break;
@@ -88,7 +90,26 @@ public class LanguageSelect extends AppCompatActivity {
                     bg.setBackgroundResource(R.drawable.tutorial_bg_empty);
                     break;
                 case Code.MOVIE:
-                    bg.setBackgroundResource(R.drawable.language_select_bg);
+                    bg.setBackgroundResource(R.drawable.chapter_bg);
+                    break;
+                case Code.PHONICS_SPLASH:
+                    bg.setBackgroundResource(R.drawable.phonics_link_bg);
+                    break;
+                case Code.WORDS_SPLASH:
+                    bg.setBackgroundResource(R.drawable.en_words_link_bg);
+                    break;
+                case Code.STORY_SPLASH:
+                    bg.setBackgroundResource(R.drawable.en_story_link_bg);
+                    break;
+                case Code.MATHS_SPLASH:
+                    bg.setBackgroundResource(R.drawable.maths_link_bg);
+                    break;
+                case Code.CHAPTER_END_SPLASH:
+                    if (mNextBgResource > 0) {
+                        bg.setBackgroundResource(mNextBgResource);
+                    } else {
+                        bg.setBackgroundResource(R.drawable.language_select_bg);
+                    }
                     break;
                 default:
                     bg.setBackgroundResource(R.drawable.language_select_bg);
@@ -99,7 +120,7 @@ public class LanguageSelect extends AppCompatActivity {
             mSelectedLanguage = Languages.ENGLISH;
 
             // Update bg 'illusory splash' image
-            switch (nextBGCode) {
+            switch (mNextBgCode) {
                 case Code.INTRO:
                     bg.setBackgroundResource(R.drawable.tutorial_intro_bg_english);
                     break;
@@ -108,6 +129,25 @@ public class LanguageSelect extends AppCompatActivity {
                     break;
                 case Code.MOVIE:
                     bg.setBackgroundResource(R.drawable.language_select_bg);
+                    break;
+                case Code.PHONICS_SPLASH:
+                    bg.setBackgroundResource(R.drawable.phonics_link_bg);
+                    break;
+                case Code.WORDS_SPLASH:
+                    bg.setBackgroundResource(R.drawable.sw_words_link_bg);
+                    break;
+                case Code.STORY_SPLASH:
+                    bg.setBackgroundResource(R.drawable.sw_story_link_bg);
+                    break;
+                case Code.MATHS_SPLASH:
+                    bg.setBackgroundResource(R.drawable.maths_link_bg);
+                    break;
+                case Code.CHAPTER_END_SPLASH:
+                    if (mNextBgResource > 0) {
+                        bg.setBackgroundResource(mNextBgResource);
+                    } else {
+                        bg.setBackgroundResource(R.drawable.language_select_bg);
+                    }
                     break;
                 default:
                     bg.setBackgroundResource(R.drawable.language_select_bg);
