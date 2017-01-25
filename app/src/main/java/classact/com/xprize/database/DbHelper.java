@@ -63,7 +63,7 @@ public class DbHelper extends SQLiteAssetHelper {
 		boolean dbExist = checkDatabase();
 		if(dbExist){
 			// do nothing here, the database exists already
-			copyDatabase();
+			// copyDatabase();
 		}else{
 			//by doing this we will be able to copy our existing db over the blank db that is
 			//created when the app first ran
