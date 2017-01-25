@@ -16,6 +16,7 @@ android {
     defaultConfig {
         minSdkVersion 25
         targetSdkVersion 25
+        multiDexEnabled true
     }
 
     sourceSets.main {

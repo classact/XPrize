@@ -15,13 +15,13 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.VideoView;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Date;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
-import classact.com.xprize.controller.DbController;
 import classact.com.xprize.database.DbHelper;
 import classact.com.xprize.database.helper.UnitHelper;
 import classact.com.xprize.database.model.Unit;
@@ -531,6 +531,9 @@ public abstract class MovieTemplate extends AppCompatActivity {
     protected boolean updateDb() {
         System.out.println("updateDb");
 
+        // Create success boolean
+        boolean success = false;
+
         // Validate UnitId
         if (mUnitId == -1) {
             System.err.println(mActivityName + " > updateDb: UnitId has not been set");
@@ -538,9 +541,16 @@ public abstract class MovieTemplate extends AppCompatActivity {
         }
 
         // Retrieve database
-        DbHelper dbHelper = DbController.DB(getApplicationContext());
+        DbHelper dbHelper = null;
+
         try {
-            // Open retrieved database
+            // Initialize DbHelper
+            dbHelper = DbHelper.getDbHelper(getApplicationContext());
+
+            // Try to connect to existing db
+            dbHelper.createDatabase(true);
+
+            // Test opening database
             dbHelper.openDatabase();
 
             // Fetch unit
@@ -555,14 +565,22 @@ public abstract class MovieTemplate extends AppCompatActivity {
             // Update
             UnitHelper.updateUnitInfo(dbHelper.getWritableDatabase(), u);
 
-            // Close connection
-            dbHelper.close();
+            // Mark as success
+            success = true;
+
+        } catch (IOException ioex) {
+            System.err.println(mActivityName + " > updateDb: IOException - " + ioex.getMessage());
 
         } catch (SQLiteException sqlex) {
-            System.err.println(mActivityName + " > updateDb: could not open database - " + sqlex.getMessage());
-            return false;
+            System.err.println(mActivityName + " > updateDb: SQLiteException - " + sqlex.getMessage());
+
+        } finally {
+            // Close database connection
+            if (dbHelper != null) {
+                dbHelper.close();
+            }
         }
-        return true;
+        return success;
     }
 
     /**

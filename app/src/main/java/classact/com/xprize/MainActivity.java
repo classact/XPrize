@@ -242,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
             // Close database connection
             if (mDbHelper != null) {
                 mDbHelper.close();
+                mDbHelper = null;
             }
 
             // Launch new intent if success
@@ -290,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
             // Close database connection
             if (mDbHelper != null) {
                 mDbHelper.close();
+                mDbHelper = null;
             }
         }
     }
@@ -521,8 +523,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-            // After all the above database updates, let's get the unitId of the next unit-to-play
-            unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
+            /* // After all the above database updates, let's get the unitId of the next unit-to-play
+            unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase()); */
 
             // Debug
             System.out.println("-----------------------------------------------------------------------------");
@@ -538,6 +540,7 @@ public class MainActivity extends AppCompatActivity {
             // Close database connection
             if (mDbHelper != null) {
                 mDbHelper.close();
+                mDbHelper = null;
             }
 
             if (success) {
@@ -679,6 +682,7 @@ public class MainActivity extends AppCompatActivity {
             // Close database connection
             if (mDbHelper != null) {
                 mDbHelper.close();
+                mDbHelper = null;
             }
         }
 
@@ -692,9 +696,10 @@ public class MainActivity extends AppCompatActivity {
     protected boolean dbEstablsh() {
         try {
             // Initialize DbHelper
-            mDbHelper = new DbHelper(this);
+            mDbHelper = DbHelper.getDbHelper(getApplicationContext());
 
             // Try create database or connect to existing
+            // mDbHelper.createDatabase(!mInitialized);
             mDbHelper.createDatabase();
 
             // Test opening database

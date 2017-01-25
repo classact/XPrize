@@ -7,14 +7,15 @@ android {
         applicationId "classact.com.xprize"
         minSdkVersion 25
         targetSdkVersion 25
+        multiDexEnabled true
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            /*minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'*/
         }
         applicationVariants.all { variant ->
             variant.outputs.each { output ->
@@ -32,13 +33,7 @@ dependencies {
     compile files('libs/androidsvg-1.2.0.jar')
     compile project(':tess-two')
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha7'
-    compile 'com.android.support:appcompat-v7:25.1.0'
+    /*compile 'com.android.support:appcompat-v7:25.1.0'*/
     compile 'com.android.support:design:25.1.0'
-    compile 'com.android.support:multidex:1.0.1'
-    compile 'com.android.support:support-compat:25.1.0'
-    compile 'com.android.support:support-core-utils:25.1.0'
-    compile 'com.android.support:support-core-ui:25.1.0'
-    compile 'com.android.support:support-media-compat:25.1.0'
-    compile 'com.android.support:support-fragment:25.1.0'
     testCompile 'junit:junit:4.12'
 }
