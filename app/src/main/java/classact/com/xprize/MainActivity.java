@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                     // Play intro movie
                     intent = new Intent(this, Movie.class);
                     intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
-                    intent.putExtra(Code.SHOW_MV_BUTTONS, false);
+                    intent.putExtra(Code.SHOW_MV_BUTTONS, true);
                     intent.putExtra(Code.NEXT_BG_CODE, Code.INTRO);
                     resultCode = Code.INTRO;
 
@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
                     // Play ending movie
                     intent = new Intent(this, Movie.class);
                     intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
-                    intent.putExtra(Code.SHOW_MV_BUTTONS, false);
+                    intent.putExtra(Code.SHOW_MV_BUTTONS, true);
                     intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
                     resultCode = Code.FINALE;
                 }
