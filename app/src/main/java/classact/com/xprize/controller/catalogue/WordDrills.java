@@ -14,6 +14,7 @@ import classact.com.xprize.activity.drill.sound.SoundDrillThirteenActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillTwelveActivity;
 import classact.com.xprize.control.DraggableImage;
 import classact.com.xprize.control.ObjectAndSound;
+import classact.com.xprize.control.RightWrongWordSet;
 import classact.com.xprize.control.Sentence;
 import classact.com.xprize.control.SoundDrillJsonBuilder;
 import classact.com.xprize.control.SpelledWord;
@@ -29,6 +30,7 @@ import classact.com.xprize.database.model.Numerals;
 import classact.com.xprize.database.model.SentenceDB;
 import classact.com.xprize.database.model.SentenceDBWords;
 import classact.com.xprize.database.model.Word;
+import classact.com.xprize.utils.FisherYates;
 
 public class WordDrills {
 
@@ -39,12 +41,6 @@ public class WordDrills {
         Intent intent = null;
 
         try {
-            System.out.println("Word ids: " + word1.getWordID() + ", " + word2.getWordID() + ", " + word3.getWordID() + ", " + word4.getWordID() + ", " + word5.getWordID());
-            System.out.println("Word picture1: " + word1.getWordPictureURI());
-            System.out.println("Word picture2: " + word2.getWordPictureURI());
-            System.out.println("Word picture3: " + word3.getWordPictureURI());
-            System.out.println("Word picture4: " + word4.getWordPictureURI());
-            System.out.println("Word picture5: " +  word5.getWordPictureURI());
             ArrayList<SpelledWord> words = new ArrayList<>();
             //One
             SpelledWord word = new SpelledWord();
@@ -72,7 +68,7 @@ public class WordDrills {
             words.add(word);
             //Five
             word = new SpelledWord();
-            object = new ObjectAndSound<>(word1.getWordPictureURI(), word5.getWordSoundURI(),"");
+            object = new ObjectAndSound<>(word5.getWordPictureURI(), word5.getWordSoundURI(),"");
             object.setSpelling(word5.getWordName());
             word.setWord(object);
             words.add(word);
@@ -97,19 +93,19 @@ public class WordDrills {
 
         try {
             ArrayList<ObjectAndSound<String>> words = new ArrayList<>();
-            ObjectAndSound<String> word = new ObjectAndSound<>("", word1.getWordSoundURI(), "");
+            ObjectAndSound<String> word = new ObjectAndSound<>(word1.getWordPictureURI(), word1.getWordSoundURI(), "");
             word.setSpelling(word1.getWordName());
             words.add(word);
-            word = new ObjectAndSound<>("", word2.getWordSoundURI(), "");
+            word = new ObjectAndSound<>(word2.getWordPictureURI(), word2.getWordSoundURI(), "");
             word.setSpelling(word2.getWordName());
             words.add(word);
-            word = new ObjectAndSound<>("", word3.getWordSoundURI(), "");
+            word = new ObjectAndSound<>(word3.getWordPictureURI(), word3.getWordSoundURI(), "");
             word.setSpelling(word3.getWordName());
             words.add(word);
-            word = new ObjectAndSound<>("", word4.getWordSoundURI(), "");
+            word = new ObjectAndSound<>(word4.getWordPictureURI(), word4.getWordSoundURI(), "");
             word.setSpelling(word4.getWordName());
             words.add(word);
-            word = new ObjectAndSound<>("", word5.getWordSoundURI(), "");
+            word = new ObjectAndSound<>(word5.getWordPictureURI(), word5.getWordSoundURI(), "");
             word.setSpelling(word5.getWordName());
             words.add(word);
 
@@ -125,78 +121,145 @@ public class WordDrills {
         return intent;
     }
 
+    /**
+     * D3 Word Drill
+     *
+     * Note that we expect 4 rightDrillWords and 8 wrongDrillWords
+     * This would make 4 sets of (1 rightDrillWord + 2 wrongDrillWords)
+     *
+     * @param context
+     * @param dbHelper
+     * @param unitId
+     * @param drillId
+     * @param languageId
+     * @param letter
+     * @param rightDrillWords
+     * @param wrongDrillWords
+     * @param drillSounds
+     * @param numerals
+     * @return
+     * @throws SQLiteException
+     * @throws Exception
+     */
     public static Intent D3(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
-                            Letter letter, Word rightWord1, Word rightWord2, Word rightWord3, Word rightWord4, Word wrongWord1, Word wrongWord2,
-                            Word wrongWord3, Word wrongWord4, Word wrongWord5, Word wrongWord6, Word wrongWord7, Word wrongWord8,
-                            String drillSound1, String drillSound2, String drillSound3, String drillSound4,
-                            Numerals numeral1, Numerals numeral2, Numerals numeral3, Numerals numeral4, Numerals numeral5, Numerals numeral6)
+                            Letter letter,
+                            ArrayList<Word> rightDrillWords,
+                            ArrayList<Word> wrongDrillWords,
+                            ArrayList<String> drillSounds,
+                            ArrayList<Numerals> numerals)
             throws SQLiteException, Exception {
+
         Intent intent = null;
+        int wordsPerSet = 3;
 
         try {
-            ArrayList<SpelledWord> sets = new ArrayList<>();
-            //Set 1
-            SpelledWord set = new SpelledWord();
-            ObjectAndSound<String> word = new ObjectAndSound<>("", rightWord1.getWordSoundURI(), "");
-            set.setWord(word);
-            ArrayList<DraggableImage<String>> items = new ArrayList<>();
-            DraggableImage<String> item = new DraggableImage<>(0, 0, wrongWord1.getWordName());
-            items.add(item);
-            item = new DraggableImage<>(0, 1, rightWord1.getWordName());
-            items.add(item);
-            item = new DraggableImage<>(0, 0, wrongWord2.getWordName());
-            items.add(item);
-            set.setLettersImages(items);
+
+            /* ==================== Debug ==================== */
+            for (int i = 0; i < numerals.size(); i++) {
+                System.out.println("WordDrills.D3 > Debug: " + "Using numerals (" + numerals.get(i).getNumber() + ")");
+            }
+
+            /* ==================== Init ==================== */
+
+            // Initialize set to hold sets of Right Wrong Word Sets
+            ArrayList<RightWrongWordSet> sets = new ArrayList<>();
+
+            // Declare reusable variables
+            Word rightWord;
+            ArrayList<Word> wrongWords;
+            RightWrongWordSet set;
+
+            // Declare counters
+            int rightWordCounter = 0;
+            int wrongWordCounter = 0;
+
+            /* ==================== Create set 1 ==================== */
+
+            // Assign right word
+            rightWord = rightDrillWords.get(rightWordCounter++);
+
+            // Assing wrong words (to array list)
+            wrongWords = new ArrayList<>();
+            wrongWords.add(wrongDrillWords.get(wrongWordCounter++));
+            wrongWords.add(wrongDrillWords.get(wrongWordCounter++));
+
+            set = getRightWrongWordSet(rightWord, wrongWords);
+
+            // Add set to list of sets
             sets.add(set);
-            //Two
-            set = new SpelledWord();
-            word = new ObjectAndSound<>("", rightWord2.getWordSoundURI(), "");
-            set.setWord(word);
-            items = new ArrayList<>();
-            item = new DraggableImage<>(0, 1, rightWord2.getWordName());
-            items.add(item);
-            item = new DraggableImage<>(0, 0, wrongWord3.getWordName());
-            items.add(item);
-            item = new DraggableImage<>(0, 0, wrongWord4.getWordName());
-            items.add(item);
-            set.setLettersImages(items);
+
+            /* ==================== Create set 2 ==================== */
+
+            // Assign right word
+            rightWord = rightDrillWords.get(rightWordCounter++);
+
+            // Assing wrong words (to array list)
+            wrongWords = new ArrayList<>();
+            wrongWords.add(wrongDrillWords.get(wrongWordCounter++));
+            wrongWords.add(wrongDrillWords.get(wrongWordCounter++));
+
+            set = getRightWrongWordSet(rightWord, wrongWords);
+
+            // Add set to list of sets
             sets.add(set);
-            //Three
-            set = new SpelledWord();
-            word = new ObjectAndSound<>("", rightWord3.getWordSoundURI(), "");
-            set.setWord(word);
-            items = new ArrayList<>();
-            item = new DraggableImage<>(0, 0, wrongWord5.getWordName());
-            items.add(item);
-            item = new DraggableImage<>(0, 0, wrongWord6.getWordName());
-            items.add(item);
-            item = new DraggableImage<>(0, 1, rightWord3.getWordName());
-            items.add(item);
-            set.setLettersImages(items);
+
+            /* ==================== Create set 3 ==================== */
+
+            // Assign right word
+            rightWord = rightDrillWords.get(rightWordCounter++);
+
+            // Assing wrong words (to array list)
+            wrongWords = new ArrayList<>();
+            wrongWords.add(wrongDrillWords.get(wrongWordCounter++));
+            wrongWords.add(wrongDrillWords.get(wrongWordCounter++));
+
+            set = getRightWrongWordSet(rightWord, wrongWords);
+
+            // Add set to list of sets
             sets.add(set);
-            //Four
-            set = new SpelledWord();
-            word = new ObjectAndSound<>("", rightWord4.getWordSoundURI(), "");
-            set.setWord(word);
-            items = new ArrayList<>();
-            item = new DraggableImage<>(0, 0, wrongWord7.getWordName());
-            items.add(item);
-            item = new DraggableImage<>(0, 1, rightWord4.getWordName());
-            items.add(item);
-            item = new DraggableImage<>(0, 0, wrongWord8.getWordName());
-            items.add(item);
-            set.setLettersImages(items);
+
+            /* ==================== Create set 4 ==================== */
+
+            // Assign right word
+            rightWord = rightDrillWords.get(rightWordCounter++);
+
+            // Assing wrong words (to array list)
+            wrongWords = new ArrayList<>();
+            wrongWords.add(wrongDrillWords.get(wrongWordCounter++));
+            wrongWords.add(wrongDrillWords.get(wrongWordCounter++));
+
+            set = getRightWrongWordSet(rightWord, wrongWords);
+
+            // Add set to list of sets
             sets.add(set);
-            //
-            String drillData = SoundDrillJsonBuilder.getSoundDrilTwelveJson(context,
-                    drillSound1, drillSound2, drillSound3, numeral1.getSound(),numeral2.getSound(),numeral3.getSound(),numeral4.getSound(),numeral5.getSound(),
-                    numeral6.getSound(), drillSound4, sets);
+
+            /* ==================== Setup drill data ==================== */
+
+            // Create drill data
+            String drillData = SoundDrillJsonBuilder.getSoundDrilTwelveJson(
+                    context,
+                    drillSounds.get(0), // Quick! Mother's coming ..
+                    drillSounds.get(1), // You got
+                    drillSounds.get(2), // No
+                    numerals.get(0).getSound(), // 0
+                    numerals.get(1).getSound(), // 1
+                    numerals.get(2).getSound(), // 2
+                    numerals.get(3).getSound(), // 3
+                    numerals.get(4).getSound(), // 4
+                    numerals.get(5).getSound(), // 5
+                    numerals.get(6).getSound(), // 6
+                    drillSounds.get(3), // Words
+                    sets); // List of Right Wrong Word Sets
+
+            /* ==================== Create intent ==================== */
+
             intent = new Intent(context, SoundDrillTwelveActivity.class);
             intent.putExtra("data", drillData);
 
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D3: " + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new SQLiteException("D3: " + ex.getMessage());
         }
         return intent;
@@ -452,5 +515,37 @@ public class WordDrills {
             throw new SQLiteException("D6: " + ex.getMessage());
         }
         return intent;
+    }
+
+    private static RightWrongWordSet getRightWrongWordSet(Word rightWord, ArrayList<Word> wrongWords) throws Exception {
+
+        try {
+            // Get shuffled indexes
+            int[] shuffledIndexes = FisherYates.shuffle(wrongWords.size() + 1); // add one because of the 1 'right word'
+
+            // Create list of right and wrong words (use Draggable Images object)
+            ArrayList<DraggableImage<Word>> rightAndWrongWords = new ArrayList<>();
+
+            // Add right words to list
+            rightAndWrongWords.add(new DraggableImage<Word>(0, 1, rightWord));
+
+            // Add wrong words to list
+            for (int i = 0; i < wrongWords.size(); i++) {
+                rightAndWrongWords.add(new DraggableImage<Word>(0, 0, wrongWords.get(i)));
+            }
+
+            // Now add the right and wrong words to a shuffled array
+            ArrayList<DraggableImage<Word>> shuffledRightAndWrongWords = new ArrayList<>();
+            for (int i = 0; i < shuffledIndexes.length; i++) {
+                shuffledRightAndWrongWords.add(rightAndWrongWords.get(shuffledIndexes[i]));
+            }
+
+            // Return a newly created set of right and wrong words
+            return new RightWrongWordSet(rightWord, shuffledRightAndWrongWords);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("getRightWrongWordSet > Exception: " + ex.getMessage());
+        }
     }
 }

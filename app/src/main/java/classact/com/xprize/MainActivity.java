@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import java.io.IOException;
+import java.util.Date;
 
 import classact.com.xprize.activity.drill.tutorial.Tutorial;
 import classact.com.xprize.activity.link.LevelCompleteLink;
@@ -15,6 +16,7 @@ import classact.com.xprize.activity.link.StoryLink;
 import classact.com.xprize.activity.link.WordsLink;
 import classact.com.xprize.activity.menu.LanguageSelect;
 import classact.com.xprize.activity.movie.Movie;
+import classact.com.xprize.activity.movie.MoviePausable;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.controller.DrillFetcher;
@@ -25,7 +27,8 @@ import classact.com.xprize.utils.ResourceDecoder;
 
 public class MainActivity extends AppCompatActivity {
 
-    private boolean mActivitesInProgress;
+    private final boolean ALLOW_DB_RECOPY = false;
+
     private boolean mInitialized;
     private DbHelper mDbHelper;
 
@@ -65,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             // Establish database connectivity
-            if (!dbEstablsh()) {
+            if (!dbEstablsh(!mInitialized)) {
                 throw new Exception("Db Connection unsuccessful");
             }
             System.out.println("MainActivity.determineNextItem > Debug: Db Connection successful");
@@ -91,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
                     // Play intro movie
                     intent = new Intent(this, Movie.class);
                     intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
-                    intent.putExtra(Code.SHOW_MV_BUTTONS, true);
                     intent.putExtra(Code.NEXT_BG_CODE, Code.INTRO);
                     resultCode = Code.INTRO;
 
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("MainActivity.determineNextItem > Debug: Play Chapter Movie");
 
                     // Play chapter movie
-                    intent = new Intent(this, Movie.class);
+                    intent = new Intent(this, MoviePausable.class);
                     intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
                     intent.putExtra(Code.SHOW_MV_BUTTONS, true);
                     intent.putExtra(Code.NEXT_BG_CODE, Code.MOVIE);
@@ -210,10 +212,9 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("MainActivity.determineNextItem > Debug: Finale Section ");
 
                 if (u.getUnitFirstTimeMovie() == 0) {
-                    // Play ending movie
+                    // Play finale movie
                     intent = new Intent(this, Movie.class);
                     intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
-                    intent.putExtra(Code.SHOW_MV_BUTTONS, true);
                     intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
                     resultCode = Code.FINALE;
                 }
@@ -242,11 +243,24 @@ public class MainActivity extends AppCompatActivity {
             // Close database connection
             if (mDbHelper != null) {
                 mDbHelper.close();
+                mDbHelper = null;
             }
 
             // Launch new intent if success
             if (success) {
                 if (intent != null) {
+                    startActivityForResult(intent, resultCode);
+                    overridePendingTransition(0, android.R.anim.fade_out);
+                } else {
+                    // Debug error: force finale
+                    System.err.println("MainActivity.determineNextItem > Error: Forcing finale");
+
+
+                    // Force play finale movie ... for now
+                    intent = new Intent(this, Movie.class);
+                    intent.putExtra(Code.RES_NAME, "finale_movie");
+                    intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
+                    resultCode = Code.FINALE;
                     startActivityForResult(intent, resultCode);
                     overridePendingTransition(0, android.R.anim.fade_out);
                 }
@@ -261,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             // Establish database connectivity
-            if (!dbEstablsh()) {
+            if (!dbEstablsh(!mInitialized)) {
                 throw new Exception("Db Connection unsuccessful");
             }
             System.out.println("MainActivity.onDestroy > Debug: Db Connection successful");
@@ -290,6 +304,7 @@ public class MainActivity extends AppCompatActivity {
             // Close database connection
             if (mDbHelper != null) {
                 mDbHelper.close();
+                mDbHelper = null;
             }
         }
     }
@@ -309,6 +324,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Flag if everything processed 100%
         boolean success = false;
+        boolean finaleComplete = false;
 
         /* Resolve request completion
          * ==========================
@@ -317,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
          */
         try {
             // Establish database connectivity
-            if (!dbEstablsh()) {
+            if (!dbEstablsh(!mInitialized)) {
                 throw new Exception("Db Connection unsuccessful");
             }
             System.out.println("MainActivity.onActivityResult > Debug: Db Connection successful");
@@ -338,7 +354,6 @@ public class MainActivity extends AppCompatActivity {
 
                     // Update database
                     // TO DO
-
                     break;
 
                 case Code.INTRO:
@@ -353,7 +368,6 @@ public class MainActivity extends AppCompatActivity {
                     // Update unit u in database
                     result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
                     System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() +") successfull updated in database");
-
                     break;
 
                 case Code.TUTORIAL:
@@ -366,6 +380,7 @@ public class MainActivity extends AppCompatActivity {
                     u.setUnitFirstTime(1); // Mark tutorial as having completed
                     u.setUnitCompleted(1); // Mark unit as completed (as we don't have any drills - unless the tutorial is a drill)
                     u.setUnitInProgress(0); // Flag the unit as no longer being 'in progress'
+                    u.setUnitDateLastPlayed(Globals.STANDARD_DATE_TIME_STRING(new Date())); // Flag last-played datetime
 
                     // Update unit u in database
                     result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
@@ -400,8 +415,8 @@ public class MainActivity extends AppCompatActivity {
                     // Update unit u in database
                     result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
                     System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() +") successfull updated in database");
-
                     break;
+
                 case Code.DRILL_SPLASH:
                     // Update unit u model
                     u.setUnitFirstTime(1); // Splash/Tutorial has been watched
@@ -451,6 +466,7 @@ public class MainActivity extends AppCompatActivity {
                     // Update unit u model
                     u.setUnitCompleted(1); // Mark unit as completed (as we don't have any drills - unless the tutorial is a drill)
                     u.setUnitInProgress(0); // Flag the unit as no longer being 'in progress'
+                    u.setUnitDateLastPlayed(Globals.STANDARD_DATE_TIME_STRING(new Date())); // Flag last-played datetime
 
                     // Update unit u in database
                     result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
@@ -476,19 +492,19 @@ public class MainActivity extends AppCompatActivity {
                     // Update unit u2 in database
                     result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u2);
                     System.out.println("Request Code (" + requestCode + ") - Unit u2 (" + u2.getUnitId() +") successfull updated in database");
-
                     break;
 
                 case Code.FINALE:
                     // Validate that current unit vs request code
-                    if (unitId != Globals.FINALE_ID) {
+                    /* if (unitId != Globals.FINALE_ID) {
                         throw new Exception("Request Code (" + requestCode + ") - Finale request code detected, but unitId (" + unitId + ") does not match that");
-                    }
+                    } */
 
                     // Update unit u model
                     u.setUnitFirstTimeMovie(1); // Mark finale as having completed
                     u.setUnitCompleted(1); // Mark unit as completed (as we don't have any drills - unless any finale items are added in the future)
                     u.setUnitInProgress(0); // Flag the unit as no longer being 'in progress'
+                    u.setUnitDateLastPlayed(Globals.STANDARD_DATE_TIME_STRING(new Date())); // Flag last-played datetime
 
                     // Update unit u in database
                     result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
@@ -514,6 +530,9 @@ public class MainActivity extends AppCompatActivity {
                     // Update unit u2 in database
                     result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u2);
                     System.out.println("Request Code (" + requestCode + ") - Unit u2 (" + u2.getUnitId() +") successfull updated in database");
+
+                    // Set finaleComplete to true
+                    finaleComplete = true;
                     break;
 
                 default:
@@ -521,8 +540,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-            // After all the above database updates, let's get the unitId of the next unit-to-play
-            unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
+            /* // After all the above database updates, let's get the unitId of the next unit-to-play
+            unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase()); */
 
             // Debug
             System.out.println("-----------------------------------------------------------------------------");
@@ -532,17 +551,51 @@ public class MainActivity extends AppCompatActivity {
 
         } catch (SQLiteException sqlex) {
             System.err.println("MainActivity.onActivityResult > SQLiteException: " + sqlex.getMessage());
+
         } catch (Exception ex) {
-            System.err.println("MainActivity.onActivityResult > SQLiteException: " + ex.getMessage());
+            System.err.println("MainActivity.onActivityResult > Exception: " + ex.getMessage());
+
         } finally {
             // Close database connection
             if (mDbHelper != null) {
                 mDbHelper.close();
+                mDbHelper = null;
             }
 
-            if (success) {
+            if (finaleComplete) {
+                // Go to language select screen
+                Intent intent = new Intent(this, LanguageSelect.class);
+
+                // Determine next splash bg
+                int[] nextSplashBg = determineNextSplashBg();
+
+                if (nextSplashBg != null) {
+                    if (nextSplashBg[0] != -1) {
+                        intent.putExtra(Code.NEXT_BG_CODE, nextSplashBg[0]);
+                    }
+                    if (nextSplashBg[1] != -1) {
+                        intent.putExtra(Code.NEXT_BG_RES, nextSplashBg[1]);
+                    }
+                }
+
+                startActivityForResult(intent, Code.LANG);
+                overridePendingTransition(0, android.R.anim.fade_out);
+
+            } else if (success) {
                 // Determine the next item (a.k.a. 'Activity / Intent') to play
                 determineNextItem();
+
+            } else {
+                // Debug error: force finale
+                System.err.println("MainActivity.determineNextItem > Error: Forcing finale");
+
+                // Force play finale movie ... for now
+                Intent intent = new Intent(this, Movie.class);
+                intent.putExtra(Code.RES_NAME, "finale_movie");
+                intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
+                resultCode = Code.FINALE;
+                startActivityForResult(intent, resultCode);
+                overridePendingTransition(0, android.R.anim.fade_out);
             }
         }
     }
@@ -558,7 +611,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             // Establish database connectivity
-            if (!dbEstablsh()) {
+            if (!dbEstablsh(!mInitialized)) {
                 throw new Exception("Db Connection unsuccessful");
             }
             System.out.println("MainActivity.determineNextSplashBg > Debug: Db Connection successful");
@@ -679,6 +732,7 @@ public class MainActivity extends AppCompatActivity {
             // Close database connection
             if (mDbHelper != null) {
                 mDbHelper.close();
+                mDbHelper = null;
             }
         }
 
@@ -689,13 +743,18 @@ public class MainActivity extends AppCompatActivity {
      * Establish db connection
      * @return Returns true/false if db connection has been established
      */
-    protected boolean dbEstablsh() {
+    protected boolean dbEstablsh(boolean recopy) {
         try {
             // Initialize DbHelper
-            mDbHelper = new DbHelper(this);
+            mDbHelper = DbHelper.getDbHelper(getApplicationContext());
 
             // Try create database or connect to existing
-            mDbHelper.createDatabase();
+            if (ALLOW_DB_RECOPY) {
+                mDbHelper.createDatabase(recopy);
+            } else {
+                mDbHelper.createDatabase();
+            }
+            // mDbHelper.createDatabase();
 
             // Test opening database
             mDbHelper.openDatabase();
@@ -704,6 +763,31 @@ public class MainActivity extends AppCompatActivity {
             return true;
 
         // Otherwise
+        } catch (IOException ioex) {
+            System.err.println("MainActivity.dbEstablish > IOException: " + ioex.getMessage());
+        } catch (SQLiteException sqlex) {
+            System.err.println("MainActivity.dbEstablish > SQLiteException: " + sqlex.getMessage());
+        } catch (Exception ex) {
+            System.err.println("MainActivity.dbEstablish > Exception: " + ex.getMessage());
+        }
+        return false;
+    }
+
+    protected boolean dbEstablishWithRecopy() {
+        try {
+            // Initialize DbHelper
+            mDbHelper = DbHelper.getDbHelper(getApplicationContext());
+
+            // Try create database or connect to existing
+            mDbHelper.createDatabase(true);
+
+            // Test opening database
+            mDbHelper.openDatabase();
+
+            // All good
+            return true;
+
+            // Otherwise
         } catch (IOException ioex) {
             System.err.println("MainActivity.dbEstablish > IOException: " + ioex.getMessage());
         } catch (SQLiteException sqlex) {

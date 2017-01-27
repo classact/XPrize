@@ -8,6 +8,7 @@ import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -23,10 +24,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import java.io.FileDescriptor;
+import java.io.IOException;
 import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.view.TouchView;
 
 public class Tutorial extends AppCompatActivity {
@@ -1084,6 +1088,7 @@ public class Tutorial extends AppCompatActivity {
         // Update current state
         currentState = state;
 
+        /* OLD CODE
         // Retrieve audio resource
         int audioResourceId = TutorialAudioResources.get(state);
 
@@ -1095,25 +1100,73 @@ public class Tutorial extends AppCompatActivity {
         } else if (audioResourceId == -1) {
             audioResourceId = TutorialAudioResources.getAffirmation(rnd.nextInt(TutorialAudioResources.noOfAffirmations()));
         }
+        */
 
-        // Create media player
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), audioResourceId);
-
-        // Set on completion listener
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-
-                // Release all previous media player instances
-                mp.release();
-
-                // Send Message to controller
-                sendMessageToController("play", currentState + PLAY_COMPLETE);
+        try {
+            // Reset media player
+            if (mediaPlayer != null) {
+                mediaPlayer.release();
+                mediaPlayer = null;
             }
-        });
 
-        // Play the tune ~ ♪♫♪
-        mediaPlayer.start();
+            // Get resource name
+            String name = TutorialAudioResources.get(state);
+
+            // Validate resource name
+            if (name == null) {
+
+                // Throw error
+                throw new Exception("Could not retrieve audio resource name");
+
+            // Check if it's an affirmation
+            } else if (name.equalsIgnoreCase("-1")) {
+
+                // Get affirmation
+                name = TutorialAudioResources.getAffirmation(rnd.nextInt(TutorialAudioResources.noOfAffirmations()));
+            }
+
+            // Get resource file descriptor, using name
+            String soundPath = FetchResource.sound(getApplicationContext(), name);
+
+            // Reset media player
+            mediaPlayer = new MediaPlayer();
+
+            // Set data source of media player
+            mediaPlayer.setDataSource(soundPath);
+
+
+            // Set on completion listener
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+
+                    // Release all previous media player instances
+                    mp.release();
+
+                    // Send Message to controller
+                    sendMessageToController("play", currentState + PLAY_COMPLETE);
+                }
+            });
+
+            // Set on prepared listener
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+
+                    // Play the tune ~ ♪♫♪
+                    mediaPlayer.start();
+                }
+            });
+
+            // Prepare the media player
+            mediaPlayer.prepare();
+
+        } catch (IOException ioex) {
+            System.err.println("Tutorial.play > IOException: " + ioex.getMessage());
+
+        } catch (Exception ex) {
+            System.err.println("Tutorial.play > Exception: " + ex.getMessage());
+        }
     }
 
     /****************************

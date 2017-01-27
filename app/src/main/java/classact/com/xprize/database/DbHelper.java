@@ -19,14 +19,30 @@ import classact.com.xprize.database.helper.SQLiteAssetHelper;
 
 
 public class DbHelper extends SQLiteAssetHelper {
+    private static DbHelper myDbHelper;
 	private static String DATABASE_NAME = "CA_XPrize.db";
 	private static String DATABASE_PATH;
 	private static int DATABASE_VERSION=1;
 	private SQLiteDatabase myDatabase;
 	private final Context myContext;
 
+    public static DbHelper getDbHelper(Context c) {
 
-	public DbHelper(Context c) {
+        if (myDbHelper == null) {
+            myDbHelper = new DbHelper(c);
+            System.out.println("--------------------------------------------");
+            System.out.println("DbHelper.getDbHelper > Debug: create new");
+            System.out.println("--------------------------------------------");
+        } else {
+            System.out.println("--------------------------------------------");
+            System.out.println("DbHelper.getDbHelper > Debug: re-use");
+            System.out.println("--------------------------------------------");
+        }
+
+        return myDbHelper;
+    }
+
+	private DbHelper(Context c) {
 		super(c, DATABASE_NAME, null, DATABASE_VERSION);
 		this.myContext = c;
 		this.DATABASE_PATH = c.getApplicationInfo().dataDir + "/databases/";
@@ -135,6 +151,10 @@ public class DbHelper extends SQLiteAssetHelper {
 			myDatabase.close();
 
 		super.close();
+
+        System.out.println("--------------------------------------------");
+		System.out.println("DbHelper.close > Debug: connection closed");
+        System.out.println("--------------------------------------------");
 	}
 
 
