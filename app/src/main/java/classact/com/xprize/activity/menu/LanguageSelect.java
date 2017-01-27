@@ -96,10 +96,10 @@ public class LanguageSelect extends AppCompatActivity {
                     bg.setBackgroundResource(R.drawable.phonics_link_bg);
                     break;
                 case Code.WORDS_SPLASH:
-                    bg.setBackgroundResource(R.drawable.en_words_link_bg);
+                    bg.setBackgroundResource(R.drawable.sw_words_link_bg);
                     break;
                 case Code.STORY_SPLASH:
-                    bg.setBackgroundResource(R.drawable.en_story_link_bg);
+                    bg.setBackgroundResource(R.drawable.sw_story_link_bg);
                     break;
                 case Code.MATHS_SPLASH:
                     bg.setBackgroundResource(R.drawable.maths_link_bg);
@@ -134,10 +134,10 @@ public class LanguageSelect extends AppCompatActivity {
                     bg.setBackgroundResource(R.drawable.phonics_link_bg);
                     break;
                 case Code.WORDS_SPLASH:
-                    bg.setBackgroundResource(R.drawable.sw_words_link_bg);
+                    bg.setBackgroundResource(R.drawable.en_words_link_bg);
                     break;
                 case Code.STORY_SPLASH:
-                    bg.setBackgroundResource(R.drawable.sw_story_link_bg);
+                    bg.setBackgroundResource(R.drawable.en_story_link_bg);
                     break;
                 case Code.MATHS_SPLASH:
                     bg.setBackgroundResource(R.drawable.maths_link_bg);

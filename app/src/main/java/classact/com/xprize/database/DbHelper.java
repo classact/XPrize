@@ -153,7 +153,7 @@ public class DbHelper extends SQLiteAssetHelper {
 		super.close();
 
         System.out.println("--------------------------------------------");
-		System.out.println("DbHelper.close > Debug: database closed");
+		System.out.println("DbHelper.close > Debug: connection closed");
         System.out.println("--------------------------------------------");
 	}
 

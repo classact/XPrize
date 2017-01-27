@@ -355,15 +355,17 @@ public class SoundDrillJsonBuilder {
         String drillData = "{\"instructions\":" + ResourceDecoder.getIdentifier(context,readAfterDamaSound,"raw") + "," +
                 "\"touch\":" +  ResourceDecoder.getIdentifier(context,touchSound,"raw") + "," +
                 "\"words\": [" ;
-        int i = 0;
-        for (SpelledWord word: words) {
-            if (i == 0)
-                drillData += "{\"word\":" + ResourceDecoder.getIdentifier(context, word.getWord().getObjectImage(),"drawable");
-            else
-                drillData += ",{\"word\":" +  ResourceDecoder.getIdentifier(context,word.getWord().getSpelling(),"drawable") ;
+        for (int i = 0; i < words.size(); i++) {
+            SpelledWord word = words.get(i);
 
-            drillData += "," + "\"sound\":" + ResourceDecoder.getIdentifier(context,word.getWord().getObjectSound(),"raw") + "}";
-            i++;
+            drillData += "{\"word\":" + ResourceDecoder.getIdentifier(context, word.getWord().getObjectImage(),"drawable");
+            drillData += "," + "\"sound\":" + ResourceDecoder.getIdentifier(context,word.getWord().getObjectSound(),"raw");
+            drillData += "," + "\"name\":" + word.getWord().getSpelling() + "}";
+
+            // Append comma if required
+            if (i != words.size() - 1) {
+                drillData += ",";
+            }
         }
         drillData += "]}" ;
         return drillData;
@@ -378,13 +380,19 @@ public class SoundDrillJsonBuilder {
                 "\"can_you_match\":" + ResourceDecoder.getIdentifier(context, canYouMatchSound, "raw") + "," +
                 "\"count_1\":" + ResourceDecoder.getIdentifier(context, countOneSound, "raw") + "," +
                 "\"words\": [";
-        int i = 0;
-        for (ObjectAndSound<String> word : words){
-            if (i == 0)
-                drillData += "{\"word\":" +  ResourceDecoder.getIdentifier(context,word.getSpelling() ,"drawable") + ",\"sound\": " + ResourceDecoder.getIdentifier(context, word.getObjectSound(), "raw") + "}";
-            else
-                drillData += ",{\"word\":" +  ResourceDecoder.getIdentifier(context,word.getSpelling(),"drawable") + ",\"sound\": " + ResourceDecoder.getIdentifier(context, word.getObjectSound(), "raw") + "}";
-            i++;
+
+        for (int i = 0; i < words.size(); i++) {
+            ObjectAndSound<String> word = words.get(i);
+
+            drillData += "{\"word\":" + ResourceDecoder.getIdentifier(context, word.getObjectImage(),"drawable");
+            drillData += "," + "\"sound\":" + ResourceDecoder.getIdentifier(context, word.getObjectSound(),"raw");
+            drillData += "," + "\"name\":" + word.getSpelling() + "}";
+
+            // Append comma if required
+            if (i != words.size() - 1) {
+                drillData += ",";
+            }
+
         }
         drillData += "]}" ;
         return drillData;

@@ -107,6 +107,8 @@ public class Movie extends AppCompatActivity {
             } else {
                 mSplashImage.setBackgroundResource(R.drawable.en_intro_bg);
             }
+        } else if (mNextBgCode == Code.FINALE) {
+            mSplashImage.setBackgroundResource(R.color.black);
         }
 
         // Show hide play/stop buttons
@@ -132,7 +134,10 @@ public class Movie extends AppCompatActivity {
         // Append appropriate language identifier if required
         // (Default is English)
         String resourceName = intent.getStringExtra(Code.RES_NAME);
-        if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
+
+        // Check if Swahili prefix should be attached
+        /* NOTE --- finale_movie has no swahili prefix */
+        if (!resourceName.equalsIgnoreCase("finale_movie") && Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
             resourceName = SWAHILI_PREFIX + resourceName;
         }
 
@@ -493,78 +498,10 @@ public class Movie extends AppCompatActivity {
     protected void close(String nextActivityClassName) {
         System.out.println("close");
 
-        try {
-            // Complete unit in DB
-            if (!updateDb()) {
-                throw new Exception("error updating db");
-            }
-        } catch (SQLiteException sqlex) {
-            System.err.println(" > close: error creating unit updates - " + sqlex.getMessage());
-        } catch (ClassNotFoundException cnfex) {
-            System.err.println(" > close: cannot find class of next activity - " + cnfex.getMessage());
-        } catch (Exception ex) {
-            System.err.println(" > close: " + ex.getMessage());
-        } finally {
-            Intent intent = new Intent();
-            setResult(Code.MOVIE, intent);
-            finish();
-            overridePendingTransition(0, android.R.anim.fade_out);
-        }
-    }
-
-    /**
-     * UPDATE DB
-     */
-    protected boolean updateDb() {
-        System.out.println("updateDb");
-
-        // Create success boolean
-        boolean success = false;
-
-        // Validate UnitId
-        if (mUnitId == -1) {
-            System.err.println(mActivityName + " > updateDb: UnitId has not been set");
-            return false;
-        }
-
-        // Retrieve database
-        DbHelper dbHelper = null;
-
-        try {
-            // Initialize DbHelper
-            dbHelper = DbHelper.getDbHelper(getApplicationContext());
-
-            // Try to connect to existing db
-            dbHelper.createDatabase(true);
-
-            // Test opening database
-            dbHelper.openDatabase();
-
-            // Fetch unit
-            Unit u = UnitHelper.getUnitInfo(dbHelper.getReadableDatabase(), mUnitId);
-
-            // Update date last played (common to all units)
-            u.setUnitDateLastPlayed(Globals.STANDARD_DATE_TIME_STRING(new Date()));
-
-            // Update
-            UnitHelper.updateUnitInfo(dbHelper.getWritableDatabase(), u);
-
-            // Mark as success
-            success = true;
-
-        } catch (IOException ioex) {
-            System.err.println(mActivityName + " > updateDb: IOException - " + ioex.getMessage());
-
-        } catch (SQLiteException sqlex) {
-            System.err.println(mActivityName + " > updateDb: SQLiteException - " + sqlex.getMessage());
-
-        } finally {
-            // Close database connection
-            if (dbHelper != null) {
-                dbHelper.close();
-            }
-        }
-        return success;
+        Intent intent = new Intent();
+        setResult(Code.MOVIE, intent);
+        finish();
+        overridePendingTransition(0, android.R.anim.fade_out);
     }
 
     /**

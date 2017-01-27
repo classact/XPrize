@@ -39,12 +39,6 @@ public class WordDrills {
         Intent intent = null;
 
         try {
-            System.out.println("Word ids: " + word1.getWordID() + ", " + word2.getWordID() + ", " + word3.getWordID() + ", " + word4.getWordID() + ", " + word5.getWordID());
-            System.out.println("Word picture1: " + word1.getWordPictureURI());
-            System.out.println("Word picture2: " + word2.getWordPictureURI());
-            System.out.println("Word picture3: " + word3.getWordPictureURI());
-            System.out.println("Word picture4: " + word4.getWordPictureURI());
-            System.out.println("Word picture5: " +  word5.getWordPictureURI());
             ArrayList<SpelledWord> words = new ArrayList<>();
             //One
             SpelledWord word = new SpelledWord();
@@ -72,7 +66,7 @@ public class WordDrills {
             words.add(word);
             //Five
             word = new SpelledWord();
-            object = new ObjectAndSound<>(word1.getWordPictureURI(), word5.getWordSoundURI(),"");
+            object = new ObjectAndSound<>(word5.getWordPictureURI(), word5.getWordSoundURI(),"");
             object.setSpelling(word5.getWordName());
             word.setWord(object);
             words.add(word);
@@ -97,19 +91,19 @@ public class WordDrills {
 
         try {
             ArrayList<ObjectAndSound<String>> words = new ArrayList<>();
-            ObjectAndSound<String> word = new ObjectAndSound<>("", word1.getWordSoundURI(), "");
+            ObjectAndSound<String> word = new ObjectAndSound<>(word1.getWordPictureURI(), word1.getWordSoundURI(), "");
             word.setSpelling(word1.getWordName());
             words.add(word);
-            word = new ObjectAndSound<>("", word2.getWordSoundURI(), "");
+            word = new ObjectAndSound<>(word2.getWordPictureURI(), word2.getWordSoundURI(), "");
             word.setSpelling(word2.getWordName());
             words.add(word);
-            word = new ObjectAndSound<>("", word3.getWordSoundURI(), "");
+            word = new ObjectAndSound<>(word3.getWordPictureURI(), word3.getWordSoundURI(), "");
             word.setSpelling(word3.getWordName());
             words.add(word);
-            word = new ObjectAndSound<>("", word4.getWordSoundURI(), "");
+            word = new ObjectAndSound<>(word4.getWordPictureURI(), word4.getWordSoundURI(), "");
             word.setSpelling(word4.getWordName());
             words.add(word);
-            word = new ObjectAndSound<>("", word5.getWordSoundURI(), "");
+            word = new ObjectAndSound<>(word5.getWordPictureURI(), word5.getWordSoundURI(), "");
             word.setSpelling(word5.getWordName());
             words.add(word);
 
