@@ -16,6 +16,7 @@ import classact.com.xprize.activity.link.StoryLink;
 import classact.com.xprize.activity.link.WordsLink;
 import classact.com.xprize.activity.menu.LanguageSelect;
 import classact.com.xprize.activity.movie.Movie;
+import classact.com.xprize.activity.movie.MoviePausable;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.controller.DrillFetcher;
@@ -26,7 +27,7 @@ import classact.com.xprize.utils.ResourceDecoder;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final boolean ALLOW_DB_RECOPY = true;
+    private final boolean ALLOW_DB_RECOPY = false;
 
     private boolean mInitialized;
     private DbHelper mDbHelper;
@@ -93,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
                     // Play intro movie
                     intent = new Intent(this, Movie.class);
                     intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
-                    intent.putExtra(Code.SHOW_MV_BUTTONS, true);
                     intent.putExtra(Code.NEXT_BG_CODE, Code.INTRO);
                     resultCode = Code.INTRO;
 
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("MainActivity.determineNextItem > Debug: Play Chapter Movie");
 
                     // Play chapter movie
-                    intent = new Intent(this, Movie.class);
+                    intent = new Intent(this, MoviePausable.class);
                     intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
                     intent.putExtra(Code.SHOW_MV_BUTTONS, true);
                     intent.putExtra(Code.NEXT_BG_CODE, Code.MOVIE);
@@ -215,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
                     // Play finale movie
                     intent = new Intent(this, Movie.class);
                     intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
-                    intent.putExtra(Code.SHOW_MV_BUTTONS, true);
                     intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
                     resultCode = Code.FINALE;
                 }
@@ -260,7 +259,6 @@ public class MainActivity extends AppCompatActivity {
                     // Force play finale movie ... for now
                     intent = new Intent(this, Movie.class);
                     intent.putExtra(Code.RES_NAME, "finale_movie");
-                    intent.putExtra(Code.SHOW_MV_BUTTONS, true);
                     intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
                     resultCode = Code.FINALE;
                     startActivityForResult(intent, resultCode);
@@ -594,7 +592,6 @@ public class MainActivity extends AppCompatActivity {
                 // Force play finale movie ... for now
                 Intent intent = new Intent(this, Movie.class);
                 intent.putExtra(Code.RES_NAME, "finale_movie");
-                intent.putExtra(Code.SHOW_MV_BUTTONS, true);
                 intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
                 resultCode = Code.FINALE;
                 startActivityForResult(intent, resultCode);

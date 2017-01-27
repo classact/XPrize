@@ -3,14 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_movie"
+    android:id="@+id/activity_movie_pausable"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context="classact.com.xprize.activity.movie.Movie">
+    tools:context="classact.com.xprize.activity.movie.MoviePausable">
 
     <VideoView
-        android:id="@+id/movie_video"
+        android:id="@+id/movie_pausable_video"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -20,19 +20,37 @@
         android:layout_centerVertical="true"
         />
 
+    <Button
+        android:id="@+id/movie_pausable_play_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/play_button"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"/>
+
+    <Button
+        android:id="@+id/movie_pausable_pause_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/pause_button"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"/>
+
     <RelativeLayout
-        android:id="@+id/movie_splash_container"
+        android:id="@+id/movie_pausable_splash_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <RelativeLayout
-            android:id="@+id/movie_splash"
+            android:id="@+id/movie_pausable_splash"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/black">
 
             <ImageView
-                android:id="@+id/movie_splash_image"
+                android:id="@+id/movie_pausable_splash_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"

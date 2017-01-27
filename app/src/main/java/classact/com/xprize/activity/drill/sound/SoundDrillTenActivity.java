@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import java.util.Random;
 
 import classact.com.xprize.R;
+import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillTenActivity extends AppCompatActivity {
@@ -378,7 +379,7 @@ public class SoundDrillTenActivity extends AppCompatActivity {
                     objects = new JSONObject[]{null,null,null,null,null};
 
                     // Get a shuffled array of indexes for 'objects' array
-                    int[] shuffledIndexes = fisherYatesShuffle(objects.length);
+                    int[] shuffledIndexes = FisherYates.shuffle(objects.length);
 
                     // Assign words to objects array
                     for (int i = 0; i < objects.length; i++) {
@@ -617,40 +618,6 @@ public class SoundDrillTenActivity extends AppCompatActivity {
         if (mp != null){
             mp.release();
         }
-    }
-
-    public int[] fisherYatesShuffle(int N) {
-
-        // Initialize base based on N
-        int[] base = new int[N];
-
-        // Initialized rnd variable used in the shuffle
-        Random rnd = new Random();
-
-        // Declare variables to be used;
-        int j, a, b;
-
-        // Populate base
-        for (int i = 0; i < N; i++) {
-            base[i] = i;
-        }
-
-        // Start the shuffle
-        for (int i = 0; i < N - 1; i++) {
-
-            // Get random value j, where i <= j < N
-            j = i + rnd.nextInt(N - i);
-
-            // Store current values
-            a = base[i];
-            b = base[j];
-
-            // Swap them
-            base[i] = b;
-            base[j] = a;
-        }
-
-        return base;
     }
 
 //    @Override

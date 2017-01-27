@@ -22,7 +22,9 @@ import classact.com.xprize.database.helper.UnitHelper;
 import classact.com.xprize.database.helper.WordHelper;
 import classact.com.xprize.database.model.DrillFlowWords;
 import classact.com.xprize.database.model.Letter;
+import classact.com.xprize.database.model.Numerals;
 import classact.com.xprize.database.model.Unit;
+import classact.com.xprize.database.model.Word;
 import classact.com.xprize.locale.Languages;
 
 public class DrillFetcher {
@@ -242,39 +244,54 @@ public class DrillFetcher {
                     int rightLimit = 4; // number of correct words
                     int wrongLimit = 8; // number of incorrect words
                     int numberLimit = 6; // Limit numbers to 8
-                    int boyGirl = 1;
+                    int boyGirl = 2; // numbers (a.k.a number of correct words) spoken in english by a girl from g_0 to g_6
 
-                    ArrayList<Integer> numerals = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, numberLimit, boyGirl);
-                    ArrayList<Integer> rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, rightLimit);
-                    ArrayList<Integer> wrongDrillWordIDs = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, wrongLimit);
+                    if (languageId == Languages.SWAHILI) {
+                        boyGirl = 1; // numbers spoken by a guy/boy instead. Swahili doesn't have a girl version for this
+                    }
+
+                    ArrayList<Integer> numeralIds = NumeralHelper.getNumeralsBelowLimitFromZero(dbHelper.getReadableDatabase(), languageId, numberLimit, boyGirl);
+                    ArrayList<Integer> rightDrillWordIds = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, rightLimit);
+                    ArrayList<Integer> wrongDrillWordIds = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, wrongLimit);
                     DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
                     Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+
+                    for (int i = 0; i < numeralIds.size(); i++) {
+                        System.out.println("DrillFetcher.getWordDrill() > case (" + drillId + "): " + "Using Numeral id (" + numeralIds.get(i) + "), index (" + i + ")");
+                    }
+
+                    // Populate right drill words
+                    ArrayList<Word> rightDrillWords = new ArrayList<Word>();
+                    for (int i = 0; i < rightDrillWordIds.size(); i++) {
+                        rightDrillWords.add(WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIds.get(i)));
+                    }
+
+                    // Populate wrong drill words
+                    ArrayList<Word> wrongDrillWords = new ArrayList<Word>();
+                    for (int i = 0; i < wrongDrillWordIds.size(); i++) {
+                        wrongDrillWords.add(WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIds.get(i)));
+                    }
+
+                    // Populate drill sounds
+                    ArrayList<String> drillSounds = new ArrayList<String>();
+                    drillSounds.add(drillFlowWord.getDrillSound1());
+                    drillSounds.add(drillFlowWord.getDrillSound2());
+                    drillSounds.add(drillFlowWord.getDrillSound3());
+                    drillSounds.add(drillFlowWord.getDrillSound4());
+
+                    // Populate numerals (for countdown)
+                    ArrayList<Numerals> numerals = new ArrayList<Numerals>();
+                    for (int i = 0; i < numeralIds.size(); i++) {
+                        numerals.add(NumeralHelper.getNumeralById(dbHelper.getReadableDatabase(), numeralIds.get(i)));
+                    }
 
                     // Fetch D3
                     intent = WordDrills.D3(context, dbHelper, unitId, drillId, languageId,
                             letter,
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(0)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(1)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(2)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(3)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(0)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(1)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(2)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(3)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(4)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(5)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(6)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(7)),
-                            drillFlowWord.getDrillSound1(),
-                            drillFlowWord.getDrillSound2(),
-                            drillFlowWord.getDrillSound3(),
-                            drillFlowWord.getDrillSound4(),
-                            NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(0)),
-                            NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(1)),
-                            NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(2)),
-                            NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(3)),
-                            NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(4)),
-                            NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(5))
+                            rightDrillWords,
+                            wrongDrillWords,
+                            drillSounds,
+                            numerals
                     );
                     break;
                 }

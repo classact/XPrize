@@ -1,7 +1,6 @@
-package classact.com.xprize.activity.template;
+package classact.com.xprize.activity.movie;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteException;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,23 +11,18 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.VideoView;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.Date;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
-import classact.com.xprize.database.DbHelper;
-import classact.com.xprize.database.helper.UnitHelper;
-import classact.com.xprize.database.model.Unit;
 import classact.com.xprize.locale.Languages;
-import classact.com.xprize.utils.ResourceDecoder;
 
-public abstract class MovieTemplate extends AppCompatActivity {
+public class MoviePausable extends AppCompatActivity {
 
     /*protected int mRequestCode;
     protected final String REQ_CODE_KEY = "REQ_CODE";*/
@@ -38,6 +32,7 @@ public abstract class MovieTemplate extends AppCompatActivity {
     // Views
     protected RelativeLayout mSplashScreenContainer;
     protected RelativeLayout mSplashScreen;
+    protected ImageView mSplashImage;
     protected MediaPlayer mVideoPlayer;
     protected VideoView mVideo;
     protected Uri mVideoURI;
@@ -58,6 +53,7 @@ public abstract class MovieTemplate extends AppCompatActivity {
     protected int mUnitId;
     protected String mActivityName;
     protected boolean mShowVideoControls;
+    protected int mNextBgCode;
 
     // Keys to hold non-persistent data
     protected final String FADE_OUT_DELAY_KEY = "FADE_OUT_DELAY";
@@ -67,6 +63,7 @@ public abstract class MovieTemplate extends AppCompatActivity {
     protected final String ACTIVITY_NAME_KEY = "ACTIVITY_NAME";
     protected final String NEXT_ACTIVITY_KEY = "NEXT_ACTIVITY";
     protected final String SHOW_MV_CONTROLS = "SHOW_MV_CONTROLS";
+    protected final String NEXT_BG = "NEXT_BG_CODE";
 
     // States
     protected final int INIT = 0;
@@ -81,43 +78,61 @@ public abstract class MovieTemplate extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_movie_pausable);
         System.out.println("onCreate");
-        setContentView(R.layout.activity_movie);
 
-        mSplashScreenContainer = (RelativeLayout) findViewById(R.id.movie_splash_container);
-        mSplashScreen = (RelativeLayout) findViewById(R.id.movie_splash);
-        mVideo = (VideoView) findViewById(R.id.movie_video);
-        mPlayButton = (Button) findViewById(R.id.movie_play_button);
-        mPauseButton = (Button) findViewById(R.id.movie_pause_button);
+        int bg;
 
-        mSplashScreenContainer.setVisibility(View.VISIBLE);
-        mPauseButton.setVisibility(View.INVISIBLE);
+        mSplashScreenContainer = (RelativeLayout) findViewById(R.id.movie_pausable_splash_container);
+        mSplashScreen = (RelativeLayout) findViewById(R.id.movie_pausable_splash);
+        mSplashImage = (ImageView) findViewById(R.id.movie_pausable_splash_image);
+        mVideo = (VideoView) findViewById(R.id.movie_pausable_video);
+        mPauseButton = (Button) findViewById(R.id.movie_pausable_pause_button);
+        mPlayButton = (Button) findViewById(R.id.movie_pausable_play_button);
+
+        // Requires data from invoker intent
+        Intent intent = getIntent();
+        mShowVideoControls = intent.getBooleanExtra(Code.SHOW_MV_BUTTONS, false);
+        mNextBgCode = intent.getIntExtra(Code.NEXT_BG_CODE, -1);
+
+        if (mNextBgCode == Code.INTRO) {
+            if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
+                mSplashImage.setBackgroundResource(R.drawable.sw_intro_bg);
+            } else {
+                mSplashImage.setBackgroundResource(R.drawable.en_intro_bg);
+            }
+        } else if (mNextBgCode == Code.FINALE) {
+            mSplashImage.setBackgroundResource(R.color.black);
+        }
+
+        // Show hide play/stop buttons
+        if (mShowVideoControls) {
+            mPauseButton.setVisibility(View.VISIBLE);
+            mPlayButton.setVisibility(View.INVISIBLE);
+        } else {
+            mPauseButton.setVisibility(View.GONE);
+            mPauseButton.invalidate();
+            mPlayButton.setVisibility(View.GONE);
+            mPlayButton.invalidate();
+        }
 
         mUnitId = 1;
         mActivityName = "Movie";
         mNextActivityClassName = null;
 
-        // Requires data from invoker intent
-        Intent intent = getIntent();
-
-        // Show hide play/stop buttons
-        mShowVideoControls = intent.getBooleanExtra(Code.SHOW_MV_BUTTONS, false);
-        if (!mShowVideoControls) {
-            mPlayButton.setVisibility(View.INVISIBLE);
-        }
-
         // Set splash screen delay
-        mSplashScreenFadeOutDelay = intent.getIntExtra(Code.MV_SPLASH_DELAY, 1000);
+        mSplashScreenFadeOutDelay = intent.getIntExtra(Code.MV_SPLASH_DELAY, 3000);
+        mSplashScreenFadeOutAnimation = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out);
+        mSplashScreenFadeOutAnimation.setFillAfter(true);
 
         // Append appropriate language identifier if required
         // (Default is English)
         String resourceName = intent.getStringExtra(Code.RES_NAME);
+
+        // Check if Swahili prefix should be attached
         if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
             resourceName = SWAHILI_PREFIX + resourceName;
         }
-
-        // Get resource id using resource name
-        int resourceId = ResourceDecoder.getIdentifier(getApplicationContext(), resourceName, "raw");
 
         // Create video path
         String videoPath = Environment.getExternalStorageDirectory() + "/Android/media/classact.com.xprize/videos/" + resourceName + ".mp4";
@@ -125,15 +140,14 @@ public abstract class MovieTemplate extends AppCompatActivity {
         // Set video URI
         Uri videoURI = Uri.parse(videoPath);
         mVideo.setVideoURI(videoURI);
-        
 
-        // Init defaults
-        initDefaults();
+        addListenersToViews();
     }
 
     /**
      * ANDROID ACTIVITY LIFECYCLE METHODS
      */
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -144,11 +158,6 @@ public abstract class MovieTemplate extends AppCompatActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         System.out.println("onPostCreate");
-
-        if (mState == INIT) {
-            // add listeners to views
-            addListenersToViews();
-    }
     }
 
     @Override
@@ -161,7 +170,6 @@ public abstract class MovieTemplate extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         System.out.println("onResume");
-        // resumeVideo();
     }
 
     @Override
@@ -186,6 +194,10 @@ public abstract class MovieTemplate extends AppCompatActivity {
         outState.putInt(UNIT_ID_KEY, mUnitId);
         outState.putString(ACTIVITY_NAME_KEY, mActivityName);
         outState.putBoolean(SHOW_MV_CONTROLS, mShowVideoControls);
+        outState.putInt(NEXT_BG, mNextBgCode);
+        if (!(mState == INIT || mState == COMPLETE)) {
+            pauseVideo();
+        }
         super.onSaveInstanceState(outState);
     }
 
@@ -200,39 +212,12 @@ public abstract class MovieTemplate extends AppCompatActivity {
         mUnitId = savedInstanceState.getInt(UNIT_ID_KEY);
         mActivityName = savedInstanceState.getString(ACTIVITY_NAME_KEY);
         mShowVideoControls = savedInstanceState.getBoolean(SHOW_MV_CONTROLS);
+        mNextBgCode = savedInstanceState.getInt(NEXT_BG);
         if (!(mState == INIT || mState == COMPLETE)) {
             resumeVideo();
         } else if (mState == COMPLETE) {
             close(mNextActivityClassName);
         }
-    }
-
-    /**
-     * INIT DEFAULTS
-     */
-    protected void initDefaults() {
-        System.out.println("initDefaults");
-        // Set state
-        mState = INIT;
-
-        // Set fade out animation
-        mSplashScreenFadeOutAnimation = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out);
-        mSplashScreenFadeOutAnimation.setFillAfter(true);
-
-        // Show mv controls
-        mShowVideoControls = false;
-
-        // Set fade out delay
-        mSplashScreenFadeOutDelay = 1000;
-
-        // Set stop position
-        mVideoStopPosition = 0;
-
-        // Set default unit id
-        mUnitId = -1; // No unit id set
-
-        // Set default Activity Name
-        mActivityName = "MovieTemplate";
     }
 
     /**
@@ -489,7 +474,7 @@ public abstract class MovieTemplate extends AppCompatActivity {
             mVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    mp.stop();
+                    mVideoPlayer.stop();
                     mState = COMPLETE;
                     close(mNextActivityClassName);
                 }
@@ -506,107 +491,29 @@ public abstract class MovieTemplate extends AppCompatActivity {
     protected void close(String nextActivityClassName) {
         System.out.println("close");
 
-        try {
-            // Complete unit in DB
-            if (!updateDb()) {
-                throw new Exception("error updating db");
-            }
-        } catch (SQLiteException sqlex) {
-            System.err.println(" > close: error creating unit updates - " + sqlex.getMessage());
-        } catch (ClassNotFoundException cnfex) {
-            System.err.println(" > close: cannot find class of next activity - " + cnfex.getMessage());
-        } catch (Exception ex) {
-            System.err.println(" > close: " + ex.getMessage());
-        } finally {
-            Intent intent = new Intent();
-            setResult(Code.MOVIE, intent);
-            finish();
-            overridePendingTransition(0, android.R.anim.fade_out);
-        }
+        Intent intent = new Intent();
+        setResult(Code.MOVIE, intent);
+        finish();
+        overridePendingTransition(0, android.R.anim.fade_out);
     }
-
-    /**
-     * UPDATE DB
-     */
-    protected boolean updateDb() {
-        System.out.println("updateDb");
-
-        // Create success boolean
-        boolean success = false;
-
-        // Validate UnitId
-        if (mUnitId == -1) {
-            System.err.println(mActivityName + " > updateDb: UnitId has not been set");
-            return false;
-        }
-
-        // Retrieve database
-        DbHelper dbHelper = null;
-
-        try {
-            // Initialize DbHelper
-            dbHelper = DbHelper.getDbHelper(getApplicationContext());
-
-            // Try to connect to existing db
-            dbHelper.createDatabase(true);
-
-            // Test opening database
-            dbHelper.openDatabase();
-
-            // Fetch unit
-            Unit u = UnitHelper.getUnitInfo(dbHelper.getReadableDatabase(), mUnitId);
-
-            // Fetch unit with updated logic ('forced upon' inheriting class)
-            u = unitUpdateLogic(u, dbHelper);
-
-            // Update date last played (common to all units)
-            u.setUnitDateLastPlayed(Globals.STANDARD_DATE_TIME_STRING(new Date()));
-
-            // Update
-            UnitHelper.updateUnitInfo(dbHelper.getWritableDatabase(), u);
-
-            // Mark as success
-            success = true;
-
-        } catch (IOException ioex) {
-            System.err.println(mActivityName + " > updateDb: IOException - " + ioex.getMessage());
-
-        } catch (SQLiteException sqlex) {
-            System.err.println(mActivityName + " > updateDb: SQLiteException - " + sqlex.getMessage());
-
-        } finally {
-            // Close database connection
-            if (dbHelper != null) {
-                dbHelper.close();
-            }
-        }
-        return success;
-    }
-
-    /**
-     * UNIT UPDATES
-     * Must be overriden by any class that uses this template
-     * @return
-     */
-    protected abstract Unit unitUpdateLogic(Unit u, DbHelper dbHelper);
 
     /**
      * FADE OUT SPLASH SCREEN RUNNABLE
      */
     protected static class FadeOutSplashScreen implements Runnable {
-        private final WeakReference<MovieTemplate> mMovieTemplate;
+        private final WeakReference<MoviePausable> mMoviePausable;
 
-        FadeOutSplashScreen(MovieTemplate movieTemplate) {
-            mMovieTemplate = new WeakReference<MovieTemplate>(movieTemplate);
+        FadeOutSplashScreen(MoviePausable moviePausable) {
+            mMoviePausable = new WeakReference<>(moviePausable);
         }
 
         @Override
         public void run() {
             System.out.println("FadeOutSplashScreen.run");
-            MovieTemplate movieTemplate = mMovieTemplate.get();
-            if (movieTemplate != null) {
-                RelativeLayout splashScreen = movieTemplate.getSplashScreen();
-                Animation splashScreenFadeOutAnimation = movieTemplate.getSplashScreenFadeOutAnimation();
+            MoviePausable moviePausable = mMoviePausable.get();
+            if (moviePausable != null) {
+                RelativeLayout splashScreen = moviePausable.getSplashScreen();
+                Animation splashScreenFadeOutAnimation = moviePausable.getSplashScreenFadeOutAnimation();
 
                 if (!(splashScreen == null || splashScreenFadeOutAnimation == null)) {
                     splashScreen.startAnimation(splashScreenFadeOutAnimation);

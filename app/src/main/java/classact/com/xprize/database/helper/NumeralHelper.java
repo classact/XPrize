@@ -50,6 +50,33 @@ public class NumeralHelper {
         cursor.close();
         return numeral;
     }
+
+    /**
+     * Get Numeral By Id
+     * Duplicate of above method until we clean up everything
+     * @param db
+     * @param numeralID
+     * @return
+     */
+    public static Numerals getNumeralById(SQLiteDatabase db, int numeralID){
+        String[] columns = new String[] {"_id","LanguageID","Number",
+                "BoyGirl","NumberSound","NumberBlackPicture","NumberSparklePicture" };
+        String OrderBy = "_id asc";
+        Cursor cursor = db.query("tbl_Numerals", columns, "_id=?", new String[]{String.valueOf(numeralID),}, null, null, OrderBy);
+        Numerals numeral = new Numerals();
+        if (cursor.getCount()>0) {
+            cursor.moveToFirst();
+            numeral.setLanguageID(cursor.getInt(1));
+            numeral.setNumber(cursor.getInt(2));
+            numeral.setBoyGirl(cursor.getInt(3));
+            numeral.setSound(cursor.getString(4));
+            numeral.setBlackImage(cursor.getString(5));
+            numeral.setSparklingImage(cursor.getString(6));
+        }
+        cursor.close();
+        return numeral;
+    }
+
     public static ArrayList<Integer> getNumerals(SQLiteDatabase db, int languageID, int limit, int boyGirl){
         ArrayList<Integer> numerals = new ArrayList<Integer>();
         Cursor cursor = db.rawQuery("SELECT _id FROM tbl_Numerals where LanguageID = "+languageID+ " and BoyGirl = " + boyGirl + " ORDER BY RANDOM() LIMIT " + limit +" order by _id;", null);
@@ -103,7 +130,7 @@ public class NumeralHelper {
     }
     public static ArrayList<Integer> getNumeralsBelowLimitFromZero(SQLiteDatabase db, int languageID, int limit,  int boyGirl){
         ArrayList<Integer> numerals = new ArrayList<Integer>();
-        Cursor cursor = db.rawQuery("SELECT _id FROM tbl_Numerals where LanguageID = "+languageID+ " and BoyGirl = " + boyGirl + " AND Number <= " + limit + " order by _id;", null);
+        Cursor cursor = db.rawQuery("SELECT _id FROM tbl_Numerals where LanguageID = "+languageID+ " and BoyGirl = " + boyGirl + " AND Number <= " + limit + " order by Number;", null);
         int numeral = 0;
         try {
             if (cursor.moveToFirst()) {

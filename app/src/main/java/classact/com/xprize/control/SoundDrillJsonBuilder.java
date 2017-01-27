@@ -402,6 +402,7 @@ public class SoundDrillJsonBuilder {
                                                  String quickMotherIsComing,
                                                  String youGotSound,
                                                  String noSound,
+                                                 String countZeroSound,
                                                  String countOneSound,
                                                  String countTwoSound,
                                                  String countThreeSound,
@@ -409,10 +410,11 @@ public class SoundDrillJsonBuilder {
                                                  String countFiveSound,
                                                  String countSixSound,
                                                  String wordsSound,
-                                                 ArrayList<SpelledWord> sets){
+                                                 ArrayList<RightWrongWordSet> sets){
         String drillData = "{\"quick_mothers_coming\":" +  ResourceDecoder.getIdentifier(context,quickMotherIsComing,"raw") + "," +
-                "\"you_got\":" +ResourceDecoder.getIdentifier(context,quickMotherIsComing,"raw") + "," +
+                "\"you_got\":" +ResourceDecoder.getIdentifier(context,youGotSound,"raw") + "," +
                 "\"no_sound\":" + ResourceDecoder.getIdentifier(context,noSound,"raw") + "," +
+                "\"count_0\":" + ResourceDecoder.getIdentifier(context,countZeroSound,"raw") + "," +
                 "\"count_1\":" + ResourceDecoder.getIdentifier(context,countOneSound,"raw") + "," +
                 "\"count_2\":" + ResourceDecoder.getIdentifier(context,countTwoSound,"raw") + "," +
                 "\"count_3\":" + ResourceDecoder.getIdentifier(context,countThreeSound,"raw") + "," +
@@ -421,26 +423,52 @@ public class SoundDrillJsonBuilder {
                 "\"count_6\":" + ResourceDecoder.getIdentifier(context,countSixSound,"raw") + "," +
                 "\"words_sound\":" + ResourceDecoder.getIdentifier(context,wordsSound,"raw") + "," +
                 "\"sets\": [" ;
-        int i = 0;
-        for (SpelledWord word: sets) {
-            if (i == 0)
-                drillData += "{\"sound\": " +ResourceDecoder.getIdentifier(context,word.getWord().getObjectSound(),"raw")  + "," +
-                    "\"words\": [" ;
-            else
-                drillData += ",{\"sound\": " +ResourceDecoder.getIdentifier(context,word.getWord().getObjectSound(),"raw")  + "," +
-                    "\"words\": [" ;
-            i++;
-            int j = 0;
-            for(DraggableImage<String> obj : word.getLettersImages()) {
-                if (j == 0)
-                    drillData += "{\"word\":" + ResourceDecoder.getIdentifier(context,obj.getcontent(),"drawable") + ",\"correct\":" + obj.isRight() + "}";
-                else
-                    drillData += ",{\"word\":" + ResourceDecoder.getIdentifier(context,obj.getcontent(),"drawable") + ",\"correct\":" + obj.isRight() + "}";
-               j++;
+
+        for (int i = 0; i < sets.size(); i++) {
+            // Populate Spelled Words (word + sound)
+            RightWrongWordSet set = sets.get(i);
+
+            // Populate Sounds in word
+            // Comma logic
+            if (i > 0) {
+                drillData += ",";
             }
+            // Append data
+            drillData += "{\"sound\": " + ResourceDecoder.getIdentifier(context, set.getRightWord().getWordSoundURI(), "raw")  + "," +
+
+                    // Open words array
+                    "\"words\": [" ;
+
+            // Get Letter Images in word
+            ArrayList<DraggableImage<classact.com.xprize.database.model.Word>> rightAndWrongWords = set.getRightAndWrongWords();
+
+            // Populate Draggable Images (a.k.a. 'Letter Images') in word
+            for (int j = 0; j < rightAndWrongWords.size(); j++) {
+
+                DraggableImage<classact.com.xprize.database.model.Word> theWord = rightAndWrongWords.get(j);
+
+                //Comma logic
+                if (j > 0) {
+                    drillData += ",";
+                }
+
+                // Append Letter data
+                drillData += "{\"image\":" + ResourceDecoder.getIdentifier(context, theWord.getcontent().getWordPictureURI(), "drawable");
+
+                // Append Letter data
+                drillData += ",\"name\":" + theWord.getcontent().getWordName();
+
+                // Append Is Right data
+                drillData += ",\"correct\":" + theWord.isRight() + "}";
+            }
+
+            // Close words array
             drillData += "]}";
         }
-        drillData += "]}" ;
+
+        // Close JSON drill data
+        drillData += "]}";
+
         return drillData;
     }
 
