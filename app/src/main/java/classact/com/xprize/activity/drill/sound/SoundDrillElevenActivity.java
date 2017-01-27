@@ -1,11 +1,10 @@
 package classact.com.xprize.activity.drill.sound;
 
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -285,7 +284,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
                 startPair++;
                 int sound = words.getJSONObject(assignments[card - 1]).getInt("sound");
                 int word = words.getJSONObject(assignments[card - 1]).getInt("word");
-                button.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                button.setBackgroundResource(R.drawable.cardsinglesmlback);
                 button.setImageResource(word);
                 playThisSound(sound);
             }
