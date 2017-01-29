@@ -86,37 +86,32 @@ public class WordDrills {
     }
 
     public static Intent D2(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
-                            Letter letter, Word word1, Word word2, Word word3, Word word4, Word word5,
+                            Word word1, Word word2, Word word3, Word word4, Word word5,
                             String drillSound1, String drillSound2)
             throws SQLiteException, Exception {
-        Intent intent = null;
+        Intent intent;
 
         try {
-            ArrayList<ObjectAndSound<String>> words = new ArrayList<>();
-            ObjectAndSound<String> word = new ObjectAndSound<>(word1.getWordPictureURI(), word1.getWordSoundURI(), "");
-            word.setSpelling(word1.getWordName());
-            words.add(word);
-            word = new ObjectAndSound<>(word2.getWordPictureURI(), word2.getWordSoundURI(), "");
-            word.setSpelling(word2.getWordName());
-            words.add(word);
-            word = new ObjectAndSound<>(word3.getWordPictureURI(), word3.getWordSoundURI(), "");
-            word.setSpelling(word3.getWordName());
-            words.add(word);
-            word = new ObjectAndSound<>(word4.getWordPictureURI(), word4.getWordSoundURI(), "");
-            word.setSpelling(word4.getWordName());
-            words.add(word);
-            word = new ObjectAndSound<>(word5.getWordPictureURI(), word5.getWordSoundURI(), "");
-            word.setSpelling(word5.getWordName());
-            words.add(word);
+            ArrayList<Word> words = new ArrayList<>();
+            words.add(word1);
+            words.add(word2);
+            words.add(word3);
+            words.add(word4);
+            words.add(word5);
 
-            String drillData = SoundDrillJsonBuilder.getSoundDrillElevenJson(context, drillSound1, drillSound2, NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, 1).getSound(), words);
+            String drillData = SoundDrillJsonBuilder.getSoundDrillElevenJson(
+                    context,
+                    drillSound1,
+                    drillSound2,
+                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, 1).getSound(),
+                    words);
             intent = new Intent(context, SoundDrillElevenActivity.class);
             intent.putExtra("data", drillData);
 
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D2: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D2: " + ex.getMessage());
+            throw new Exception("D2: " + ex.getMessage());
         }
         return intent;
     }
@@ -132,7 +127,6 @@ public class WordDrills {
      * @param unitId
      * @param drillId
      * @param languageId
-     * @param letter
      * @param rightDrillWords
      * @param wrongDrillWords
      * @param drillSounds
@@ -142,7 +136,6 @@ public class WordDrills {
      * @throws Exception
      */
     public static Intent D3(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
-                            Letter letter,
                             ArrayList<Word> rightDrillWords,
                             ArrayList<Word> wrongDrillWords,
                             ArrayList<String> drillSounds,
@@ -236,7 +229,7 @@ public class WordDrills {
             /* ==================== Setup drill data ==================== */
 
             // Create drill data
-            String drillData = SoundDrillJsonBuilder.getSoundDrilTwelveJson(
+            String drillData = SoundDrillJsonBuilder.getSoundDrillTwelveJson(
                     context,
                     drillSounds.get(0), // Quick! Mother's coming ..
                     drillSounds.get(1), // You got
@@ -260,7 +253,7 @@ public class WordDrills {
             throw new SQLiteException("D3: " + sqlex.getMessage());
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new SQLiteException("D3: " + ex.getMessage());
+            throw new Exception("D3: " + ex.getMessage());
         }
         return intent;
     }

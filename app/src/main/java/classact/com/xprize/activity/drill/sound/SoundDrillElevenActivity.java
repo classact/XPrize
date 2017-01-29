@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
 
 import org.json.JSONArray;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import classact.com.xprize.R;
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillElevenActivity extends AppCompatActivity {
@@ -39,6 +41,8 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
     Handler handler;
     private JSONObject allData;
 
+    private boolean gameStarted;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,13 +57,44 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         ImageButtonWord8 = (ImageButton)findViewById(R.id.button_word8);
         ImageButtonWord9 = (ImageButton)findViewById(R.id.button_word9);
         ImageButtonWord10 = (ImageButton)findViewById(R.id.button_word10);
-        initialiseCards();String drillData = getIntent().getExtras().getString("data");
+
+        /*
+        ImageButtonWord1.setAlpha(0f);
+        ImageButtonWord2.setAlpha(0f);
+        ImageButtonWord3.setAlpha(0f);
+        ImageButtonWord4.setAlpha(0f);
+        ImageButtonWord5.setAlpha(0f);
+        ImageButtonWord6.setAlpha(0f);
+        ImageButtonWord7.setAlpha(0f);
+        ImageButtonWord8.setAlpha(0f);
+        ImageButtonWord9.setAlpha(0f);
+        ImageButtonWord10.setAlpha(0f);
+        */
+
+        gameStarted = false;
+
+        initialiseCards();
+
+        enableCards(false);
+
+        String drillData = getIntent().getExtras().getString("data");
+
         handler = new Handler();
         initialiseData(drillData);
+
         try {
-            int sound = allData.getInt("monkey_wants_two");
-            mp = MediaPlayer.create(this, sound);
-            mp.start();
+            String sound = allData.getString("monkey_wants_two");
+            if (mp != null) {
+                mp.release();
+            }
+            mp = new MediaPlayer();
+            mp.setDataSource(FetchResource.sound(getApplicationContext(), sound));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -67,6 +102,70 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
                     completeIntro();
                 }
             });
+
+            AlphaAnimation animation1 = new AlphaAnimation(0f, 1.0f);
+            AlphaAnimation animation2 = new AlphaAnimation(0f, 1.0f);
+            AlphaAnimation animation3 = new AlphaAnimation(0f, 1.0f);
+            AlphaAnimation animation4 = new AlphaAnimation(0f, 1.0f);
+            AlphaAnimation animation5 = new AlphaAnimation(0f, 1.0f);
+            AlphaAnimation animation6 = new AlphaAnimation(0f, 1.0f);
+            AlphaAnimation animation7 = new AlphaAnimation(0f, 1.0f);
+            AlphaAnimation animation8 = new AlphaAnimation(0f, 1.0f);
+            AlphaAnimation animation9 = new AlphaAnimation(0f, 1.0f);
+            AlphaAnimation animation10 = new AlphaAnimation(0f, 1.0f);
+
+            animation1.setDuration(1100);
+            animation2.setDuration(1100);
+            animation3.setDuration(1100);
+            animation4.setDuration(1100);
+            animation5.setDuration(1100);
+            animation6.setDuration(1100);
+            animation7.setDuration(1100);
+            animation8.setDuration(1100);
+            animation9.setDuration(1100);
+            animation10.setDuration(1100);
+
+            animation1.setStartOffset(100);
+            animation2.setStartOffset(200);
+            animation3.setStartOffset(300);
+            animation4.setStartOffset(400);
+            animation5.setStartOffset(500);
+            animation6.setStartOffset(600);
+            animation7.setStartOffset(700);
+            animation8.setStartOffset(800);
+            animation9.setStartOffset(900);
+            animation10.setStartOffset(1000);
+
+            animation1.setFillAfter(true);
+            animation2.setFillAfter(true);
+            animation3.setFillAfter(true);
+            animation4.setFillAfter(true);
+            animation5.setFillAfter(true);
+            animation6.setFillAfter(true);
+            animation7.setFillAfter(true);
+            animation8.setFillAfter(true);
+            animation9.setFillAfter(true);
+            animation10.setFillAfter(true);
+
+            ImageButtonWord1.startAnimation(animation1);
+            ImageButtonWord2.startAnimation(animation2);
+            ImageButtonWord3.startAnimation(animation3);
+            ImageButtonWord4.startAnimation(animation4);
+            ImageButtonWord5.startAnimation(animation5);
+            ImageButtonWord6.startAnimation(animation6);
+            ImageButtonWord7.startAnimation(animation7);
+            ImageButtonWord8.startAnimation(animation8);
+            ImageButtonWord9.startAnimation(animation9);
+            ImageButtonWord10.startAnimation(animation10);
+
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    enableCards(true);
+                }
+            }, 500);
+
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -76,15 +175,15 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
 
     private void completeIntro(){
         try {
-            int sound = allData.getInt("can_you_match");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(getApplicationContext(), myUri);
+            String sound = allData.getString("can_you_match");
+            mp.setDataSource(FetchResource.sound(getApplicationContext(), sound));
             mp.prepare();
             mp.start();
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
+                    gameStarted = true;
                 }
             });
         }
@@ -187,6 +286,19 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         );
     }
 
+    public void enableCards(boolean enable) {
+        ImageButtonWord1.setEnabled(enable);
+        ImageButtonWord2.setEnabled(enable);
+        ImageButtonWord3.setEnabled(enable);
+        ImageButtonWord4.setEnabled(enable);
+        ImageButtonWord5.setEnabled(enable);
+        ImageButtonWord6.setEnabled(enable);
+        ImageButtonWord7.setEnabled(enable);
+        ImageButtonWord8.setEnabled(enable);
+        ImageButtonWord9.setEnabled(enable);
+        ImageButtonWord10.setEnabled(enable);
+    }
+
     private void initialiseData(String drillData){
         try{
             allData = new JSONObject(drillData);
@@ -264,15 +376,16 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
     }
 
     private void turnCard(int card){
-        try{
-            if (!cardState[card - 1]) {
-                ImageButton ImageButton = getCard(card);
-                processCard(card,ImageButton);
+        if (gameStarted) {
+            try {
+                if (!cardState[card - 1]) {
+                    ImageButton ImageButton = getCard(card);
+                    processCard(card, ImageButton);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                finish();
             }
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            finish();
         }
     }
 
@@ -282,10 +395,11 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
                 cardState[card - 1] = true;
                 openPair[startPair] = card;
                 startPair++;
-                int sound = words.getJSONObject(assignments[card - 1]).getInt("sound");
-                int word = words.getJSONObject(assignments[card - 1]).getInt("word");
+                String sound = words.getJSONObject(assignments[card - 1]).getString("sound");
+                int image = words.getJSONObject(assignments[card - 1]).getInt("image");
                 button.setBackgroundResource(R.drawable.cardsinglesmlback);
-                button.setImageResource(word);
+                button.setImageResource(image);
+
                 playThisSound(sound);
             }
         }
@@ -295,7 +409,35 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         }
     }
 
-    private void playThisSound(int soundid){
+    private void playThisSound(String sound){
+        try {
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    if (startPair == 2) {
+                        handler.postDelayed(isCorrectPair, 500);
+                    }
+                }
+            });
+            mp.prepare();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            finish();
+        }
+    }
+
+    /* private void playThisSound(int soundid){
         try {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
             mp.reset();
@@ -315,7 +457,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
             ex.printStackTrace();
             finish();
         }
-    }
+    } */
 
     private void playSound(int soundid){
         try {
@@ -362,7 +504,9 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
 
     private void hideCard(ImageButton card){
         card.setImageResource(0);
+        card.setBackgroundResource(0);
         card.setVisibility(View.INVISIBLE);
+        card.setEnabled(false);
     }
 
     private void reward(){

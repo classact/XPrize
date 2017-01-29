@@ -9,6 +9,7 @@ import classact.com.xprize.activity.template.LinkTemplate;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.locale.Languages;
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceDecoder;
 
 public class LevelCompleteLink extends LinkTemplate {
@@ -36,7 +37,7 @@ public class LevelCompleteLink extends LinkTemplate {
         }
 
         // Get resource id using resource name
-        super.mResourceId = ResourceDecoder.getIdentifier(getApplicationContext(), resourceName, "raw");
+        super.mNarrator = FetchResource.sound(getApplicationContext(), resourceName);
 
         // Set activity name and next-activity class name
         super.mActivityName = "LevelCompleteLink";

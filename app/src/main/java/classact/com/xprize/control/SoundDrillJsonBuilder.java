@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceDecoder;
 
 /**
@@ -375,18 +376,18 @@ public class SoundDrillJsonBuilder {
                                                   String monkeyWantsTwoSound,
                                                   String canYouMatchSound,
                                                   String countOneSound,
-                                                  ArrayList<ObjectAndSound<String>> words) {
-        String drillData = "{\"monkey_wants_two\":" + ResourceDecoder.getIdentifier(context, monkeyWantsTwoSound, "raw") + "," +
-                "\"can_you_match\":" + ResourceDecoder.getIdentifier(context, canYouMatchSound, "raw") + "," +
-                "\"count_1\":" + ResourceDecoder.getIdentifier(context, countOneSound, "raw") + "," +
+                                                  ArrayList<classact.com.xprize.database.model.Word> words) {
+        String drillData = "{\"monkey_wants_two\":\"" + monkeyWantsTwoSound + "\"," +
+                "\"can_you_match\":\"" + canYouMatchSound + "\"," +
+                "\"count_1\":\"" + countOneSound + "\"," +
                 "\"words\": [";
 
         for (int i = 0; i < words.size(); i++) {
-            ObjectAndSound<String> word = words.get(i);
+            classact.com.xprize.database.model.Word word = words.get(i);
 
-            drillData += "{\"word\":" + ResourceDecoder.getIdentifier(context, word.getObjectImage(),"drawable");
-            drillData += "," + "\"sound\":" + ResourceDecoder.getIdentifier(context, word.getObjectSound(),"raw");
-            drillData += "," + "\"name\":" + word.getSpelling() + "}";
+            drillData += "{\"image\":" + ResourceDecoder.getIdentifier(context, word.getWordPictureURI(), "drawable") + "";
+            drillData += "," + "\"sound\":\"" + word.getWordSoundURI() + "\"";
+            drillData += "," + "\"name\":\"" + word.getWordName() + "\"}";
 
             // Append comma if required
             if (i != words.size() - 1) {
@@ -398,7 +399,7 @@ public class SoundDrillJsonBuilder {
         return drillData;
     }
 
-    public static String getSoundDrilTwelveJson(Context context,
+    public static String getSoundDrillTwelveJson(Context context,
                                                  String quickMotherIsComing,
                                                  String youGotSound,
                                                  String noSound,
@@ -411,17 +412,17 @@ public class SoundDrillJsonBuilder {
                                                  String countSixSound,
                                                  String wordsSound,
                                                  ArrayList<RightWrongWordSet> sets){
-        String drillData = "{\"quick_mothers_coming\":" +  ResourceDecoder.getIdentifier(context,quickMotherIsComing,"raw") + "," +
-                "\"you_got\":" +ResourceDecoder.getIdentifier(context,youGotSound,"raw") + "," +
-                "\"no_sound\":" + ResourceDecoder.getIdentifier(context,noSound,"raw") + "," +
-                "\"count_0\":" + ResourceDecoder.getIdentifier(context,countZeroSound,"raw") + "," +
-                "\"count_1\":" + ResourceDecoder.getIdentifier(context,countOneSound,"raw") + "," +
-                "\"count_2\":" + ResourceDecoder.getIdentifier(context,countTwoSound,"raw") + "," +
-                "\"count_3\":" + ResourceDecoder.getIdentifier(context,countThreeSound,"raw") + "," +
-                "\"count_4\":" + ResourceDecoder.getIdentifier(context,countFourSound,"raw") + "," +
-                "\"count_5\":" +ResourceDecoder.getIdentifier(context,countFiveSound,"raw") + "," +
-                "\"count_6\":" + ResourceDecoder.getIdentifier(context,countSixSound,"raw") + "," +
-                "\"words_sound\":" + ResourceDecoder.getIdentifier(context,wordsSound,"raw") + "," +
+        String drillData = "{\"quick_mothers_coming\":\"" + quickMotherIsComing + "\"," +
+                "\"you_got\":\"" + youGotSound + "\"," +
+                "\"no_sound\":\"" + noSound + "\"," +
+                "\"count_0\":\"" + countZeroSound + "\"," +
+                "\"count_1\":\"" + countOneSound + "\"," +
+                "\"count_2\":\"" + countTwoSound + "\"," +
+                "\"count_3\":\"" + countThreeSound + "\"," +
+                "\"count_4\":\"" + countFourSound + "\"," +
+                "\"count_5\":\"" + countFiveSound + "\"," +
+                "\"count_6\":\"" + countSixSound + "\"," +
+                "\"words_sound\":\"" + wordsSound + "\"," +
                 "\"sets\": [" ;
 
         for (int i = 0; i < sets.size(); i++) {
@@ -434,10 +435,10 @@ public class SoundDrillJsonBuilder {
                 drillData += ",";
             }
             // Append data
-            drillData += "{\"sound\": " + ResourceDecoder.getIdentifier(context, set.getRightWord().getWordSoundURI(), "raw")  + "," +
+            drillData += "{\"sound\":\"" + set.getRightWord().getWordSoundURI() + "\"," +
 
                     // Open words array
-                    "\"words\": [" ;
+                    "\"words\":[" ;
 
             // Get Letter Images in word
             ArrayList<DraggableImage<classact.com.xprize.database.model.Word>> rightAndWrongWords = set.getRightAndWrongWords();

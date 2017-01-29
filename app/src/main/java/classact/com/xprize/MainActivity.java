@@ -27,7 +27,16 @@ import classact.com.xprize.utils.ResourceDecoder;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final boolean ALLOW_DB_RECOPY = false;
+
+    private final boolean ALLOW_DB_RECOPY = true;
+
+    // Database hack related
+    private final boolean HACK_NEXT_UNIT = true;
+    private final int HACK_UNIT_ID = 1;
+    private final int HACK_UNIT_SUB_ID_IN_PROGRESS = 0;
+    private final int HACK_DRILL_LAST_PLAYED = 9;
+    private final int HACK_UNIT_FIRST_TIME = 0;
+    private final int HACK_UNIT_FIRST_TIME_MOVIE = 1;
 
     private boolean mInitialized;
     private DbHelper mDbHelper;
@@ -72,6 +81,70 @@ public class MainActivity extends AppCompatActivity {
                 throw new Exception("Db Connection unsuccessful");
             }
             System.out.println("MainActivity.determineNextItem > Debug: Db Connection successful");
+
+            /* NORMAL LOGIC PAUSE */
+
+            // :: HACK :: START for next unit to be played - development purposes
+            if (!mInitialized && HACK_NEXT_UNIT) {
+                System.out.println("=====================================================================");
+                System.out.println(":: HACK :: MainActivity.determineNextItem > Debug: Hack section start");
+
+                // Declare re-usable variables
+                Unit u; // Unit to be updated
+                int result; // Result (gives unitId) after database update
+
+                System.out.println("---------------------------------------------------------------------");
+
+                // Loop through each unit, completing them, until we get to unitToBePlayed (hacked)
+                for (int i = 0; i < HACK_UNIT_ID; i++) {
+
+                    // Get unit
+                    u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), i);
+
+                    // Update unit model's data
+                    u.setUnitUnlocked(1);
+                    u.setUnitDateLastPlayed(Globals.STANDARD_DATE_TIME_STRING(new Date()));
+                    u.setUnitInProgress(0);
+                    u.setUnitSubIDInProgress(0);
+                    u.setUnitCompleted(1);
+                    u.setUnitDrillLastPlayed(0);
+                    u.setUnitFirstTime(1);
+                    u.setUnitFirstTimeMovie(1);
+
+                    // Update unit in database
+                    result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+
+                    // Confirm result
+                    System.out.println(":: HACK :: Unit #" + result + " completed via hack");
+                }
+
+                System.out.println("---------------------------------------------------------------------");
+
+                // Now establish the next unit + drill to be played
+                u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), HACK_UNIT_ID);
+
+                // Update unit model's data
+                u.setUnitUnlocked(1);
+                u.setUnitDateLastPlayed("0");
+                u.setUnitInProgress(1);
+                u.setUnitSubIDInProgress(HACK_UNIT_SUB_ID_IN_PROGRESS);
+                u.setUnitCompleted(0);
+                u.setUnitDrillLastPlayed(HACK_DRILL_LAST_PLAYED);
+                u.setUnitFirstTime(HACK_UNIT_FIRST_TIME);
+                u.setUnitFirstTimeMovie(HACK_UNIT_FIRST_TIME_MOVIE);
+
+                // Update unit in database
+                result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+
+                // Confirm result
+                System.out.println(":: HACK :: == Unit #" + result + ", " +
+                        "Drill # " + (HACK_DRILL_LAST_PLAYED + 1) + " hacked and ready ==");
+
+                System.out.println(":: HACK :: MainActivity.determineNextItem > Debug: Hack section end");
+                System.out.println("=====================================================================");
+            } // :: HACK :: END
+
+            /* NORMAL LOGIC RESUME */
 
             // Get current unit
             int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
@@ -616,9 +689,34 @@ public class MainActivity extends AppCompatActivity {
             }
             System.out.println("MainActivity.determineNextSplashBg > Debug: Db Connection successful");
 
+            // Declare re-usable unit-related variabels
+            int unitId, unitCompleted, drillLastPlayed, unitFirstTime, unitFirstTimeMovie;
+            Unit u;
+
             // Get current unit
-            int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
-            Unit u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);
+            if (HACK_NEXT_UNIT) {
+                /* :: HACK :: APPLIED */
+                unitId = HACK_UNIT_ID;
+                u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);
+                unitCompleted = 0;
+                drillLastPlayed = HACK_DRILL_LAST_PLAYED;
+                unitFirstTime = HACK_UNIT_FIRST_TIME;
+                unitFirstTimeMovie = HACK_UNIT_FIRST_TIME_MOVIE;
+
+                // Debug
+                System.out.println("MainActivity.determineNextSplashBg > Debug: :: HACK :: APPLIED ");
+            } else {
+                /* :: HACK :: NOT APPLIED */
+                unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
+                u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);
+                unitCompleted = u.getUnitCompleted();
+                drillLastPlayed = u.getUnitDrillLastPlayed();
+                unitFirstTime = u.getUnitFirstTime();
+                unitFirstTimeMovie = u.getUnitFirstTimeMovie();
+
+                // Debug
+                System.out.println("MainActivity.determineNextSplashBg > Debug: :: HACK :: NOT APPLIED ");
+            }
 
             // Debug
             System.out.println("MainActivity.determineNextSplashBg > Debug: UnitId = " + unitId);
@@ -629,7 +727,7 @@ public class MainActivity extends AppCompatActivity {
                 // Debug
                 System.out.println("MainActivity.determineNextSplashBg > Debug: Intro Section");
 
-                if (u.getUnitFirstTimeMovie() == 0) {
+                if (unitFirstTimeMovie == 0) {
 
                     // Debug
                     System.out.println("MainActivity.determineNextSplashBg > Debug: Select Intro Movie");
@@ -637,7 +735,7 @@ public class MainActivity extends AppCompatActivity {
                     // Select Intro Movie
                     nextSplashBg[0] = Code.INTRO;
 
-                } else if (u.getUnitFirstTime() == 0) {
+                } else if (unitFirstTime == 0) {
 
                     // Debug
                     System.out.println("MainActivity.determineNextSplashBg > Debug: Select Intro Tutorial");
@@ -651,7 +749,7 @@ public class MainActivity extends AppCompatActivity {
                 // Debug
                 System.out.println("MainActivity.determineNextSplashBg > Debug: Chapter Section");
 
-                if (u.getUnitFirstTimeMovie() == 0) {
+                if (unitFirstTimeMovie == 0) {
 
                     // Debug
                     System.out.println("MainActivity.determineNextSplashBg > Debug: Select Chapter Movie");
@@ -667,7 +765,6 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("MainActivity.determineNextSplashBg > Debug: Drill section");
 
                     // Determine type of splash by comparing drill last played
-                    int drillLastPlayed = u.getUnitDrillLastPlayed();
                     int sumOfDrillsPlayed = (u.getNumberOfLanguageDrills() + u.getNumberOfMathDrills());
 
                     // Determine if the chapter ending splash should be played
@@ -675,7 +772,7 @@ public class MainActivity extends AppCompatActivity {
                     // * Unit has not been completed
                     // * Last drill has been played
                     //   - Determine this by checking <drill last played> is equal to <sum of number of drills (language, maths) in unit >
-                    if (u.getUnitCompleted() == 0 && drillLastPlayed == sumOfDrillsPlayed) {
+                    if (unitCompleted == 0 && drillLastPlayed == sumOfDrillsPlayed) {
 
                         // Debug
                         System.out.println("MainActivity.determineNextSplashBg > Debug: Chapter End (" + drillLastPlayed + "/" + sumOfDrillsPlayed + ")");

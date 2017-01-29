@@ -1,7 +1,11 @@
 package classact.com.xprize.utils;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ScaleDrawable;
+import android.net.Uri;
 import android.os.Environment;
+import android.view.Gravity;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -174,5 +178,93 @@ public class FetchResource {
         }
 
         return path;
+    }
+
+    public static Uri imageURI(Context context, String name) {
+        Uri uri = null;
+        FileInputStream fis = null;
+        FileDescriptor fd;
+
+        try {
+            try {
+                // Get PNG path
+                String head = Environment.getExternalStorageDirectory() + LOCATION + context.getPackageName() + IMAGES;
+                String path = head + name + PNG;
+
+                // Initialize new fis
+                fis = new FileInputStream(path);
+
+                // Get file descriptor
+                fd = fis.getFD();
+
+                // // Validate file descriptor
+                if (!fd.valid()) {
+
+                    // Close existing fis
+                    fis.close();
+
+                    // Get JPG path instead
+                    path = head + name + JPG;
+
+                    // Open new fis
+                    fis = new FileInputStream(path);
+
+                    // Get file descriptor
+                    fd = fis.getFD();
+
+                    // Validate file descriptor
+                    if (!fd.valid()) {
+                        throw new Exception("File Descriptor is invalid");
+                    }
+                }
+
+                uri = Uri.parse(path);
+
+            } catch (Exception ex) {
+                System.err.println("FetchResource.imageURI > Exception: " + ex.getMessage());
+                uri = null;
+
+            } finally {
+                // Close fis
+                if (fis != null) {
+                    fis.close();
+                }
+            }
+        } catch (IOException ioex) {
+            System.err.println("FetchResource.imageURI > IOException: " + ioex.getMessage());
+            uri = null;
+        }
+
+        return uri;
+    }
+
+    public static Drawable drawable(Context context, String name) {
+        Drawable d;
+
+        try {
+            d = Drawable.createFromPath(image(context, name));
+
+        } catch (Exception ex) {
+            System.err.println("FetchResource.drawable > Exception: " + ex.getMessage());
+            d = null;
+        }
+
+        return d;
+    }
+
+    public static ScaleDrawable scaleDrawable(Context context, String name, float scaleWidth, float scaleHeight) {
+        ScaleDrawable sd;
+
+        try {
+            Drawable d = Drawable.createFromPath(image(context, name));
+            d.setBounds(0, 0, (int) (d.getIntrinsicWidth() * 0.5), (int) (d.getIntrinsicHeight() * 0.5));
+            sd = new ScaleDrawable(d, Gravity.CENTER, scaleWidth, scaleHeight);
+
+        } catch (Exception ex) {
+            System.err.println("FetchResource.drawable > Exception: " + ex.getMessage());
+            sd = null;
+        }
+
+        return sd;
     }
 }
