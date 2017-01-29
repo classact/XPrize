@@ -694,7 +694,7 @@ public class MainActivity extends AppCompatActivity {
             Unit u;
 
             // Get current unit
-            if (HACK_NEXT_UNIT) {
+            if (!mInitialized && HACK_NEXT_UNIT) {
                 /* :: HACK :: APPLIED */
                 unitId = HACK_UNIT_ID;
                 u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);

@@ -41,39 +41,20 @@ public class WordDrills {
         Intent intent = null;
 
         try {
-            ArrayList<SpelledWord> words = new ArrayList<>();
-            //One
-            SpelledWord word = new SpelledWord();
-            ObjectAndSound<String> object = new ObjectAndSound<>(word1.getWordPictureURI(), word1.getWordSoundURI(),"");
-            object.setSpelling(word1.getWordName());
-            word.setWord(object);
-            words.add(word);
-            //Two
-            word = new SpelledWord();
-            object = new ObjectAndSound<>(word2.getWordPictureURI(), word2.getWordSoundURI(),"");
-            object.setSpelling(word2.getWordName());
-            word.setWord(object);
-            words.add(word);
-            //Three
-            word = new SpelledWord();
-            object = new ObjectAndSound<>(word3.getWordPictureURI(), word3.getWordSoundURI(),"");
-            object.setSpelling(word3.getWordName());
-            word.setWord(object);
-            words.add(word);
-            //Four
-            word = new SpelledWord();
-            object = new ObjectAndSound<>(word4.getWordPictureURI(), word4.getWordSoundURI(),"");
-            object.setSpelling(word4.getWordName());
-            word.setWord(object);
-            words.add(word);
-            //Five
-            word = new SpelledWord();
-            object = new ObjectAndSound<>(word5.getWordPictureURI(), word5.getWordSoundURI(),"");
-            object.setSpelling(word5.getWordName());
-            word.setWord(object);
-            words.add(word);
-            //
-            String drillData = SoundDrillJsonBuilder.getSoundDrillTenJson(context,drillSound1,drillSound2,words);
+            // Create words list
+            ArrayList<Word> words = new ArrayList<>();
+            words.add(word1);
+            words.add(word2);
+            words.add(word3);
+            words.add(word4);
+            words.add(word5);
+            // Create drill data
+            String drillData = SoundDrillJsonBuilder.getSoundDrillTenJson(
+                    context,
+                    drillSound1,
+                    drillSound2,
+                    words
+            );
             intent = new Intent(context,SoundDrillTenActivity.class);
             intent.putExtra("data",drillData);
 
@@ -104,7 +85,8 @@ public class WordDrills {
                     drillSound1,
                     drillSound2,
                     NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, 1).getSound(),
-                    words);
+                    words
+            );
             intent = new Intent(context, SoundDrillElevenActivity.class);
             intent.putExtra("data", drillData);
 
@@ -242,7 +224,8 @@ public class WordDrills {
                     numerals.get(5).getSound(), // 5
                     numerals.get(6).getSound(), // 6
                     drillSounds.get(3), // Words
-                    sets); // List of Right Wrong Word Sets
+                    sets
+            ); // List of Right Wrong Word Sets
 
             /* ==================== Create intent ==================== */
 

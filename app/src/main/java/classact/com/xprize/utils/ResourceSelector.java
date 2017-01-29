@@ -5,85 +5,133 @@ import android.content.Context;
 import java.util.Random;
 
 import classact.com.xprize.R;
+import classact.com.xprize.common.Globals;
+import classact.com.xprize.database.model.Language;
+import classact.com.xprize.locale.Languages;
 
 /**
  * Created by Tseliso on 11/3/2016.
  */
 
 public class ResourceSelector {
-    private static int languageId = 1;
 
     public static int getPositiveAffirmationSound(Context context){
         Random rand = new Random();
-        if (languageId == 1) {
-            switch (rand.nextInt(12)) {
-                case 1:
-                    return R.raw.amazing;
-                case 2:
-                    return R.raw.awesome;
-                case 3:
-                    return R.raw.good_job;
-                case 4:
-                    return R.raw.i_like_it;
-                case 5:
-                    return R.raw.nice;
-                case 6:
-                    return R.raw.number_1;
-                case 7:
-                    return R.raw.number_1_2;
-                case 8:
-                    return R.raw.shine;
-                case 9:
-                    return R.raw.whoohoo;
-                case 10:
-                    return R.raw.yeah;
-                default:
-                    return R.raw.yippeee;
-            }
-        }
-        else{
+        int resourceId = 0;
+
+        if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
             switch (rand.nextInt(5)) {
+                case 0:
+                    resourceId = R.raw.s_amazing;
+                    break;
                 case 1:
-                    return R.raw.s_amazing;
+                    resourceId = R.raw.s_congrats1;
+                    break;
                 case 2:
-                    return R.raw.s_congrats1;
+                    resourceId = R.raw.s_congrats2;
+                    break;
                 case 3:
-                    return R.raw.s_congrats2;
+                    resourceId = R.raw.s_cool;
+                    break;
                 case 4:
-                    return R.raw.s_cool;
+                    resourceId = R.raw.s_goodjob;
+                    break;
                 default:
-                    return R.raw.s_goodjob;
+                    System.err.println("ResourceSelector.getPositiveAffirmationSound > Error(SWAHILI): " +
+                            "random number does not correspond to Resource Id options");
+                    break;
+            }
+        } else {
+            switch (rand.nextInt(11)) {
+                case 0:
+                    resourceId = R.raw.amazing;
+                    break;
+                case 1:
+                    resourceId = R.raw.awesome;
+                    break;
+                case 2:
+                    resourceId = R.raw.good_job;
+                    break;
+                case 3:
+                    resourceId = R.raw.i_like_it;
+                    break;
+                case 4:
+                    resourceId = R.raw.nice;
+                    break;
+                case 5:
+                    resourceId = R.raw.number_1;
+                    break;
+                case 6:
+                    resourceId = R.raw.number_1_2;
+                    break;
+                case 7:
+                    resourceId = R.raw.shine;
+                    break;
+                case 8:
+                    resourceId = R.raw.whoohoo;
+                    break;
+                case 9:
+                    resourceId = R.raw.yeah;
+                    break;
+                case 10:
+                    resourceId = R.raw.yippeee;
+                    break;
+                default:
+                    System.err.println("ResourceSelector.getPositiveAffirmationSound > Error(ENGLISH): " +
+                            "random number does not correspond to Resource Id options");
+                    break;
             }
         }
+        return resourceId;
     }
 
     public static int getNegativeAffirmationSound(Context context) {
         Random rand = new Random();
-        if (languageId == 1) {
+        int resourceId = 0;
+
+        if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
             switch (rand.nextInt(5)) {
+                case 0:
+                    resourceId = R.raw.s_sorry;
+                    break;
                 case 1:
-                    return R.raw.sorry;
+                    resourceId = R.raw.s_tryagain;
+                    break;
                 case 2:
-                    return R.raw.try_again;
+                    resourceId = R.raw.s_keepgoing;
+                    break;
                 case 3:
-                    return R.raw.try_again_2;
+                    resourceId = R.raw.s_goodtry2;
+                    break;
+                case 4:
+                    resourceId = R.raw.s_goodtry1;
+                    break;
                 default:
-                    return R.raw.uh_oh;
+                    System.err.println("ResourceSelector.getNegativeAffirmationSound > Error(SWAHILI): " +
+                            "random number does not correspond to Resource Id options");
+                    break;
             }
         }
         else{
-            switch (rand.nextInt(5)) {
+            switch (rand.nextInt(4)) {
+                case 0:
+                    resourceId = R.raw.sorry;
+                    break;
                 case 1:
-                    return R.raw.s_sorry;
+                    resourceId = R.raw.try_again;
+                    break;
                 case 2:
-                    return R.raw.s_tryagain;
+                    resourceId = R.raw.try_again_2;
+                    break;
                 case 3:
-                    return R.raw.s_keepgoing;
-                case 4:
-                    return R.raw.s_goodtry2;
+                    resourceId = R.raw.uh_oh;
+                    break;
                 default:
-                    return R.raw.s_goodtry1;
+                    System.err.println("ResourceSelector.getNegativeAffirmationSound > Error(ENGLISH): " +
+                            "random number does not correspond to Resource Id options");
+                    break;
             }
         }
+        return resourceId;
     }
 }

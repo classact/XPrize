@@ -352,16 +352,16 @@ public class SoundDrillJsonBuilder {
     public static String getSoundDrillTenJson(Context context,
                                               String readAfterDamaSound,
                                               String touchSound,
-                                              ArrayList<SpelledWord> words){
-        String drillData = "{\"instructions\":" + ResourceDecoder.getIdentifier(context,readAfterDamaSound,"raw") + "," +
-                "\"touch\":" +  ResourceDecoder.getIdentifier(context,touchSound,"raw") + "," +
-                "\"words\": [" ;
+                                              ArrayList<classact.com.xprize.database.model.Word> words){
+        String drillData = "{\"instructions\":\"" + readAfterDamaSound + "\"," +
+                "\"touch\":\"" +  touchSound + "\"," +
+                "\"words\":[" ;
         for (int i = 0; i < words.size(); i++) {
-            SpelledWord word = words.get(i);
+            classact.com.xprize.database.model.Word word = words.get(i);
 
-            drillData += "{\"word\":" + ResourceDecoder.getIdentifier(context, word.getWord().getObjectImage(),"drawable");
-            drillData += "," + "\"sound\":" + ResourceDecoder.getIdentifier(context,word.getWord().getObjectSound(),"raw");
-            drillData += "," + "\"name\":" + word.getWord().getSpelling() + "}";
+            drillData += "{\"image\":" + ResourceDecoder.getIdentifier(context, word.getWordPictureURI(), "drawable");
+            drillData += "," + "\"sound\":\"" + word.getWordSoundURI() + "\"";
+            drillData += "," + "\"name\":\"" + word.getWordName() + "\"}";
 
             // Append comma if required
             if (i != words.size() - 1) {

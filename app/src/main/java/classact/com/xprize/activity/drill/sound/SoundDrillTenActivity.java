@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import java.util.Random;
 
 import classact.com.xprize.R;
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 
@@ -124,9 +125,21 @@ public class SoundDrillTenActivity extends AppCompatActivity {
             allData = new JSONObject(drillData);
             words = allData.getJSONArray("words");
             flashButton.setVisibility(View.INVISIBLE);
-            int sound = allData.getInt("instructions");
-            mp = MediaPlayer.create(this, sound);
-            mp.start();
+            String sound = allData.getString("instructions");
+
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -136,6 +149,7 @@ public class SoundDrillTenActivity extends AppCompatActivity {
                     showWord();
                 }
             });
+            mp.prepare();
         } catch (Exception ex) {
             ex.printStackTrace();
             finish();
@@ -202,10 +216,14 @@ public class SoundDrillTenActivity extends AppCompatActivity {
         System.out.println("-- SoundTrillTenActivity.showWord > Debug: METHOD CALLED");
 
         try{
-            int word = words.getJSONObject(currentWord).getInt("word");
-            System.out.println("SoundDrillTenActivity.showWord > Debug: word is " + word);
-            flashButton.setImageResource(word);
-            int sound = words.getJSONObject(currentWord).getInt("sound");
+            int image = words.getJSONObject(currentWord).getInt("image");
+            String name = words.getJSONObject(currentWord).getString("name");
+
+            // Debug
+            System.out.println("SoundDrillTenActivity.showWord > Debug: word is " + name);
+
+            flashButton.setImageResource(image);
+            String sound = words.getJSONObject(currentWord).getString("sound");
             playSoundAndShowNext(sound);
 
         }
@@ -215,17 +233,20 @@ public class SoundDrillTenActivity extends AppCompatActivity {
         }
     }
 
-    private void playSoundAndShowNext(int soundid){
+    private void playSoundAndShowNext(String sound){
 
         // Debug
         System.out.println("-- SoundTrillTenActivity.playSoundAndShowNext > Debug: METHOD CALLED");
 
         try {
-            // Get uri for sound
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
+            // Get sound path
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
 
-            // Set data source to uri
-            mp.setDataSource(getApplicationContext(), myUri);
+            // Reset media player
+            mp.reset();
+
+            // Set data source to sound path
+            mp.setDataSource(soundPath);
 
             // Set on prepared listener
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -298,17 +319,23 @@ public class SoundDrillTenActivity extends AppCompatActivity {
         System.out.println("-- SoundTrillTenActivity.playWordSound > Debug: METHOD CALLED");
 
         try{
-            int sound = objects[currentWord].getInt("sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            String sound = objects[currentWord].getString("sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();;
@@ -322,14 +349,17 @@ public class SoundDrillTenActivity extends AppCompatActivity {
         System.out.println("-- SoundTrillTenActivity.sayTouchWord > Debug: METHOD CALLED");
 
         try {
-            // Extra sound resource id from 'allData' array
-            int sound = allData.getInt("touch");
+            // Extra sound resourcefrom 'allData' array
+            String sound = allData.getString("touch");
 
-            // Get uri of sound to play
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            // Get sound path
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
 
-            // Set media player's data source to uri
-            mp.setDataSource(getApplicationContext(), myUri);
+            // Reset media player
+            mp.reset();
+
+            // Set media player's data source to sound path
+            mp.setDataSource(soundPath);
 
             // Set on prepared listener
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -394,7 +424,7 @@ public class SoundDrillTenActivity extends AppCompatActivity {
                         objects[i] = word;
 
                         // Extra word resource from objects[i]
-                        int wordImage = word.getInt("word");
+                        int wordImage = word.getInt("image");
 
                         // Debug
                         System.out.println("SoundTrillTenActivity.beginTouchWord > Debug: Processed (" +
@@ -527,8 +557,12 @@ public class SoundDrillTenActivity extends AppCompatActivity {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -569,6 +603,7 @@ public class SoundDrillTenActivity extends AppCompatActivity {
                     }
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -592,14 +627,19 @@ public class SoundDrillTenActivity extends AppCompatActivity {
                 Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
                 mp.reset();
                 mp.setDataSource(getApplicationContext(), myUri);
-                mp.prepare();
-                mp.start();
+                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mp.start();
+                    }
+                });
                 mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         mp.reset();
                     }
                 });
+                mp.prepare();
             }
             catch (Exception ex){
                 ex.printStackTrace();
