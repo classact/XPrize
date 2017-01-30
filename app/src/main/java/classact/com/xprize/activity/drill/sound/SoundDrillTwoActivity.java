@@ -289,34 +289,6 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
         }
     }
 
-    private void playSound(String sound){
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(soundPath);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            finish();
-        }
-    }
-
     private void playSoundAndRunnableAfterCompletion(String sound) {
         try {
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
@@ -379,6 +351,34 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
         }
     }
 
+    private void playSound(String sound){
+        try {
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                }
+            });
+            mp.prepare();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            finish();
+        }
+    }
+
     private void playSound(int soundId){
         try {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
@@ -427,7 +427,9 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
                                         }
                                     }, 350);
                                 } else {
-                                    mp.release();
+                                    if (mp != null) {
+                                        mp.release();
+                                    }
                                     finish();
                                 }
                             }

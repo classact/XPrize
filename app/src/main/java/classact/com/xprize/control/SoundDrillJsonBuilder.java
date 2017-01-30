@@ -74,40 +74,39 @@ public class SoundDrillJsonBuilder {
                                              String itMakesTheSound,
                                              String touchSound,
                                              ArrayList<SoundDrillThreeObject> list){
-        String drillData = "{\"sets\": [" +
-                "{\"image\": " +  ResourceDecoder.getIdentifier(context,list.get(0).getObject().getObjectImage(),"drawable") + "," +
-                "\"sound\":" + ResourceDecoder.getIdentifier(context,list.get(0).getObject().getObjectSound(),"raw") + "," +
-                "\"phonic_sound\":" + ResourceDecoder.getIdentifier(context,list.get(0).getObject().getObjectPhonicSound(),"raw") + "," +
-                "\"images\": [" +
-                "{\"image\":" +  ResourceDecoder.getIdentifier(context,list.get(0).getPair().getRightObject().getObjectImage(),"drawable") +",\"correct\":1}," +
-                "{\"image\":" +  ResourceDecoder.getIdentifier(context,list.get(0).getPair().getWrongObject().getObjectImage(),"drawable") +",\"correct\":0}" +
+        String drillData = "{\"sets\":[" +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(0).getObject().getObjectImage(),"drawable") + "," +
+                "\"sound\":\"" + list.get(0).getObject().getObjectSound() + "\"," +
+                "\"phonic_sound\":\"" + list.get(0).getObject().getObjectPhonicSound() + "\"," +
+                "\"images\":[" +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(0).getPair().getRightObject().getObjectImage(),"drawable") + ",\"correct\":1}," +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(0).getPair().getWrongObject().getObjectImage(),"drawable") + ",\"correct\":0}" +
                 "]}," +
-                "{\"image\": " + ResourceDecoder.getIdentifier(context,list.get(1).getObject().getObjectImage(),"drawable") + "," +
-                "\"sound\":" + ResourceDecoder.getIdentifier(context,list.get(1).getObject().getObjectSound(),"raw") + "," +
-                "\"phonic_sound\":" + ResourceDecoder.getIdentifier(context,list.get(1).getObject().getObjectPhonicSound(),"raw") + "," +
-                "\"images\": [" +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(1).getPair().getRightObject().getObjectImage(),"drawable") +",\"correct\":0}," +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(1).getPair().getWrongObject().getObjectImage(),"drawable") +",\"correct\":1}" +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(1).getObject().getObjectImage(),"drawable") + "," +
+                "\"sound\":\"" + list.get(1).getObject().getObjectSound() + "\"," +
+                "\"phonic_sound\":\"" + list.get(1).getObject().getObjectPhonicSound() + "\"," +
+                "\"images\":[" +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(1).getPair().getRightObject().getObjectImage(),"drawable") + ",\"correct\":0}," +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(1).getPair().getWrongObject().getObjectImage(),"drawable") + ",\"correct\":1}" +
                 "]}," +
-                "{\"image\": " + ResourceDecoder.getIdentifier(context,list.get(2).getObject().getObjectImage(),"drawable") + "," +
-                "\"sound\":" + ResourceDecoder.getIdentifier(context,list.get(2).getObject().getObjectSound(),"raw") + "," +
-                "\"phonic_sound\":" + ResourceDecoder.getIdentifier(context,list.get(2).getObject().getObjectPhonicSound(),"raw") + "," +
-                "\"images\": [" +
-                "{\"image\":" +ResourceDecoder.getIdentifier(context,list.get(2).getPair().getRightObject().getObjectImage(),"drawable") +",\"correct\":0}," +
-                "{\"image\":" +  ResourceDecoder.getIdentifier(context,list.get(2).getPair().getWrongObject().getObjectImage(),"drawable") +",\"correct\":1}" +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(2).getObject().getObjectImage(),"drawable") + "," +
+                "\"sound\":\"" + list.get(2).getObject().getObjectSound() + "\"," +
+                "\"phonic_sound\":\"" + list.get(2).getObject().getObjectPhonicSound() + "\"," +
+                "\"images\":[" +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(2).getPair().getRightObject().getObjectImage(),"drawable") + ",\"correct\":0}," +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(2).getPair().getWrongObject().getObjectImage(),"drawable") + ",\"correct\":1}" +
                 "]}," +
-                "{\"image\": " +ResourceDecoder.getIdentifier(context,list.get(3).getObject().getObjectImage(),"drawable") + "," +
-                "\"sound\":" + ResourceDecoder.getIdentifier(context,list.get(3).getObject().getObjectSound(),"raw") + "," +
-                "\"phonic_sound\":" + ResourceDecoder.getIdentifier(context,list.get(3).getObject().getObjectPhonicSound(),"raw") + "," +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(3).getObject().getObjectImage(),"drawable") + "," +
+                "\"sound\":\"" + list.get(3).getObject().getObjectSound() + "\"," +
+                "\"phonic_sound\":\"" + list.get(3).getObject().getObjectPhonicSound() + "\"," +
                 "\"images\": [" +
-                "{\"image\":" +ResourceDecoder.getIdentifier(context,list.get(3).getPair().getRightObject().getObjectImage(),"drawable") +",\"correct\":1}," +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(3).getPair().getWrongObject().getObjectImage(),"drawable") +",\"correct\":0}" +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(3).getPair().getRightObject().getObjectImage(),"drawable") + ",\"correct\":1}," +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(3).getPair().getWrongObject().getObjectImage(),"drawable") + ",\"correct\":0}" +
                 "]}" +
                 "]," +
-                "\"this_is_the_letter\":" +  ResourceDecoder.getIdentifier(context,thisIsTheLetterSound,"raw") + "," +
-                "\"it_makes_sound\":" +  ResourceDecoder.getIdentifier(context,itMakesTheSound,"raw") + "," +
-                "\"touch\":" +  ResourceDecoder.getIdentifier(context,touchSound,"raw") + "}";
-
+                "\"this_is_the_letter\":\"" + thisIsTheLetterSound + "\"," +
+                "\"it_makes_sound\":\"" + itMakesTheSound + "\"," +
+                "\"touch\":\"" + touchSound + "\"}";
         return drillData;
     }
 
