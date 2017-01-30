@@ -168,11 +168,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
 
             if (mp == null) {
                 mp = new MediaPlayer();
-            } else {
-                mp.reset();
             }
-
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            mp.reset();
             mp.setDataSource(soundPath);
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -192,6 +190,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -233,6 +234,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -274,6 +278,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -306,6 +313,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -331,6 +341,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -394,6 +407,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
+                if (mp != null) {
+                    mp.release();
+                }
                 finish();
             }
         }
@@ -490,6 +506,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -542,6 +561,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -573,6 +595,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -596,6 +621,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             // Debug
             System.out.println("-- SoundTrillTwelveActivity.finishRunnable.run(Runnable) > Debug: METHOD CALLED");
 
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     };
@@ -691,6 +719,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             }
             catch (Exception ex) {
                 ex.printStackTrace();
+                if (mp != null) {
+                    mp.release();
+                }
                 finish();
             }
         }
@@ -700,11 +731,6 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         // Debug
         System.out.println("-- SoundTrillTwelveActivity.onSaveInstanceState > Debug: METHOD CALLED");
-
-        // Reset media player
-        if (mp != null) {
-            mp.reset();
-        }
 
         // Save drill data to key
         outState.putString(DRILL_DATA_KEY, mDrillData);
@@ -733,6 +759,11 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
     protected void onPause() {
         // Call the super always
         super.onPause();
+
+        // Release media player
+        if (mp != null) {
+            mp.release();
+        }
 
         // Debug
         System.out.println("-- SoundTrillTwelveActivity.onPause > Debug: METHOD CALLED");

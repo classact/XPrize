@@ -49,6 +49,9 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -83,6 +86,9 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -113,6 +119,9 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -150,6 +159,9 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -180,6 +192,9 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -217,6 +232,9 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -275,6 +293,9 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -320,6 +341,9 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
