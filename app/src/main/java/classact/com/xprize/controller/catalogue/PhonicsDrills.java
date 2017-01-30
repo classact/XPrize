@@ -143,10 +143,9 @@ public class PhonicsDrills {
 
         try {
             DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-            ArrayList<DraggableImage<ObjectAndSound>> images = new ArrayList<DraggableImage<ObjectAndSound>>();
+            ArrayList<DraggableImage<ObjectAndSound>> images = new ArrayList<>();
             Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
-            ArrayList<Integer> rightDrillWordIDs = new ArrayList();
-            rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, rightlimit);
+            ArrayList<Integer> rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, rightlimit);
             int lastPosition=0;
             for (int i=0; i < rightDrillWordIDs.size(); i++ ){
                 Word word = WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i));
