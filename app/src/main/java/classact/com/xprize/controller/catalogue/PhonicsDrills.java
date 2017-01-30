@@ -45,9 +45,8 @@ public class PhonicsDrills {
             Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
             ObjectAndSound<String> letterObject = new ObjectAndSound<>(letter.getLetterPictureLowerCaseBlackURI(), letter.getLetterSoundURI(), letter.getPhonicSoundURI());
-            ArrayList<ObjectAndSound<String>> drillObjects = new ArrayList<ObjectAndSound<String>>();
-            ArrayList<Integer> drillWordIDs = new ArrayList();
-            drillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
+            ArrayList<ObjectAndSound<String>> drillObjects = new ArrayList<>();
+            ArrayList<Integer> drillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
 
             for (int i=0; i < drillWordIDs.size(); i++ ){
                 Word word = WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(i));
