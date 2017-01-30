@@ -111,7 +111,7 @@ public class PhonicsDrills {
         try {
             DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
             Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
-            ArrayList<SoundDrillThreeObject> sets = new ArrayList<SoundDrillThreeObject>();
+            ArrayList<SoundDrillThreeObject> sets = new ArrayList<>();
             ArrayList<Integer> wrongLetters = LetterHelper.getWrongLetters(dbHelper.getReadableDatabase(), languageId, letterId, limit);
             ObjectAndSound<String> objectAndSound = new ObjectAndSound<>(letter.getLetterPictureLowerCaseBlackURI(), letter.getLetterSoundURI(), letter.getPhonicSoundURI());
 

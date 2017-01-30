@@ -54,7 +54,7 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        clickedItem(1);
+                        clickedItem(0);
                     }
                 }
         );
@@ -62,12 +62,12 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        clickedItem(2);
+                        clickedItem(1);
                     }
                 }
         );
         drillData = getIntent().getExtras().getString("data");
-        currentSet = 1;
+        currentSet = 0;
         handler = new Handler(Looper.getMainLooper());
         initialiseData();
         showSet();
@@ -89,7 +89,7 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
         demoItem.setVisibility(View.VISIBLE);
         itemsLayout.setVisibility(View.INVISIBLE);
         try{
-            JSONObject setData = sets.getJSONObject(currentSet - 1);
+            JSONObject setData = sets.getJSONObject(currentSet);
             demoItem.setImageResource(setData.getInt("image"));
             currentSound = setData.getString("sound");
             currentPhonicSound = setData.getString("phonic_sound");
@@ -285,14 +285,19 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     mp.start();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // setItemsEnabled(true);
+                            itemsEnabled = true;
+                        }
+                    }, mp.getDuration() - 100);
                 }
             });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
-                    // setItemsEnabled(true);
-                    itemsEnabled = true;
                 }
             });
             mp.prepare();
@@ -382,7 +387,7 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    mp.release();
+                    mp.reset();
                 }
             });
             mp.prepare();
@@ -402,7 +407,7 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
                 mRunnable = new Runnable() {
                     @Override
                     public void run() {
-                        if (currentSet < 4) {
+                        if (currentSet < sets.length() - 1) {
                             currentSet++;
                             handler.postDelayed(nextDrill, 350);
                         } else {

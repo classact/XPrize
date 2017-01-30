@@ -86,15 +86,15 @@ public class SoundDrillJsonBuilder {
                 "\"sound\":\"" + list.get(1).getObject().getObjectSound() + "\"," +
                 "\"phonic_sound\":\"" + list.get(1).getObject().getObjectPhonicSound() + "\"," +
                 "\"images\":[" +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(1).getPair().getRightObject().getObjectImage(),"drawable") + ",\"correct\":0}," +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(1).getPair().getWrongObject().getObjectImage(),"drawable") + ",\"correct\":1}" +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(1).getPair().getRightObject().getObjectImage(),"drawable") + ",\"correct\":1}," +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(1).getPair().getWrongObject().getObjectImage(),"drawable") + ",\"correct\":0}" +
                 "]}," +
                 "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(2).getObject().getObjectImage(),"drawable") + "," +
                 "\"sound\":\"" + list.get(2).getObject().getObjectSound() + "\"," +
                 "\"phonic_sound\":\"" + list.get(2).getObject().getObjectPhonicSound() + "\"," +
                 "\"images\":[" +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(2).getPair().getRightObject().getObjectImage(),"drawable") + ",\"correct\":0}," +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(2).getPair().getWrongObject().getObjectImage(),"drawable") + ",\"correct\":1}" +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(2).getPair().getRightObject().getObjectImage(),"drawable") + ",\"correct\":1}," +
+                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(2).getPair().getWrongObject().getObjectImage(),"drawable") + ",\"correct\":0}" +
                 "]}," +
                 "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(3).getObject().getObjectImage(),"drawable") + "," +
                 "\"sound\":\"" + list.get(3).getObject().getObjectSound() + "\"," +
