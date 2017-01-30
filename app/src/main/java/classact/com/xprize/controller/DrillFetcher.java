@@ -106,7 +106,8 @@ public class DrillFetcher {
                     int wrongLimit = 9;
 
                     // Fetch D5
-                    intent = PhonicsDrills.D5(context, dbHelper, unitId, drillId, languageId, letterId, rightLimit, wrongLimit, wordType);
+                    intent = PhonicsDrills.D5(context, dbHelper, unitId, drillId, languageId, subId, letterId, rightLimit, wrongLimit, wordType);
+                    break;
                 }
                 case 6: {
                     DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
