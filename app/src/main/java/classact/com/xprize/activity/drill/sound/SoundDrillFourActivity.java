@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillFourActivity extends AppCompatActivity {
@@ -37,7 +38,7 @@ public class SoundDrillFourActivity extends AppCompatActivity {
     private boolean entered;
     private int play_mode = 1;
     private Handler handler;
-    private int drillSound;
+    private String drillSound;
     JSONObject params;
 
     @Override
@@ -132,13 +133,16 @@ public class SoundDrillFourActivity extends AppCompatActivity {
                                     break;
                             }*/
                             //playSound(R.raw.good_job);
-                            playObjectSound(images.getJSONObject(currentItem - 1).getInt("sound"));
+                            playObjectSound(images.getJSONObject(currentItem - 1).getString("sound"));
                         }
                         else{
                             playRewardSound(false);
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
+                        if (mp != null){
+                            mp.release();
+                        }
                         finish();
                     }
                 }
@@ -151,6 +155,9 @@ public class SoundDrillFourActivity extends AppCompatActivity {
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
+                        if (mp != null){
+                            mp.release();
+                        }
                         finish();
                     }
                 }
@@ -162,13 +169,20 @@ public class SoundDrillFourActivity extends AppCompatActivity {
         playIntroSound();
     }
 
-    private void playObjectSound(int soundid){
+    private void playObjectSound(String sound){
         try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -176,6 +190,44 @@ public class SoundDrillFourActivity extends AppCompatActivity {
                     current_reward++;
                     if (current_reward > 4) {
                         playRewardSound(true);
+                        mp.release();
+                        finish();
+                    }
+                }
+            });
+            mp.prepare();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    private void playObjectSound(int soundId){
+        try {
+            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), myUri);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    current_reward++;
+                    if (current_reward > 4) {
+                        playRewardSound(true);
+                        mp.release();
                         finish();
                     }
                 }
@@ -183,6 +235,9 @@ public class SoundDrillFourActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -194,21 +249,64 @@ public class SoundDrillFourActivity extends AppCompatActivity {
             playSound(ResourceSelector.getNegativeAffirmationSound(this));
     }
 
-    private void playSound(int soundid){
+    private void playSound(String sound){
         try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    private void playSound(int soundId){
+        try {
+            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), myUri);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                }
+            });
+            mp.prepare();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -223,26 +321,34 @@ public class SoundDrillFourActivity extends AppCompatActivity {
             item4.setImageResource(images.getJSONObject(3).getInt("image"));
             item5.setImageResource(images.getJSONObject(4).getInt("image"));
             item6.setImageResource(images.getJSONObject(5).getInt("image"));
-            drillSound = params.getInt("drillsound");
+            drillSound = params.getString("drillsound");
            // getWindow().getDecorView().getRootView().setBackgroundResource(params.getInt("background"));
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
 
     private void playIntroSound(){
         try {
-            play_mode = 1;
-            if (mp == null)
-                mp = MediaPlayer.create(this, params.getInt("dama_needs_to_clean"));
-            else {
-                Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + params.getInt("dama_needs_to_clean"));
-                mp.setDataSource(this, myUri);
-                mp.prepare();
+            play_mode = 1;// dama_needs_to_clean
+            String sound = params.getString("dama_needs_to_clean");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
             }
-            mp.start();
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -250,9 +356,13 @@ public class SoundDrillFourActivity extends AppCompatActivity {
                     playBeginningOfDrillSound();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -268,6 +378,9 @@ public class SoundDrillFourActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -287,7 +400,7 @@ public class SoundDrillFourActivity extends AppCompatActivity {
         }
         else{
             try{
-                playSound(images.getJSONObject(currentItem - 1).getInt("sound"));
+                playSound(images.getJSONObject(currentItem - 1).getString("sound"));
             }
             catch (Exception ex){
                 ex.printStackTrace();
@@ -298,11 +411,19 @@ public class SoundDrillFourActivity extends AppCompatActivity {
 
     public void playBeginningOfDrillSound(){
         try {
-            int sound = params.getInt("drag_the_pictures_that_start");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            String sound = params.getString("drag_the_pictures_that_start");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -310,60 +431,53 @@ public class SoundDrillFourActivity extends AppCompatActivity {
                     playDrillSound();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
 
-    private Runnable startDrill = new Runnable(){
-        @Override
-        public void run() {
-            playBeginningOfDrillSound();
-        }
-    };
-
     public void playDrillSound(){
         try{
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + drillSound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            String soundPath = FetchResource.sound(getApplicationContext(), drillSound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     try {
                         mp.reset();
                         play_mode = 2;
-                        playSound(params.getInt("into_the_box"));
+                        playSound(params.getString("into_the_box"));
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        ;
                     }
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
-
-    private Runnable sayDrillSound = new Runnable(){
-        @Override
-        public void run() {
-            playDrillSound();
-        }
-    };
-
-    private Runnable endDrillInstructions = new Runnable(){
-        @Override
-        public void run() {
-            play_mode = 2;
-            //playSound(R.raw.into_the_box);
-        }
-    };
 
     @Override
     public void onPause(){
