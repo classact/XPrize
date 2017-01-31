@@ -207,18 +207,21 @@ public class PhonicsDrills {
             int numberOfRightDrillWords = rightDrillWordIDs.size();
             ArrayList<ObjectAndSound> images;
 
-            for (int i = 0; i < numberOfRightDrillWords; i++) {
+            for (int i = 0; i < numberOfRightDrillWords; i += 2) {
                 Word rightWord = WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i));
                 images = new ArrayList<>();
 
                 // Drill object (The reference object for the drill item)
                 ObjectAndSound drillObject = new ObjectAndSound(rightWord.getImagePictureURI(), rightWord.getWordSoundURI(), "");
+                System.out.println("Processing Right Word: (id " + rightWord.getWordID() + ")" + rightWord.getWordName());
+
                 drillObject.setBeginningLetterSound(letter.getLetterSoundURI());
-                System.out.println("Processing Right Word: " + rightWord.getWordName());
 
                 // Get another right word
-                // Word anotherRightWord = WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i));
-                ObjectAndSound objectAndSound = new ObjectAndSound(rightWord.getImagePictureURI(), rightWord.getWordSoundURI(), "");
+                Word anotherRightWord = WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i+1));
+                System.out.println("Processing Another Right Word: (id " + anotherRightWord.getWordID() + ")" + anotherRightWord.getWordName());
+
+                ObjectAndSound objectAndSound = new ObjectAndSound(anotherRightWord.getImagePictureURI(), anotherRightWord.getWordSoundURI(), "");
                 objectAndSound.setCustomData("1");
                 images.add(objectAndSound);
 

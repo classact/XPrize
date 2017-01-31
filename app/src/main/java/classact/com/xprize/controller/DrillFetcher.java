@@ -107,7 +107,7 @@ public class DrillFetcher {
                 }
                 case 5: {
                     int wordType = 1; // drill 1 only uses phonic words, which is WordType 1
-                    int rightLimit = 3; // 5 words for this drill
+                    int rightLimit = 6; // 3 right words, 3 other right words
                     int wrongLimit = 9;
 
                     // Fetch D5
