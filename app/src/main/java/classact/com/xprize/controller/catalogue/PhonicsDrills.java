@@ -188,52 +188,59 @@ public class PhonicsDrills {
         try {
             System.out.println("===== A =====");
             ArrayList<SoundDrillFiveObject> soundDrillFiveObjects = new ArrayList<>();
-            ArrayList<ObjectAndSound> images = new ArrayList<>();
-            ArrayList<ObjectAndSound> drillObjects = new ArrayList<>();
 
             System.out.println("===== B =====");
             DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
             Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
             System.out.println("===== C =====");
-            ArrayList<Integer> wrongDrillWordIDs = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, wronglimit);
             ArrayList<Integer> rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, rightlimit);
+            ArrayList<Integer> wrongDrillWordIDs = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, wronglimit);
 
             System.out.println("===== D =====");
             System.out.println("rightDrillWordIDs.size(): " + rightDrillWordIDs.size());
-            int lastPosition=0;
-            for (int i=0; i < rightDrillWordIDs.size(); i++ ){
+            System.out.println("wrongDrillWordIDs.size(): " + wrongDrillWordIDs.size());
+
+
+            int wrongWordCounter = 0;
+            int maxWrongWordsPerItem = 3;
+            int numberOfRightDrillWords = rightDrillWordIDs.size();
+            ArrayList<ObjectAndSound> images;
+
+            for (int i = 0; i < numberOfRightDrillWords; i++) {
                 Word rightWord = WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i));
+                images = new ArrayList<>();
+
+                // Drill object (The reference object for the drill item)
+                ObjectAndSound drillObject = new ObjectAndSound(rightWord.getImagePictureURI(), rightWord.getWordSoundURI(), "");
+                drillObject.setBeginningLetterSound(letter.getLetterSoundURI());
+                System.out.println("Processing Right Word: " + rightWord.getWordName());
+
+                // Get another right word
+                // Word anotherRightWord = WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i));
                 ObjectAndSound objectAndSound = new ObjectAndSound(rightWord.getImagePictureURI(), rightWord.getWordSoundURI(), "");
                 objectAndSound.setCustomData("1");
                 images.add(objectAndSound);
 
-                System.out.println("===== DA =====");
+                // The wrong words/images
+                for (int j = wrongWordCounter; j < maxWrongWordsPerItem; j++) {
+                    Word wrongWord = WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(j));
 
-                ObjectAndSound drillObject = new ObjectAndSound(rightWord.getImagePictureURI(), rightWord.getWordSoundURI(), "");
-                drillObject.setBeginningLetterSound(letter.getLetterSoundURI());
-                drillObjects.add(drillObject);
+                    System.out.println("Processing Wrong Word: " + wrongWord.getWordName());
 
-                System.out.println("===== DB =====");
-                System.out.println("i: " + i);
-
-                int jloopCount=0;
-                for (int j=lastPosition; i < wrongDrillWordIDs.size(); i++ ){
-                    while (j < (lastPosition + 3)) {
-                        Word wrongWord = WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(i));
-                        objectAndSound = new ObjectAndSound(wrongWord.getImagePictureURI(), wrongWord.getWordSoundURI(), "");
-                        objectAndSound.setCustomData("0");
-                        images.add(objectAndSound);
-                        jloopCount = j;
-
-                        System.out.println("===== DBA =====");
-                    }
-                    lastPosition = jloopCount;
+                    objectAndSound = new ObjectAndSound(wrongWord.getImagePictureURI(), wrongWord.getWordSoundURI(), "");
+                    objectAndSound.setCustomData("0");
+                    images.add(objectAndSound);
                 }
+                wrongWordCounter += 3;
+                maxWrongWordsPerItem += 3;
+
                 SoundDrillFiveObject obj = new SoundDrillFiveObject(drillObject, images);
                 soundDrillFiveObjects.add(obj);
 
-                System.out.println("===== DC =====");
+                System.out.println("===== E(" + i + ") =====");
+                System.out.println("images.size(): " + images.size());
+                System.out.println("soundDrillFiveObjects.size(): " + soundDrillFiveObjects.size());
             }
 
             // Debug

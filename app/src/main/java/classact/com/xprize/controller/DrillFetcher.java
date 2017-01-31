@@ -66,6 +66,11 @@ public class DrillFetcher {
 
             // Get letterId using unit u
             int letterId = LetterSequenceHelper.getLetterID(dbHelper.getReadableDatabase(), languageId, unitId, subId);
+            Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+
+            // Debug
+            System.out.println("DrillFetcher.getPhonicsDrill > Debug: Letter :: " +
+                    letter.getLetterName() + " :: for (" + languageId + ", " + unitId + ", " + subId + ", " + drillId + ") selected");
 
             switch (drillId) {
                 case 1: {
@@ -111,7 +116,7 @@ public class DrillFetcher {
                 }
                 case 6: {
                     DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-                    Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+                    // Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
                     // Fetch D6
                     intent = PhonicsDrills.D6(context, dbHelper, unitId, drillId, languageId,
@@ -133,7 +138,7 @@ public class DrillFetcher {
                     ArrayList<Integer> rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
                     ArrayList<Integer> wrongDrillWordIDs = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, wrongWordLimit);
                     DrillFlowWords drillFlowWord = drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-                    Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+                    // Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
                     // Fetch D7
                     intent = PhonicsDrills.D7(context, dbHelper, unitId, drillId, languageId,
@@ -163,7 +168,7 @@ public class DrillFetcher {
                 case 9: {
                     DrillFlowWords drillFlowWord;
                     drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-                    Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+                    // Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
                     // Fetch D9
                     intent = PhonicsDrills.D9(context, dbHelper, unitId, drillId, languageId,
