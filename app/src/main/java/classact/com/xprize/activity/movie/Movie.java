@@ -94,7 +94,7 @@ public class Movie extends AppCompatActivity {
                 mSplashImage.setBackgroundResource(R.drawable.en_intro_bg);
             }
         } else if (mNextBgCode == Code.FINALE) {
-            mSplashImage.setBackgroundResource(R.color.black);
+            mSplashImage.setBackgroundResource(R.drawable.star_level_20);
         }
 
         mUnitId = 1;

@@ -47,11 +47,13 @@ public class SoundDrillTenActivity extends AppCompatActivity {
     private int mode;
     private JSONObject[] objects;
     private JSONObject allData;
+    private boolean buttonsEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_ten);
+        buttonsEnabled = false;
         buttonWord1 = (ImageButton)findViewById(R.id.button_word1);
         buttonWord2 = (ImageButton)findViewById(R.id.button_word2);
         buttonWord3 = (ImageButton)findViewById(R.id.button_word3);
@@ -336,6 +338,12 @@ public class SoundDrillTenActivity extends AppCompatActivity {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     mp.start();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            buttonsEnabled = true;
+                        }
+                    }, mp.getDuration() - 150);
                 }
             });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -637,39 +645,48 @@ public class SoundDrillTenActivity extends AppCompatActivity {
         // Debug
         System.out.println("-- SoundTrillTenActivity.checkIfWordCorrect > Debug: METHOD CALLED");
 
-        if (word == currentWord){
-            reward(word);
-            playThisSound(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
-            currentWord++;
-        }
-        else{
-            try {
-                int soundid = ResourceSelector.getNegativeAffirmationSound(getApplicationContext());
-                Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
-                mp.reset();
-                mp.setDataSource(getApplicationContext(), myUri);
-                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        mp.start();
+        if (buttonsEnabled) {
+            if (word == currentWord) {
+                buttonsEnabled = false;
+                reward(word);
+                playThisSound(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
+                currentWord++;
+            } else {
+                try {
+                    int soundid = ResourceSelector.getNegativeAffirmationSound(getApplicationContext());
+                    Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
+                    mp.reset();
+                    mp.setDataSource(getApplicationContext(), myUri);
+                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            mp.start();
+                        }
+                    });
+                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            mp.reset();
+                        }
+                    });
+                    mp.prepare();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    if (mp != null) {
+                        mp.release();
                     }
-                });
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp.reset();
-                    }
-                });
-                mp.prepare();
-            }
-            catch (Exception ex){
-                ex.printStackTrace();
-                if (mp != null) {
-                    mp.release();
+                    finish();
                 }
-                finish();
             }
         }
+    }
+
+    private void setButtonsEnabled(boolean enable) {
+        buttonWord1.setEnabled(enable);
+        buttonWord2.setEnabled(enable);
+        buttonWord3.setEnabled(enable);
+        buttonWord4.setEnabled(enable);
+        buttonWord5.setEnabled(enable);
     }
 
     @Override

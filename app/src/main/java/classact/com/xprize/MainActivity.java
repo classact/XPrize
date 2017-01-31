@@ -28,13 +28,13 @@ import classact.com.xprize.utils.ResourceDecoder;
 public class MainActivity extends AppCompatActivity {
 
 
-    private final boolean ALLOW_DB_RECOPY = true;
+    private final boolean ALLOW_DB_RECOPY = false;
 
     // Database hack related
-    private final boolean HACK_NEXT_UNIT = true;
+    private final boolean HACK_NEXT_UNIT = false;
     private final int HACK_UNIT_ID = 1;
     private final int HACK_UNIT_SUB_ID_IN_PROGRESS = 0;
-    private final int HACK_DRILL_LAST_PLAYED = 4;
+    private final int HACK_DRILL_LAST_PLAYED = 11;
     private final int HACK_UNIT_FIRST_TIME = 0;
     private final int HACK_UNIT_FIRST_TIME_MOVIE = 1;
 
@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize success boolean to see if everything is A-OK
         boolean success = false;
+        boolean isFinale = false;
 
         // Declare intent
         Intent intent = null;
@@ -290,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
                     intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
                     resultCode = Code.FINALE;
+                    isFinale = true;
                 }
 
             } else {
@@ -323,7 +325,11 @@ public class MainActivity extends AppCompatActivity {
             if (success) {
                 if (intent != null) {
                     startActivityForResult(intent, resultCode);
-                    overridePendingTransition(0, android.R.anim.fade_out);
+                    if (isFinale) {
+                        overridePendingTransition(android.R.anim.fade_out, android.R.anim.fade_out);
+                    } else {
+                        overridePendingTransition(0, android.R.anim.fade_out);
+                    }
                 } else {
                     // Debug error: force finale
                     System.err.println("MainActivity.determineNextItem > Error: Forcing finale");
@@ -335,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
                     resultCode = Code.FINALE;
                     startActivityForResult(intent, resultCode);
-                    overridePendingTransition(0, android.R.anim.fade_out);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
             }
         }
@@ -503,7 +509,7 @@ public class MainActivity extends AppCompatActivity {
                     // Hax to avoid bugged drills
                     int currentDrill = u.getUnitDrillLastPlayed() + 1;
                     int nextDrill = currentDrill + 1;
-                    int[] buggedDrills = {};
+                    int[] buggedDrills = {6,7,8,9};
 
                     if (buggedDrills.length > 0) {
                         for (int buggedDrill : buggedDrills) {
@@ -670,7 +676,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
                 resultCode = Code.FINALE;
                 startActivityForResult(intent, resultCode);
-                overridePendingTransition(0, android.R.anim.fade_out);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         }
     }
