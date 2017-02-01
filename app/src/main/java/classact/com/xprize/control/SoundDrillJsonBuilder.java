@@ -207,14 +207,14 @@ public class SoundDrillJsonBuilder {
                                               String thisIsLowerCaseSound,
                                               String thisisUppderCaseSound,
                                               String dragTheLettersSound){
-        String drillData = "{\"small_letter\":" + ResourceDecoder.getIdentifier(context,smallLetterImage,"drawable")  + "," +
-                "\"letter_sound\":" + ResourceDecoder.getIdentifier(context,letterSound,"raw")+  "," +
+        String drillData = "{\"small_letter\":" + ResourceDecoder.getIdentifier(context,smallLetterImage,"drawable") + "," +
+                "\"letter_sound\":\"" + letterSound + "\"," +
                 "\"big_letter\":" + ResourceDecoder.getIdentifier(context,upperLetterImage,"drawable") + "," +
-                "\"we_can_write_the_letter\":" +ResourceDecoder.getIdentifier(context,weCanWriteTheLetterSound,"raw") +"," +
-                "\"in_two_ways\":" + ResourceDecoder.getIdentifier(context,inTwoWaysSound,"raw") +"," +
-                "\"this_is_the_lower_case\":" + ResourceDecoder.getIdentifier(context,thisIsLowerCaseSound,"raw") +"," +
-                "\"this_is_the_upper_case\":" + ResourceDecoder.getIdentifier(context,thisisUppderCaseSound,"raw") +"," +
-                "\"drag_the_letters\":" + ResourceDecoder.getIdentifier(context,dragTheLettersSound,"raw") +
+                "\"we_can_write_the_letter\":\"" + weCanWriteTheLetterSound + "\"," +
+                "\"in_two_ways\":\"" + inTwoWaysSound + "\"," +
+                "\"this_is_the_lower_case\":\"" + thisIsLowerCaseSound + "\"," +
+                "\"this_is_the_upper_case\":\"" + thisisUppderCaseSound + "\"," +
+                "\"drag_the_letters\":\"" + dragTheLettersSound + "\"" +
                 "}";
 
         return drillData;
