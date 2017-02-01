@@ -1,7 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.SoundPrescence;
 
 public class SoundDrillOneActivity extends AppCompatActivity implements SoundPrescence.SoundPresenceListener {
@@ -49,6 +49,9 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -58,9 +61,19 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
     //
     private void playIntro(){
         try {
-            int intro = drillData.getInt("intro");
-            mp = MediaPlayer.create(this, intro);
-            mp.start();
+            String intro = drillData.getString("intro");
+            String soundPath = FetchResource.sound(getApplicationContext(), intro);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -69,20 +82,32 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                     playNormalLetterSound();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
 
     public void playNormalLetterSound(){
         try {
-            int letterSound = drillData.getInt("letter_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + letterSound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            String letterSound = drillData.getString("letter_sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), letterSound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -90,9 +115,13 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                     playPhonicSoundIntro();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -106,11 +135,19 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
 
     public void playPhonicSoundIntro(){
         try {
-            int sound = drillData.getInt("it_makes_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            String sound = drillData.getString("it_makes_sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -118,20 +155,32 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                     playletterSound();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
 
     public void playletterSound(){
         try {
-            int letterSound = drillData.getInt("letter_phonic_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" +  letterSound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            String letterSound = drillData.getString("letter_phonic_sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), letterSound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -139,9 +188,13 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                     nowYouTry();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -155,11 +208,19 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
 
     private void nowYouTry(){
         try {
-            int sound = drillData.getInt("now_you_try");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" +  sound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            String sound = drillData.getString("now_you_try");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -167,9 +228,13 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                     intiatePrescence();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -204,11 +269,19 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
         try {
             int image = objects.getJSONObject(currentObject).getInt("object");
             letter.setImageResource(image);
-            int letterSound = drillData.getInt("letter_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + letterSound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            String letterSound = drillData.getString("letter_sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), letterSound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -216,9 +289,13 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                     playObject();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -233,11 +310,19 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
 
     private void playObject(){
         try {
-            int letterSound = objects.getJSONObject(currentObject).getInt("object_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" +  letterSound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            String letterSound = objects.getJSONObject(currentObject).getString("object_sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), letterSound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -252,9 +337,13 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                     }
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }

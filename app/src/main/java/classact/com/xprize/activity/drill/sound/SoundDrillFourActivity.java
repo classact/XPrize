@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillFourActivity extends AppCompatActivity {
@@ -27,23 +28,26 @@ public class SoundDrillFourActivity extends AppCompatActivity {
     private ImageView item6;
     private ImageView toyBox;
     private int currentItem;
-    private int current_reward = 1;
+    private int current_reward = 0;
     private String drillData;
+    private Handler handler;
     private int totalItems = 6;
     private JSONArray images;
     private MediaPlayer mp;
     float x;
     float y;
     private boolean entered;
-    private int play_mode = 1;
-    private Handler handler;
-    private int drillSound;
+    private String drillSound;
     JSONObject params;
+    private boolean itemsEnabled;
+    private Runnable mRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_four);
+
+        toyBox = (ImageView) findViewById(R.id.toybox);
 
         item1 = (ImageView) findViewById(R.id.item1);
         item2 = (ImageView) findViewById(R.id.item2);
@@ -52,38 +56,34 @@ public class SoundDrillFourActivity extends AppCompatActivity {
         item5 = (ImageView) findViewById(R.id.item5);
         item6 = (ImageView) findViewById(R.id.item6);
 
-
-        drillData = getIntent().getExtras().getString("data");
-        initialiseData(drillData);
-        toyBox = (ImageView) findViewById(R.id.toybox);
+        // setItemsEnabled(false);
+        itemsEnabled = false;
 
         item1.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 1;
-                x = v.getX();
-                y = v.getZ();
+                currentItem = 0;
                 return dragItem(v,event);
             }
         });
         item2.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 2;
+                currentItem = 1;
                 return dragItem(v,event);
             }
         });
         item3.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 3;
+                currentItem = 2;
                 return dragItem(v,event);
             }
         });
         item4.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 4;
+                currentItem = 3;
                 return dragItem(v,event);
             }
         });
@@ -91,7 +91,7 @@ public class SoundDrillFourActivity extends AppCompatActivity {
         item5.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 5;
+                currentItem = 4;
                 return dragItem(v,event);
             }
         });
@@ -99,118 +99,17 @@ public class SoundDrillFourActivity extends AppCompatActivity {
         item6.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 6;
+                currentItem = 5;
                 return dragItem(v,event);
             }
         });
 
-
-        toyBox.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                int action = event.getAction();
-                if (action == DragEvent.ACTION_DRAG_ENTERED)
-                    entered = true;
-                else if (action == DragEvent.ACTION_DRAG_EXITED)
-                    entered = false;
-                else if (event.getAction() == DragEvent.ACTION_DROP && entered) {
-                    try {
-                        int right = images.getJSONObject(currentItem - 1).getInt("right");
-                        if (right == 1) {
-                            /*switch (current_reward) {
-                                case 1:
-                                    reward1.setImageResource(R.drawable.rewardball1colour);
-                                    break;
-                                case 2:
-                                    reward2.setImageResource(R.drawable.rewardball1colour);
-                                    break;
-                                case 3:
-                                    reward3.setImageResource(R.drawable.rewardball1colour);
-                                    break;
-                                case 4:
-                                    reward4.setImageResource(R.drawable.rewardball1colour);
-                                    break;
-                            }*/
-                            //playSound(R.raw.good_job);
-                            playObjectSound(images.getJSONObject(currentItem - 1).getInt("sound"));
-                        }
-                        else{
-                            playRewardSound(false);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        finish();
-                    }
-                }
-                else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED  && entered) {
-                    try {
-                        int right = images.getJSONObject(currentItem - 1).getInt("right");
-                        if (right == 1) {
-                            ImageView view = (ImageView) event.getLocalState();
-                            view.setVisibility(View.INVISIBLE);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        finish();
-                    }
-                }
-                return true;
-            }
-        });
-        play_mode = 1;
+        toyBox.setOnDragListener(onItemDraggedIntoToyboxListener);
         handler = new Handler(Looper.getMainLooper());
-        playIntroSound();
-    }
 
-    private void playObjectSound(int soundid){
-        try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
-            mp.reset();
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    current_reward++;
-                    if (current_reward > 4) {
-                        playRewardSound(true);
-                        finish();
-                    }
-                }
-            });
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            finish();
-        }
-    }
-
-    private void playRewardSound(boolean affirm){
-        if (affirm)
-            playSound(ResourceSelector.getPositiveAffirmationSound(this));
-        else
-            playSound(ResourceSelector.getNegativeAffirmationSound(this));
-    }
-
-    private void playSound(int soundid){
-        try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                }
-            });
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            finish();
-        }
+        drillData = getIntent().getExtras().getString("data");
+        initialiseData(drillData);
+        playDamaNeedsToCleanSound();
     }
 
     private void initialiseData (String data){
@@ -223,86 +122,73 @@ public class SoundDrillFourActivity extends AppCompatActivity {
             item4.setImageResource(images.getJSONObject(3).getInt("image"));
             item5.setImageResource(images.getJSONObject(4).getInt("image"));
             item6.setImageResource(images.getJSONObject(5).getInt("image"));
-            drillSound = params.getInt("drillsound");
-           // getWindow().getDecorView().getRootView().setBackgroundResource(params.getInt("background"));
+            drillSound = params.getString("drillsound");
         }
         catch (Exception ex){
+            System.err.println("------------------------------------------------------");
+            System.err.println("SoundDrillFourActivity.initialiseData > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------");
             ex.printStackTrace();
+            System.err.println("------------------------------------------------------");
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
 
-    private void playIntroSound(){
+    private void playDamaNeedsToCleanSound(){
         try {
-            play_mode = 1;
-            if (mp == null)
-                mp = MediaPlayer.create(this, params.getInt("dama_needs_to_clean"));
-            else {
-                Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + params.getInt("dama_needs_to_clean"));
-                mp.setDataSource(this, myUri);
-                mp.prepare();
+            String sound = params.getString("dama_needs_to_clean");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
             }
-            mp.start();
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
-                    playBeginningOfDrillSound();
+                    playDragThePicturesThatStartWithSound();
                 }
             });
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            finish();
-        }
-    }
-
-    private void resetObject(){
-        try{
-            item1.setImageResource(images.getJSONObject(0).getInt("image"));
-            item2.setImageResource(images.getJSONObject(1).getInt("image"));
-            item3.setImageResource(images.getJSONObject(2).getInt("image"));
-            item4.setImageResource(images.getJSONObject(3).getInt("image"));
-            item5.setImageResource(images.getJSONObject(4).getInt("image"));
-            item6.setImageResource(images.getJSONObject(5).getInt("image"));
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            finish();
-        }
-    }
-
-    public boolean dragItem(View view, MotionEvent motionEvent){
-        if (play_mode == 2) {
-            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                ClipData data = ClipData.newPlainText("", "");
-                View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
-                        view);
-                view.startDrag(data, shadowBuilder, view, 0);
-                entered = false;
-                return true;
-            } else {
-                return false;
-            }
-        }
-        else{
-            try{
-                playSound(images.getJSONObject(currentItem - 1).getInt("sound"));
-            }
-            catch (Exception ex){
-                ex.printStackTrace();
-            }
-            return false;
-        }
-    }
-
-    public void playBeginningOfDrillSound(){
-        try {
-            int sound = params.getInt("drag_the_pictures_that_start");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(this, myUri);
             mp.prepare();
-            mp.start();
+        }
+        catch (Exception ex){
+            System.err.println("------------------------------------------------------");
+            System.err.println("SoundDrillFourActivity.playDamaNeedsToCleanSound > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("------------------------------------------------------");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    private void playDragThePicturesThatStartWithSound(){
+        try {
+            String sound = params.getString("drag_the_pictures_that_start");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -310,71 +196,358 @@ public class SoundDrillFourActivity extends AppCompatActivity {
                     playDrillSound();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
+            System.err.println("------------------------------------------------------");
+            System.err.println("SoundDrillFourActivity.playDragThePicturesThatStartWithSound > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------");
             ex.printStackTrace();
+            System.err.println("------------------------------------------------------");
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
-
-    private Runnable startDrill = new Runnable(){
-        @Override
-        public void run() {
-            playBeginningOfDrillSound();
-        }
-    };
 
     public void playDrillSound(){
         try{
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + drillSound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            String soundPath = FetchResource.sound(getApplicationContext(), drillSound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    try {
-                        mp.reset();
-                        play_mode = 2;
-                        playSound(params.getInt("into_the_box"));
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        ;
-                    }
+                    mp.reset();
+                    playIntoTheBoxSound();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
+            System.err.println("------------------------------------------------------");
+            System.err.println("SoundDrillFourActivity.playDrillSound > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------");
             ex.printStackTrace();
+            System.err.println("------------------------------------------------------");
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
 
-    private Runnable sayDrillSound = new Runnable(){
+    public void playIntoTheBoxSound() {
+        try{
+            String sound = params.getString("into_the_box");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    // setItemsEnabled(true);
+                    itemsEnabled = true;
+                }
+            });
+            mp.prepare();
+        }
+        catch (Exception ex){
+            System.err.println("------------------------------------------------------");
+            System.err.println("SoundDrillFourActivity.playIntoTheBoxSound > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("------------------------------------------------------");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    private void playSoundAndRunnableAfterCompletion(String sound) {
+        try {
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    if (mRunnable != null) {
+                        mRunnable.run();
+                    }
+                }
+            });
+            mp.prepare();
+        }
+        catch (Exception ex){
+            System.err.println("------------------------------------------------------");
+            System.err.println("SoundDrillFourActivity.playSoundAndRunnableAfterCompletion > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("------------------------------------------------------");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    private void playSoundAndRunnableAfterCompletion(int soundId) {
+        try {
+            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(this, myUri);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    if (mRunnable != null) {
+                        mRunnable.run();
+                    }
+                }
+            });
+            mp.prepare();
+        }
+        catch (Exception ex){
+            System.err.println("------------------------------------------------------");
+            System.err.println("SoundDrillFourActivity.playSoundAndRunnableAfterCompletion > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("------------------------------------------------------");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    private void playSound(String sound){
+        try {
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                }
+            });
+            mp.prepare();
+        }
+        catch (Exception ex){
+            System.err.println("------------------------------------------------------");
+            System.err.println("SoundDrillFourActivity.playSound > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("------------------------------------------------------");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    private void playSound(int soundId){
+        try {
+            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), myUri);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                }
+            });
+            mp.prepare();
+        }
+        catch (Exception ex){
+            System.err.println("------------------------------------------------------");
+            System.err.println("SoundDrillFourActivity.playSound > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("------------------------------------------------------");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    public boolean dragItem(View view, MotionEvent motionEvent) {
+        if (itemsEnabled) {
+            try {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    ClipData data = ClipData.newPlainText("", "");
+                    View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
+                            view);
+                    view.startDragAndDrop(data, shadowBuilder, view, 0);
+                    entered = false;
+                    String sound = images.getJSONObject(currentItem).getString("sound");
+                    playSound(sound);
+                    return true;
+                }
+            } catch (Exception ex) {
+                System.err.println("------------------------------------------------------");
+                System.err.println("SoundDrillFourActivity.dragItem > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("------------------------------------------------------");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
+        return false;
+    }
+
+    private View.OnDragListener onItemDraggedIntoToyboxListener = new View.OnDragListener() {
         @Override
-        public void run() {
-            playDrillSound();
+        public boolean onDrag(View v, DragEvent event) {
+            try {
+                int action = event.getAction();
+                if (action == DragEvent.ACTION_DRAG_ENTERED) {
+                    if (!entered) {
+                        entered = true;
+                    }
+                } else if (action == DragEvent.ACTION_DRAG_EXITED) {
+                    if (entered) {
+                        entered = false;
+                    }
+                } else if (event.getAction() == DragEvent.ACTION_DROP && entered) {
+                    int right = images.getJSONObject(currentItem).getInt("right");
+                    if (right == 1) {
+                        playRewardSound(true);
+                    } else {
+                        playRewardSound(false);
+                    }
+                } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && entered) {
+                    int right = images.getJSONObject(currentItem).getInt("right");
+                    if (right == 1) {
+                        ImageView view = (ImageView) event.getLocalState();
+                        view.setVisibility(View.INVISIBLE);
+                    }
+                }
+                return true;
+            } catch (Exception ex) {
+                System.err.println("------------------------------------------------------");
+                System.err.println("SoundDrillFourActivity.onItemDraggedIntoToyboxListener > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("------------------------------------------------------");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+            return false;
         }
     };
 
-    private Runnable endDrillInstructions = new Runnable(){
-        @Override
-        public void run() {
-            play_mode = 2;
-            //playSound(R.raw.into_the_box);
+    private void playRewardSound(boolean affirm){
+        if (affirm) {
+            // Increment reward
+            current_reward++;
+
+            // Debug
+            System.out.println("SoundDrillFourActivity.playRewardSound > Debug: Current reward is (" + current_reward + ")");
+
+            if (current_reward == 4) {
+                // setItemsEnabled(false);
+                itemsEnabled = false;
+
+                // Runnable to close activity
+                mRunnable = null;
+                mRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mp != null) {
+                            mp.release();
+                        }
+                        finish();
+                    }
+                };
+                playSoundAndRunnableAfterCompletion(ResourceSelector.getPositiveAffirmationSound(this));
+            } else {
+                playSound(ResourceSelector.getPositiveAffirmationSound(this));
+            }
+        } else {
+            playSound(ResourceSelector.getNegativeAffirmationSound(this));
         }
-    };
+    }
+
+    private void setItemsEnabled(boolean enable) {
+        item1.setEnabled(enable);
+        item2.setEnabled(enable);
+        item3.setEnabled(enable);
+        item4.setEnabled(enable);
+        item5.setEnabled(enable);
+        item6.setEnabled(enable);
+    }
 
     @Override
-    public void onPause(){
+    protected void onPause(){
         super.onPause();
         if (mp != null){
             mp.release();
         }
     }
-
-//    @Override
-//    public void onBackPressed() {
-//    }
 }
-

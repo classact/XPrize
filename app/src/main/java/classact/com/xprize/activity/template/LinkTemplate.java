@@ -7,12 +7,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.RelativeLayout;
 
+import java.io.IOException;
+
 public abstract class LinkTemplate extends AppCompatActivity {
 
     protected int mRequestCode;
 
     protected final String REQ_CODE_KEY = "REQ_CODE";
-    protected final String RESOURCE_ID_KEY = "RESOURCE_ID";
+    protected final String NARRATOR_KEY = "NARRATOR";
     protected final String STATE_KEY = "STATE";
     protected final String ACTIVITY_NAME_KEY = "ACTIVITY_NAME";
     protected final String NEXT_ACTIVITY_KEY = "NEXT_ACTIVITY";
@@ -27,7 +29,7 @@ public abstract class LinkTemplate extends AppCompatActivity {
     protected RelativeLayout mBackground;
     protected Context mContext;
     protected MediaPlayer mPlayer;
-    protected int mResourceId;
+    protected String mNarrator;
     protected String mState;
     protected String mActivityName;
     protected String mNextActivityClassName;
@@ -92,7 +94,7 @@ public abstract class LinkTemplate extends AppCompatActivity {
         stopPlayer();
         System.out.println("onSaveInstanceState"+mState);
 
-        outState.putInt(RESOURCE_ID_KEY, mResourceId);
+        outState.putString(NARRATOR_KEY, mNarrator);
         outState.putString(STATE_KEY, mState);
         outState.putString(ACTIVITY_NAME_KEY, mActivityName);
         outState.putString(NEXT_ACTIVITY_KEY, mNextActivityClassName);
@@ -105,7 +107,7 @@ public abstract class LinkTemplate extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         System.out.println("onRestoreInstanceState"+mState);
 
-        mResourceId = savedInstanceState.getInt(RESOURCE_ID_KEY);
+        mNarrator = savedInstanceState.getString(NARRATOR_KEY);
         mState = savedInstanceState.getString(STATE_KEY);
         mActivityName = savedInstanceState.getString(ACTIVITY_NAME_KEY);
         mNextActivityClassName = savedInstanceState.getString(NEXT_ACTIVITY_KEY);
@@ -116,38 +118,50 @@ public abstract class LinkTemplate extends AppCompatActivity {
     public void createPlayer(MediaPlayer player) {
         System.out.println("createPlayer"+mState);
 
-        mPlayer = player;
+        try {
+            mPlayer = player;
 
-        if (mPlayer != null) {
-            mPlayer.release();
-            mPlayer = null;
-        }
-
-        // validate context
-        if (mContext == null) {
-            System.err.println(mActivityName + " > createPlayer: invalid context");
-        }
-
-        mPlayer = MediaPlayer.create(mContext, mResourceId);
-
-        mState = PREPARED;
-
-        mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mPlayer.start();
-                mState = PLAY;
-            }
-        });
-
-        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mState = COMPLETE;
+            if (mPlayer != null) {
                 mPlayer.release();
-                close(mNextActivityClassName);
+                mPlayer = null;
             }
-        });
+
+            // validate context
+            if (mContext == null) {
+                System.err.println(mActivityName + " > createPlayer: invalid context");
+            }
+
+            mPlayer = new MediaPlayer();
+            mPlayer.setDataSource(mNarrator);
+
+            mState = PREPARED;
+
+            mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mPlayer.start();
+                    mState = PLAY;
+                }
+            });
+
+            mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mState = COMPLETE;
+                    mPlayer.release();
+                    close(mNextActivityClassName);
+                }
+            });
+
+            mPlayer.prepare();
+
+        } catch (IOException ioex) {
+            System.err.println(mActivityName + ".createPlayer > IOException: " + ioex.getMessage());
+
+        } catch (Exception ex) {
+            System.err.println(mActivityName + ".createPlayer > Exception: " + ex.getMessage());
+
+        }
     }
 
     public void stopPlayer() {

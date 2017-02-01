@@ -7,6 +7,7 @@ import classact.com.xprize.R;
 import classact.com.xprize.activity.template.LinkTemplate;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.locale.Languages;
+import classact.com.xprize.utils.FetchResource;
 
 public class PhonicsLink extends LinkTemplate {
 
@@ -20,10 +21,10 @@ public class PhonicsLink extends LinkTemplate {
 
         // Note that no need to localize Bg
         if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
-            super.mResourceId = R.raw.sw_phonics_link;
+            super.mNarrator = FetchResource.sound(getApplicationContext(), "sw_phonics_link");
         } else {
             // Fallback to English
-            super.mResourceId = R.raw.en_phonics_link;
+            super.mNarrator = FetchResource.sound(getApplicationContext(), "en_phonics_link");
         }
 
         super.mActivityName = "PhonicsLink";

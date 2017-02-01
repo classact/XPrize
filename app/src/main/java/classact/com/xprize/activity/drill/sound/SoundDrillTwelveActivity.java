@@ -1,9 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,14 +15,19 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillTwelveActivity extends AppCompatActivity {
+
+    private final String DRILL_DATA_KEY = "DRILL_DATA";
 
     private final int COUNTDOWN_TOP_MARGIN = 18;
     private final int COUNTDOWN_LEFT_MARGIN = 564;
     private final int TWO_DIGIT_OFFSET = 117;
     private final int ONE_DIGIT_OFFSET = 40;
+
+    private String mDrillData;
 
     private ImageButton buttonWord1;
     private ImageButton buttonWord2;
@@ -33,7 +35,6 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
     private MediaPlayer mp;
     private TextView timeView;
     private int time;
-    private int cancel_repeats=0;
     public JSONArray wordSets;
     final Handler timeHandler = new Handler();
     final Handler setHandler = new Handler();
@@ -52,6 +53,22 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_twelve);
         timeView = (TextView) findViewById( R.id.textViewtimer );
+        buttonWord1 = (ImageButton)findViewById(R.id.button_word1);
+        buttonWord2 = (ImageButton)findViewById(R.id.button_word_2);
+        buttonWord3 = (ImageButton)findViewById(R.id.button_word3);
+
+        initializeGUI();
+        mDrillData = getIntent().getExtras().getString("data");
+        initializeData(mDrillData);
+
+    } //End of protected void onCreate
+
+    private void initializeGUI() {
+        /* Show white background for position-checking purposes
+        buttonWord1.setBackgroundResource(android.R.color.white);
+        buttonWord2.setBackgroundResource(android.R.color.white);
+        buttonWord3.setBackgroundResource(android.R.color.white);
+        */
 
         // Set value of time
         time = 15;
@@ -74,18 +91,11 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         // Update timeView layout
         timeView.setLayoutParams(timeViewLP);
 
+        // Update timeView text color
+        timeView.setTextColor(Color.DKGRAY);
+
         // Update timeView with new time
         timeView.setText(timeString);
-
-        buttonWord1 = (ImageButton)findViewById(R.id.button_word1);
-        buttonWord2 = (ImageButton)findViewById(R.id.button_word_2);
-        buttonWord3 = (ImageButton)findViewById(R.id.button_word3);
-
-        /* Show white background for position-checking purposes
-        buttonWord1.setBackgroundResource(android.R.color.white);
-        buttonWord2.setBackgroundResource(android.R.color.white);
-        buttonWord3.setBackgroundResource(android.R.color.white);
-        */
 
         buttonWord1.setImageResource(0);
         buttonWord2.setImageResource(0);
@@ -143,13 +153,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                 wordClicked(2);
             }
         });
+    }
 
-        String drillData = getIntent().getExtras().getString("data");
-        initialiseData(drillData);
-
-    } //End of protected void onCreate
-
-    private void initialiseData(String drillData){
+    private void initializeData(String drillData) {
 
         // Debug
         System.out.println("-- SoundTrillTwelveActivity.initialiseData > Debug: METHOD CALLED");
@@ -158,9 +164,20 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             params = new JSONObject(drillData);
             wordSets = params.getJSONArray("sets");
             currentSet = 0;
-            int sound = params.getInt("quick_mothers_coming");
-            mp = MediaPlayer.create(this, sound);
-            mp.start();
+            String sound = params.getString("quick_mothers_coming");
+
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -169,25 +186,32 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                     nextSet();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
 
-
-    private void playSound(int soundid){
+    private void playSound(String sound){
 
         // Debug
         System.out.println("-- SoundTrillTwelveActivity.playSound > Debug: METHOD CALLED");
 
         try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
             mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -206,9 +230,57 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                     }
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    private void playSound(int soundid){
+
+        // Debug
+        System.out.println("-- SoundTrillTwelveActivity.playSound > Debug: METHOD CALLED");
+
+        try {
+            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), myUri);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+
+                    if (gameOver) {
+                        setHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                // Update colour of text
+                                timeView.setTextColor(Color.parseColor("#cc0000"));
+
+                                startConcluding();
+                            }
+                        }, 350);
+                    }
+                }
+            });
+            mp.prepare();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -222,8 +294,12 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -233,9 +309,13 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                     }
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -261,6 +341,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -324,6 +407,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
+                if (mp != null) {
+                    mp.release();
+                }
                 finish();
             }
         }
@@ -361,7 +447,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                 // Update timeView layout
                 timeView.setLayoutParams(timeViewLP);
 
-                if (String.valueOf(time).equalsIgnoreCase("5")) {
+                if (String.valueOf(time).equalsIgnoreCase("6")) {
                     emergencyHandler.postDelayed(countdownEmergency, 250);
                 }
 
@@ -399,12 +485,16 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             // Disable all buttons
             setButtonsEnabled(false);
 
-            int sound = params.getInt("you_got");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            String sound = params.getString("you_got");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
             mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -412,9 +502,13 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                     sayCorrectCount();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -425,36 +519,37 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         System.out.println("-- SoundTrillTwelveActivity.sayCorrectCount > Debug: METHOD CALLED");
 
         try {
-            int sound = params.getInt("count_0");
+            String sound = params.getString("count_0");
             switch (currentSet) {
                 case 1:
-                    sound = params.getInt("count_1");
-                    ;
+                    sound = params.getString("count_1");
                     break;
                 case 2:
-                    sound = params.getInt("count_2");
-                    ;
+                    sound = params.getString("count_2");
                     break;
                 case 3:
-                    sound = params.getInt("count_3");
-                    ;
+                    sound = params.getString("count_3");
                     break;
                 case 4:
-                    sound = params.getInt("count_4");
-                    ;
+                    sound = params.getString("count_4");
                     break;
                 case 5:
-                    sound = params.getInt("count_5");
-                    ;
+                    sound = params.getString("count_5");
                     break;
                 case 6:
-                    sound = params.getInt("count_6");
+                    sound = params.getString("count_6");
                     break;
             }
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -462,9 +557,13 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                     sayWords();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -475,11 +574,16 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         System.out.println("-- SoundTrillTwelveActivity.sayWords > Debug: METHOD CALLED");
 
         try {
-            int sound = params.getInt("words_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            String sound = params.getString("words_sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -487,9 +591,13 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                     setHandler.postDelayed(finishRunnable, 300);
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -513,6 +621,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             // Debug
             System.out.println("-- SoundTrillTwelveActivity.finishRunnable.run(Runnable) > Debug: METHOD CALLED");
 
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     };
@@ -541,7 +652,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                     } else if (emergencyRed) {
                         if (timeView != null) {
                             timeView.setTextColor(Color.DKGRAY);
-                            if (time > 2) {
+                            if (time > 3) {
                                 emergencyHandler.postDelayed(countdownEmergency, 500);
                             } else {
                                 emergencyHandler.postDelayed(countdownEmergency, 250);
@@ -551,7 +662,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                     } else {
                         timeView.setTextColor(Color.RED);
                         emergencyRed = true;
-                        if (time > 2) {
+                        if (time > 3) {
                             emergencyHandler.postDelayed(countdownEmergency, 500);
                         } else {
                             emergencyHandler.postDelayed(countdownEmergency, 250);
@@ -587,7 +698,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             try {
                 if (!gameOver) {
                     // Get sound resource
-                    int sound = wordSets.getJSONObject(currentSet).getInt("sound");
+                    String sound = wordSets.getJSONObject(currentSet).getString("sound");
 
                     // Add a next action to be played after a few hundred milliseconds
                     /* Note that this is not done after completion,
@@ -608,40 +719,62 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             }
             catch (Exception ex) {
                 ex.printStackTrace();
+                if (mp != null) {
+                    mp.release();
+                }
                 finish();
             }
         }
     };
 
     @Override
-    public void onPause(){
+    protected void onSaveInstanceState(Bundle outState) {
+        // Debug
+        System.out.println("-- SoundTrillTwelveActivity.onSaveInstanceState > Debug: METHOD CALLED");
+
+        // Save drill data to key
+        outState.putString(DRILL_DATA_KEY, mDrillData);
+
+        // Call the super always
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        // Call the super always
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // Debug
+        System.out.println("-- SoundTrillTwelveActivity.onRestoreInstanceState > Debug: METHOD CALLED");
+
+        // Save drill data to key
+        mDrillData = savedInstanceState.getString(DRILL_DATA_KEY);
+
+        // Initialize everything to start the drill again
+        initializeGUI();
+        initializeData(mDrillData);
+    }
+
+    @Override
+    protected void onPause() {
+        // Call the super always
         super.onPause();
+
+        // Release media player
+        if (mp != null) {
+            mp.release();
+        }
 
         // Debug
         System.out.println("-- SoundTrillTwelveActivity.onPause > Debug: METHOD CALLED");
-
-        if (mp != null){
-            mp.release();
-        }
     }
 
-    /**
-     * Get Text View Dimensions
-     * Note that this returns a point, but that's just
-     * to store the width and height
-     * @param textView
-     * @param text
-     * @return
-     */
-    public Point getTextViewDims(TextView textView, String text) {
-        Rect bounds = new Rect();
-        Paint textPaint = textView.getPaint();
-        textPaint.getTextBounds(text, 0, text.length(), bounds);
+    @Override
+    protected void onResume() {
+        // Call the super always
+        super.onResume();
 
-        return new Point(bounds.width(), bounds.height());
+        // Debug
+        System.out.println("-- SoundTrillTwelveActivity.onResume > Debug: METHOD CALLED");
     }
-
-//    @Override
-//    public void onBackPressed() {
-//    }
 }

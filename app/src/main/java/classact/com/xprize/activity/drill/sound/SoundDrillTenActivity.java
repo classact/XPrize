@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import java.util.Random;
 
 import classact.com.xprize.R;
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 
@@ -46,11 +47,13 @@ public class SoundDrillTenActivity extends AppCompatActivity {
     private int mode;
     private JSONObject[] objects;
     private JSONObject allData;
+    private boolean buttonsEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_ten);
+        buttonsEnabled = false;
         buttonWord1 = (ImageButton)findViewById(R.id.button_word1);
         buttonWord2 = (ImageButton)findViewById(R.id.button_word2);
         buttonWord3 = (ImageButton)findViewById(R.id.button_word3);
@@ -124,9 +127,21 @@ public class SoundDrillTenActivity extends AppCompatActivity {
             allData = new JSONObject(drillData);
             words = allData.getJSONArray("words");
             flashButton.setVisibility(View.INVISIBLE);
-            int sound = allData.getInt("instructions");
-            mp = MediaPlayer.create(this, sound);
-            mp.start();
+            String sound = allData.getString("instructions");
+
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -136,8 +151,12 @@ public class SoundDrillTenActivity extends AppCompatActivity {
                     showWord();
                 }
             });
+            mp.prepare();
         } catch (Exception ex) {
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -202,30 +221,40 @@ public class SoundDrillTenActivity extends AppCompatActivity {
         System.out.println("-- SoundTrillTenActivity.showWord > Debug: METHOD CALLED");
 
         try{
-            int word = words.getJSONObject(currentWord).getInt("word");
-            System.out.println("SoundDrillTenActivity.showWord > Debug: word is " + word);
-            flashButton.setImageResource(word);
-            int sound = words.getJSONObject(currentWord).getInt("sound");
+            int image = words.getJSONObject(currentWord).getInt("image");
+            String name = words.getJSONObject(currentWord).getString("name");
+
+            // Debug
+            System.out.println("SoundDrillTenActivity.showWord > Debug: word is " + name);
+
+            flashButton.setImageResource(image);
+            String sound = words.getJSONObject(currentWord).getString("sound");
             playSoundAndShowNext(sound);
 
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
 
-    private void playSoundAndShowNext(int soundid){
+    private void playSoundAndShowNext(String sound){
 
         // Debug
         System.out.println("-- SoundTrillTenActivity.playSoundAndShowNext > Debug: METHOD CALLED");
 
         try {
-            // Get uri for sound
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
+            // Get sound path
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
 
-            // Set data source to uri
-            mp.setDataSource(getApplicationContext(), myUri);
+            // Reset media player
+            mp.reset();
+
+            // Set data source to sound path
+            mp.setDataSource(soundPath);
 
             // Set on prepared listener
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -255,6 +284,9 @@ public class SoundDrillTenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -298,20 +330,35 @@ public class SoundDrillTenActivity extends AppCompatActivity {
         System.out.println("-- SoundTrillTenActivity.playWordSound > Debug: METHOD CALLED");
 
         try{
-            int sound = objects[currentWord].getInt("sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            String sound = objects[currentWord].getString("sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            mp.reset();
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            buttonsEnabled = true;
+                        }
+                    }, mp.getDuration() - 150);
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();;
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -322,14 +369,17 @@ public class SoundDrillTenActivity extends AppCompatActivity {
         System.out.println("-- SoundTrillTenActivity.sayTouchWord > Debug: METHOD CALLED");
 
         try {
-            // Extra sound resource id from 'allData' array
-            int sound = allData.getInt("touch");
+            // Extra sound resourcefrom 'allData' array
+            String sound = allData.getString("touch");
 
-            // Get uri of sound to play
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            // Get sound path
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
 
-            // Set media player's data source to uri
-            mp.setDataSource(getApplicationContext(), myUri);
+            // Reset media player
+            mp.reset();
+
+            // Set media player's data source to sound path
+            mp.setDataSource(soundPath);
 
             // Set on prepared listener
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -359,6 +409,9 @@ public class SoundDrillTenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -394,7 +447,7 @@ public class SoundDrillTenActivity extends AppCompatActivity {
                         objects[i] = word;
 
                         // Extra word resource from objects[i]
-                        int wordImage = word.getInt("word");
+                        int wordImage = word.getInt("image");
 
                         // Debug
                         System.out.println("SoundTrillTenActivity.beginTouchWord > Debug: Processed (" +
@@ -469,6 +522,9 @@ public class SoundDrillTenActivity extends AppCompatActivity {
             }
             catch (Exception ex){
                 ex.printStackTrace();
+                if (mp != null) {
+                    mp.release();
+                }
                 finish();
 
             }
@@ -527,8 +583,12 @@ public class SoundDrillTenActivity extends AppCompatActivity {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -569,9 +629,13 @@ public class SoundDrillTenActivity extends AppCompatActivity {
                     }
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -581,31 +645,48 @@ public class SoundDrillTenActivity extends AppCompatActivity {
         // Debug
         System.out.println("-- SoundTrillTenActivity.checkIfWordCorrect > Debug: METHOD CALLED");
 
-        if (word == currentWord){
-            reward(word);
-            playThisSound(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
-            currentWord++;
-        }
-        else{
-            try {
-                int soundid = ResourceSelector.getNegativeAffirmationSound(getApplicationContext());
-                Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
-                mp.reset();
-                mp.setDataSource(getApplicationContext(), myUri);
-                mp.prepare();
-                mp.start();
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp.reset();
+        if (buttonsEnabled) {
+            if (word == currentWord) {
+                buttonsEnabled = false;
+                reward(word);
+                playThisSound(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
+                currentWord++;
+            } else {
+                try {
+                    int soundid = ResourceSelector.getNegativeAffirmationSound(getApplicationContext());
+                    Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
+                    mp.reset();
+                    mp.setDataSource(getApplicationContext(), myUri);
+                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            mp.start();
+                        }
+                    });
+                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            mp.reset();
+                        }
+                    });
+                    mp.prepare();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    if (mp != null) {
+                        mp.release();
                     }
-                });
-            }
-            catch (Exception ex){
-                ex.printStackTrace();
-                finish();
+                    finish();
+                }
             }
         }
+    }
+
+    private void setButtonsEnabled(boolean enable) {
+        buttonWord1.setEnabled(enable);
+        buttonWord2.setEnabled(enable);
+        buttonWord3.setEnabled(enable);
+        buttonWord4.setEnabled(enable);
+        buttonWord5.setEnabled(enable);
     }
 
     @Override

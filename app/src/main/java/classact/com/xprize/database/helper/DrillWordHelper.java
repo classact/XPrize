@@ -19,8 +19,8 @@ public class DrillWordHelper {
         }
     }
 
-    public static ArrayList getDrillWords(SQLiteDatabase db, int languageID, int unitId, int subId, int drillId, int wordType, int limit){
-        ArrayList drillWords = new ArrayList();
+    public static ArrayList<Integer> getDrillWords(SQLiteDatabase db, int languageID, int unitId, int subId, int drillId, int wordType, int limit){
+        ArrayList<Integer> drillWords = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT WordID FROM tbl_DrillWords where LanguageID = "+languageID+" and WordType = " + wordType + " and UnitID = " + unitId + " and SubID = " + subId + " and DrillID = " + drillId + " ORDER BY RANDOM() LIMIT " + limit +";", null);
         //DrillWords drillWord = new DrillWords();
         int drillWord=0;
@@ -53,8 +53,8 @@ public class DrillWordHelper {
         }
     }
 
-    public static ArrayList getWrongDrillWords(SQLiteDatabase db, int languageID, int unitId, int subId, int drillId, int wordType, int limit){
-        ArrayList drillWords = new ArrayList();
+    public static ArrayList<Integer> getWrongDrillWords(SQLiteDatabase db, int languageID, int unitId, int subId, int drillId, int wordType, int limit){
+        ArrayList <Integer>drillWords = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT WordID FROM tbl_DrillWords where LanguageID = "+languageID+" and WordType = " + wordType + " and UnitID <> " + unitId + " and SubID = "+ subId + " ORDER BY RANDOM() LIMIT " + limit +";", null);
         int drillWord=0;
         try {

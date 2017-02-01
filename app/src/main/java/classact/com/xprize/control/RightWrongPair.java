@@ -8,8 +8,8 @@ public class RightWrongPair {
     private ObjectAndSound _rightObject;
     private ObjectAndSound _wrongObject;
 
-    public RightWrongPair (ObjectAndSound rightObjet, ObjectAndSound wrongObject) {
-        _rightObject = rightObjet;
+    public RightWrongPair (ObjectAndSound rightObject, ObjectAndSound wrongObject) {
+        _rightObject = rightObject;
         _wrongObject = wrongObject;
     }
 
