@@ -184,9 +184,9 @@ public class DrillFetcher {
                 }
             }
         } catch (SQLiteException sqlex) {
-            throw new SQLiteException("getPhonicsDrill: " + sqlex.getMessage());
+            throw new SQLiteException("getPhonicsDrill > SQLiteException: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new Exception("getPhonicsDrill: " + ex.getMessage());
+            throw new Exception("getPhonicsDrill > Exception: " + ex.getMessage());
         }
         return intent;
     }

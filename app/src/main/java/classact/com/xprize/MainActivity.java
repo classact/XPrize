@@ -28,13 +28,13 @@ import classact.com.xprize.utils.ResourceDecoder;
 public class MainActivity extends AppCompatActivity {
 
 
-    private final boolean ALLOW_DB_RECOPY = false;
+    private final boolean ALLOW_DB_RECOPY = true;
 
     // Database hack related
-    private final boolean HACK_NEXT_UNIT = false;
+    private final boolean HACK_NEXT_UNIT = true;
     private final int HACK_UNIT_ID = 1;
     private final int HACK_UNIT_SUB_ID_IN_PROGRESS = 0;
-    private final int HACK_DRILL_LAST_PLAYED = 5;
+    private final int HACK_DRILL_LAST_PLAYED = 6;
     private final int HACK_UNIT_FIRST_TIME = 0;
     private final int HACK_UNIT_FIRST_TIME_MOVIE = 1;
 
@@ -509,7 +509,7 @@ public class MainActivity extends AppCompatActivity {
                     // Hax to avoid bugged drills
                     int currentDrill = u.getUnitDrillLastPlayed() + 1;
                     int nextDrill = currentDrill + 1;
-                    int[] buggedDrills = {7,8,9};
+                    int[] buggedDrills = {8,9};
 
                     if (buggedDrills.length > 0) {
                         for (int buggedDrill : buggedDrills) {

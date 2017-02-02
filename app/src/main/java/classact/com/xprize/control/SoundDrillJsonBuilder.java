@@ -223,49 +223,66 @@ public class SoundDrillJsonBuilder {
     public static  String getSoundDrillSevenJson(Context context,
                                                  String listenToWordAndTouch,
                                                  ArrayList<SpelledWord> words){
-        String drillData = "{\"listen_to_word_and_touch\":" +  ResourceDecoder.getIdentifier(context,listenToWordAndTouch,"raw") + "," + "\"words\":[";
-        int i = 1;
-        for(SpelledWord obj : words) {
-            if (i > 1) {
+
+        String drillData = "{\"listen_to_word_and_touch\":\"" + listenToWordAndTouch + "\"," + "\"words\":[";
+
+        for (int i = 0; i < words.size(); i++) {
+
+            SpelledWord word = words.get(i);
+
+            if (i > 0) {
                 drillData += ",";
             }
-            drillData += "{\"segmeted_word_spelling\":["  ;
-            String[] images = words.get(i-1).getWord().getSpelling().split(",");
+            drillData += "{\"segmeted_word_spelling\":[";
+
+            String[] images = word.getWord().getSpelling().split(",");
+
             for(int x = 0; x < images.length; x++){
+
                 String[] BlackAndRed = images[x].split("&");
-                if (x == 0) {
-                    drillData += "{\"black\":" + ResourceDecoder.getIdentifier(context,BlackAndRed[0],"drawable");
+
+                if (x > 0) {
+                    drillData += ",";
                 }
-                else{
-                    drillData += ",{\"black\":" + ResourceDecoder.getIdentifier(context,BlackAndRed[0],"drawable");
-                }
+                drillData += "{\"black\":" + ResourceDecoder.getIdentifier(context,BlackAndRed[0],"drawable");
                 drillData += ",\"red\":" + ResourceDecoder.getIdentifier(context,BlackAndRed[1],"drawable") + "}";
             }
-            drillData += "],\"segmeted_word_sound\":" + ResourceDecoder.getIdentifier(context, words.get(i-1).getWord().getObjectSound(), "raw") + "," +
-                    "\"segmeted_word_slow_sound\":" + ResourceDecoder.getIdentifier(context, words.get(i-1).getWord().getObjectSlowSound(), "raw") + "," +
-                    "\"segmeted_word_sounds\": [";
-            int j = 1;
-            for (String sound: obj.getLettersSound()) {
-                if (j == 1)
-                    drillData += "{\"sound\":" + ResourceDecoder.getIdentifier(context,sound, "raw") + "}";
-                else
-                    drillData += ",{\"sound\":" + ResourceDecoder.getIdentifier(context, sound, "raw") + "}";
-                j++;
+
+            drillData += "],\"segmeted_word_sound\":\"" + word.getWord().getObjectSound() + "\"," +
+                    "\"segmeted_word_slow_sound\":\"" + word.getWord().getObjectSlowSound() + "\"," +
+                    "\"segmeted_word_sounds\":[";
+
+
+            ArrayList<String> sounds = word.getLettersSound();
+            for (int j = 0; j < sounds.size(); j++) {
+
+                String sound = sounds.get(i);
+
+                if (j > 0) {
+                    drillData += ",";
+                }
+                drillData += "{\"sound\":\"" + sound + "\"}";
             }
+
             drillData += "],";
             drillData +=  "\"pictures\":[" ;
-            j = 0;
-            for (DraggableImage<String> image: obj.getLettersImages()) {
-                if (j == 0)
-                    drillData += "{\"picture\":" + ResourceDecoder.getIdentifier(context,image.getcontent(),"drawable") + ",\"correct\":" +  image.isRight() + "}";
-                else
-                    drillData += ",{\"picture\":" + ResourceDecoder.getIdentifier(context,image.getcontent(),"drawable") + ",\"correct\":" +  image.isRight() + "}";
-                j++;
+
+            ArrayList<DraggableImage<String>> draggableImages = word.getLettersImages();
+            for (int k = 0; k < draggableImages.size(); k++) {
+
+                DraggableImage<String> draggableImage = draggableImages.get(i);
+
+                if (k > 0) {
+                    drillData += ",";
+                }
+                drillData += "{\"picture\":" + ResourceDecoder.getIdentifier(context,draggableImage.getcontent(),"drawable") +
+                        ",\"correct\":" +  draggableImage.isRight() + "}";
+
             }
             drillData += "]}";
-            i++;
         }
         drillData += "]}";
+
         return drillData;
     }
 

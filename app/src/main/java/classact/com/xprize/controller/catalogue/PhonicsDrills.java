@@ -365,9 +365,9 @@ public class PhonicsDrills {
             spelledWord.setWord(word);
             spelledWord.setettersSound(letterSounds);
             letterImages = new ArrayList<>();
-            letterImages.add(new DraggableImage<String>(0, 1, rightWord3.getWordPictureURI()));
-            letterImages.add(new DraggableImage<String>(0, 0, wrongWord5.getWordPictureURI()));
-            letterImages.add(new DraggableImage<String>(0, 0, wrongWord6.getWordPictureURI()));
+            letterImages.add(new DraggableImage<>(0, 1, rightWord3.getWordPictureURI()));
+            letterImages.add(new DraggableImage<>(0, 0, wrongWord5.getWordPictureURI()));
+            letterImages.add(new DraggableImage<>(0, 0, wrongWord6.getWordPictureURI()));
             spelledWord.setLettersImages(letterImages);
             words.add(spelledWord);
             /*
@@ -429,9 +429,11 @@ public class PhonicsDrills {
             intent.putExtra("data", drillData);
 
         } catch (SQLiteException sqlex) {
-            throw new SQLiteException("D7: " + sqlex.getMessage());
+            sqlex.printStackTrace();
+            throw new SQLiteException("D7 > SQLIteException: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D7: " + ex.getMessage());
+            ex.printStackTrace();
+            throw new SQLiteException("D7 > Exception: " + ex.getMessage());
         }
         return intent;
     }
