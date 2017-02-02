@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import classact.com.xprize.R;
 import classact.com.xprize.utils.FetchResource;
+import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillSevenActivity extends AppCompatActivity {
@@ -102,7 +103,6 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
 
     public void showTripple(){
         try {
-            System.out.println("Current tripple: " + currentTripple);
             roundEnd = false;
             //segmentWritingView = new SegmetedWritingView(this,R.drawable.backgroundwhite);
             //writingContainer.removeAllViews();
@@ -126,13 +126,17 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
             }
 
             JSONArray pictures = data.getJSONObject(currentTripple).getJSONArray("pictures");
+            int[] shuffledArrayIndexes = FisherYates.shuffle(pictures.length()); // Randomized indexes
             for(int i = 0; i < pictures.length();i++) {
-                items[i].setImageResource(pictures.getJSONObject(i).getInt("picture"));
-                if (pictures.getJSONObject(i).getInt("correct") == 1) {
+                int si = shuffledArrayIndexes[i];
+                System.out.println("SoundDrillSevenActivity.showTripple > Debug: Shuffled index is (" + si + ")");
+                JSONObject pictureObject = pictures.getJSONObject(si);
+                items[i].setImageResource(pictureObject.getInt("picture"));
+                if (pictureObject.getInt("correct") == 1) {
                     correctItem = i;
+                    System.out.println("SoundDrillSevenActivity.showTripple > Debug: correctItem is (" + correctItem + ")");
                 }
             }
-
             playListenToWordAndTouch();
         }
         catch (Exception ex){
@@ -146,6 +150,7 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
 
     public void playListenToWordAndTouch() {
         try {
+            System.out.println("SoundDrillSevenActivity.playListenToWordAndTouch > Debug: correctItem is (" + correctItem + ")");
             String sound = params.getString("listen_to_word_and_touch");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
