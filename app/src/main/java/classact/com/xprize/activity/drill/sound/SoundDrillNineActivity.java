@@ -1,7 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -11,6 +10,7 @@ import android.widget.RelativeLayout;
 import org.json.JSONObject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.view.WriteView;
 
 public class SoundDrillNineActivity extends AppCompatActivity {
@@ -34,9 +34,18 @@ public class SoundDrillNineActivity extends AppCompatActivity {
         try {
             params = new JSONObject(data);
             //Todo: Sound
-            int soundid = params.getInt("lets_draw");
-            mp = MediaPlayer.create(this,soundid);
-            mp.start();
+            String sound = params.getString("lets_draw");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -44,9 +53,13 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                     handler.postDelayed(sayDrawSomethingRunnable, 500);
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -60,22 +73,32 @@ public class SoundDrillNineActivity extends AppCompatActivity {
 
     private void sayDrawSomething(){
         try {
-            int soundid = params.getInt("draw_something_that_starts_with");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            String sound = params.getString("draw_something_that_starts_with");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
-                    //handler.postDelayed(saySomethingRunnable, 200);
                     saySomething();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -88,13 +111,19 @@ public class SoundDrillNineActivity extends AppCompatActivity {
     };
 
     private void saySomething(){
-        int sound = 0;
         try{
-            sound = params.getInt("sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            String sound = params.getString("sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.setDataSource(soundPath);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -102,9 +131,13 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                     handler.postDelayed(writeRunnable,6000);
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -113,22 +146,35 @@ public class SoundDrillNineActivity extends AppCompatActivity {
         @Override
         public void run() {
             try{
-                int sound = params.getInt("what_did_you_draw");
-                Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-                mp.reset();
-                mp.setDataSource(getApplicationContext(), myUri);
-                mp.prepare();
-                mp.start();
+                String sound = params.getString("what_did_you_draw");
+                String soundPath = FetchResource.sound(getApplicationContext(), sound);
+                if (mp == null) {
+                    mp = new MediaPlayer();
+                }
+                mp.setDataSource(soundPath);
+                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mp.start();
+                    }
+                });
                 mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         mp.reset();
+                        if (mp != null) {
+                            mp.release();
+                        }
                         finish();
                     }
                 });
+                mp.prepare();
             }
             catch (Exception ex){
                 ex.printStackTrace();
+                if (mp != null) {
+                    mp.release();
+                }
                 finish();
             }
         }

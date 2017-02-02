@@ -316,10 +316,10 @@ public class SoundDrillJsonBuilder {
                                                  String drawSomethingStartsWith,
                                                  String yippeSound,
                                                  String letsDrawSound) {
-        String drillData = "{\"sound\":" + ResourceDecoder.getIdentifier(context,letterSound,"raw") +
-                "\"draw_something_that_starts_with\":" + ResourceDecoder.getIdentifier(context,drawSomethingStartsWith,"raw") + "," +
-                "\"what_did_you_draw\":" + ResourceDecoder.getIdentifier(context,yippeSound,"raw") + "," +
-                "\"lets_draw\":" + ResourceDecoder.getIdentifier(context,letsDrawSound,"raw") +
+        String drillData = "{\"sound\":\"" + letterSound + "\"," +
+                "\"draw_something_that_starts_with\":\"" + drawSomethingStartsWith + "\"," +
+                "\"what_did_you_draw\":\"" + yippeSound + "\"," +
+                "\"lets_draw\":\"" + letsDrawSound + "\"" +
                 "}";
         return drillData;
     }

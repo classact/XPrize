@@ -403,9 +403,9 @@ public class PhonicsDrills {
             intent.putExtra("data", drillData);
 
         } catch (SQLiteException sqlex) {
-            throw new SQLiteException("D9: " + sqlex.getMessage());
+            throw new SQLiteException("D9 > SQLiteException: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D9: " + ex.getMessage());
+            throw new Exception("D9 > Exception: " + ex.getMessage());
         }
         return intent;
     }

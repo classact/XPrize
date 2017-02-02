@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private final boolean HACK_NEXT_UNIT = true;
     private final int HACK_UNIT_ID = 1;
     private final int HACK_UNIT_SUB_ID_IN_PROGRESS = 0;
-    private final int HACK_DRILL_LAST_PLAYED = 7;
+    private final int HACK_DRILL_LAST_PLAYED = 8;
     private final int HACK_UNIT_FIRST_TIME = 0;
     private final int HACK_UNIT_FIRST_TIME_MOVIE = 1;
 
@@ -509,7 +509,7 @@ public class MainActivity extends AppCompatActivity {
                     // Hax to avoid bugged drills
                     int currentDrill = u.getUnitDrillLastPlayed() + 1;
                     int nextDrill = currentDrill + 1;
-                    int[] buggedDrills = {9};
+                    int[] buggedDrills = {};
 
                     if (buggedDrills.length > 0) {
                         for (int buggedDrill : buggedDrills) {
