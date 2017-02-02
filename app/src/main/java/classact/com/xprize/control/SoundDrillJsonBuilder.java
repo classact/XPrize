@@ -233,7 +233,10 @@ public class SoundDrillJsonBuilder {
             if (i > 0) {
                 drillData += ",";
             }
-            drillData += "{\"segmeted_word_spelling\":[";
+            drillData += "{\"word_image\":" + ResourceDecoder.getIdentifier(context,word.getWord().getObjectImage(),"drawable") + ",";
+            drillData += "\"word_sound\":\"" + word.getWord().getObjectSound() + "\",";
+
+            drillData += "\"segmeted_word_spelling\":[";
 
             String[] images = word.getWord().getSpelling().split(",");
 
@@ -252,11 +255,10 @@ public class SoundDrillJsonBuilder {
                     "\"segmeted_word_slow_sound\":\"" + word.getWord().getObjectSlowSound() + "\"," +
                     "\"segmeted_word_sounds\":[";
 
-
             ArrayList<String> sounds = word.getLettersSound();
             for (int j = 0; j < sounds.size(); j++) {
 
-                String sound = sounds.get(i);
+                String sound = sounds.get(j);
 
                 if (j > 0) {
                     drillData += ",";
@@ -270,7 +272,7 @@ public class SoundDrillJsonBuilder {
             ArrayList<DraggableImage<String>> draggableImages = word.getLettersImages();
             for (int k = 0; k < draggableImages.size(); k++) {
 
-                DraggableImage<String> draggableImage = draggableImages.get(i);
+                DraggableImage<String> draggableImage = draggableImages.get(k);
 
                 if (k > 0) {
                     drillData += ",";
