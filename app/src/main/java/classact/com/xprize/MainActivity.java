@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private final boolean HACK_NEXT_UNIT = true;
     private final int HACK_UNIT_ID = 1;
     private final int HACK_UNIT_SUB_ID_IN_PROGRESS = 0;
-    private final int HACK_DRILL_LAST_PLAYED = 6;
+    private final int HACK_DRILL_LAST_PLAYED = 7;
     private final int HACK_UNIT_FIRST_TIME = 0;
     private final int HACK_UNIT_FIRST_TIME_MOVIE = 1;
 
@@ -509,7 +509,7 @@ public class MainActivity extends AppCompatActivity {
                     // Hax to avoid bugged drills
                     int currentDrill = u.getUnitDrillLastPlayed() + 1;
                     int nextDrill = currentDrill + 1;
-                    int[] buggedDrills = {8,9};
+                    int[] buggedDrills = {9};
 
                     if (buggedDrills.length > 0) {
                         for (int buggedDrill : buggedDrills) {
@@ -618,7 +618,6 @@ public class MainActivity extends AppCompatActivity {
 
                 default:
                     throw new Exception("Request Code (" + requestCode + ") - Invalid");
-
             }
 
             /* // After all the above database updates, let's get the unitId of the next unit-to-play
@@ -682,7 +681,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public int[] determineNextSplashBg() {
-
         // Index 0: the Code according to commons.Code
         // Index 1: custom bg resource
         int[] nextSplashBg = new int[2];

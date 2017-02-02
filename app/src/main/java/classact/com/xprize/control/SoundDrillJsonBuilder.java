@@ -299,12 +299,12 @@ public class SoundDrillJsonBuilder {
                                                  String bigLetterPath,
                                                  String bigLetterDotsImage){
         String drillData = "{\"small_letter_path\":" + ResourceDecoder.getIdentifier(context,smallLetterPath,"raw") + "," +
-                "\"lets_learn_how_to_write_upper\":" +ResourceDecoder.getIdentifier(context,letsLearnToWriteUpperSound,"raw")  + "," +
-                "\"lets_learn_how_to_write_lower\":" + ResourceDecoder.getIdentifier(context,letsLearnToWriteLowerSound,"raw")  + "," +
-                "\"now_you_write\":" + ResourceDecoder.getIdentifier(context,nowYouWriteSound,"raw")  + "," +
-                "\"watch\":" + ResourceDecoder.getIdentifier(context,watchSound,"raw")  + "," +
-                "\"small_letter\":" + ResourceDecoder.getIdentifier(context,smallLetterDotsImage,"drawable")   + "," +
-                "\"letter_sound\":" + ResourceDecoder.getIdentifier(context,letterSound,"raw")  +  "," +
+                "\"lets_learn_how_to_write_upper\":\"" + letsLearnToWriteUpperSound + "\"," +
+                "\"lets_learn_how_to_write_lower\":\"" + letsLearnToWriteLowerSound + "\"," +
+                "\"now_you_write\":\"" + nowYouWriteSound + "\"," +
+                "\"watch\":\"" + watchSound + "\"," +
+                "\"small_letter\":" + ResourceDecoder.getIdentifier(context,smallLetterDotsImage,"drawable") + "," +
+                "\"letter_sound\":\"" + letterSound + "\"," +
                 "\"big_letter_path\":" + ResourceDecoder.getIdentifier(context,bigLetterPath,"raw") + "," +
                 "\"big_letter\":" + ResourceDecoder.getIdentifier(context,bigLetterDotsImage,"drawable") +
                 "}";
