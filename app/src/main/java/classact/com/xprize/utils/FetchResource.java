@@ -18,7 +18,7 @@ import java.io.IOException;
 public class FetchResource {
 
     private static final String LOCATION = "/Android/media/";
-    private static final String VIDEOS = "/videos/";
+    private static final String VIDEOS = "raw";
     private static final String SOUNDS = "/sounds/";
     private static final String IMAGES = "/images/";
 
@@ -29,6 +29,23 @@ public class FetchResource {
     private static final String WAV = ".wav";
 
     public static String video(Context context, String name) {
+        String path = null;
+
+        try {
+            // Get MP4 path
+            String packageName = context.getPackageName();
+            int resourceId = context.getResources().getIdentifier(name, "raw", packageName);
+            path = "android.resource://" + packageName + "/" + resourceId;
+
+        } catch (Exception ex) {
+            System.err.println("FetchResource.video > Exception: " + ex.getMessage());
+            path = null;
+        }
+
+        return path;
+    }
+
+    public static String videoPath(Context context, String name) {
         String path = null;
         FileInputStream fis = null;
         FileDescriptor fd;
@@ -69,6 +86,23 @@ public class FetchResource {
     }
 
     public static String sound(Context context, String name) {
+        String path;
+
+        try {
+            // Get MP4 path
+            String packageName = context.getPackageName();
+            int resourceId = context.getResources().getIdentifier(name, "raw", packageName);
+            path = "android.resource://" + packageName + "/" + resourceId;
+
+        } catch (Exception ex) {
+            System.err.println("FetchResource.video > Exception: " + ex.getMessage());
+            path = null;
+        }
+
+        return path;
+    }
+
+    public static String soundPath(Context context, String name) {
         String path = null;
         FileInputStream fis = null;
         FileDescriptor fd;

@@ -1,6 +1,7 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -39,7 +40,7 @@ public class SoundDrillNineActivity extends AppCompatActivity {
             if (mp == null) {
                 mp = new MediaPlayer();
             }
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -78,7 +79,7 @@ public class SoundDrillNineActivity extends AppCompatActivity {
             if (mp == null) {
                 mp = new MediaPlayer();
             }
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -117,7 +118,7 @@ public class SoundDrillNineActivity extends AppCompatActivity {
             if (mp == null) {
                 mp = new MediaPlayer();
             }
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -151,7 +152,7 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                 if (mp == null) {
                     mp = new MediaPlayer();
                 }
-                mp.setDataSource(soundPath);
+                mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
                 mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mp) {

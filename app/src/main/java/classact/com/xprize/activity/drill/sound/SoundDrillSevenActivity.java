@@ -157,7 +157,7 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 mp = new MediaPlayer();
             }
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -190,7 +190,7 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 mp = new MediaPlayer();
             }
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -297,7 +297,7 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                     mp = new MediaPlayer();
                 }
                 mp.reset();
-                mp.setDataSource(soundPath);
+                mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
                 mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mp) {
@@ -331,7 +331,7 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 mp = new MediaPlayer();
             }
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
