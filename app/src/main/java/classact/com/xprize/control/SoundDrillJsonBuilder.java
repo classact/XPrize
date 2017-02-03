@@ -312,14 +312,15 @@ public class SoundDrillJsonBuilder {
     }
 
     public static String getSoundDrillNineJson(Context context,
-                                                 String letterSound,
-                                                 String drawSomethingStartsWith,
-                                                 String yippeSound,
-                                                 String letsDrawSound) {
+                                                String letterSound,
+                                                String letsDrawSound,
+                                                String drawSomethingStartsWith,
+                                                String whatDidYouDrawSound) {
+
         String drillData = "{\"sound\":\"" + letterSound + "\"," +
+                "\"lets_draw\":\"" + letsDrawSound + "\"," +
                 "\"draw_something_that_starts_with\":\"" + drawSomethingStartsWith + "\"," +
-                "\"what_did_you_draw\":\"" + yippeSound + "\"," +
-                "\"lets_draw\":\"" + letsDrawSound + "\"" +
+                "\"what_did_you_draw\":\"" + whatDidYouDrawSound + "\"" +
                 "}";
         return drillData;
     }

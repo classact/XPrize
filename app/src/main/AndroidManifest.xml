@@ -9,6 +9,7 @@
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
@@ -218,8 +219,11 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="landscape">
         </activity>
-        <activity android:name=".activity.movie.MoviePausable">
+        <activity
+            android:name=".activity.movie.MoviePausable"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="landscape">
         </activity>
-    </application>
 
+    </application>
 </manifest>
