@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import classact.com.xprize.activity.drill.tutorial.Tutorial;
@@ -30,10 +31,10 @@ public class MainActivity extends AppCompatActivity {
     private final boolean ALLOW_DB_RECOPY = true;
 
     // Database hack related
-    private final boolean HACK_NEXT_UNIT = true;
+    private final boolean HACK_NEXT_UNIT = false;
     private final int HACK_UNIT_ID = 1;
     private final int HACK_UNIT_SUB_ID_IN_PROGRESS = 0;
-    private final int HACK_DRILL_LAST_PLAYED = 8;
+    private final int HACK_DRILL_LAST_PLAYED = 0;
     private final int HACK_UNIT_FIRST_TIME = 0;
     private final int HACK_UNIT_FIRST_TIME_MOVIE = 1;
 
@@ -262,6 +263,12 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("MainActivity.determineNextItem > Debug: Determine drill");
 
                         int drillId = drillLastPlayed + 1; // next item to play
+
+                        // Unit 1 skip Drill #13, 14, 15 hack
+                        if (unitId == 1 && drillId >= 13 && drillId <= 15) {
+                            drillId = 16;
+                        }
+
                         int languageId = Globals.SELECTED_LANGUAGE;
                         int subId = 0;
 
@@ -508,10 +515,15 @@ public class MainActivity extends AppCompatActivity {
                     // Hax to avoid bugged drills
                     int currentDrill = u.getUnitDrillLastPlayed() + 1;
                     int nextDrill = currentDrill + 1;
-                    int[] buggedDrills = {9};
-
-                    if (buggedDrills.length > 0) {
-                        for (int buggedDrill : buggedDrills) {
+                    ArrayList<Integer> buggedDrills = new ArrayList<>();
+                    if (unitId == 1) {
+                        // No Word drills #13, 14 and 15 for unit 1
+                        buggedDrills.add(13);
+                        buggedDrills.add(14);
+                        buggedDrills.add(15);
+                    }
+                    if (buggedDrills.size() > 0) {
+                        for (Integer buggedDrill : buggedDrills) {
                             if (buggedDrill >= nextDrill) {
                                 if (nextDrill == buggedDrill) {
                                     System.err.println("Skipping drill " + nextDrill);
@@ -721,6 +733,11 @@ public class MainActivity extends AppCompatActivity {
 
                 // Debug
                 System.out.println("MainActivity.determineNextSplashBg > Debug: :: HACK :: NOT APPLIED ");
+            }
+
+            // Unit 1 skip Drill #13, 14, 15 hack
+            if (unitId == 1 && drillLastPlayed >= 12 && drillLastPlayed <= 14) {
+                drillLastPlayed = 15;
             }
 
             // Debug

@@ -307,6 +307,10 @@ public class DrillFetcher {
                     DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
                     Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
+                    System.out.println("DrillFetcher.getWordDrill.case 13 > Debug: languageId " +
+                            languageId + ", unitId " + unitId + ", subId " + subId + ", drillId" +
+                            drillId + ", wordType" + wordType + ", limit " + limit);
+
                     // Fetch D4
                     intent = WordDrills.D4(context, dbHelper, unitId, drillId, languageId,
                             letter,

@@ -14,7 +14,7 @@ import classact.com.xprize.database.model.SimpleStoryWords;
 public class SimpleStoryWordHelper {
     public static SimpleStoryWords getSentenceWord(SQLiteDatabase db, int sentenceWordID) {
 
-        String[] columns = new String[]{"_id", "LanguageID", "UnitID", "SentenceID", "SentenceNo", "WordNo", "BlackWprd", "RedWord", "Sound"};
+        String[] columns = new String[]{"_id", "LanguageID", "UnitID", "SentenceID", "SentenceNo", "WordNo", "WordName", "WordSound"};
         String OrderBy = "_id asc";
         Cursor cursor = db.query("tbl_SentenceWords", columns, "_id=?", new String[]{String.valueOf(sentenceWordID)}, null, null, OrderBy);
         SimpleStoryWords sentenceWord = new SimpleStoryWords();
@@ -27,16 +27,15 @@ public class SimpleStoryWordHelper {
             sentenceWord.setSentenceID(cursor.getInt(3));
             sentenceWord.setSentenceNo(cursor.getInt(4));
             sentenceWord.setWordNo(cursor.getInt(5));
-            sentenceWord.setBlackWord(cursor.getString(6));
-            sentenceWord.setRedWord(cursor.getString(7));
-            sentenceWord.setWordSound(cursor.getString(8));
+            sentenceWord.setWordName(cursor.getString(6));
+            sentenceWord.setWordSound(cursor.getString(7));
         }
         cursor.close();
         return sentenceWord;
     }
 
-    public static ArrayList getSentenceWords(SQLiteDatabase db, int sentenceID){
-        ArrayList sentences = new ArrayList();
+    public static ArrayList<Integer> getSentenceWords(SQLiteDatabase db, int sentenceID){
+        ArrayList<Integer> sentences = new ArrayList<>();
         Cursor cursor = db.rawQuery("select _id from tbl_SentenceWords where SentenceID = " + sentenceID+ ";", null);
         //DrillWords drillWord = new DrillWords();
         int sentence=0;

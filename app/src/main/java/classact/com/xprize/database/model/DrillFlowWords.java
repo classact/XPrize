@@ -165,8 +165,8 @@ public class DrillFlowWords {
         return drillSound8;
     }
 
-    public void setDrillSound8(String drillSound9) {
-        this.drillSound9 = drillSound9;
+    public void setDrillSound8(String drillSound8) {
+        this.drillSound8 = drillSound8;
     }
 
     public String getDrillSound9() {

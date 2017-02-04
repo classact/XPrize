@@ -3,19 +3,21 @@ package classact.com.xprize.control;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+import classact.com.xprize.database.model.SimpleStoryWords;
+
 /**
  * Created by Tseliso on 1/3/2017.
  */
 
 public class SimpleStorySentence {
-    private ArrayList<Word> words;
+    private ArrayList<SimpleStoryWords> words;
     private String fullSound;
 
-    public ArrayList<Word> getWords() {
+    public ArrayList<SimpleStoryWords> getWords() {
         return words;
     }
 
-    public void setWords(ArrayList<Word> words) {
+    public void setWords(ArrayList<SimpleStoryWords> words) {
         this.words = words;
     }
 

@@ -13,6 +13,7 @@ public class SimpleStoryWords{
     private int wordNo;
     private String blackWord;
     private String redWord;
+    private String wordName;
     private String wordSound;
 
     public int getSentenceWordID() {
@@ -61,6 +62,14 @@ public class SimpleStoryWords{
 
     public void setWordNo(int wordNo) {
         this.wordNo = wordNo;
+    }
+
+    public String getWordName() {
+        return wordName;
+    }
+
+    public void setWordName(String wordName) {
+        this.wordName = wordName;
     }
 
     public String getBlackWord() { return blackWord;}
