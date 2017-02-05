@@ -334,9 +334,6 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                     }
                     else{
                         mp.release();
-                        if (mp != null) {
-                            mp.release();
-                        }
                         finish();
                     }
                 }
