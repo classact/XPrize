@@ -7,6 +7,7 @@ import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -1075,6 +1076,12 @@ public class Tutorial extends AppCompatActivity {
         startActivity(intent);
         overridePendingTransition(0, android.R.anim.fade_out);
         */
+
+        // Release media player
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+
         Intent intent = new Intent();
         setResult(Code.TUTORIAL, intent);
         finishAfterTransition();
@@ -1103,11 +1110,6 @@ public class Tutorial extends AppCompatActivity {
         */
 
         try {
-            // Reset media player
-            if (mediaPlayer != null) {
-                mediaPlayer.release();
-                mediaPlayer = null;
-            }
 
             // Get resource name
             String name = TutorialAudioResources.get(state);
@@ -1129,10 +1131,15 @@ public class Tutorial extends AppCompatActivity {
             String soundPath = FetchResource.sound(getApplicationContext(), name);
 
             // Reset media player
-            mediaPlayer = new MediaPlayer();
+            if (mediaPlayer == null) {
+                mediaPlayer = new MediaPlayer();
+            }
+
+            // Reset media player
+            mediaPlayer.reset();
 
             // Set data source of media player
-            mediaPlayer.setDataSource(soundPath);
+            mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(soundPath));
 
 
             // Set on completion listener
@@ -1141,7 +1148,7 @@ public class Tutorial extends AppCompatActivity {
                 public void onCompletion(MediaPlayer mp) {
 
                     // Release all previous media player instances
-                    mp.release();
+                    mp.reset();
 
                     // Send Message to controller
                     sendMessageToController("play", currentState + PLAY_COMPLETE);
