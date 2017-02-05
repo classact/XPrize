@@ -4,7 +4,7 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
-import classact.com.xprize.database.model.SimpleStoryWords;
+import classact.com.xprize.database.model.SimpleStoryWord;
 import classact.com.xprize.utils.ResourceDecoder;
 
 /**
@@ -67,7 +67,7 @@ public class SimpleStoryJsonBuilder {
             }
             i++;
             int j = 0;
-            for(SimpleStoryWords word: sentence.getWords()){
+            for(SimpleStoryWord word: sentence.getWords()){
                 if (j ==  0){
                     drillData +="{";
                 }
@@ -75,12 +75,13 @@ public class SimpleStoryJsonBuilder {
                     drillData +=",{";
                 }
                 j++;
-                drillData += "\"black_word\":" + ResourceDecoder.getIdentifier(context,word.getWordName(),"drawable");
-                /*if (word.getRedImage() != null)
-                    drillData += ",\"red_word\":" + ResourceDecoder.getIdentifier(context,word.getRedImage(),"drawable");
-                else*/
-                drillData += ",\"red_word\":0";
-                drillData += ",\"sound\":" + ResourceDecoder.getIdentifier(context,word.getWordSound(),"raw") + "}";
+                drillData += "\"black_word\":" + ResourceDecoder.getIdentifier(context,word.getBlackWord(),"drawable");
+                if (word.getRedWord() != null) {
+                    drillData += ",\"red_word\":" + ResourceDecoder.getIdentifier(context, word.getRedWord(), "drawable");
+                } else {
+                    drillData += ",\"red_word\":0";
+                }
+                drillData += ",\"sound\":" + ResourceDecoder.getIdentifier(context,word.getSound(),"raw") + "}";
             }
             drillData += "]";
         }

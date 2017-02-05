@@ -28,7 +28,7 @@ import classact.com.xprize.utils.ResourceDecoder;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final boolean ALLOW_DB_RECOPY = true;
+    private final boolean ALLOW_DB_RECOPY = false;
 
     // Database hack related
     private final boolean HACK_NEXT_UNIT = false;

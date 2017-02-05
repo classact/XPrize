@@ -4,8 +4,8 @@ package classact.com.xprize.database.model;
  * Created by JHB on 2016/12/16.
  */
 
-public class SimpleStoryWords{
-    private int sentenceWordID;
+public class SimpleStoryWord {
+    private int simpleStoryWordID;
     private int languageID;
     private int unitID;
     private int sentenceID;
@@ -16,14 +16,20 @@ public class SimpleStoryWords{
     private String wordName;
     private String wordSound;
 
-    public int getSentenceWordID() {
-        return sentenceWordID;
+    /* * * * * * * * * * *
+     * SimpleStoryWordID *
+     * * * * * * * * * * */
+    public int getSimpleStoryWordID() {
+        return simpleStoryWordID;
     }
 
-    public void setSentenceWordID(int sentenceWordID) {
-        this.sentenceWordID = sentenceWordID;
+    public void setSimpleStoryWordID(int simpleStoryWordID) {
+        this.simpleStoryWordID = simpleStoryWordID;
     }
 
+    /* * * * * * * *
+     * LanguageID *
+     * * * * * * */
     public int getLanguageID() {
         return languageID;
     }
@@ -32,6 +38,9 @@ public class SimpleStoryWords{
         this.languageID = languageID;
     }
 
+    /* * * * *
+     * UnitID *
+     * * * * * */
     public int getUnitID() {
         return unitID;
     }
@@ -40,6 +49,9 @@ public class SimpleStoryWords{
         this.unitID = unitID;
     }
 
+    /* * * * * * * *
+     * SentenceID *
+     * * * * * * */
     public int getSentenceID() {
         return sentenceID;
     }
@@ -48,6 +60,9 @@ public class SimpleStoryWords{
         this.sentenceID = sentenceID;
     }
 
+    /* * * * * * *
+     * SentenceNo *
+     * * * * * * * */
     public int getSentenceNo() {
         return sentenceNo;
     }
@@ -56,6 +71,9 @@ public class SimpleStoryWords{
         this.sentenceNo = sentenceNo;
     }
 
+    /* * * * * *
+     * WordNo *
+     * * * * */
     public int getWordNo() {
         return wordNo;
     }
@@ -64,28 +82,30 @@ public class SimpleStoryWords{
         this.wordNo = wordNo;
     }
 
-    public String getWordName() {
-        return wordName;
-    }
-
-    public void setWordName(String wordName) {
-        this.wordName = wordName;
-    }
-
+    /* * * * * * *
+     * BlackWord *
+     * * * * * * */
     public String getBlackWord() { return blackWord;}
 
     public void setBlackWord(String blackWord) {
         this.blackWord = blackWord;
     }
 
+    /* * * * * *
+     * RedWord *
+     * * * * * */
     public String getRedWord() { return redWord;}
 
     public void setRedWord(String redWord) {
         this.redWord = redWord;
     }
-    public String getWordSound() { return wordSound;}
 
-    public void setWordSound(String wordSound) {
+    /* * * * *
+     * Sound *
+     * * * * */
+    public String getSound() { return wordSound;}
+
+    public void setSound(String wordSound) {
         this.wordSound = wordSound;
     }
 

@@ -20,11 +20,9 @@ import classact.com.xprize.database.helper.SimpleStoryUnitFileHelper;
 import classact.com.xprize.database.helper.SimpleStoryWordHelper;
 import classact.com.xprize.database.model.Comprehension;
 import classact.com.xprize.database.model.DrillFlowWords;
-import classact.com.xprize.database.model.SentenceDBWords;
 import classact.com.xprize.database.model.SimpleStories;
 import classact.com.xprize.database.model.SimpleStoryUnitFiles;
-import classact.com.xprize.database.model.SimpleStoryWords;
-import classact.com.xprize.database.model.Word;
+import classact.com.xprize.database.model.SimpleStoryWord;
 
 public class StoryDrills {
 
@@ -38,25 +36,44 @@ public class StoryDrills {
             DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
 
             // Initialize sentence lists
-            ArrayList<SimpleStorySentence> sentences = new ArrayList<>();
-            ArrayList<Integer> sentenceIds = SimpleStoriesHelper.getSentences(dbHelper.getReadableDatabase(), languageId, unitId);
+            ArrayList<SimpleStorySentence> simpleStorySentences = new ArrayList<>();
+
+            // Get SimpleStories (Sentences) from tbl_SimpleStories
+            ArrayList<Integer> simpleStorySentenceIds = SimpleStoriesHelper.getSentences(dbHelper.getReadableDatabase(), languageId, unitId);
 
             // Fetch story data
-            for (int i = 0; i < sentenceIds.size(); i++) {
-                SimpleStories sentenceFromDB = SimpleStoriesHelper.getSentence(dbHelper.getReadableDatabase(), sentenceIds.get(i));
-                SimpleStorySentence sentence = new SimpleStorySentence();
+            for (int i = 0; i < simpleStorySentenceIds.size(); i++) {
+                // Get an individual SimpleStories (a sentence) object
+                SimpleStories simpleStories = SimpleStoriesHelper.getSentence(dbHelper.getReadableDatabase(), simpleStorySentenceIds.get(i));
 
-                sentence.setFullSound(sentenceFromDB.getSentenceSoundFile());
+                // Create object used to store the sentence data
+                // Note the 1:many relationship where a single sentence can be split into several words
+                // ie. This + is + Bahati
+                SimpleStorySentence simpleStorySentence = new SimpleStorySentence();
 
-                ArrayList<SimpleStoryWords> words = new ArrayList<>();
+                // Full sentence sound file
+                simpleStorySentence.setFullSound(simpleStories.getSentenceSoundFile());
 
-                ArrayList<Integer> sentenceWordIDs = SimpleStoryWordHelper.getSentenceWords(dbHelper.getReadableDatabase(), sentenceIds.get(i));
-                for (int j = 0; j < sentenceWordIDs.size(); j++) {
-                    SimpleStoryWords sentenceWord = SimpleStoryWordHelper.getSentenceWord(dbHelper.getReadableDatabase(), sentenceWordIDs.get(j));
-                    words.add(sentenceWord);
+                // List to hold the words in a sentence
+                ArrayList<SimpleStoryWord> simpleStoryWords = new ArrayList<>();
+
+                // Get all the SimpleStoryWordIds
+                ArrayList<Integer> simpleStoryWordIds = SimpleStoryWordHelper.getSimpleStoryWordIds(dbHelper.getReadableDatabase(), simpleStorySentenceIds.get(i));
+
+                // For each SimpleStoryWordId
+                for (int j = 0; j < simpleStoryWordIds.size(); j++) {
+
+                    // Get the SimpleStoryWord object
+                    SimpleStoryWord simpleStoryWord = SimpleStoryWordHelper.getSimpleStoryWord(dbHelper.getReadableDatabase(), simpleStoryWordIds.get(j));
+
+                    // Add the SimpleStoryWord object to list
+                    simpleStoryWords.add(simpleStoryWord);
                 }
-                sentence.setWords(words);
-                sentences.add(sentence);
+                // Set (add) the list of SimpleStoryWords for the SimpleStorySentence
+                simpleStorySentence.setWords(simpleStoryWords);
+
+                // Add the SimpleStorySentence to the list of SimpleStorySentence(s)
+                simpleStorySentences.add(simpleStorySentence);
             }
 
             ArrayList<ComprehensionQuestion> questions = new ArrayList<>();
@@ -117,7 +134,7 @@ public class StoryDrills {
                     simpleStoryUnitFiles.getSimpleStoryUnitSoundFile(),
                     drillFlowWord.getDrillSound8(),
                     simpleStoryUnitFiles.getSimpleStoryUnitImage(),
-                    sentences,
+                    simpleStorySentences,
                     simpleStoryUnitFiles.getCompInstr1(),
                     simpleStoryUnitFiles.getCompInstr2(),
                     questions);
