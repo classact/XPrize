@@ -21,6 +21,7 @@ import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.locale.Languages;
+import classact.com.xprize.utils.FetchResource;
 
 public class MoviePausable extends AppCompatActivity {
 
@@ -135,7 +136,7 @@ public class MoviePausable extends AppCompatActivity {
         }
 
         // Create video path
-        String videoPath = Environment.getExternalStorageDirectory() + "/Android/media/classact.com.xprize/videos/" + resourceName + ".mp4";
+        String videoPath = FetchResource.video(getApplicationContext(), resourceName);
 
         // Set video URI
         Uri videoURI = Uri.parse(videoPath);

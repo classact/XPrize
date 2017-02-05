@@ -1,6 +1,7 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -67,7 +68,7 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                 mp = new MediaPlayer();
             }
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -101,7 +102,7 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                 mp = new MediaPlayer();
             }
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -141,7 +142,7 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                 mp = new MediaPlayer();
             }
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -174,7 +175,7 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                 mp = new MediaPlayer();
             }
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -214,7 +215,7 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                 mp = new MediaPlayer();
             }
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -275,7 +276,7 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                 mp = new MediaPlayer();
             }
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -316,7 +317,7 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                 mp = new MediaPlayer();
             }
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {

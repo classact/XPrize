@@ -135,27 +135,27 @@ public class DrillFetcher {
                     int wrongWordLimit = 10;
 
                     //This will get 5 random words based on the specific unit ID
-                    ArrayList<Integer> rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
-                    ArrayList<Integer> wrongDrillWordIDs = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, wrongWordLimit);
+                    ArrayList<Integer> rightDrillWordIds = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
+                    ArrayList<Integer> wrongDrillWordIds = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, wrongWordLimit);
                     DrillFlowWords drillFlowWord = drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
                     // Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+
+                    ArrayList<Word> rightDrillWords = new ArrayList<>();
+                    for (Integer id: rightDrillWordIds) {
+                        rightDrillWords.add(WordHelper.getWord(dbHelper.getReadableDatabase(), id));
+                    }
+
+                    ArrayList<Word> wrongDrillWords = new ArrayList<>();
+                    for (Integer id: wrongDrillWordIds) {
+                        wrongDrillWords.add(WordHelper.getWord(dbHelper.getReadableDatabase(), id));
+                    }
+
 
                     // Fetch D7
                     intent = PhonicsDrills.D7(context, dbHelper, unitId, drillId, languageId,
                             letter,
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(0)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(1)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(2)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(0)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(1)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(2)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(3)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(4)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(5)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(6)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(7)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(8)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(9)),
+                            rightDrillWords,
+                            wrongDrillWords,
                             drillFlowWord.getDrillSound1()
                     );
                     break;
@@ -184,9 +184,9 @@ public class DrillFetcher {
                 }
             }
         } catch (SQLiteException sqlex) {
-            throw new SQLiteException("getPhonicsDrill: " + sqlex.getMessage());
+            throw new SQLiteException("getPhonicsDrill > SQLiteException: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new Exception("getPhonicsDrill: " + ex.getMessage());
+            throw new Exception("getPhonicsDrill > Exception: " + ex.getMessage());
         }
         return intent;
     }
@@ -306,6 +306,10 @@ public class DrillFetcher {
                     ArrayList<Integer>  rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
                     DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
                     Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+
+                    System.out.println("DrillFetcher.getWordDrill.case 13 > Debug: languageId " +
+                            languageId + ", unitId " + unitId + ", subId " + subId + ", drillId" +
+                            drillId + ", wordType" + wordType + ", limit " + limit);
 
                     // Fetch D4
                     intent = WordDrills.D4(context, dbHelper, unitId, drillId, languageId,

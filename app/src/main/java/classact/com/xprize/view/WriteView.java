@@ -28,11 +28,35 @@ public class WriteView extends View {
     private MaskFilter mBlur;
     private boolean drew = false;
     //private int background;
+    private boolean mTransparentBackground;
 
     public WriteView(Context context,int background){
         super(context);
         this.context = context;
         //this.background = background;
+        mTransparentBackground = false;
+        mPath = new Path();
+        mBitmapPaint = new Paint(Paint.DITHER_FLAG);
+        mPaint = new Paint();
+        mPaint.setAntiAlias(true);
+        mPaint.setDither(true);
+        mPaint.setColor(0xFFFF0000);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeJoin(Paint.Join.ROUND);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mPaint.setStrokeWidth(40);
+
+        mEmboss = new EmbossMaskFilter(new float[] { 1, 1, 1 },
+                0.4f, 6, 3.5f);
+
+        mBlur = new BlurMaskFilter(8, BlurMaskFilter.Blur.NORMAL);
+    }
+
+    public WriteView(Context context,int background, boolean transparentBackground){
+        super(context);
+        this.context = context;
+        //this.background = background;
+        mTransparentBackground = transparentBackground;
         mPath = new Path();
         mBitmapPaint = new Paint(Paint.DITHER_FLAG);
         mPaint = new Paint();
@@ -61,13 +85,17 @@ public class WriteView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_4444);
         mCanvas = new Canvas(mBitmap);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawColor(0xFFAAAAAA);
+        if (mTransparentBackground) {
+            canvas.drawColor(0x00000000);
+        } else {
+            canvas.drawColor(0xFFAAAAAA);
+        }
 
         //Bitmap backgroundBitmap = BitmapFactory.decodeResource(this.getContext().getResources(),
         //        background);

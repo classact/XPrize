@@ -5,51 +5,51 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 
-import classact.com.xprize.database.model.SimpleStoryWords;
+import classact.com.xprize.database.model.SimpleStoryWord;
 
 /**
  * Created by JHB on 2016/12/16.
  */
 
 public class SimpleStoryWordHelper {
-    public static SimpleStoryWords getSentenceWord(SQLiteDatabase db, int sentenceWordID) {
+    public static SimpleStoryWord getSimpleStoryWord(SQLiteDatabase db, int simpleStoryWordId) {
 
-        String[] columns = new String[]{"_id", "LanguageID", "UnitID", "SentenceID", "SentenceNo", "WordNo", "BlackWprd", "RedWord", "Sound"};
+        String[] columns = new String[]{"_id", "LanguageID", "UnitID", "SentenceID", "SentenceNo", "WordNo", "WordName", "WordSound"};
         String OrderBy = "_id asc";
-        Cursor cursor = db.query("tbl_SentenceWords", columns, "_id=?", new String[]{String.valueOf(sentenceWordID)}, null, null, OrderBy);
-        SimpleStoryWords sentenceWord = new SimpleStoryWords();
+        Cursor cursor = db.query("tbl_SimpleStoryWords", columns, "_id=?", new String[]{String.valueOf(simpleStoryWordId)}, null, null, OrderBy);
+        SimpleStoryWord simpleStoryWord = new SimpleStoryWord();
         if (cursor.getCount()>0) {
             cursor.moveToFirst();
-            sentenceWord = new SimpleStoryWords();
-            sentenceWord.setSentenceID(cursor.getInt(0));
-            sentenceWord.setLanguageID(cursor.getInt(1));
-            sentenceWord.setUnitID(cursor.getInt(2));
-            sentenceWord.setSentenceID(cursor.getInt(3));
-            sentenceWord.setSentenceNo(cursor.getInt(4));
-            sentenceWord.setWordNo(cursor.getInt(5));
-            sentenceWord.setBlackWord(cursor.getString(6));
-            sentenceWord.setRedWord(cursor.getString(7));
-            sentenceWord.setWordSound(cursor.getString(8));
+            simpleStoryWord = new SimpleStoryWord();
+            simpleStoryWord.setSimpleStoryWordID(cursor.getInt(0));
+            simpleStoryWord.setLanguageID(cursor.getInt(1));
+            simpleStoryWord.setUnitID(cursor.getInt(2));
+            simpleStoryWord.setSentenceID(cursor.getInt(3));
+            simpleStoryWord.setSentenceNo(cursor.getInt(4));
+            simpleStoryWord.setWordNo(cursor.getInt(5));
+            simpleStoryWord.setBlackWord(cursor.getString(6));
+            simpleStoryWord.setRedWord(cursor.getString(7));
+            simpleStoryWord.setSound(cursor.getString(8));
         }
         cursor.close();
-        return sentenceWord;
+        return simpleStoryWord;
     }
 
-    public static ArrayList getSentenceWords(SQLiteDatabase db, int sentenceID){
-        ArrayList sentences = new ArrayList();
-        Cursor cursor = db.rawQuery("select _id from tbl_SentenceWords where SentenceID = " + sentenceID+ ";", null);
+    public static ArrayList<Integer> getSimpleStoryWordIds(SQLiteDatabase db, int sentenceID){
+        ArrayList<Integer> simpleStoryWordIds = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select _id from tbl_SimpleStoryWords where SentenceID = " + sentenceID+ ";", null);
         //DrillWords drillWord = new DrillWords();
-        int sentence=0;
+        int simpleStoryWordId = 0;
         try {
             if (cursor.moveToFirst()) {
                 do {
                     //drillWord = new DrillWords();
-                    sentence = cursor.getInt(0);
+                    simpleStoryWordId = cursor.getInt(0);
                     //drillWord.setDrillID(cursor.getInt(0));
-                    sentences.add(sentence);
+                    simpleStoryWordIds.add(simpleStoryWordId);
                 } while (cursor.moveToNext());
             }
-            return sentences;
+            return simpleStoryWordIds;
         }finally {
             cursor.close();
         }

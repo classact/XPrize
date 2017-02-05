@@ -171,7 +171,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             }
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -205,7 +205,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         try {
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -488,7 +488,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             String sound = params.getString("you_got");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -543,7 +543,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
 
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -577,7 +577,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             String sound = params.getString("words_sound");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -709,7 +709,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             // Enable buttons
-                            setButtonsEnabled(true);
+                            if (!gameOver) {
+                                setButtonsEnabled(true);
+                            }
                         }
                     }, 500);
 

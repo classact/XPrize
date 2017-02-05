@@ -13,15 +13,17 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import classact.com.xprize.R;
+import classact.com.xprize.utils.FetchResource;
+import classact.com.xprize.utils.ResourceSelector;
 import classact.com.xprize.view.PathAnimationView;
 import classact.com.xprize.view.PathCoordinate;
 import classact.com.xprize.view.WriteView;
-import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillEightActivity extends AppCompatActivity implements PathAnimationView.AnimationDone{
     private RelativeLayout drawArea;
@@ -45,7 +47,6 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         initialiseData(drillData);
         handler = new Handler(Looper.getMainLooper());
         startDrill();
-
     }
 
     private void startDrill(){
@@ -57,17 +58,27 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
                 item = drillData.getInt("small_letter");
             letter.setImageResource(item);
             getPathData();
-            if (repeat == 1)
-                mp = MediaPlayer.create(this,drillData.getInt("lets_learn_how_to_write_upper"));
-            else {
-                int soundid =  drillData.getInt("lets_learn_how_to_write_lower");;
-                Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
-                mp.setDataSource(this, myUri);
-                mp.prepare();
+            String sound = "";
+            if (repeat == 1) {
+                sound = drillData.getString("lets_learn_how_to_write_upper");
+            } else {
+                sound = drillData.getString("lets_learn_how_to_write_lower");
             }
             animationView = new PathAnimationView(this);
             animationView.setAlpha(0.6f);
             animationView.setPaths(getPathArray());
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -75,33 +86,46 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
                     playLetterSound();
                 }
             });
-            mp.start();
+            mp.prepare();
         }
         catch(Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
 
     public void playLetterSound(){
         try {
-
-            int letterSound = drillData.getInt("letter_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + letterSound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
+            String sound = drillData.getString("letter_sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
                     prepareToWrite();
-                    //handler.postDelayed(writeRunnable,500);
                 }
             });
-            mp.start();
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -122,6 +146,9 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -130,10 +157,19 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
     public void playWatch() {
         try {
             //watch first
-            int sound = drillData.getInt("watch");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
+            String sound = drillData.getString("watch");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -148,9 +184,12 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
                     animationView.animateThisPath();
                 }
             });
-            mp.start();
+            mp.prepare();
         } catch (Exception ex) {
-            ex.printStackTrace();;
+            ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -159,7 +198,6 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
     public void onAnimationDone(){
         prepareWritingCanvas();
     }
-
 
     public void prepareWritingCanvas(){
         writingView = new WriteView(this,R.drawable.backgroundtrace1);
@@ -174,10 +212,19 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
     public void playYouTry() {
         try {
             //now you try
-            int sound = drillData.getInt("now_you_write");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(this, myUri);
-            mp.prepare();
+            String sound = drillData.getString("now_you_write");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -185,9 +232,12 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
                     handler.postDelayed(checkDone,4000);
                 }
             });
-            mp.start();
+            mp.prepare();
         } catch (Exception ex) {
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -200,43 +250,62 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
     };
 
     public void checkIsDone(){
-        //String letter = ImageRecognition.detectText(writingView.getBitMap(),this);
-        //new ImageSaver(this).
-        //        setFileName("myImage.png").
-        //        setDirectoryName("images").
-        //        save(writingView.getBitMap());
-        if (writingView.didDraw()){
-            mp = MediaPlayer.create(this, ResourceSelector.getPositiveAffirmationSound(this));
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    completed();
+        try {
+            if (writingView.didDraw()) {
+                Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + ResourceSelector.getPositiveAffirmationSound(this));
+                if (mp == null) {
+                    mp = new MediaPlayer();
                 }
-            });
-        }
-        else {
-            if (numberOfChecks % 2 == 0) {
-                playYouTry();
-            }
-            else{
-                prepareToWrite();
-            }
-            numberOfChecks++;
+                mp.reset();
+                mp.setDataSource(this, myUri);
+                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mp.start();
+                    }
+                });
+                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        mp.reset();
+                        completed();
+                    }
+                });
+                mp.prepare();
+            } else {
+                if (numberOfChecks % 2 == 0) {
+                    playYouTry();
+                } else {
+                    prepareToWrite();
+                }
+                numberOfChecks++;
 
+            }
+        } catch (IOException ioex) {
+            System.err.println("SoundDrillEightActivity.checkIsDone() > IOException: " + ioex.getMessage());
+            ioex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
         }
-
     }
 
     public void completed(){
-        if (repeat == 1)
-        {
+        if (repeat == 1) {
             repeat++;
             startDrill();
+        } else {
+            if (mp != null) {
+                mp.release();
+            }
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    finish();
+                }
+            }, 500);
         }
-        else
-            this.finish();
     }
 
     private void getPathData(){
@@ -256,6 +325,9 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
                     paths = new JSONObject(result.toString()).getJSONArray("paths");
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                    if (mp != null) {
+                        mp.release();
+                    }
                     finish();
                 } finally {
                     reader.close();
@@ -266,20 +338,21 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
-
-    //
 
     private  ArrayList<ArrayList<PathCoordinate>> getPathArray(){
         ArrayList<ArrayList<PathCoordinate>> pathsArray = new  ArrayList<ArrayList<PathCoordinate>>();
         try {
             for (int i = 0; i < paths.length(); i++) {
-                ArrayList<PathCoordinate> path = new ArrayList<PathCoordinate>();
+                ArrayList<PathCoordinate> path = new ArrayList<>();
                 JSONObject obj = paths.getJSONObject(i);
                 JSONArray array = obj.getJSONArray("path");
-                for(int k = 0; k < array.length(); k++){
+                for(int k = 0; k < array.length(); k++) {
                     PathCoordinate coordinate = new PathCoordinate((float)array.getJSONObject(k).getDouble("x"),(float)array.getJSONObject(k).getDouble("y"));
                     path.add(coordinate);
                 }
@@ -288,6 +361,9 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
 
@@ -303,6 +379,9 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -314,9 +393,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
             mp.release();
         }
     }
-
    // @Override
    // public void onBackPressed() {
    // }
 }
-

@@ -135,7 +135,7 @@ public class SoundDrillTenActivity extends AppCompatActivity {
 
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -254,7 +254,7 @@ public class SoundDrillTenActivity extends AppCompatActivity {
             mp.reset();
 
             // Set data source to sound path
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
 
             // Set on prepared listener
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -333,7 +333,7 @@ public class SoundDrillTenActivity extends AppCompatActivity {
             String sound = objects[currentWord].getString("sound");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -379,7 +379,7 @@ public class SoundDrillTenActivity extends AppCompatActivity {
             mp.reset();
 
             // Set media player's data source to sound path
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
 
             // Set on prepared listener
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {

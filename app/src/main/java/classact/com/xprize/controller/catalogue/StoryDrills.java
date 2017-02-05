@@ -22,64 +22,84 @@ import classact.com.xprize.database.model.Comprehension;
 import classact.com.xprize.database.model.DrillFlowWords;
 import classact.com.xprize.database.model.SimpleStories;
 import classact.com.xprize.database.model.SimpleStoryUnitFiles;
-import classact.com.xprize.database.model.SimpleStoryWords;
+import classact.com.xprize.database.model.SimpleStoryWord;
 
 public class StoryDrills {
 
     public static Intent D1(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId) throws SQLiteException, Exception  {
-        Intent intent = null;
+        Intent intent;
+
+        System.out.println("-- StoryDrills.D1 > Debug: unitId " + unitId + ", drillId " + drillId + ", languageId " + languageId);
 
         try {
             // Fetch drillFlowWord
             DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
 
             // Initialize sentence lists
-            ArrayList<SimpleStorySentence> sentences = new ArrayList<>();
-            ArrayList<Integer> sentenceIds = SimpleStoriesHelper.getSentences(dbHelper.getReadableDatabase(), languageId, unitId);
+            ArrayList<SimpleStorySentence> simpleStorySentences = new ArrayList<>();
+
+            // Get SimpleStories (Sentences) from tbl_SimpleStories
+            ArrayList<Integer> simpleStorySentenceIds = SimpleStoriesHelper.getSentences(dbHelper.getReadableDatabase(), languageId, unitId);
 
             // Fetch story data
-            for (int i = 0; i < sentenceIds.size(); i++) {
-                SimpleStories sentenceFromDB = SimpleStoriesHelper.getSentence(dbHelper.getReadableDatabase(), sentenceIds.get(i));
-                SimpleStorySentence sentence = new SimpleStorySentence();
-                sentence.setFullSound(sentenceFromDB.getSentenceSoundFile());
-                ArrayList<classact.com.xprize.control.Word> words = new ArrayList<>();
-                ArrayList<Integer> sentenceWordIDs = new ArrayList();
-                sentenceWordIDs = SimpleStoryWordHelper.getSentenceWords(dbHelper.getReadableDatabase(), sentenceIds.get(i));
-                for (int j = 0; j < sentenceWordIDs.size(); j++) {
-                    SimpleStoryWords sentenceWord = SimpleStoryWordHelper.getSentenceWord(dbHelper.getReadableDatabase(), sentenceWordIDs.get(j));
-                    classact.com.xprize.control.Word word = new classact.com.xprize.control.Word(1, sentenceWord.getBlackWord(), sentenceWord.getRedWord());
-                    word.setSound(sentenceWord.getWordSound());
-                    words.add(word);
+            for (int i = 0; i < simpleStorySentenceIds.size(); i++) {
+                // Get an individual SimpleStories (a sentence) object
+                SimpleStories simpleStories = SimpleStoriesHelper.getSentence(dbHelper.getReadableDatabase(), simpleStorySentenceIds.get(i));
+
+                // Create object used to store the sentence data
+                // Note the 1:many relationship where a single sentence can be split into several words
+                // ie. This + is + Bahati
+                SimpleStorySentence simpleStorySentence = new SimpleStorySentence();
+
+                // Full sentence sound file
+                simpleStorySentence.setFullSound(simpleStories.getSentenceSoundFile());
+
+                // List to hold the words in a sentence
+                ArrayList<SimpleStoryWord> simpleStoryWords = new ArrayList<>();
+
+                // Get all the SimpleStoryWordIds
+                ArrayList<Integer> simpleStoryWordIds = SimpleStoryWordHelper.getSimpleStoryWordIds(dbHelper.getReadableDatabase(), simpleStorySentenceIds.get(i));
+
+                // For each SimpleStoryWordId
+                for (int j = 0; j < simpleStoryWordIds.size(); j++) {
+
+                    // Get the SimpleStoryWord object
+                    SimpleStoryWord simpleStoryWord = SimpleStoryWordHelper.getSimpleStoryWord(dbHelper.getReadableDatabase(), simpleStoryWordIds.get(j));
+
+                    // Add the SimpleStoryWord object to list
+                    simpleStoryWords.add(simpleStoryWord);
                 }
-                sentence.setWords(words);
-                sentences.add(sentence);
+                // Set (add) the list of SimpleStoryWords for the SimpleStorySentence
+                simpleStorySentence.setWords(simpleStoryWords);
+
+                // Add the SimpleStorySentence to the list of SimpleStorySentence(s)
+                simpleStorySentences.add(simpleStorySentence);
             }
 
             ArrayList<ComprehensionQuestion> questions = new ArrayList<>();
             ArrayList<DraggableImage<String>> images = new ArrayList<>();
 
-            ArrayList<Integer> comprehensionIDs = new ArrayList();
-            comprehensionIDs = ComprehensionHelper.getComprehensionIDs(dbHelper.getReadableDatabase(), languageId, unitId);
+            ArrayList<Integer> comprehensionIDs = ComprehensionHelper.getComprehensionIDs(dbHelper.getReadableDatabase(), languageId, unitId);
             int rightPicture = 0;
             for (int i = 0; i < comprehensionIDs.size(); i++) {
                 Comprehension comprehensionQA = ComprehensionHelper.getComprehensionQA(dbHelper.getReadableDatabase(), comprehensionIDs.get(i));
                 if (comprehensionQA.getQuestionHasSoundAnswer() == 0) {
                     ComprehensionQuestion question = new ComprehensionQuestion(comprehensionQA.getQuestionSound(), "", 0);
-                    if (comprehensionQA.getCorrectPicture() == comprehensionQA.getPicture1()) {
+                    if (comprehensionQA.getCorrectPicture().equalsIgnoreCase(comprehensionQA.getPicture1())) {
                         DraggableImage<String> image = new DraggableImage<>(0, 1, comprehensionQA.getPicture1());
                         images.add(image);
                     } else {
                         DraggableImage<String> image = new DraggableImage<>(0, 0, comprehensionQA.getPicture1());
                         images.add(image);
                     }
-                    if (comprehensionQA.getCorrectPicture() == comprehensionQA.getPicture2()) {
+                    if (comprehensionQA.getCorrectPicture().equalsIgnoreCase(comprehensionQA.getPicture2())) {
                         DraggableImage<String> image = new DraggableImage<>(0, 1, comprehensionQA.getPicture2());
                         images.add(image);
                     } else {
                         DraggableImage<String> image = new DraggableImage<>(0, 0, comprehensionQA.getPicture2());
                         images.add(image);
                     }
-                    if (comprehensionQA.getCorrectPicture() == comprehensionQA.getPicture3()) {
+                    if (comprehensionQA.getCorrectPicture().equalsIgnoreCase(comprehensionQA.getPicture3())) {
                         DraggableImage<String> image = new DraggableImage<>(0, 1, comprehensionQA.getPicture3());
                         images.add(image);
                     } else {
@@ -114,7 +134,7 @@ public class StoryDrills {
                     simpleStoryUnitFiles.getSimpleStoryUnitSoundFile(),
                     drillFlowWord.getDrillSound8(),
                     simpleStoryUnitFiles.getSimpleStoryUnitImage(),
-                    sentences,
+                    simpleStorySentences,
                     simpleStoryUnitFiles.getCompInstr1(),
                     simpleStoryUnitFiles.getCompInstr2(),
                     questions);
@@ -122,9 +142,11 @@ public class StoryDrills {
             intent.putExtra("data", drillData);
 
         } catch (SQLiteException sqlex) {
-            throw new SQLiteException("D1: " + sqlex.getMessage());
+            sqlex.printStackTrace();
+            throw new SQLiteException("D1 > SQLiteException: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D1: " + ex.getMessage());
+            ex.printStackTrace();
+            throw new Exception("D1 > Exception: " + ex.getMessage());
         }
         return intent;
     }

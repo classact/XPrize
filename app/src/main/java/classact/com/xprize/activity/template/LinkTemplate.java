@@ -3,6 +3,7 @@ package classact.com.xprize.activity.template;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.RelativeLayout;
@@ -132,7 +133,7 @@ public abstract class LinkTemplate extends AppCompatActivity {
             }
 
             mPlayer = new MediaPlayer();
-            mPlayer.setDataSource(mNarrator);
+            mPlayer.setDataSource(getApplicationContext(), Uri.parse(mNarrator));
 
             mState = PREPARED;
 

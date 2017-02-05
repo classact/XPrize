@@ -39,7 +39,7 @@ public class ComprehensionHelper {
         return comprehensionQA;
     }
 
-    public static ArrayList getComprehensionIDs(SQLiteDatabase db, int languageID, int unitId){
+    public static ArrayList<Integer> getComprehensionIDs(SQLiteDatabase db, int languageID, int unitId){
         ArrayList comprehensionQAs = new ArrayList();
         Cursor cursor = db.rawQuery("select _id from tbl_Comprehension where LanguageID = "+languageID+" and UnitID = " + unitId + ";", null);
         //DrillWords drillWord = new DrillWords();

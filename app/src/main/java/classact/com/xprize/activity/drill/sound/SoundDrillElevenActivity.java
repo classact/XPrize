@@ -84,11 +84,12 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
 
         try {
             String sound = allData.getString("monkey_wants_two");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp != null) {
                 mp.release();
             }
             mp = new MediaPlayer();
-            mp.setDataSource(FetchResource.sound(getApplicationContext(), sound));
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -179,9 +180,14 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
     private void completeIntro(){
         try {
             String sound = allData.getString("can_you_match");
-            mp.setDataSource(FetchResource.sound(getApplicationContext(), sound));
-            mp.prepare();
-            mp.start();
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -189,6 +195,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
                     gameStarted = true;
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -428,7 +435,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         try {
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             mp.reset();
-            mp.setDataSource(soundPath);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -481,14 +488,19 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         try {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -503,8 +515,12 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         try {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -512,6 +528,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
                     finish();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
