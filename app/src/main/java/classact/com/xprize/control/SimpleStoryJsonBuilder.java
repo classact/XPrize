@@ -14,48 +14,48 @@ import classact.com.xprize.utils.ResourceDecoder;
 public class SimpleStoryJsonBuilder {
     public static String getSimpleStoryJson(Context context,
                                             String storyLinkSound,
-                                            String amazingSound,
+                                            String readEachSentenceAfterMotherSound,
                                             String listenFirstSound,
-                                            String nowYourReadSound,
+                                            String nowReadSound,
                                             String listenToWholeStorySound,
-                                            String readWholeStorySound,
+                                            String nowReadWholeStorySound,
                                             String wellDoneYouCanReadSound,
                                             String nowAnswerQuestionsSound,
                                             String fullStorySound,
                                             String touchTheArrow,
                                             String storyImage,
                                             ArrayList<SimpleStorySentence> sentences,
-                                            String answerQuestionsSound,
+                                            String comprehensionQuestion,
                                             String comprehensionInstructions,
                                             ArrayList<ComprehensionQuestion> questions) {
 
-        System.out.println(":::: " + storyLinkSound);
-        System.out.println(":::: " + amazingSound);
-        System.out.println(":::: " + listenFirstSound);
-        System.out.println(":::: " + nowYourReadSound);
-        System.out.println(":::: " + listenToWholeStorySound);
-        System.out.println(":::: " + readWholeStorySound);
-        System.out.println(":::: " + wellDoneYouCanReadSound);
-        System.out.println(":::: " + nowAnswerQuestionsSound);
-        System.out.println(":::: " + fullStorySound);
-        System.out.println(":::: " + touchTheArrow);
-        System.out.println(":::: " + storyImage);
-        System.out.println(":::: " + answerQuestionsSound);
-        System.out.println(":::: " + comprehensionInstructions);
+        System.out.println(":::: storyLinkSound: " + storyLinkSound);
+        System.out.println(":::: readEachSentenceAfterMotherSound: " + readEachSentenceAfterMotherSound);
+        System.out.println(":::: listenFirstSound: " + listenFirstSound);
+        System.out.println(":::: nowReadSound: " + nowReadSound);
+        System.out.println(":::: listenToWholeStorySound: " + listenToWholeStorySound);
+        System.out.println(":::: nowReadWholeStorySound: " + nowReadWholeStorySound);
+        System.out.println(":::: wellDoneYouCanReadSound: " + wellDoneYouCanReadSound);
+        System.out.println(":::: nowAnswerQuestionsSound: " + nowAnswerQuestionsSound);
+        System.out.println(":::: fullStorySound: " + fullStorySound);
+        System.out.println(":::: touchTheArrow: " + touchTheArrow);
+        System.out.println(":::: storyImage: " + storyImage);
+        System.out.println(":::: comprehensionQuestion: " + comprehensionQuestion);
+        System.out.println(":::: comprehensionInstructions: " + comprehensionInstructions);
 
-        String drillData = "{\"amazing_sound\":" + ResourceDecoder.getIdentifier(context,amazingSound,"raw") + "," +
-                "\"listen_first_sound\":" + ResourceDecoder.getIdentifier(context,listenFirstSound,"raw")+ "," +
-                "\"now_you_read_sound\":" + ResourceDecoder.getIdentifier(context,nowYourReadSound,"raw") + "," +
-                "\"listen_to_whole_story\":" + ResourceDecoder.getIdentifier(context,listenToWholeStorySound,"raw") + "," +
-                "\"read_whole_story_sound\":" + ResourceDecoder.getIdentifier(context,readWholeStorySound,"raw") + "," +
-                "\"well_done_sound\":" + ResourceDecoder.getIdentifier(context,wellDoneYouCanReadSound,"raw") + "," +
-                "\"now_answer_sound\":" + ResourceDecoder.getIdentifier(context,nowAnswerQuestionsSound,"raw") + "," +
-                "\"story_link_sound\":" + ResourceDecoder.getIdentifier(context,storyLinkSound,"raw") + "," +
+        String drillData = "{\"reach_each_sentence_after_mother_sound\":\"" + readEachSentenceAfterMotherSound + "\"," +
+                "\"listen_first_sound\":\"" + listenFirstSound + "\"," +
+                "\"now_read_sound\":\"" + nowReadSound + "\"," +
+                "\"listen_to_whole_story\":\"" + listenToWholeStorySound + "\"," +
+                "\"now_read_whole_story_sound\":\"" + nowReadWholeStorySound + "\"," +
+                "\"well_done_sound\":\"" + wellDoneYouCanReadSound + "\"," +
+                "\"now_answer_sound\":\"" + nowAnswerQuestionsSound + "\"," +
+                "\"story_link_sound\":\"" + storyLinkSound + "\"," +
                 "\"story_image\":" + ResourceDecoder.getIdentifier(context,storyImage,"drawable") + "," +
-                "\"full_story_sound\":" + ResourceDecoder.getIdentifier(context,fullStorySound,"raw")+ "," +
-                "\"touch_arrow\":" + ResourceDecoder.getIdentifier(context,touchTheArrow,"raw")+ "," +
-                "\"answer_questions_sound\":" + ResourceDecoder.getIdentifier(context,answerQuestionsSound,"raw")+ "," +
-                "\"comprehension_instructions_sound\":" + ResourceDecoder.getIdentifier(context,comprehensionInstructions,"raw")+ "," +
+                "\"full_story_sound\":\"" + fullStorySound + "\"," +
+                "\"touch_arrow\":\"" + touchTheArrow + "\"," +
+                "\"comprehension_question_sound\":\"" + comprehensionQuestion + "\"," +
+                "\"comprehension_instructions_sound\":\"" + comprehensionInstructions + "\"," +
                 "\"sentences\":[" ;
         int i = 0;
         for (SimpleStorySentence sentence : sentences){
@@ -81,7 +81,7 @@ public class SimpleStoryJsonBuilder {
                 } else {
                     drillData += ",\"red_word\":0";
                 }
-                drillData += ",\"sound\":" + ResourceDecoder.getIdentifier(context,word.getSound(),"raw") + "}";
+                drillData += ",\"sound\":\"" + word.getSound() + "\"}";
             }
             drillData += "]";
         }
@@ -95,8 +95,8 @@ public class SimpleStoryJsonBuilder {
                 drillData += ",{";
             }
             drillData += "\"is_touch\":" + q.getIsATouchQuestion() + ",";
-            drillData += "\"question_sound\":" + ResourceDecoder.getIdentifier(context,q.getQuestionSound(),"raw") + ",";
-            drillData += "\"answer_sound\":" + ResourceDecoder.getIdentifier(context,q.getAnswerSound(),"raw") + ",";
+            drillData += "\"question_sound\":\"" + q.getQuestionSound() + "\",";
+            drillData += "\"answer_sound\":\"" + q.getAnswerSound() + "\",";
             drillData += "\"images\":[";
             int j = 0;
             for (DraggableImage<String> image : q.getImages()){
