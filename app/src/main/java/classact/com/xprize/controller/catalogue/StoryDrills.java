@@ -77,46 +77,127 @@ public class StoryDrills {
             }
 
             ArrayList<ComprehensionQuestion> questions = new ArrayList<>();
-            ArrayList<DraggableImage<String>> images = new ArrayList<>();
+            final String DEFAULT_PICTURE = "c_";
 
-            ArrayList<Integer> comprehensionIDs = ComprehensionHelper.getComprehensionIDs(dbHelper.getReadableDatabase(), languageId, unitId);
+            ArrayList<Integer> comprehensionIds = ComprehensionHelper.getComprehensionIDs(dbHelper.getReadableDatabase(), languageId, unitId);
             int rightPicture = 0;
-            for (int i = 0; i < comprehensionIDs.size(); i++) {
-                Comprehension comprehensionQA = ComprehensionHelper.getComprehensionQA(dbHelper.getReadableDatabase(), comprehensionIDs.get(i));
-                if (comprehensionQA.getQuestionHasSoundAnswer() == 0) {
-                    ComprehensionQuestion question = new ComprehensionQuestion(comprehensionQA.getQuestionSound(), "", 0);
-                    if (comprehensionQA.getCorrectPicture().equalsIgnoreCase(comprehensionQA.getPicture1())) {
-                        DraggableImage<String> image = new DraggableImage<>(0, 1, comprehensionQA.getPicture1());
-                        images.add(image);
-                    } else {
-                        DraggableImage<String> image = new DraggableImage<>(0, 0, comprehensionQA.getPicture1());
-                        images.add(image);
-                    }
-                    if (comprehensionQA.getCorrectPicture().equalsIgnoreCase(comprehensionQA.getPicture2())) {
-                        DraggableImage<String> image = new DraggableImage<>(0, 1, comprehensionQA.getPicture2());
-                        images.add(image);
-                    } else {
-                        DraggableImage<String> image = new DraggableImage<>(0, 0, comprehensionQA.getPicture2());
-                        images.add(image);
-                    }
-                    if (comprehensionQA.getCorrectPicture().equalsIgnoreCase(comprehensionQA.getPicture3())) {
-                        DraggableImage<String> image = new DraggableImage<>(0, 1, comprehensionQA.getPicture3());
-                        images.add(image);
-                    } else {
-                        DraggableImage<String> image = new DraggableImage<>(0, 0, comprehensionQA.getPicture3());
-                        images.add(image);
-                    }
-                    question.setImages(images);
-                    questions.add(question);
-                } else {
-                    ComprehensionQuestion question = new ComprehensionQuestion(comprehensionQA.getQuestionSound(), comprehensionQA.getAnswerSound(), 0);
-                    DraggableImage<String> image = new DraggableImage<>(0, 1, comprehensionQA.getPicture1());
-                    images.add(image);
-                    image = new DraggableImage<>(0, 1, comprehensionQA.getPicture2());
-                    images.add(image);
-                    question.setImages(images);
-                    questions.add(question);
+            for (int i = 0; i < comprehensionIds.size(); i++) {
+
+                int comprehensionId = comprehensionIds.get(i);
+                Comprehension comprehension = ComprehensionHelper.getComprehensionQA(dbHelper.getReadableDatabase(), comprehensionId);
+
+                // Stores all the comprehension pictures
+                String[] comprehensionPictures = {comprehension.getPicture1(), comprehension.getPicture2(), comprehension.getPicture3()};
+
+                // Init images that will store all the valid images for the comprehension item
+                ArrayList<DraggableImage<String>> images = new ArrayList<>();
+
+                // Declare comprehension question
+                ComprehensionQuestion question;
+
+                // Check if the question has a sound answer
+                int hasSoundAnswer = comprehension.getQuestionHasSoundAnswer();
+
+                // Create a new question
+                // It's actually a 'question' and 'answer'
+                question = new ComprehensionQuestion(comprehension.getQuestionSound(), comprehension.getAnswerSound(), hasSoundAnswer);
+
+                // Init the correct picture
+                String correctPicture = comprehension.getCorrectPicture();
+
+                // Check if it actually exists
+                // For tbl_Comprehension, some images for Picture1,2,3, are defaulted to "c_" (indicating 'not applicable')
+                boolean correctPictureExists = true;
+
+                // Validate the correct picture
+                if (correctPicture.equalsIgnoreCase(DEFAULT_PICTURE)) {
+                    correctPictureExists = false;
                 }
+
+                // An index to check if this is the first valid picture or not
+                // Is used when no correct picture exists
+                int correctPictureIndex = -1;
+
+                for (int j = 0; j < comprehensionPictures.length; j++) {
+
+                    boolean pictureIsValid = false;
+                    int isCorrect = 0;
+                    String picture = comprehensionPictures[j];
+
+                    // Ensure that picture is not null
+                    if (picture != null) {
+
+                        // If a correct picture to compare against exists
+                        if (correctPictureExists) {
+
+                            // If a valid picture exists to compare
+                            if (!picture.equalsIgnoreCase(DEFAULT_PICTURE)) {
+
+                                // Mark picture as valid
+                                pictureIsValid = true;
+
+                                // Compare
+                                if (correctPicture.equalsIgnoreCase(picture)) {
+
+                                    // Correct picture index found
+                                    correctPictureIndex = j;
+
+                                    // This is the correct picture
+                                    isCorrect = 1;
+                                }
+
+                                // In case no correct pictures until now
+                                if (j == comprehensionPictures.length - 1 && correctPictureIndex == -1) {
+
+                                    // Check if any images have been added so far
+                                    if (images.size() > 0) {
+
+                                        // If so, the first image is the correct one
+                                        images.get(0).setIsRight(1);
+                                    } else {
+
+                                        // Alternatively, the last image (the current one) is the correct one
+                                        isCorrect = 1;
+                                    }
+                                }
+                            }
+                        } else {
+                            // The first picture will be the 'correct' one as fallback
+                            if (!picture.equalsIgnoreCase(DEFAULT_PICTURE)) {
+
+                                // Mark picture as valid
+                                pictureIsValid = true;
+
+                                // Note that a valid picture has been found
+                                if (correctPictureIndex == -1) {
+                                    correctPictureIndex = j;
+
+                                    // Let this be the correct picture
+                                    isCorrect = 1;
+                                }
+                            }
+                        }
+                    } else {
+                        System.err.println(":::: StoryDrills.D1 > Error: Picture (" + j + ") for question (" + i + ") is null");
+                    }
+
+                    if (pictureIsValid) {
+                        DraggableImage<String> image = new DraggableImage<>(0, isCorrect, picture);
+                        images.add(image);
+
+                        System.out.println(":::: StoryDrills.D1 > Debug: Picture (" + j + ") added to question (" + i + ")");
+                    }
+                }
+
+                if (images.size() == 0) {
+                    System.err.println(":::: StoryDrills.D1 > Error: No images for comprehensionId (" + i + ")");
+                }
+
+                question.setNumberOfPictures(comprehension.getNumberOfPictures());
+                question.setImages(images);
+
+                // Add question to questions list
+                questions.add(question);
             }
 
             SimpleStoryUnitFiles simpleStoryUnitFiles = SimpleStoryUnitFileHelper.getSimpleStoryUnitFiles(dbHelper.getReadableDatabase(), unitId, languageId);

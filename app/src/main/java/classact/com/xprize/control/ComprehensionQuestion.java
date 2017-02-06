@@ -10,6 +10,7 @@ public class ComprehensionQuestion {
     private String questionSound;
     private String answerSound;
     private int isATouchQuestion;
+    private int mNumberOfPictures;
     private ArrayList<DraggableImage<String>> images;
 
     public ComprehensionQuestion(String questionSound, String answerSound, int isATouchQuestion){
@@ -40,6 +41,12 @@ public class ComprehensionQuestion {
 
     public void setIsATouchQuestion(int isTouchAQuestion) {
         this.isATouchQuestion = isATouchQuestion;
+    }
+
+    public int getNumberOfPictures() { return mNumberOfPictures; }
+
+    public void setNumberOfPictures(int numberOfPictures) {
+        mNumberOfPictures = numberOfPictures;
     }
 
     public ArrayList<DraggableImage<String>> getImages() {

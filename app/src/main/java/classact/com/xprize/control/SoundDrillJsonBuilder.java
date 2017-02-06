@@ -529,12 +529,12 @@ public class SoundDrillJsonBuilder {
         for(Sentence sentence : sentences) {
             if (i == 0)
                 drillData += "{\"sentence\":" + sentence.getWCount() + "," +
-                    "\"text\": \"" + ResourceDecoder.getIdentifier(context,sentence.getSentenceText(),"raw") + "\"," +
-                    "\"words\": [";
+                    "\"text\":\"" + ResourceDecoder.getIdentifier(context,sentence.getSentenceText(),"raw") + "\"," +
+                    "\"words\":[";
             else
                 drillData += ",{\"sentence\":" + sentence.getWCount() + "," +
-                        "\"text\": \"" + ResourceDecoder.getIdentifier(context,sentence.getSentenceText(),"raw") + "\"," +
-                        "\"words\": [";
+                        "\"text\":\"" + ResourceDecoder.getIdentifier(context,sentence.getSentenceText(),"raw") + "\"," +
+                        "\"words\":[";
             i++;
             int j = 0;
             for (DraggableImage<String> word : sentence.getWords()) {
