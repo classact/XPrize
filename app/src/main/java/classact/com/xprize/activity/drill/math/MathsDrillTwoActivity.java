@@ -73,6 +73,9 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -111,6 +114,9 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -124,8 +130,18 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
             numbers = allData.getJSONArray("numerals");
             setupNumbers();
             int sound = allData.getInt("monkey_has");
-            mp = MediaPlayer.create(this, sound);
-            mp.start();
+            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), myUri);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -133,9 +149,13 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                     sayNumberOfObjects();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -144,10 +164,17 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
         try{
             int sound = allData.getInt("number_of_objects_sound");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -155,9 +182,13 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                     sayCanYouTouch();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -166,32 +197,58 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
     public void numberClicked(int position){
         try {
             int correct = numbers.getJSONObject(positions[position - 1]).getInt("right");
-            int sound = ResourceSelector.getPositiveAffirmationSound(getApplicationContext());
-            mp.reset();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.release();
-                    finish();
-                }
-            });
+            Uri myUri;
+            int sound;
             if (correct == 0) {
                 sound = ResourceSelector.getNegativeAffirmationSound(getApplicationContext());
+                myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+                if (mp == null) {
+                    mp = new MediaPlayer();
+                }
+                mp.reset();
+                mp.setDataSource(getApplicationContext(), myUri);
+                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mp.start();
+                    }
+                });
                 mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         mp.reset();
                     }
                 });
+                mp.prepare();
+            } else {
+                sound = ResourceSelector.getPositiveAffirmationSound(getApplicationContext());
+                myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+                if (mp == null) {
+                    mp = new MediaPlayer();
+                }
+                mp.reset();
+                mp.setDataSource(getApplicationContext(), myUri);
+                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mp.start();
+                    }
+                });
+                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        mp.release();
+                        finish();
+                    }
+                });
+                mp.prepare();
             }
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
-
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -200,10 +257,17 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
         try{
             int sound = allData.getInt("can_you_find_and_touch");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -214,6 +278,9 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -222,10 +289,17 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
         try{
             int sound = allData.getInt("numeral_sound");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -233,9 +307,13 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
 
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }

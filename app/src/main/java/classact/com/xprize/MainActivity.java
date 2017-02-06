@@ -28,13 +28,13 @@ import classact.com.xprize.utils.ResourceDecoder;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final boolean ALLOW_DB_RECOPY = true;
+    private final boolean ALLOW_DB_RECOPY = false;
 
     // Database hack related
-    private final boolean HACK_NEXT_UNIT = true;
+    private final boolean HACK_NEXT_UNIT = false;
     private final int HACK_UNIT_ID = 1;
     private final int HACK_UNIT_SUB_ID_IN_PROGRESS = 0;
-    private final int HACK_DRILL_LAST_PLAYED = 15;
+    private final int HACK_DRILL_LAST_PLAYED = 16;
     private final int HACK_UNIT_FIRST_TIME = 0;
     private final int HACK_UNIT_FIRST_TIME_MOVIE = 1;
 
@@ -212,7 +212,12 @@ public class MainActivity extends AppCompatActivity {
 
                     // Determine type of splash by comparing drill last played
                     int drillLastPlayed = u.getUnitDrillLastPlayed();
-                    int sumOfDrillsPlayed = (u.getNumberOfLanguageDrills() + u.getNumberOfMathDrills());
+                    int sumOfDrillsPlayed = 0;
+                    if (unitId == 1) {
+                        sumOfDrillsPlayed = (u.getNumberOfLanguageDrills() + u.getNumberOfMathDrills() + 3); // Add 3 word drills that aren't played
+                    } else {
+                        sumOfDrillsPlayed = (u.getNumberOfLanguageDrills() + u.getNumberOfMathDrills());
+                    }
 
                     System.out.println("------------- Unit First Time? " + u.getUnitFirstTime());
                     if (u.getUnitFirstTime() == 0) {
@@ -253,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // Show ending splash
                         intent = new Intent(this, LevelCompleteLink.class);
-                        intent.putExtra(Code.RES_NAME, "star_level_" + unitId);
+                        intent.putExtra(Code.RES_NAME, "level" + unitId);
                         resultCode = Code.CHAPTER_END;
 
                         // Let's roll with the drill

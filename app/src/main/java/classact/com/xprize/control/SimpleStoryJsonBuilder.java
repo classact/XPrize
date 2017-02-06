@@ -17,7 +17,7 @@ public class SimpleStoryJsonBuilder {
                                             String readEachSentenceAfterMotherSound,
                                             String listenFirstSound,
                                             String nowReadSound,
-                                            String listenToWholeStorySound,
+                                            String listenToTheWholeStorySound,
                                             String nowReadWholeStorySound,
                                             String wellDoneYouCanReadSound,
                                             String nowAnswerQuestionsSound,
@@ -33,7 +33,7 @@ public class SimpleStoryJsonBuilder {
         System.out.println(":::: readEachSentenceAfterMotherSound: " + readEachSentenceAfterMotherSound);
         System.out.println(":::: listenFirstSound: " + listenFirstSound);
         System.out.println(":::: nowReadSound: " + nowReadSound);
-        System.out.println(":::: listenToWholeStorySound: " + listenToWholeStorySound);
+        System.out.println(":::: listenToTheWholeStorySound: " + listenToTheWholeStorySound);
         System.out.println(":::: nowReadWholeStorySound: " + nowReadWholeStorySound);
         System.out.println(":::: wellDoneYouCanReadSound: " + wellDoneYouCanReadSound);
         System.out.println(":::: nowAnswerQuestionsSound: " + nowAnswerQuestionsSound);
@@ -43,17 +43,17 @@ public class SimpleStoryJsonBuilder {
         System.out.println(":::: comprehensionQuestion: " + comprehensionQuestion);
         System.out.println(":::: comprehensionInstructions: " + comprehensionInstructions);
 
-        String drillData = "{\"reach_each_sentence_after_mother_sound\":\"" + readEachSentenceAfterMotherSound + "\"," +
+        String drillData = "{\"read_each_sentence_after_mother_sound\":\"" + readEachSentenceAfterMotherSound + "\"," +
                 "\"listen_first_sound\":\"" + listenFirstSound + "\"," +
                 "\"now_read_sound\":\"" + nowReadSound + "\"," +
-                "\"listen_to_whole_story\":\"" + listenToWholeStorySound + "\"," +
+                "\"listen_to_the_whole_story\":\"" + listenToTheWholeStorySound + "\"," +
                 "\"now_read_whole_story_sound\":\"" + nowReadWholeStorySound + "\"," +
-                "\"well_done_sound\":\"" + wellDoneYouCanReadSound + "\"," +
+                "\"well_done_you_can_read_sound\":\"" + wellDoneYouCanReadSound + "\"," +
                 "\"now_answer_sound\":\"" + nowAnswerQuestionsSound + "\"," +
                 "\"story_link_sound\":\"" + storyLinkSound + "\"," +
                 "\"story_image\":" + ResourceDecoder.getIdentifier(context,storyImage,"drawable") + "," +
                 "\"full_story_sound\":\"" + fullStorySound + "\"," +
-                "\"touch_arrow\":\"" + touchTheArrow + "\"," +
+                "\"touch_the_arrow\":\"" + touchTheArrow + "\"," +
                 "\"comprehension_question_sound\":\"" + comprehensionQuestion + "\"," +
                 "\"comprehension_instructions_sound\":\"" + comprehensionInstructions + "\"," +
                 "\"sentences\":[" ;

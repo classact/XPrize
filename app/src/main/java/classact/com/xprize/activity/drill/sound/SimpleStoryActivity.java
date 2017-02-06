@@ -76,8 +76,9 @@ public class SimpleStoryActivity extends AppCompatActivity {
             }
         });
         handler = new Handler();
-        currentSentence = 0;
         initialiseData();
+        //  playReadEachSentenceAfterMother();
+        populateAndShowSentence();
     }
 
     private void initialiseData(){
@@ -90,7 +91,45 @@ public class SimpleStoryActivity extends AppCompatActivity {
             allData = new JSONObject(drillData);
             sentences = allData.getJSONArray("sentences");
             currentSound = 0;
-            populateAndShowSentence();
+            currentSentence = 0;
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    private void playReadEachSentenceAfterMother() {
+
+        // Debug
+        System.out.println(":: SimpleStoryActivity.playReadEachSentenceAfterMother > Debug: METHOD CALLED");
+
+
+        try{
+            String sound = allData.getString("read_each_sentence_after_mother_sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    saySentenceWord();
+                }
+            });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -259,7 +298,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
         System.out.println(":: SimpleStoryActivity.sayItsYourTurn > Debug: METHOD CALLED");
 
         try{
-            String sound = allData.getString("now_you_read_sound");
+            String sound = allData.getString("now_read_sound");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -348,8 +387,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             // Debug
             System.out.println(":: SimpleStoryActivity.finishListening(Runnable) > Debug: METHOD CALLED");
 
-            currentSentence ++;
-            if (currentSentence - 1 <  sentences.length() ){
+            currentSentence++;
+            if (currentSentence < sentences.length() ){
                 populateAndShowSentence();
             }
             else{
@@ -364,7 +403,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
         System.out.println(":: SimpleStoryActivity.listenToTheWholeStory > Debug: METHOD CALLED");
 
         try {
-            String sound = allData.getString("listen_to_whole_story");
+            String sound = allData.getString("listen_to_the_whole_story");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -443,7 +482,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
         try {
             container.setVisibility(View.VISIBLE);
             container.removeAllViews();
-            String sound = allData.getString("read_whole_story_sound");
+            String sound = allData.getString("now_read_whole_story_sound");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -482,7 +521,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
         try {
             container.setVisibility(View.VISIBLE);
             container.removeAllViews();
-            String sound = allData.getString("touch_arrow");
+            String sound = allData.getString("touch_the_arrow");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -530,7 +569,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
         System.out.println(":: SimpleStoryActivity.nextSentence > Debug: METHOD CALLED");
 
         currentSentence++;
-        if (currentSentence - 1 <  sentences.length())
+        if (currentSentence <  sentences.length())
             populateSentence();
         else
             wellDone();
@@ -546,7 +585,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
             nextButton.setVisibility(View.INVISIBLE);
             int image = allData.getInt("story_image");
             getWindow().getDecorView().getRootView().setBackgroundResource(image);
-            String sound = allData.getString("well_done_sound");
+            String sound = allData.getString("well_done_you_can_read_sound");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -641,8 +680,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         try{
 
-            if (currentQuestion -1 < questions.length()){
-                JSONObject question = questions.getJSONObject(currentQuestion - 1);
+            if (currentQuestion < questions.length()){
+                JSONObject question = questions.getJSONObject(currentQuestion);
                 if (question.getInt("is_touch") == 1){ //Three objects
                     singleImage.setVisibility(View.INVISIBLE);
                     tripleImageThree.setVisibility(View.VISIBLE);
@@ -678,7 +717,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     public void onCompletion(MediaPlayer mp) {
                         try {
                             mp.reset();
-                            JSONObject question = questions.getJSONObject(currentQuestion - 1);
+                            JSONObject question = questions.getJSONObject(currentQuestion);
                             if (question.getInt("is_touch") == 0) { //Three objects
                                 handler.postDelayed(plaSingleImageAnswerRunnable, 3000);
                             }
@@ -723,8 +762,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
         System.out.println(":: SimpleStoryActivity.playSingleImageAnswer > Debug: METHOD CALLED");
 
         try{
-            JSONObject question = questions.getJSONObject(currentQuestion - 1);
-            singleImage.setImageResource(question.getJSONArray("images").getJSONObject(1).getInt("image"));
+            JSONObject question = questions.getJSONObject(currentQuestion);
+            singleImage.setImageResource(question.getJSONArray("images").getJSONObject(0).getInt("image"));
             String sound = question.getString("answer_sound");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
@@ -793,6 +832,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     mp.reset();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -809,7 +849,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
         System.out.println(":: SimpleStoryActivity.turnWord > Debug: METHOD CALLED");
 
         try{
-            JSONArray sentence = sentences.getJSONArray(currentSentence - 1);
+            JSONArray sentence = sentences.getJSONArray(currentSentence);
             JSONObject word = sentence.getJSONObject(currentSound);
             ImageView image = sentenceViews.get(currentSound);
             int picture = word.getInt(turnString);
@@ -837,7 +877,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
             container.removeAllViews();
             container.setVisibility(View.VISIBLE);
             while (!done) {
-                JSONArray sentence = sentences.getJSONArray(currentSentence - 1);
+                JSONArray sentence = sentences.getJSONArray(currentSentence);
                 LinearLayout line = getLine();
                 ImageView item;
                 int width = 0;
@@ -886,8 +926,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
         System.out.println(":: SimpleStoryActivity.imageClicked > Debug: METHOD CALLED");
 
         try {
-            JSONObject question = questions.getJSONObject(currentQuestion - 1);
-            if (question.getJSONArray("images").getJSONObject(image-1).getInt("is_right") == 1){
+            JSONObject question = questions.getJSONObject(currentQuestion);
+            if (question.getJSONArray("images").getJSONObject(image).getInt("is_right") == 1){
                 playSound(ResourceSelector.getPositiveAffirmationSound(this));
                 currentQuestion++;
                 nextQuestion();

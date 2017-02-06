@@ -122,9 +122,8 @@ public abstract class LinkTemplate extends AppCompatActivity {
         try {
             mPlayer = player;
 
-            if (mPlayer != null) {
-                mPlayer.release();
-                mPlayer = null;
+            if (mPlayer == null) {
+                mPlayer = new MediaPlayer();
             }
 
             // validate context
@@ -132,7 +131,7 @@ public abstract class LinkTemplate extends AppCompatActivity {
                 System.err.println(mActivityName + " > createPlayer: invalid context");
             }
 
-            mPlayer = new MediaPlayer();
+            mPlayer.reset();
             mPlayer.setDataSource(getApplicationContext(), Uri.parse(mNarrator));
 
             mState = PREPARED;
