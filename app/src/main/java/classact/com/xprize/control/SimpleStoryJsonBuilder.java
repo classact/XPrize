@@ -81,7 +81,8 @@ public class SimpleStoryJsonBuilder {
                 } else {
                     drillData += ",\"red_word\":0";
                 }
-                drillData += ",\"sound\":\"" + word.getSound() + "\"}";
+                drillData += ",\"sound\":\"" + word.getSound() + "\"";
+                drillData += ",\"set_no\":" + word.getSentenceSetNo() + "}";
             }
             drillData += "]";
         }

@@ -13,8 +13,8 @@ public class SimpleStoryWord {
     private int wordNo;
     private String blackWord;
     private String redWord;
-    private String wordName;
-    private String wordSound;
+    private String sound;
+    private int sentenceSetNo;
 
     /* * * * * * * * * * *
      * SimpleStoryWordID *
@@ -103,10 +103,18 @@ public class SimpleStoryWord {
     /* * * * *
      * Sound *
      * * * * */
-    public String getSound() { return wordSound;}
+    public String getSound() { return sound;}
 
-    public void setSound(String wordSound) {
-        this.wordSound = wordSound;
+    public void setSound(String sound) {
+        this.sound = sound;
     }
 
+    /* * * * * * * * *
+     * SentenceSetNo *
+     * * * * * * * * */
+    public int getSentenceSetNo() { return sentenceSetNo;}
+
+    public void setSentenceSetNo(int sentenceSetNo) {
+        this.sentenceSetNo = sentenceSetNo;
+    }
 }

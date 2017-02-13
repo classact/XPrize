@@ -1,13 +1,18 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.app.ActionBar;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,6 +25,7 @@ import classact.com.xprize.utils.ImageHelper;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SimpleStoryActivity extends AppCompatActivity {
+    private String drillData;
     private JSONArray sentences;
     private MediaPlayer mp;
     private Handler handler;
@@ -37,6 +43,12 @@ public class SimpleStoryActivity extends AppCompatActivity {
     private ImageView trippleImageTwo;
     private ImageView tripleImageThree;
 
+    private LinearLayout col;
+    private ArrayList<ArrayList<ImageView>> itemGrid;
+    private ArrayList<ArrayList<ArrayList<ImageView>>> itemGridSets;
+
+    private final int STARTING_SET = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +58,12 @@ public class SimpleStoryActivity extends AppCompatActivity {
         getWindow().getDecorView().getRootView().setBackgroundResource(R.drawable.background_simple_story);
 
         container = (LinearLayout)findViewById(R.id.container_simple_story);
+
+        RelativeLayout.LayoutParams containerParams = (RelativeLayout.LayoutParams) container.getLayoutParams();
+        containerParams.topMargin = 0;
+        containerParams.leftMargin = 0;
+        container.setLayoutParams(containerParams);
+
         singleImage = (ImageView)findViewById(R.id.single_image);
         trippleImageOne = (ImageView)findViewById (R.id.tripple_image_1);
         trippleImageOne.setOnClickListener(new View.OnClickListener() {
@@ -76,9 +94,163 @@ public class SimpleStoryActivity extends AppCompatActivity {
             }
         });
         handler = new Handler();
-        initialiseData();
+        /*initialiseData();
         //  playReadEachSentenceAfterMother();
-        populateAndShowSentence();
+        populateAndShowSentence();*/
+
+        col = new LinearLayout(getApplicationContext());
+        // col.setBackgroundColor(Color.GRAY);
+        col.setOrientation(LinearLayout.VERTICAL);
+        col.setGravity(Gravity.CENTER);
+
+        LinearLayout.LayoutParams colParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+        );
+        col.setLayoutParams(colParams);
+
+        // Retrieves the sentences from drill data
+        // Do this before creating rows, in case there is an override for number of
+        // sentences per set
+        // * Note: NO override exists at the moment *
+        initialiseData();
+
+        // Initialize Item Grid Sets
+        itemGridSets = new ArrayList<>();
+
+        // Initialize Item Grid
+        // For now, make it will be populated through logic
+        itemGrid = null;
+
+        // In the DB, Set numbers start from 1 instead of 0
+        int startingSetIndex = STARTING_SET + 1;
+
+        // Initialize the current set
+        int currentSet = -1;
+
+        // Loop through sentences to create Linear Layout rows
+        try {
+            if (sentences != null) {
+                // Loopy loop ...
+                for (int i = 0; i < sentences.length(); i++) {
+
+                    // Instantiate sentence object
+                    JSONArray sentence = sentences.getJSONArray(i);
+
+                    // Validate sentence object
+                    if (sentence == null) {
+                        throw new Exception("Sentence (" + i + ") is null");
+                    }
+
+                    // Create list of items (ImageViews) that will hold sentence words
+                    ArrayList<ImageView> items = new ArrayList<>();
+
+                    // Grab each sentence word
+                    // To do so, loop through each sentence
+                    for (int j = 0; j < sentence.length(); j++) {
+                        // Get the sentence word
+                        JSONObject sentenceWord = sentence.getJSONObject(j);
+
+                        // Check if a new itemGrid should be created
+                        // An itemGrid exists per set
+                        // One can check the current setNo using JSON "set_no"
+                        int sentenceSetNumber = sentenceWord.getInt("set_no");
+                        System.out.println(":::::: Sentence set_no is " + sentenceSetNumber);
+                        if (sentenceSetNumber != currentSet) {
+
+                            // Add item grid to item grid sets,
+                            // given that a current, non-empty grid exists,
+                            // add that grid to the set of grids
+                            if (itemGrid != null && itemGrid.size() > 0) {
+                                System.out.println(":::::: Adding item grid to item grid set");
+                                itemGridSets.add(itemGrid);
+                            }
+
+                            itemGrid = new ArrayList<>();
+                            currentSet = sentenceSetNumber;
+
+                            System.out.println(":::::: New item grid created");
+                        }
+
+                        // Get the image resourceId of the sentence word
+                        int sentenceWordImageResourceId = sentenceWord.getInt("black_word");
+
+                        // Create image view to hold the sentence word
+                        ImageView item = new ImageView(getApplication());
+
+                        // Set sentence word's image resource to that of the resourceId
+                        item.setImageResource(sentenceWordImageResourceId);
+
+                        // Set layout params of sentenceWordImageView
+                        LinearLayout.LayoutParams itemParams = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                        );
+                        itemParams.leftMargin = 28; // Some 'padding' between sentence words
+                        itemParams.rightMargin = 28;
+                        item.setLayoutParams(itemParams);
+
+                        // Add imageView to list of items (ImageViews)
+                        items.add(item);
+                    }
+                    // Add items to itemGrid,
+                    // as long as it's not null
+                    if (itemGrid != null) {
+                        itemGrid.add(items);
+                    }
+
+                    // See if the items must be displayed
+                    // Do this by checking if the current set is the 'starting set'
+                    if (currentSet == startingSetIndex) {
+
+                        // Create new linear layout horizontal row
+                        LinearLayout row = new LinearLayout(getApplicationContext());
+
+                        // Custom colour the background (testing purposes)
+                        // Even number colouring variations
+                        /*if (i % 2 == 0) {
+                            row.setBackgroundColor(Color.CYAN);
+                        } else {
+                            row.setBackgroundColor(Color.MAGENTA);
+                        }*/
+                        row.setOrientation(LinearLayout.HORIZONTAL);
+                        row.setBaselineAligned(true);
+
+                        // Create row layout params
+                        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                        );
+                        row.setLayoutParams(rowParams);
+
+                        // Add items to row
+                        for (int j = 0; j < items.size(); j++) {
+                            row.addView(items.get(j));
+                            System.out.println("::::::::: Adding image " + j + " to row " + i);
+                        }
+
+                        // Add row to col
+                        col.addView(row);
+                    }
+                }
+            } else {
+                // Throw exception. Cannot work with null sentences
+                throw new Exception("Sentences are null");
+            }
+        } catch (Exception ex) {
+            // Finish the activity - it's bugged
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.onCreate > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+
+        container.addView(col);
     }
 
     private void initialiseData(){
@@ -87,7 +259,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
         System.out.println(":: SimpleStoryActivity.initialiseData > Debug: METHOD CALLED");
 
         try {
-            String drillData = getIntent().getExtras().getString("data");
+            drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
             sentences = allData.getJSONArray("sentences");
             currentSound = 0;
