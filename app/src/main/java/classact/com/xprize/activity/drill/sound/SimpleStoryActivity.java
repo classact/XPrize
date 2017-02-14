@@ -47,6 +47,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
     private SimpleStoryActivity thisActivity;
 
+    private RelativeLayout rootView;
+
     private LinearLayout col;
 
     // Image View grid sets
@@ -73,6 +75,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
     private final int BLACK_WORD = 0;
     private final int RED_WORD = 1;
 
+    private boolean touchWordsEnabled;
     private int mSelectedSetIndex;
     private int mSelectedRowIndex;
     private int mSelectedWordIndex;
@@ -82,6 +85,9 @@ public class SimpleStoryActivity extends AppCompatActivity {
     private int mActiveRowIndex;
     private int mActiveWordIndex;
     private boolean mActiveWordFlipped;
+
+    private ImageView mNextArrow;
+    private ImageView mPreviousArrow;
 
     private final int STATE_0 = 0;
     private final int STATE_1 = 1;
@@ -96,6 +102,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         // Set background to background-simple-story (until I change it in the layout file)
         getWindow().getDecorView().getRootView().setBackgroundResource(R.drawable.background_simple_story);
+
+        rootView = (RelativeLayout) findViewById(R.id.activity_simple_story);
 
         container = (LinearLayout)findViewById(R.id.container_simple_story);
 
@@ -297,7 +305,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         imageView.setLayoutParams(imageViewParams);
 
                         // Add listener to ImageView
-                        imageView.setOnClickListener(new TouchWordListener(thisActivity, soundPathGridSets.size(), soundPathGrid.size(), j));
+                        imageView.setOnClickListener(new SelectedWordListener(thisActivity, soundPathGridSets.size(), soundPathGrid.size(), j));
 
                         // Add Image View to list of Image Views
                         imageViews.add(imageView);
@@ -388,6 +396,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         col.addView(row);
                     }
                 }
+
             } else {
                 // Throw exception. Cannot work with null sentences
                 throw new Exception("Sentences are null");
@@ -410,121 +419,6 @@ public class SimpleStoryActivity extends AppCompatActivity {
         currentState = STATE_0;
 
         playPrompt("read_each_sentence_after_mother_sound");
-    }
-
-    class TouchWordListener implements ImageView.OnClickListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
-
-        private SimpleStoryActivity mThisActivity;
-        private int mSetIndex;
-        private int mRowIndex;
-        private int mWordIndex;
-
-        public TouchWordListener(SimpleStoryActivity thisActivity, int setIndex, int rowIndex, int wordIndex) {
-            mSetIndex = setIndex;
-            mRowIndex = rowIndex;
-            mWordIndex = wordIndex;
-            mThisActivity = thisActivity;
-
-            // Update selected Set, Row and Word Indexes for the activity
-            mThisActivity.setSelectedSetIndex(setIndex);
-            mThisActivity.setSelectedRowIndex(rowIndex);
-            mThisActivity.setSelectedWordIndex(wordIndex);
-        }
-
-        @Override
-        public void onClick(View v) {
-            mThisActivity.playTouchWord(mSetIndex, mRowIndex, mWordIndex);
-        }
-
-        @Override
-        public void onPrepared(MediaPlayer mp) {
-            mp.start();
-            flipSelectedWord(RED_WORD, mSetIndex, mRowIndex, mWordIndex);
-        }
-
-        @Override
-        public void onCompletion(MediaPlayer mp) {
-            mp.reset();
-            flipSelectedWord(BLACK_WORD, mSetIndex, mRowIndex, mWordIndex);
-
-        }
-    }
-
-    private void playTouchWord(int setIndex, int rowIndex, int wordIndex) {
-        try {
-            // Get sound path from sound path grid sets
-            String soundPath = soundPathGridSets.get(setIndex).get(rowIndex).get(wordIndex);
-
-            // Initialize media player if need be
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-
-            // Check if media player is playing
-            if (mp.isPlaying() && mSelectedWordFlipped) {
-                mp.stop();
-                flipSelectedWord(BLACK_WORD, mSelectedSetIndex, mSelectedRowIndex, mSelectedWordIndex);
-            }
-
-            // Media player jazz ♫♪
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new TouchWordListener(thisActivity, setIndex, rowIndex, wordIndex));
-            mp.setOnCompletionListener(new TouchWordListener(thisActivity, setIndex, rowIndex, wordIndex));
-            mp.prepare();
-
-        } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.playWord(" + setIndex + ", " + rowIndex + ", " +
-                    wordIndex + ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
-            ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    private void flipSelectedWord(int side, int setIndex, int rowIndex, int wordIndex) {
-        try {
-            // Initialize image (resource id)
-            int image = 0;
-
-            // Get the resource id, based on the side
-            // 0: black
-            // 1: red
-            if (side == BLACK_WORD) {
-                image = blackWordGridSets.get(setIndex).get(rowIndex).get(wordIndex);
-                mSelectedWordFlipped = false;
-            } else if (side == RED_WORD) {
-                image = redWordGridSets.get(setIndex).get(rowIndex).get(wordIndex);
-                mSelectedWordFlipped = true;
-            }
-
-            // Validate image
-            // Simply 'return' if image resource id remains as 0
-            if (image == 0) {
-                mSelectedWordFlipped = false;
-                return;
-            }
-
-            // Update the corresponding Image View's image resource
-            imageViewGridSets.get(setIndex).get(rowIndex).get(wordIndex).setImageResource(image);
-
-        } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.flipSelectedWord(" + side + ", " + setIndex + ", " +
-                    rowIndex + ", " + wordIndex + ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
-            ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
-        }
     }
 
     class PromptListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
@@ -605,6 +499,9 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.reset();
             switch (mPrompt) {
                 case "read_each_sentence_after_mother_sound": {
+                    // Disable narration on touch
+                    touchWordsEnabled = false;
+
                     // Reset the active word
                     mActiveSetIndex = 0;
                     mActiveRowIndex = 0;
@@ -617,16 +514,64 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 }
                 case "listen_first_sound": {
                     // Play the current active word (unmuted)
-                    playReadWord(false, mActiveSetIndex, mActiveRowIndex, mActiveWordIndex);
+                    playActiveWord(false, mActiveSetIndex, mActiveRowIndex, mActiveWordIndex);
                     break;
                 }
                 case "now_read_sound": {
                     // Play the current active word (muted)
-                    playReadWord(true, mActiveSetIndex, mActiveRowIndex, mActiveWordIndex);
+                    playActiveWord(true, mActiveSetIndex, mActiveRowIndex, mActiveWordIndex);
                     break;
                 }
                 case "now_read_whole_story_sound": {
+                    // Enable narration on touch
+                    touchWordsEnabled = true;
 
+                    // After a short delay, introduce arrows
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Create next and previous arrows
+                            mNextArrow = new ImageView(getApplicationContext());
+                            mNextArrow.setImageResource(R.drawable.simple_story_next);
+                            mNextArrow.setScaleX(0.9f);
+                            mNextArrow.setScaleY(0.9f);
+
+                            // Create row layout params
+                            RelativeLayout.LayoutParams nextArrowParams = new RelativeLayout.LayoutParams(
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                            );
+                            nextArrowParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                            nextArrowParams.topMargin = 1200;
+                            nextArrowParams.rightMargin = 210;
+                            mNextArrow.setLayoutParams(nextArrowParams);
+
+                            mPreviousArrow = new ImageView(getApplicationContext());
+                            mPreviousArrow.setImageResource(R.drawable.simple_story_next);
+                            mPreviousArrow.setScaleX(-0.9f);
+                            mPreviousArrow.setScaleY(0.9f);
+
+                            // Create row layout params
+                            RelativeLayout.LayoutParams previousArrowParams = new RelativeLayout.LayoutParams(
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                            );
+                            previousArrowParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                            previousArrowParams.topMargin = 1200;
+                            previousArrowParams.leftMargin = 210;
+                            mPreviousArrow.setLayoutParams(previousArrowParams);
+
+                            rootView.addView(mNextArrow);
+                            rootView.addView(mPreviousArrow);
+
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    playPrompt("touch_the_arrow");
+                                }
+                            }, 500);
+                        }
+                    }, 500);
                     break;
                 }
                 case "touch_the_arrow": {
@@ -687,7 +632,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
         }
     }
 
-    class ReadWordListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+    class ActiveWordListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
         private SimpleStoryActivity mThisActivity;
         private int mSetIndex;
@@ -699,7 +644,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
         private int mMaxRows;
         private int mMaxWords;
 
-        public ReadWordListener(SimpleStoryActivity thisActivity, boolean mute, int setIndex, int rowIndex, int wordIndex) {
+        public ActiveWordListener(SimpleStoryActivity thisActivity, boolean mute, int setIndex, int rowIndex, int wordIndex) {
             mMute = mute;
             mSetIndex = setIndex;
             mRowIndex = rowIndex;
@@ -888,7 +833,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     // It's any other word
 
                     // Read next word
-                    playReadWord(mMute, mSetIndex, mRowIndex, mWordIndex + 1);
+                    playActiveWord(mMute, mSetIndex, mRowIndex, mWordIndex + 1);
 
                 }
             }
@@ -906,10 +851,10 @@ public class SimpleStoryActivity extends AppCompatActivity {
         }
     }
 
-    private void playReadWord(boolean mute, int setIndex, int rowIndex, int wordIndex) {
+    private void playActiveWord(boolean mute, int setIndex, int rowIndex, int wordIndex) {
 
         // Debug
-        System.out.println(":: SimpleStoryActivity.playReadWord(" + mute + ", " + setIndex +
+        System.out.println(":: SimpleStoryActivity.playActiveWord(" + mute + ", " + setIndex +
                 ", " + rowIndex + ", " + wordIndex + ") > Debug: METHOD CALLED");
 
         try {
@@ -930,13 +875,13 @@ public class SimpleStoryActivity extends AppCompatActivity {
             // Media player jazz ♫♪
             mp.reset();
             mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new ReadWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex));
-            mp.setOnCompletionListener(new ReadWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex));
+            mp.setOnPreparedListener(new ActiveWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex));
+            mp.setOnCompletionListener(new ActiveWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex));
             mp.prepare();
 
         } catch (Exception ex) {
             System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.playWord(" + setIndex + ", " + rowIndex + ", " +
+            System.err.println("SimpleStoryActivity.playActiveWord(" + setIndex + ", " + rowIndex + ", " +
                     wordIndex + ") > Exception: " + ex.getMessage());
             System.err.println("------------------------------------------------------------");
             ex.printStackTrace();
@@ -977,6 +922,141 @@ public class SimpleStoryActivity extends AppCompatActivity {
         } catch (Exception ex) {
             System.err.println("============================================================");
             System.err.println("SimpleStoryActivity.flipActiveWord(" + side + ", " + setIndex + ", " +
+                    rowIndex + ", " + wordIndex + ") > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    class SelectedWordListener implements ImageView.OnClickListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+
+        private SimpleStoryActivity mThisActivity;
+        private int mSetIndex;
+        private int mRowIndex;
+        private int mWordIndex;
+
+        public SelectedWordListener(SimpleStoryActivity thisActivity, int setIndex, int rowIndex, int wordIndex) {
+            mSetIndex = setIndex;
+            mRowIndex = rowIndex;
+            mWordIndex = wordIndex;
+            mThisActivity = thisActivity;
+
+            // Update selected Set, Row and Word Indexes for the activity
+            mThisActivity.setSelectedSetIndex(setIndex);
+            mThisActivity.setSelectedRowIndex(rowIndex);
+            mThisActivity.setSelectedWordIndex(wordIndex);
+        }
+
+        @Override
+        public void onClick(View v) {
+            mThisActivity.playSelectedWord(mSetIndex, mRowIndex, mWordIndex);
+        }
+
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+            mp.start();
+            flipSelectedWord(RED_WORD, mSetIndex, mRowIndex, mWordIndex);
+        }
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            mp.reset();
+            flipSelectedWord(BLACK_WORD, mSetIndex, mRowIndex, mWordIndex);
+
+        }
+    }
+
+    private void playSelectedWord(int setIndex, int rowIndex, int wordIndex) {
+
+        // Debug
+        System.out.println(":: SimpleStoryActivity.playSelectedWord(" + setIndex +
+                ", " + rowIndex + ", " + wordIndex + ") > Debug: METHOD CALLED");
+
+        // Proceed with logic only when touch words (narration via touch)
+        // are enabled
+        if (touchWordsEnabled) {
+
+            // Debug
+            System.out.println(":: SimpleStoryActivity.playSelectedWord(" + setIndex +
+                    ", " + rowIndex + ", " + wordIndex + ") > Debug: Touch words enabled");
+
+            try {
+                // Get sound path from sound path grid sets
+                String soundPath = soundPathGridSets.get(setIndex).get(rowIndex).get(wordIndex);
+
+                // Initialize media player if need be
+                if (mp == null) {
+                    mp = new MediaPlayer();
+                }
+
+                // Check if media player is playing
+                if (mp.isPlaying() && mSelectedWordFlipped) {
+                    mp.stop();
+                    flipSelectedWord(BLACK_WORD, mSelectedSetIndex, mSelectedRowIndex, mSelectedWordIndex);
+                }
+
+                // Media player jazz ♫♪
+                mp.reset();
+                mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+                mp.setOnPreparedListener(new SelectedWordListener(thisActivity, setIndex, rowIndex, wordIndex));
+                mp.setOnCompletionListener(new SelectedWordListener(thisActivity, setIndex, rowIndex, wordIndex));
+                mp.prepare();
+
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.err.println("SimpleStoryActivity.playSelectedWord(" + setIndex + ", " + rowIndex + ", " +
+                        wordIndex + ") > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+
+        } else {
+
+            // Debug
+            System.out.println(":: SimpleStoryActivity.playSelectedWord(" + setIndex +
+                    ", " + rowIndex + ", " + wordIndex + ") > Debug: Touch words disabled");
+        }
+    }
+
+    private void flipSelectedWord(int side, int setIndex, int rowIndex, int wordIndex) {
+        try {
+            // Initialize image (resource id)
+            int image = 0;
+
+            // Get the resource id, based on the side
+            // 0: black
+            // 1: red
+            if (side == BLACK_WORD) {
+                image = blackWordGridSets.get(setIndex).get(rowIndex).get(wordIndex);
+                mSelectedWordFlipped = false;
+            } else if (side == RED_WORD) {
+                image = redWordGridSets.get(setIndex).get(rowIndex).get(wordIndex);
+                mSelectedWordFlipped = true;
+            }
+
+            // Validate image
+            // Simply 'return' if image resource id remains as 0
+            if (image == 0) {
+                mSelectedWordFlipped = false;
+                return;
+            }
+
+            // Update the corresponding Image View's image resource
+            imageViewGridSets.get(setIndex).get(rowIndex).get(wordIndex).setImageResource(image);
+
+        } catch (Exception ex) {
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.flipSelectedWord(" + side + ", " + setIndex + ", " +
                     rowIndex + ", " + wordIndex + ") > Exception: " + ex.getMessage());
             System.err.println("------------------------------------------------------------");
             ex.printStackTrace();
