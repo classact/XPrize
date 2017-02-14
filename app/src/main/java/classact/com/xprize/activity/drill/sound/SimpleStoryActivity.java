@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import classact.com.xprize.R;
@@ -68,15 +69,25 @@ public class SimpleStoryActivity extends AppCompatActivity {
     // and not java.util.Set *
     private ArrayList<ArrayList<ArrayList<String>>> soundPathGridSets;
 
-
     private final int STARTING_SET = 0;
     private final int BLACK_WORD = 0;
     private final int RED_WORD = 1;
 
-    private int mCurrentSetIndex;
-    private int mCurrentRowIndex;
-    private int mCurrentWordIndex;
-    private boolean mWordFlipped;
+    private int mSelectedSetIndex;
+    private int mSelectedRowIndex;
+    private int mSelectedWordIndex;
+    private boolean mSelectedWordFlipped;
+
+    private int mActiveSetIndex;
+    private int mActiveRowIndex;
+    private int mActiveWordIndex;
+    private boolean mActiveWordFlipped;
+
+    private final int STATE_0 = 0;
+    private final int STATE_1 = 1;
+    private final int STATE_2 = 2;
+    private final int STATE_3 = 3;
+    private int currentState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,6 +229,26 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         final int sentenceSet = sentenceWord.getInt("set_no");
                         if (sentenceSet != currentSet) {
 
+                            // Add previous Image View grid to Image View grid sets
+                            if (imageViewGrid != null && imageViewGrid.size() > 0) {
+                                imageViewGridSets.add(imageViewGrid);
+                            }
+
+                            // Add previous black word grid to black word grid sets
+                            if (blackWordGrid != null && blackWordGrid.size() > 0) {
+                                blackWordGridSets.add(blackWordGrid);
+                            }
+
+                            // Add previous red word grid to red word grid sets
+                            if (redWordGrid != null && redWordGrid.size() > 0) {
+                                redWordGridSets.add(redWordGrid);
+                            }
+
+                            // Add previous sound path grid to sound path grid sets
+                            if (soundPathGrid != null && soundPathGrid.size() > 0) {
+                                soundPathGridSets.add(soundPathGrid);
+                            }
+
                             // Assign new Image View grid for the new set
                             imageViewGrid = new ArrayList<>();
 
@@ -301,29 +332,32 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         soundPathGrid.add(soundPaths);
                     }
 
-                    // Add Image View grid to Image View grid sets
-                    if (imageViewGrid != null && imageViewGrid.size() > 0) {
-                        imageViewGridSets.add(imageViewGrid);
-                    }
+                    // If this is the last row (sentence), add grids to grid sets here
+                    if (i == sentences.length() - 1) {
+                        // Add final Image View grid to Image View grid sets
+                        if (imageViewGrid != null && imageViewGrid.size() > 0) {
+                            imageViewGridSets.add(imageViewGrid);
+                        }
 
-                    // Add black word grid to black word grid sets
-                    if (blackWordGrid != null && blackWordGrid.size() > 0) {
-                        blackWordGridSets.add(blackWordGrid);
-                    }
+                        // Add final black word grid to black word grid sets
+                        if (blackWordGrid != null && blackWordGrid.size() > 0) {
+                            blackWordGridSets.add(blackWordGrid);
+                        }
 
-                    // Add red word grid to red word grid sets
-                    if (redWordGrid != null && redWordGrid.size() > 0) {
-                        redWordGridSets.add(redWordGrid);
-                    }
+                        // Add final red word grid to red word grid sets
+                        if (redWordGrid != null && redWordGrid.size() > 0) {
+                            redWordGridSets.add(redWordGrid);
+                        }
 
-                    // Add sound path grid to sound path grid sets
-                    if (soundPathGrid != null && soundPathGrid.size() > 0) {
-                        soundPathGridSets.add(soundPathGrid);
+                        // Add final sound path grid to sound path grid sets
+                        if (soundPathGrid != null && soundPathGrid.size() > 0) {
+                            soundPathGridSets.add(soundPathGrid);
+                        }
                     }
 
                     // See if the current set's Image Views must be displayed
                     // Do this by checking if the current set is the 'starting set'
-                    if (currentSet == startingSetIndex) {
+                    if (currentSet == startingSetIndex && imageViewGrid.size() == 1) {
 
                         // Create new linear layout horizontal row
                         LinearLayout row = new LinearLayout(getApplicationContext());
@@ -372,6 +406,10 @@ public class SimpleStoryActivity extends AppCompatActivity {
         }
 
         container.addView(col);
+
+        currentState = STATE_0;
+
+        playPrompt("read_each_sentence_after_mother_sound");
     }
 
     class TouchWordListener implements ImageView.OnClickListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
@@ -387,32 +425,32 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mWordIndex = wordIndex;
             mThisActivity = thisActivity;
 
-            // Update current Set, Row and Word Indexes for the activity
-            mThisActivity.setCurrentSetIndex(setIndex);
-            mThisActivity.setCurrentRowIndex(rowIndex);
-            mThisActivity.setCurrentWordIndex(wordIndex);
+            // Update selected Set, Row and Word Indexes for the activity
+            mThisActivity.setSelectedSetIndex(setIndex);
+            mThisActivity.setSelectedRowIndex(rowIndex);
+            mThisActivity.setSelectedWordIndex(wordIndex);
         }
 
         @Override
         public void onClick(View v) {
-            mThisActivity.playSentenceWordSound(mSetIndex, mRowIndex, mWordIndex);
+            mThisActivity.playTouchWord(mSetIndex, mRowIndex, mWordIndex);
         }
 
         @Override
         public void onPrepared(MediaPlayer mp) {
             mp.start();
-            flipWord(RED_WORD, mSetIndex, mRowIndex, mWordIndex);
+            flipSelectedWord(RED_WORD, mSetIndex, mRowIndex, mWordIndex);
         }
 
         @Override
         public void onCompletion(MediaPlayer mp) {
             mp.reset();
-            flipWord(BLACK_WORD, mSetIndex, mRowIndex, mWordIndex);
+            flipSelectedWord(BLACK_WORD, mSetIndex, mRowIndex, mWordIndex);
 
         }
     }
 
-    private void playSentenceWordSound(int setIndex, int rowIndex, int wordIndex) {
+    private void playTouchWord(int setIndex, int rowIndex, int wordIndex) {
         try {
             // Get sound path from sound path grid sets
             String soundPath = soundPathGridSets.get(setIndex).get(rowIndex).get(wordIndex);
@@ -423,9 +461,9 @@ public class SimpleStoryActivity extends AppCompatActivity {
             }
 
             // Check if media player is playing
-            if (mp.isPlaying() && mWordFlipped) {
+            if (mp.isPlaying() && mSelectedWordFlipped) {
                 mp.stop();
-                flipWord(BLACK_WORD, mCurrentSetIndex, mCurrentRowIndex, mCurrentWordIndex);
+                flipSelectedWord(BLACK_WORD, mSelectedSetIndex, mSelectedRowIndex, mSelectedWordIndex);
             }
 
             // Media player jazz ♫♪
@@ -449,7 +487,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
         }
     }
 
-    private void flipWord(int side, int setIndex, int rowIndex, int wordIndex) {
+    private void flipSelectedWord(int side, int setIndex, int rowIndex, int wordIndex) {
         try {
             // Initialize image (resource id)
             int image = 0;
@@ -459,16 +497,16 @@ public class SimpleStoryActivity extends AppCompatActivity {
             // 1: red
             if (side == BLACK_WORD) {
                 image = blackWordGridSets.get(setIndex).get(rowIndex).get(wordIndex);
-                mWordFlipped = false;
+                mSelectedWordFlipped = false;
             } else if (side == RED_WORD) {
                 image = redWordGridSets.get(setIndex).get(rowIndex).get(wordIndex);
-                mWordFlipped = true;
+                mSelectedWordFlipped = true;
             }
 
             // Validate image
             // Simply 'return' if image resource id remains as 0
             if (image == 0) {
-                mWordFlipped = false;
+                mSelectedWordFlipped = false;
                 return;
             }
 
@@ -477,7 +515,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         } catch (Exception ex) {
             System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.flipWord(" + side + ", " + setIndex + ", " +
+            System.err.println("SimpleStoryActivity.flipSelectedWord(" + side + ", " + setIndex + ", " +
                     rowIndex + ", " + wordIndex + ") > Exception: " + ex.getMessage());
             System.err.println("------------------------------------------------------------");
             ex.printStackTrace();
@@ -489,36 +527,545 @@ public class SimpleStoryActivity extends AppCompatActivity {
         }
     }
 
-    public void setCurrentSetIndex(int currentSetIndex) {
-        mCurrentSetIndex = currentSetIndex;
+    class PromptListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+
+        private SimpleStoryActivity mThisActivity;
+        private String mPrompt;
+
+        public PromptListener(SimpleStoryActivity thisActivity, String prompt) {
+            mPrompt = prompt;
+            mThisActivity = thisActivity;
+        }
+
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+            // Reset volume to max (in case it was muted before)
+            mp.setVolume(1, 1);
+
+            if (mPrompt.equalsIgnoreCase("now_read_whole_story_sound")) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Clear all existing rows of child views
+                        for (int i = 0; i < col.getChildCount(); i++) {
+
+                            // Get row
+                            LinearLayout row = (LinearLayout) col.getChildAt(i);
+
+                            // Remove all views from row
+                            row.removeAllViews();
+                        }
+
+                        // Clear column of all child views
+                        col.removeAllViews();
+
+                        // Reset active set index, active row index, and active word index
+                        mActiveSetIndex = 0;
+                        mActiveRowIndex = 0;
+                        mActiveWordIndex = 0;
+
+                        // Get Image Views for first row of new set
+                        ArrayList<ArrayList<ImageView>> imageViewGrid = thisActivity.getImageViewGridSets().get(mActiveSetIndex);
+
+                        for (int i = 0; i < imageViewGrid.size(); i++) {
+
+                            // Get Image Views for the next row (sentence)
+                            ArrayList<ImageView> imageViews = imageViewGrid.get(i);
+
+                            // Create new linear layout horizontal row
+                            LinearLayout row = new LinearLayout(getApplicationContext());
+                            row.setOrientation(LinearLayout.HORIZONTAL);
+                            row.setBaselineAligned(true);
+
+                            // Create row layout params
+                            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                                    LinearLayout.LayoutParams.WRAP_CONTENT
+                            );
+                            row.setLayoutParams(rowParams);
+
+                            // Add Image Views to row
+                            for (int j = 0; j < imageViews.size(); j++) {
+                                row.addView(imageViews.get(j));
+                            }
+
+                            // Add row to col
+                            col.addView(row);
+                        }
+                    }
+                }, mp.getDuration() / 2);
+            }
+
+            // Play da beatz ♫♪
+            mp.start();
+        }
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            mp.reset();
+            switch (mPrompt) {
+                case "read_each_sentence_after_mother_sound": {
+                    // Reset the active word
+                    mActiveSetIndex = 0;
+                    mActiveRowIndex = 0;
+                    mActiveWordIndex = 0;
+                    mActiveWordFlipped = false;
+
+                    // Play prompt
+                    playPrompt("listen_first_sound");
+                    break;
+                }
+                case "listen_first_sound": {
+                    // Play the current active word (unmuted)
+                    playReadWord(false, mActiveSetIndex, mActiveRowIndex, mActiveWordIndex);
+                    break;
+                }
+                case "now_read_sound": {
+                    // Play the current active word (muted)
+                    playReadWord(true, mActiveSetIndex, mActiveRowIndex, mActiveWordIndex);
+                    break;
+                }
+                case "now_read_whole_story_sound": {
+
+                    break;
+                }
+                case "touch_the_arrow": {
+                    break;
+                }
+                case "listen_to_the_whole_story": {
+                    break;
+                }
+                case "full_story_sound": {
+                    break;
+                }
+                case "well_done_you_can_read_sound": {
+                    break;
+                }
+                case "now_answer_sound": {
+                    break;
+                }
+                case "comprehension_question_sound": {
+                    break;
+                }
+                case "comprehension_instructions_sound": {
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
     }
 
-    public void setCurrentRowIndex(int currentRowIndex) {
-        mCurrentRowIndex = currentRowIndex;
+    private void playPrompt(String prompt) {
+
+        // Debug
+        System.out.println(":: SimpleStoryActivity.playPrompt(\"" + prompt + "\") > Debug: METHOD CALLED");
+
+        try{
+            String sound = allData.getString(prompt);
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new PromptListener(thisActivity, prompt));
+            mp.setOnCompletionListener(new PromptListener(thisActivity, prompt));
+            mp.prepare();
+        }
+        catch (Exception ex){
+            System.err.println("============================================================");
+            System.out.println(":: SimpleStoryActivity.playPrompt(\"" + prompt + "\") > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
     }
 
-    public void setCurrentWordIndex(int currentWordIndex) {
-        mCurrentWordIndex = currentWordIndex;
+    class ReadWordListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+
+        private SimpleStoryActivity mThisActivity;
+        private int mSetIndex;
+        private int mRowIndex;
+        private int mWordIndex;
+        private boolean mMute;
+
+        private int mMaxSets;
+        private int mMaxRows;
+        private int mMaxWords;
+
+        public ReadWordListener(SimpleStoryActivity thisActivity, boolean mute, int setIndex, int rowIndex, int wordIndex) {
+            mMute = mute;
+            mSetIndex = setIndex;
+            mRowIndex = rowIndex;
+            mWordIndex = wordIndex;
+            mThisActivity = thisActivity;
+
+            // Update selected Set, Row and Word Indexes for the activity
+            mThisActivity.setActiveSetIndex(setIndex);
+            mThisActivity.setActiveRowIndex(rowIndex);
+            mThisActivity.setActiveWordIndex(wordIndex);
+        }
+
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+            // Mute media player if required
+            if (mMute) {
+                mp.setVolume(0, 0);
+            } else {
+                mp.setVolume(1, 1);
+            }
+
+            // Start playing and flip word
+            mp.start();
+            flipActiveWord(RED_WORD, mSetIndex, mRowIndex, mWordIndex);
+        }
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            try {
+                mp.reset();
+                flipActiveWord(BLACK_WORD, mSetIndex, mRowIndex, mWordIndex);
+
+                mMaxSets = mThisActivity.getSoundPathGridSets().size();
+                mMaxRows = mThisActivity.getSoundPathGridSets().get(mSetIndex).size();
+                mMaxWords = mThisActivity.getSoundPathGridSets().get(mSetIndex).get(mRowIndex).size();
+
+                // Check the position of the active word
+                if (mSetIndex == mMaxSets - 1 && mRowIndex == mMaxRows -1 && mWordIndex == mMaxWords - 1) {
+
+                    // Is the very last word of the story
+
+                    // Check if mute
+                    if (mMute) {
+
+                        // Muted. Child has finished reading the word
+                        // Child has also finished reading the entire story with the narrator
+                        // The child must now read the story by him or herself
+
+                        // Play prompt
+                        playPrompt("now_read_whole_story_sound");
+
+                    } else {
+
+                        // Un-muted. Narrator has finished reading the word
+                        // Child must now read the row again
+
+                        // Reset active word index
+                        mActiveWordIndex = 0;
+
+                        // Play prompt
+                        playPrompt("now_read_sound");
+
+                    }
+
+                } else if (mRowIndex == mMaxRows - 1 && mWordIndex == mMaxWords - 1) {
+
+                    // Is the very last word of the set
+
+                    // Check if mute
+                    if (mMute) {
+
+                        // Muted. Child has finished reading the word
+                        // Narrator must now read from first word of next set
+
+                        // Clear all existing rows of child views
+                        for (int i = 0; i < col.getChildCount(); i++) {
+
+                            // Get row
+                            LinearLayout row = (LinearLayout) col.getChildAt(i);
+
+                            // Remove all views from row
+                            row.removeAllViews();
+                        }
+
+                        // Clear column of all child views
+                        col.removeAllViews();
+
+                        // Reset active set index, active row index, and active word index
+                        mActiveSetIndex = mSetIndex + 1;
+                        mActiveRowIndex = 0;
+                        mActiveWordIndex = 0;
+
+                        // Get Image Views for first row of new set
+                        ArrayList<ImageView> imageViews = thisActivity.getImageViewGridSets().get(mActiveSetIndex).get(mActiveRowIndex);
+
+                        // Create new linear layout horizontal row
+                        LinearLayout row = new LinearLayout(getApplicationContext());
+                        row.setOrientation(LinearLayout.HORIZONTAL);
+                        row.setBaselineAligned(true);
+
+                        // Create row layout params
+                        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                        );
+                        row.setLayoutParams(rowParams);
+
+                        // Add Image Views to row
+                        for (int i = 0; i < imageViews.size(); i++) {
+                            row.addView(imageViews.get(i));
+                        }
+
+                        // Add row to col
+                        col.addView(row);
+
+                        // Play prompt
+                        playPrompt("listen_first_sound");
+
+                    } else {
+
+                        // Un-muted. Narrator has finished reading the word
+                        // Child must now read the row again
+
+                        // Reset active word index
+                        mActiveWordIndex = 0;
+
+                        // Play prompt
+                        playPrompt("now_read_sound");
+
+                    }
+
+                } else if (mWordIndex == mMaxWords - 1) {
+
+                    // Is the very last word of the row
+
+                    // Check if mute
+                    if (mMute) {
+
+                        // Muted. Child has finished reading the word
+                        // Narrator must now read from first word of next row
+
+                        // Reset active row index and active word index
+                        mActiveRowIndex = mRowIndex + 1;
+                        mActiveWordIndex = 0;
+
+                        // Get Image Views for next row (sentence)
+                        ArrayList<ImageView> imageViews = thisActivity.getImageViewGridSets().get(mSetIndex).get(mActiveRowIndex);
+
+                        // Create new linear layout horizontal row
+                        LinearLayout row = new LinearLayout(getApplicationContext());
+                        row.setOrientation(LinearLayout.HORIZONTAL);
+                        row.setBaselineAligned(true);
+
+                        // Create row layout params
+                        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                        );
+                        row.setLayoutParams(rowParams);
+
+                        // Add Image Views to row
+                        for (int i = 0; i < imageViews.size(); i++) {
+                            row.addView(imageViews.get(i));
+                        }
+
+                        // Add row to col
+                        col.addView(row);
+
+                        // Play prompt
+                        playPrompt("listen_first_sound");
+
+                    } else {
+
+                        // Un-muted. Narrator has finished reading the word
+                        // Child must now read the row again
+
+                        // Reset active word index
+                        mActiveWordIndex = 0;
+
+                        // Play prompt
+                        playPrompt("now_read_sound");
+                    }
+
+                } else {
+
+                    // It's any other word
+
+                    // Read next word
+                    playReadWord(mMute, mSetIndex, mRowIndex, mWordIndex + 1);
+
+                }
+            }
+            catch (Exception ex){
+                System.err.println("============================================================");
+                System.out.println(":: SimpleStoryActivity.onCompletion() > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
     }
 
-    public void setWordFlipped(boolean wordFlipped) {
-        mWordFlipped = wordFlipped;
+    private void playReadWord(boolean mute, int setIndex, int rowIndex, int wordIndex) {
+
+        // Debug
+        System.out.println(":: SimpleStoryActivity.playReadWord(" + mute + ", " + setIndex +
+                ", " + rowIndex + ", " + wordIndex + ") > Debug: METHOD CALLED");
+
+        try {
+            // Get sound path from sound path grid sets
+            String soundPath = soundPathGridSets.get(setIndex).get(rowIndex).get(wordIndex);
+
+            // Initialize media player if need be
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+
+            // Check if media player is playing
+            if (mp.isPlaying() && mActiveWordFlipped) {
+                mp.stop();
+                flipActiveWord(BLACK_WORD, mActiveSetIndex, mActiveRowIndex, mActiveWordIndex);
+            }
+
+            // Media player jazz ♫♪
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new ReadWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex));
+            mp.setOnCompletionListener(new ReadWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex));
+            mp.prepare();
+
+        } catch (Exception ex) {
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.playWord(" + setIndex + ", " + rowIndex + ", " +
+                    wordIndex + ") > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
     }
 
-    public int getCurrentSetIndex() {
-        return mCurrentSetIndex;
+    private void flipActiveWord(int side, int setIndex, int rowIndex, int wordIndex) {
+        try {
+            // Initialize image (resource id)
+            int image = 0;
+
+            // Get the resource id, based on the side
+            // 0: black
+            // 1: red
+            if (side == BLACK_WORD) {
+                image = blackWordGridSets.get(setIndex).get(rowIndex).get(wordIndex);
+                mActiveWordFlipped = false;
+            } else if (side == RED_WORD) {
+                image = redWordGridSets.get(setIndex).get(rowIndex).get(wordIndex);
+                mActiveWordFlipped = true;
+            }
+
+            // Validate image
+            // Simply 'return' if image resource id remains as 0
+            if (image == 0) {
+                mActiveWordFlipped = false;
+                return;
+            }
+
+            // Update the corresponding Image View's image resource
+            imageViewGridSets.get(setIndex).get(rowIndex).get(wordIndex).setImageResource(image);
+
+        } catch (Exception ex) {
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.flipActiveWord(" + side + ", " + setIndex + ", " +
+                    rowIndex + ", " + wordIndex + ") > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
     }
 
-    public int getCurrentRowIndex() {
-        return mCurrentRowIndex;
+    public void setSelectedSetIndex(int selectedSetIndex) {
+        mSelectedSetIndex = selectedSetIndex;
     }
 
-    public int getCurrentWordIndex() {
-        return mCurrentWordIndex;
+    public void setSelectedRowIndex(int selectedRowIndex) {
+        mSelectedRowIndex = selectedRowIndex;
     }
 
-    public boolean getWordFlipped() {
-        return mWordFlipped;
+    public void setSelectedWordIndex(int selectedWordIndex) {
+        mSelectedWordIndex = selectedWordIndex;
+    }
+
+    public void setSelectedWordFlipped(boolean selectedWordFlipped) {
+        mSelectedWordFlipped = selectedWordFlipped;
+    }
+
+    public void setActiveSetIndex(int activeSetIndex) {
+        mActiveSetIndex = activeSetIndex;
+    }
+
+    public void setActiveRowIndex(int activeRowIndex) {
+        mActiveRowIndex = activeRowIndex;
+    }
+
+    public void setActiveWordIndex(int activeWordIndex) {
+        mActiveWordIndex = activeWordIndex;
+    }
+
+    public void setActiveWordFlipped(boolean activeWordFlipped) {
+        mActiveWordFlipped = activeWordFlipped;
+    }
+
+    public int getSelectedSetIndex() {
+        return mSelectedSetIndex;
+    }
+
+    public int getSelectedRowIndex() {
+        return mSelectedRowIndex;
+    }
+
+    public int getSelectedWordIndex() {
+        return mSelectedWordIndex;
+    }
+
+    public boolean getSelectedWordFlipped() {
+        return mSelectedWordFlipped;
+    }
+
+    public int getActiveSetIndex() {
+        return mActiveSetIndex;
+    }
+
+    public int getActiveRowIndex() {
+        return mActiveRowIndex;
+    }
+
+    public int getActiveWordIndex() {
+        return mActiveWordIndex;
+    }
+
+    public boolean getActiveWordFlipped() {
+        return mActiveWordFlipped;
+    }
+
+    public ArrayList<ArrayList<ArrayList<ImageView>>> getImageViewGridSets() {
+        return imageViewGridSets;
+    }
+
+    public ArrayList<ArrayList<ArrayList<Integer>>> getBlackWordGridSets() {
+        return blackWordGridSets;
+    }
+
+    public ArrayList<ArrayList<ArrayList<Integer>>> getRedWordGridSets() {
+        return redWordGridSets;
+    }
+
+    public ArrayList<ArrayList<ArrayList<String>>> getSoundPathGridSets() {
+        return soundPathGridSets;
     }
 
     private void initialiseData(){
