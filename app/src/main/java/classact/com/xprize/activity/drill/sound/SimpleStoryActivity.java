@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import classact.com.xprize.R;
+import classact.com.xprize.control.SimpleStorySentence;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ImageHelper;
 import classact.com.xprize.utils.ResourceSelector;
@@ -43,11 +44,34 @@ public class SimpleStoryActivity extends AppCompatActivity {
     private ImageView trippleImageTwo;
     private ImageView tripleImageThree;
 
+    private SimpleStoryActivity thisActivity;
+
     private LinearLayout col;
-    private ArrayList<ArrayList<ImageView>> itemGrid;
-    private ArrayList<ArrayList<ArrayList<ImageView>>> itemGridSets;
+
+    // Image View grid sets
+    // * Note that a 'set' refers to a 'sentence set'
+    // and not java.util.Set *
+    private ArrayList<ArrayList<ArrayList<ImageView>>> imageViewGridSets;
+
+    // Black word grid sets
+    // * Note that a 'set' refers to a 'sentence set'
+    // and not java.util.Set *
+    private ArrayList<ArrayList<ArrayList<Integer>>> blackWordGridSets;
+
+    // Black word grid sets
+    // * Note that a 'set' refers to a 'sentence set'
+    // and not java.util.Set *
+    private ArrayList<ArrayList<ArrayList<Integer>>> redWordGridSets;
+
+    // Sound path grid sets
+    // * Note that a 'set' refers to a 'sentence set'
+    // and not java.util.Set *
+    private ArrayList<ArrayList<ArrayList<String>>> soundPathGridSets;
+
 
     private final int STARTING_SET = 0;
+    private final int BLACK_WORD = 0;
+    private final int RED_WORD = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +122,10 @@ public class SimpleStoryActivity extends AppCompatActivity {
         //  playReadEachSentenceAfterMother();
         populateAndShowSentence();*/
 
+        // Set this activity to ... well ... this activity!
+        thisActivity = this;
+
+        // Create columns
         col = new LinearLayout(getApplicationContext());
         // col.setBackgroundColor(Color.GRAY);
         col.setOrientation(LinearLayout.VERTICAL);
@@ -115,13 +143,6 @@ public class SimpleStoryActivity extends AppCompatActivity {
         // * Note: NO override exists at the moment *
         initialiseData();
 
-        // Initialize Item Grid Sets
-        itemGridSets = new ArrayList<>();
-
-        // Initialize Item Grid
-        // For now, make it will be populated through logic
-        itemGrid = null;
-
         // In the DB, Set numbers start from 1 instead of 0
         int startingSetIndex = STARTING_SET + 1;
 
@@ -129,8 +150,34 @@ public class SimpleStoryActivity extends AppCompatActivity {
         int currentSet = -1;
 
         // Loop through sentences to create Linear Layout rows
+        // and populate with Image View rows
         try {
             if (sentences != null) {
+
+                // Initialize Image View grid sets
+                imageViewGridSets = new ArrayList<>();
+
+                // Initialize black word grid sets
+                blackWordGridSets = new ArrayList<>();
+
+                // Initialize red word grid sets
+                redWordGridSets = new ArrayList<>();
+
+                // Initialize sound path grid sets
+                soundPathGridSets = new ArrayList<>();
+
+                // Create a grid to store list of Image Views
+                ArrayList<ArrayList<ImageView>> imageViewGrid = null;
+
+                // Create a grid to store list of black word resource ids
+                ArrayList<ArrayList<Integer>> blackWordGrid = null;
+
+                // Create a grid to store list of red word resource ids
+                ArrayList<ArrayList<Integer>> redWordGrid = null;
+
+                // Create a grid to store list of sound paths
+                ArrayList<ArrayList<String>> soundPathGrid = null;
+
                 // Loopy loop ...
                 for (int i = 0; i < sentences.length(); i++) {
 
@@ -142,8 +189,17 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         throw new Exception("Sentence (" + i + ") is null");
                     }
 
-                    // Create list of items (ImageViews) that will hold sentence words
-                    ArrayList<ImageView> items = new ArrayList<>();
+                    // Create list of Image Views that will hold sentence words
+                    ArrayList<ImageView> imageViews = new ArrayList<>();
+
+                    // Create list of black word resource ids per sentence word
+                    ArrayList<Integer> blackWords = new ArrayList<>();
+
+                    // Create list of red word resource ids per sentence word
+                    ArrayList<Integer> redWords = new ArrayList<>();
+
+                    // Create list of sound paths that will hold sound paths per sentence word
+                    ArrayList<String> soundPaths = new ArrayList<>();
 
                     // Grab each sentence word
                     // To do so, loop through each sentence
@@ -151,55 +207,116 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         // Get the sentence word
                         JSONObject sentenceWord = sentence.getJSONObject(j);
 
-                        // Check if a new itemGrid should be created
-                        // An itemGrid exists per set
-                        // One can check the current setNo using JSON "set_no"
-                        int sentenceSetNumber = sentenceWord.getInt("set_no");
-                        System.out.println(":::::: Sentence set_no is " + sentenceSetNumber);
-                        if (sentenceSetNumber != currentSet) {
+                        // Check if new grids should be created
+                        // Note that grids exists per set
+                        // Check the current set number using JSON "set_no"
+                        final int sentenceSet = sentenceWord.getInt("set_no");
+                        if (sentenceSet != currentSet) {
 
-                            // Add item grid to item grid sets,
-                            // given that a current, non-empty grid exists,
-                            // add that grid to the set of grids
-                            if (itemGrid != null && itemGrid.size() > 0) {
-                                System.out.println(":::::: Adding item grid to item grid set");
-                                itemGridSets.add(itemGrid);
-                            }
+                            // Assign new Image View grid for the new set
+                            imageViewGrid = new ArrayList<>();
 
-                            itemGrid = new ArrayList<>();
-                            currentSet = sentenceSetNumber;
+                            // Assign new black word grid for the new set
+                            blackWordGrid = new ArrayList<>();
 
-                            System.out.println(":::::: New item grid created");
+                            // Assign new red word grid for the new set
+                            redWordGrid = new ArrayList<>();
+
+                            // Assign new sound path grid for the new set
+                            soundPathGrid = new ArrayList<>();
+
+                            // Update current set
+                            currentSet = sentenceSet;
                         }
 
-                        // Get the image resourceId of the sentence word
-                        int sentenceWordImageResourceId = sentenceWord.getInt("black_word");
+                        // Get the black word (resource id) of the sentence word
+                        int blackWord = sentenceWord.getInt("black_word");
 
-                        // Create image view to hold the sentence word
-                        ImageView item = new ImageView(getApplication());
+                        // Get the red word (resource id) of the sentence word
+                        int redWord = sentenceWord.getInt("red_word");
+
+                        // Add black word to black words list
+                        blackWords.add(blackWord);
+
+                        // Add red word to red words list
+                        redWords.add(redWord);
+
+                        // Get the image resource id of the sentence word
+                        // This is coincidentally the 'black word'
+                        int imageResourceId = blackWord;
+
+                        // Create Image View to hold the sentence word
+                        ImageView imageView = new ImageView(getApplicationContext());
 
                         // Set sentence word's image resource to that of the resourceId
-                        item.setImageResource(sentenceWordImageResourceId);
+                        imageView.setImageResource(imageResourceId);
 
-                        // Set layout params of sentenceWordImageView
-                        LinearLayout.LayoutParams itemParams = new LinearLayout.LayoutParams(
+                        // Set layout params of Image View
+                        LinearLayout.LayoutParams imageViewParams = new LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.WRAP_CONTENT,
                                 LinearLayout.LayoutParams.WRAP_CONTENT
                         );
-                        itemParams.leftMargin = 28; // Some 'padding' between sentence words
-                        itemParams.rightMargin = 28;
-                        item.setLayoutParams(itemParams);
+                        imageViewParams.leftMargin = 28; // Some 'padding' between sentence words
+                        imageViewParams.rightMargin = 28;
+                        imageView.setLayoutParams(imageViewParams);
 
-                        // Add imageView to list of items (ImageViews)
-                        items.add(item);
+                        // Add listener to ImageView
+                        imageView.setOnClickListener(new TouchWordListener(thisActivity, soundPathGridSets.size(), soundPathGrid.size(), j));
+
+                        // Add Image View to list of Image Views
+                        imageViews.add(imageView);
+
+                        // Get the sound of the sentence word
+                        String sound = sentenceWord.getString("sound");
+
+                        // Get the sound path
+                        String soundPath = FetchResource.sound(getApplicationContext(), sound);
+
+                        // Add sound path to list of sounds paths
+                        soundPaths.add(soundPath);
+
                     }
-                    // Add items to itemGrid,
-                    // as long as it's not null
-                    if (itemGrid != null) {
-                        itemGrid.add(items);
+                    // Add Image Views to Image View Grid
+                    if (imageViewGrid != null) {
+                        imageViewGrid.add(imageViews);
                     }
 
-                    // See if the items must be displayed
+                    // Add black words to black word Grid
+                    if (blackWordGrid != null) {
+                        blackWordGrid.add(blackWords);
+                    }
+
+                    // Add red words to red word Grid
+                    if (redWordGrid != null) {
+                        redWordGrid.add(redWords);
+                    }
+
+                    // Add sound paths to sound path grid
+                    if (soundPathGrid != null) {
+                        soundPathGrid.add(soundPaths);
+                    }
+
+                    // Add Image View grid to Image View grid sets
+                    if (imageViewGrid != null && imageViewGrid.size() > 0) {
+                        imageViewGridSets.add(imageViewGrid);
+                    }
+
+                    // Add black word grid to black word grid sets
+                    if (blackWordGrid != null && blackWordGrid.size() > 0) {
+                        blackWordGridSets.add(blackWordGrid);
+                    }
+
+                    // Add red word grid to red word grid sets
+                    if (redWordGrid != null && redWordGrid.size() > 0) {
+                        redWordGridSets.add(redWordGrid);
+                    }
+
+                    // Add sound path grid to sound path grid sets
+                    if (soundPathGrid != null && soundPathGrid.size() > 0) {
+                        soundPathGridSets.add(soundPathGrid);
+                    }
+
+                    // See if the current set's Image Views must be displayed
                     // Do this by checking if the current set is the 'starting set'
                     if (currentSet == startingSetIndex) {
 
@@ -223,10 +340,9 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         );
                         row.setLayoutParams(rowParams);
 
-                        // Add items to row
-                        for (int j = 0; j < items.size(); j++) {
-                            row.addView(items.get(j));
-                            System.out.println("::::::::: Adding image " + j + " to row " + i);
+                        // Add Image Views to row
+                        for (int j = 0; j < imageViews.size(); j++) {
+                            row.addView(imageViews.get(j));
                         }
 
                         // Add row to col
@@ -251,6 +367,105 @@ public class SimpleStoryActivity extends AppCompatActivity {
         }
 
         container.addView(col);
+    }
+
+    class TouchWordListener implements ImageView.OnClickListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+
+        private SimpleStoryActivity mThisActivity;
+        private int mSetIndex;
+        private int mRowIndex;
+        private int mWordIndex;
+
+        public TouchWordListener(SimpleStoryActivity thisActivity, int setIndex, int rowIndex, int wordIndex) {
+            mSetIndex = setIndex;
+            mRowIndex = rowIndex;
+            mWordIndex = wordIndex;
+            mThisActivity = thisActivity;
+        }
+
+        @Override
+        public void onClick(View v) {
+            mThisActivity.playSentenceWordSound(mSetIndex, mRowIndex, mWordIndex);
+        }
+
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+            mp.start();
+            flipWord(RED_WORD, mSetIndex, mRowIndex, mWordIndex);
+        }
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            mp.reset();
+            flipWord(BLACK_WORD, mSetIndex, mRowIndex, mWordIndex);
+
+        }
+    }
+
+    private void playSentenceWordSound(int setIndex, int rowIndex, int wordIndex) {
+        try {
+            // Get sound path from sound path grid sets
+            String soundPath = soundPathGridSets.get(setIndex).get(rowIndex).get(wordIndex);
+
+            // Media player jazz ♫♪
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new TouchWordListener(thisActivity, setIndex, rowIndex, wordIndex));
+            mp.setOnCompletionListener(new TouchWordListener(thisActivity, setIndex, rowIndex, wordIndex));
+            mp.prepare();
+
+        } catch (Exception ex) {
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.playWord(" + setIndex + ", " + rowIndex + ", " +
+                    wordIndex + ") > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    private void flipWord(int side, int setIndex, int rowIndex, int wordIndex) {
+        try {
+            // Initialize image (resource id)
+            int image = 0;
+
+            // Get the resource id, based on the side
+            // 0: black
+            // 1: red
+            if (side == BLACK_WORD) {
+                image = blackWordGridSets.get(setIndex).get(rowIndex).get(wordIndex);
+            } else if (side == RED_WORD) {
+                image = redWordGridSets.get(setIndex).get(rowIndex).get(wordIndex);
+            }
+
+            // Validate image
+            // Simply 'return' if image resource id remains as 0
+            if (image == 0) {
+                return;
+            }
+
+            // Update the corresponding Image View's image resource
+            imageViewGridSets.get(setIndex).get(rowIndex).get(wordIndex).setImageResource(image);
+
+        } catch (Exception ex) {
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.flipWord(" + side + ", " + setIndex + ", " +
+                    rowIndex + ", " + wordIndex + ") > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
     }
 
     private void initialiseData(){
@@ -1159,8 +1374,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
         // Debug
         System.out.println(":: SimpleStoryActivity.onPause > Debug: METHOD CALLED");
 
-        if (mp != null){
+        /*if (mp != null){
             mp.release();
-        }
+        }*/
     }
 }
