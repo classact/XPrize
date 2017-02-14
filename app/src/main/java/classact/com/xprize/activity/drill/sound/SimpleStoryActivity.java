@@ -73,6 +73,11 @@ public class SimpleStoryActivity extends AppCompatActivity {
     private final int BLACK_WORD = 0;
     private final int RED_WORD = 1;
 
+    private int mCurrentSetIndex;
+    private int mCurrentRowIndex;
+    private int mCurrentWordIndex;
+    private boolean mWordFlipped;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -381,6 +386,11 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mRowIndex = rowIndex;
             mWordIndex = wordIndex;
             mThisActivity = thisActivity;
+
+            // Update current Set, Row and Word Indexes for the activity
+            mThisActivity.setCurrentSetIndex(setIndex);
+            mThisActivity.setCurrentRowIndex(rowIndex);
+            mThisActivity.setCurrentWordIndex(wordIndex);
         }
 
         @Override
@@ -407,10 +417,18 @@ public class SimpleStoryActivity extends AppCompatActivity {
             // Get sound path from sound path grid sets
             String soundPath = soundPathGridSets.get(setIndex).get(rowIndex).get(wordIndex);
 
-            // Media player jazz ♫♪
+            // Initialize media player if need be
             if (mp == null) {
                 mp = new MediaPlayer();
             }
+
+            // Check if media player is playing
+            if (mp.isPlaying() && mWordFlipped) {
+                mp.stop();
+                flipWord(BLACK_WORD, mCurrentSetIndex, mCurrentRowIndex, mCurrentWordIndex);
+            }
+
+            // Media player jazz ♫♪
             mp.reset();
             mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new TouchWordListener(thisActivity, setIndex, rowIndex, wordIndex));
@@ -441,13 +459,16 @@ public class SimpleStoryActivity extends AppCompatActivity {
             // 1: red
             if (side == BLACK_WORD) {
                 image = blackWordGridSets.get(setIndex).get(rowIndex).get(wordIndex);
+                mWordFlipped = false;
             } else if (side == RED_WORD) {
                 image = redWordGridSets.get(setIndex).get(rowIndex).get(wordIndex);
+                mWordFlipped = true;
             }
 
             // Validate image
             // Simply 'return' if image resource id remains as 0
             if (image == 0) {
+                mWordFlipped = false;
                 return;
             }
 
@@ -466,6 +487,38 @@ public class SimpleStoryActivity extends AppCompatActivity {
             }
             finish();
         }
+    }
+
+    public void setCurrentSetIndex(int currentSetIndex) {
+        mCurrentSetIndex = currentSetIndex;
+    }
+
+    public void setCurrentRowIndex(int currentRowIndex) {
+        mCurrentRowIndex = currentRowIndex;
+    }
+
+    public void setCurrentWordIndex(int currentWordIndex) {
+        mCurrentWordIndex = currentWordIndex;
+    }
+
+    public void setWordFlipped(boolean wordFlipped) {
+        mWordFlipped = wordFlipped;
+    }
+
+    public int getCurrentSetIndex() {
+        return mCurrentSetIndex;
+    }
+
+    public int getCurrentRowIndex() {
+        return mCurrentRowIndex;
+    }
+
+    public int getCurrentWordIndex() {
+        return mCurrentWordIndex;
+    }
+
+    public boolean getWordFlipped() {
+        return mWordFlipped;
     }
 
     private void initialiseData(){
