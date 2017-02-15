@@ -85,6 +85,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
     private int mActiveRowIndex;
     private int mActiveWordIndex;
     private boolean mActiveWordFlipped;
+    private int mActiveWordDuration;
 
     private ImageView mNextArrow;
     private ImageView mPreviousArrow;
@@ -397,6 +398,51 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     }
                 }
 
+                // Create next arrow
+                mNextArrow = new ImageView(getApplicationContext());
+                mNextArrow.setImageResource(R.drawable.simple_story_next);
+                mNextArrow.setScaleX(0.9f);
+                mNextArrow.setScaleY(0.9f);
+
+                // Create row layout params
+                RelativeLayout.LayoutParams nextArrowParams = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT
+                );
+                nextArrowParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                nextArrowParams.topMargin = 1200;
+                nextArrowParams.rightMargin = 210;
+                mNextArrow.setLayoutParams(nextArrowParams);
+
+                // Create previous arrow
+                mPreviousArrow = new ImageView(getApplicationContext());
+                mPreviousArrow.setImageResource(R.drawable.simple_story_next);
+                mPreviousArrow.setScaleX(-0.9f);
+                mPreviousArrow.setScaleY(0.9f);
+
+                // Create row layout params
+                RelativeLayout.LayoutParams previousArrowParams = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT
+                );
+                previousArrowParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                previousArrowParams.topMargin = 1200;
+                previousArrowParams.leftMargin = 210;
+                mPreviousArrow.setLayoutParams(previousArrowParams);
+
+                // Add listeners to next and previous arrows
+                mNextArrow.setOnClickListener(new StoryNavListener(thisActivity, true));
+                mPreviousArrow.setOnClickListener(new StoryNavListener(thisActivity, false));
+
+                // Set the arrows invisible
+                mNextArrow.setVisibility(View.INVISIBLE);
+                mPreviousArrow.setVisibility(View.INVISIBLE);
+
+
+
+                rootView.addView(mNextArrow);
+                rootView.addView(mPreviousArrow);
+
             } else {
                 // Throw exception. Cannot work with null sentences
                 throw new Exception("Sentences are null");
@@ -523,58 +569,26 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     break;
                 }
                 case "now_read_whole_story_sound": {
-                    // Enable narration on touch
-                    touchWordsEnabled = true;
 
                     // After a short delay, introduce arrows
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            // Create next and previous arrows
-                            mNextArrow = new ImageView(getApplicationContext());
-                            mNextArrow.setImageResource(R.drawable.simple_story_next);
-                            mNextArrow.setScaleX(0.9f);
-                            mNextArrow.setScaleY(0.9f);
-
-                            // Create row layout params
-                            RelativeLayout.LayoutParams nextArrowParams = new RelativeLayout.LayoutParams(
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT
-                            );
-                            nextArrowParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                            nextArrowParams.topMargin = 1200;
-                            nextArrowParams.rightMargin = 210;
-                            mNextArrow.setLayoutParams(nextArrowParams);
-
-                            mPreviousArrow = new ImageView(getApplicationContext());
-                            mPreviousArrow.setImageResource(R.drawable.simple_story_next);
-                            mPreviousArrow.setScaleX(-0.9f);
-                            mPreviousArrow.setScaleY(0.9f);
-
-                            // Create row layout params
-                            RelativeLayout.LayoutParams previousArrowParams = new RelativeLayout.LayoutParams(
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT
-                            );
-                            previousArrowParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                            previousArrowParams.topMargin = 1200;
-                            previousArrowParams.leftMargin = 210;
-                            mPreviousArrow.setLayoutParams(previousArrowParams);
-
-                            rootView.addView(mNextArrow);
-                            rootView.addView(mPreviousArrow);
-
+                            mNextArrow.setVisibility(View.VISIBLE);
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     playPrompt("touch_the_arrow");
                                 }
-                            }, 500);
+                            }, 100);
                         }
-                    }, 500);
+                    }, 300);
                     break;
                 }
                 case "touch_the_arrow": {
+                    // Enable narration on touch
+                    touchWordsEnabled = true;
+
                     break;
                 }
                 case "listen_to_the_whole_story": {
@@ -644,12 +658,14 @@ public class SimpleStoryActivity extends AppCompatActivity {
         private int mMaxRows;
         private int mMaxWords;
 
+        private final int MIN_DURATION = 1100;
+
         public ActiveWordListener(SimpleStoryActivity thisActivity, boolean mute, int setIndex, int rowIndex, int wordIndex) {
+            mThisActivity = thisActivity;
             mMute = mute;
             mSetIndex = setIndex;
             mRowIndex = rowIndex;
             mWordIndex = wordIndex;
-            mThisActivity = thisActivity;
 
             // Update selected Set, Row and Word Indexes for the activity
             mThisActivity.setActiveSetIndex(setIndex);
@@ -666,6 +682,12 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 mp.setVolume(1, 1);
             }
 
+            // Store duration
+            int duration = mp.getDuration();
+            mThisActivity.setActiveWordDuration(duration);
+
+            System.out.println(">> Duration is: " + duration);
+
             // Start playing and flip word
             mp.start();
             flipActiveWord(RED_WORD, mSetIndex, mRowIndex, mWordIndex);
@@ -676,6 +698,44 @@ public class SimpleStoryActivity extends AppCompatActivity {
             try {
                 mp.reset();
                 flipActiveWord(BLACK_WORD, mSetIndex, mRowIndex, mWordIndex);
+
+                // Get duration of active word
+                int duration = mThisActivity.getActiveWordDuration();
+
+                // See if word sound is 'too short for comfort'
+                if (duration > 0 && duration < MIN_DURATION) {
+
+                    // Word sound is too short
+
+                    System.out.println(">> Slow it down!!");
+
+                    // Wait the remainder until minimum duration is reached
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            handleOnCompletion();
+                        }
+                    }, MIN_DURATION - duration);
+
+                } else {
+                    handleOnCompletion();
+                }
+
+            } catch (Exception ex){
+                System.err.println("============================================================");
+                System.out.println(":: SimpleStoryActivity.onCompletion() > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
+
+        public void handleOnCompletion() {
+            try {
 
                 mMaxSets = mThisActivity.getSoundPathGridSets().size();
                 mMaxRows = mThisActivity.getSoundPathGridSets().get(mSetIndex).size();
@@ -830,16 +890,14 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
                 } else {
 
-                    // It's any other word
+                    // It's any other word, play it! ~ ♬♪
 
-                    // Read next word
+                    // Play the word
                     playActiveWord(mMute, mSetIndex, mRowIndex, mWordIndex + 1);
-
                 }
-            }
-            catch (Exception ex){
+            } catch (Exception ex){
                 System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.onCompletion() > Exception: " + ex.getMessage());
+                System.out.println(":: SimpleStoryActivity.handleOnCompletion() > Exception: " + ex.getMessage());
                 System.err.println("------------------------------------------------------------");
                 ex.printStackTrace();
                 System.err.println("============================================================");
@@ -1068,6 +1126,144 @@ public class SimpleStoryActivity extends AppCompatActivity {
         }
     }
 
+    class StoryNavListener implements ImageView.OnClickListener {
+
+        private boolean mToNextPage;
+        private int mSetIndex;
+        private int mRowIndex;
+        private int mWordIndex;
+        private int mMaxSetIndex;
+        private SimpleStoryActivity mThisActivity;
+
+        public StoryNavListener(SimpleStoryActivity thisActivity, boolean toNextPage) {
+            mThisActivity = thisActivity;
+            mToNextPage = toNextPage;
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            // Get data from activity
+            mSetIndex = mThisActivity.getActiveSetIndex();
+            mRowIndex = mThisActivity.getActiveRowIndex();
+            mWordIndex = mThisActivity.getActiveWordIndex();
+            mMaxSetIndex = mThisActivity.getImageViewGridSets().size() - 1;
+
+            // Check if we should navigate to next | previous page
+            if (mToNextPage) {
+
+                // Navigate to next page
+
+                // Increment the active set index
+                mSetIndex++;
+
+                // If last page, can't go any further
+                if (mSetIndex >= mMaxSetIndex) {
+
+                    // Reset active set index to max possible
+                    // (in case it's greater than max set index for whatever reason)
+                    mSetIndex = mMaxSetIndex;
+
+                    // Update the active set index in the activity
+                    mThisActivity.setActiveSetIndex(mSetIndex);
+
+                    // Ensure that next page arrow is invisible
+                    mNextArrow.setVisibility(View.INVISIBLE);
+
+                } else {
+
+                    // Update the active set index in the activity
+                    mThisActivity.setActiveSetIndex(mSetIndex);
+
+                    // Ensure that previous page arrow is visible
+                    mPreviousArrow.setVisibility(View.VISIBLE);
+                }
+
+            } else {
+
+                // Navigate to previous page
+
+                // Decrement the active set index
+                mSetIndex--;
+
+                // If page 0, can't go any backward
+                if (mSetIndex <= 0) {
+
+                    // Reset active set index to min possible
+                    // (in case it's less than 0 for some odd inexplainable reason)
+                    mSetIndex = 0;
+
+                    // Update the active set index in the activity
+                    mThisActivity.setActiveSetIndex(mSetIndex);
+
+                    // Ensure that previous page arrow is invisible
+                    mPreviousArrow.setVisibility(View.INVISIBLE);
+
+                } else {
+
+                    // Update the active set index in the activity
+                    mThisActivity.setActiveSetIndex(mSetIndex);
+
+                    // Ensure that next page arrow is visible
+                    mNextArrow.setVisibility(View.VISIBLE);
+                }
+            }
+
+            // Navigate to next or previous page, based on above logic
+
+            // Clear all existing rows of child views
+            for (int i = 0; i < col.getChildCount(); i++) {
+
+                // Get row
+                LinearLayout row = (LinearLayout) col.getChildAt(i);
+
+                // Remove all views from row
+                row.removeAllViews();
+            }
+
+            // Clear column of all child views
+            col.removeAllViews();
+
+            // Reset active row index, and active word index
+            // Active set index has already been reset
+            mRowIndex = 0;
+            mWordIndex = 0;
+
+            // Update activity's active row and word indexes
+            mThisActivity.setActiveRowIndex(mRowIndex);
+            mThisActivity.setActiveWordIndex(mWordIndex);
+
+            // Get Image Views for first row of new set
+            ArrayList<ArrayList<ImageView>> imageViewGrid = thisActivity.getImageViewGridSets().get(mSetIndex);
+
+            for (int i = 0; i < imageViewGrid.size(); i++) {
+
+                // Get Image Views for the next row (sentence)
+                ArrayList<ImageView> imageViews = imageViewGrid.get(i);
+
+                // Create new linear layout horizontal row
+                LinearLayout row = new LinearLayout(getApplicationContext());
+                row.setOrientation(LinearLayout.HORIZONTAL);
+                row.setBaselineAligned(true);
+
+                // Create row layout params
+                LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                row.setLayoutParams(rowParams);
+
+                // Add Image Views to row
+                for (int j = 0; j < imageViews.size(); j++) {
+                    row.addView(imageViews.get(j));
+                }
+
+                // Add row to col
+                col.addView(row);
+            }
+        }
+    }
+
     public void setSelectedSetIndex(int selectedSetIndex) {
         mSelectedSetIndex = selectedSetIndex;
     }
@@ -1100,6 +1296,10 @@ public class SimpleStoryActivity extends AppCompatActivity {
         mActiveWordFlipped = activeWordFlipped;
     }
 
+    public void setActiveWordDuration(int activeWordDuration) {
+        mActiveWordDuration = activeWordDuration;
+    }
+
     public int getSelectedSetIndex() {
         return mSelectedSetIndex;
     }
@@ -1130,6 +1330,10 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
     public boolean getActiveWordFlipped() {
         return mActiveWordFlipped;
+    }
+
+    public int getActiveWordDuration() {
+        return mActiveWordDuration;
     }
 
     public ArrayList<ArrayList<ArrayList<ImageView>>> getImageViewGridSets() {
