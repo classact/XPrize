@@ -2,9 +2,13 @@ package classact.com.xprize.activity.drill.sound;
 
 import android.app.ActionBar;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
+import android.support.transition.Fade;
+import android.support.transition.TransitionManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -50,6 +54,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
     private RelativeLayout rootView;
 
     private LinearLayout col;
+
+    private ImageView storyBackgroundView;
 
     // Image View grid sets
     // * Note that a 'set' refers to a 'sentence set'
@@ -438,8 +444,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 mNextArrow.setVisibility(View.INVISIBLE);
                 mPreviousArrow.setVisibility(View.INVISIBLE);
 
-
-
+                // Add arrows to root view
                 rootView.addView(mNextArrow);
                 rootView.addView(mPreviousArrow);
 
@@ -482,119 +487,45 @@ public class SimpleStoryActivity extends AppCompatActivity {
             // Reset volume to max (in case it was muted before)
             mp.setVolume(1, 1);
 
-            if (mPrompt.equalsIgnoreCase("now_read_whole_story_sound")) {
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Clear all existing rows of child views
-                        for (int i = 0; i < col.getChildCount(); i++) {
-
-                            // Get row
-                            LinearLayout row = (LinearLayout) col.getChildAt(i);
-
-                            // Remove all views from row
-                            row.removeAllViews();
-                        }
-
-                        // Clear column of all child views
-                        col.removeAllViews();
-
-                        // Reset active set index, active row index, and active word index
-                        mActiveSetIndex = 0;
-                        mActiveRowIndex = 0;
-                        mActiveWordIndex = 0;
-
-                        // Get Image Views for first row of new set
-                        ArrayList<ArrayList<ImageView>> imageViewGrid = thisActivity.getImageViewGridSets().get(mActiveSetIndex);
-
-                        for (int i = 0; i < imageViewGrid.size(); i++) {
-
-                            // Get Image Views for the next row (sentence)
-                            ArrayList<ImageView> imageViews = imageViewGrid.get(i);
-
-                            // Create new linear layout horizontal row
-                            LinearLayout row = new LinearLayout(getApplicationContext());
-                            row.setOrientation(LinearLayout.HORIZONTAL);
-                            row.setBaselineAligned(true);
-
-                            // Create row layout params
-                            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                                    LinearLayout.LayoutParams.WRAP_CONTENT
-                            );
-                            row.setLayoutParams(rowParams);
-
-                            // Add Image Views to row
-                            for (int j = 0; j < imageViews.size(); j++) {
-                                row.addView(imageViews.get(j));
-                            }
-
-                            // Add row to col
-                            col.addView(row);
-                        }
-                    }
-                }, mp.getDuration() / 2);
-            }
-
-            // Play da beatz ♫♪
-            mp.start();
-        }
-
-        @Override
-        public void onCompletion(MediaPlayer mp) {
-            mp.reset();
             switch (mPrompt) {
                 case "read_each_sentence_after_mother_sound": {
-                    // Disable narration on touch
-                    touchWordsEnabled = false;
-
-                    // Reset the active word
-                    mActiveSetIndex = 0;
-                    mActiveRowIndex = 0;
-                    mActiveWordIndex = 0;
-                    mActiveWordFlipped = false;
-
-                    // Play prompt
-                    playPrompt("listen_first_sound");
                     break;
                 }
                 case "listen_first_sound": {
-                    // Play the current active word (unmuted)
-                    playActiveWord(false, mActiveSetIndex, mActiveRowIndex, mActiveWordIndex);
                     break;
                 }
                 case "now_read_sound": {
-                    // Play the current active word (muted)
-                    playActiveWord(true, mActiveSetIndex, mActiveRowIndex, mActiveWordIndex);
-                    break;
-                }
-                case "now_read_whole_story_sound": {
-
-                    // After a short delay, introduce arrows
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mNextArrow.setVisibility(View.VISIBLE);
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    playPrompt("touch_the_arrow");
-                                }
-                            }, 100);
-                        }
-                    }, 300);
-                    break;
-                }
-                case "touch_the_arrow": {
-                    // Enable narration on touch
-                    touchWordsEnabled = true;
-
                     break;
                 }
                 case "listen_to_the_whole_story": {
                     break;
                 }
                 case "full_story_sound": {
+                    break;
+                }
+                case "now_read_whole_story_sound": {
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // Reset set, row and active indexes
+                            mThisActivity.setActiveSetIndex(0);
+                            mThisActivity.setActiveRowIndex(0);
+                            mThisActivity.setActiveWordIndex(0);
+
+                            // Clear all story set views
+                            mThisActivity.clearAllStorySetViews();
+
+                            // Get Image Views for first row of new set
+                            mThisActivity.showFullStorySet(0);
+
+                        }
+                    }, mp.getDuration() / 2);
+
+                    break;
+                }
+                case "touch_the_arrow": {
                     break;
                 }
                 case "well_done_you_can_read_sound": {
@@ -612,6 +543,152 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 default: {
                     break;
                 }
+            }
+
+            // Play da beatz ♫♪
+            mp.start();
+        }
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            mp.reset();
+            try {
+                switch (mPrompt) {
+                    case "read_each_sentence_after_mother_sound": {
+                        // Disable narration on touch
+                        touchWordsEnabled = false;
+
+                        // Reset the active word
+                        mActiveSetIndex = 0;
+                        mActiveRowIndex = 0;
+                        mActiveWordIndex = 0;
+                        mActiveWordFlipped = false;
+
+                        // Play prompt
+                        playPrompt("listen_first_sound");
+                        break;
+                    }
+                    case "listen_first_sound": {
+                        // Play the current active word (unmuted)
+                        playActiveWord(false, mActiveSetIndex, mActiveRowIndex, mActiveWordIndex);
+                        break;
+                    }
+                    case "now_read_sound": {
+                        // Play the current active word (muted)
+                        playActiveWord(true, mActiveSetIndex, mActiveRowIndex, mActiveWordIndex);
+                        break;
+                    }
+                    case "listen_to_the_whole_story": {
+                        Fade fadeIn = new Fade(Fade.IN);
+                        Fade fadeOut = new Fade(Fade.OUT);
+
+                        storyBackgroundView = new ImageView(getApplicationContext());
+                        storyBackgroundView.setBackgroundResource(allData.getInt("story_image"));
+                        LinearLayout.LayoutParams storyBackgroundViewParams = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.MATCH_PARENT
+                        );
+                        storyBackgroundView.setLayoutParams(storyBackgroundViewParams);
+
+                        TransitionManager.beginDelayedTransition(col, fadeOut);
+                        TransitionManager.beginDelayedTransition(rootView, fadeIn);
+
+                        rootView.addView(storyBackgroundView, rootView.getChildCount());
+                        clearAllStorySetViews();
+
+                        // Play prompt
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                playPrompt("full_story_sound");
+                            }
+                        }, 1000);
+
+                        break;
+                    }
+                    case "full_story_sound": {
+
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Fade fadeOut = new Fade(Fade.OUT);
+
+                                // Reset the active word
+                                mThisActivity.setActiveSetIndex(0);
+                                mThisActivity.setActiveRowIndex(0);
+                                mThisActivity.setActiveWordIndex(0);
+                                mThisActivity.setActiveWordFlipped(false);
+
+                                // Clear all story set views
+                                mThisActivity.clearAllStorySetViews();
+
+                                // Get Image Views for first row of new set
+                                mThisActivity.showFullStorySet(0);
+
+                                TransitionManager.beginDelayedTransition(rootView, fadeOut);
+                                rootView.removeViewAt(rootView.getChildCount() - 1);
+
+                                // Play prompt
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        playPrompt("now_read_whole_story_sound");
+                                    }
+                                }, 700);
+                            }
+                        }, 300);
+
+                        break;
+                    }
+                    case "now_read_whole_story_sound": {
+
+                        // After a short delay, introduce arrows
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mNextArrow.setVisibility(View.VISIBLE);
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        playPrompt("touch_the_arrow");
+                                    }
+                                }, 100);
+                            }
+                        }, 300);
+                        break;
+                    }
+                    case "touch_the_arrow": {
+                        // Enable narration on touch
+                        touchWordsEnabled = true;
+
+                        break;
+                    }
+                    case "well_done_you_can_read_sound": {
+                        break;
+                    }
+                    case "now_answer_sound": {
+                        break;
+                    }
+                    case "comprehension_question_sound": {
+                        break;
+                    }
+                    case "comprehension_instructions_sound": {
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.out.println(":: SimpleStoryActivity.PromptListener(class).onCompletion() > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
             }
         }
     }
@@ -754,7 +831,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         // The child must now read the story by him or herself
 
                         // Play prompt
-                        playPrompt("now_read_whole_story_sound");
+                        playPrompt("listen_to_the_whole_story");
 
                     } else {
 
@@ -797,28 +874,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         mActiveRowIndex = 0;
                         mActiveWordIndex = 0;
 
-                        // Get Image Views for first row of new set
-                        ArrayList<ImageView> imageViews = thisActivity.getImageViewGridSets().get(mActiveSetIndex).get(mActiveRowIndex);
-
-                        // Create new linear layout horizontal row
-                        LinearLayout row = new LinearLayout(getApplicationContext());
-                        row.setOrientation(LinearLayout.HORIZONTAL);
-                        row.setBaselineAligned(true);
-
-                        // Create row layout params
-                        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                        );
-                        row.setLayoutParams(rowParams);
-
-                        // Add Image Views to row
-                        for (int i = 0; i < imageViews.size(); i++) {
-                            row.addView(imageViews.get(i));
-                        }
-
-                        // Add row to col
-                        col.addView(row);
+                        // Add new row (sentence) to story set
+                        mThisActivity.addSentenceToStorySet(mActiveSetIndex, mActiveRowIndex);
 
                         // Play prompt
                         playPrompt("listen_first_sound");
@@ -850,28 +907,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         mActiveRowIndex = mRowIndex + 1;
                         mActiveWordIndex = 0;
 
-                        // Get Image Views for next row (sentence)
-                        ArrayList<ImageView> imageViews = thisActivity.getImageViewGridSets().get(mSetIndex).get(mActiveRowIndex);
-
-                        // Create new linear layout horizontal row
-                        LinearLayout row = new LinearLayout(getApplicationContext());
-                        row.setOrientation(LinearLayout.HORIZONTAL);
-                        row.setBaselineAligned(true);
-
-                        // Create row layout params
-                        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                        );
-                        row.setLayoutParams(rowParams);
-
-                        // Add Image Views to row
-                        for (int i = 0; i < imageViews.size(); i++) {
-                            row.addView(imageViews.get(i));
-                        }
-
-                        // Add row to col
-                        col.addView(row);
+                        // Add new row (sentence) to story set
+                        mThisActivity.addSentenceToStorySet(mActiveSetIndex, mActiveRowIndex);
 
                         // Play prompt
                         playPrompt("listen_first_sound");
@@ -1143,124 +1180,267 @@ public class SimpleStoryActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
-            // Get data from activity
-            mSetIndex = mThisActivity.getActiveSetIndex();
-            mRowIndex = mThisActivity.getActiveRowIndex();
-            mWordIndex = mThisActivity.getActiveWordIndex();
-            mMaxSetIndex = mThisActivity.getImageViewGridSets().size() - 1;
+            if (touchWordsEnabled) {
 
-            // Check if we should navigate to next | previous page
-            if (mToNextPage) {
+                // Get data from activity
+                mSetIndex = mThisActivity.getActiveSetIndex();
+                mRowIndex = mThisActivity.getActiveRowIndex();
+                mWordIndex = mThisActivity.getActiveWordIndex();
+                mMaxSetIndex = mThisActivity.getImageViewGridSets().size() - 1;
 
-                // Navigate to next page
+                // Check if we should navigate to next | previous page
+                if (mToNextPage) {
 
-                // Increment the active set index
-                mSetIndex++;
+                    // Navigate to next page
 
-                // If last page, can't go any further
-                if (mSetIndex >= mMaxSetIndex) {
+                    // Increment the active set index
+                    mSetIndex++;
 
-                    // Reset active set index to max possible
-                    // (in case it's greater than max set index for whatever reason)
-                    mSetIndex = mMaxSetIndex;
+                    // If last page, can't go any further
+                    if (mSetIndex >= mMaxSetIndex) {
 
-                    // Update the active set index in the activity
-                    mThisActivity.setActiveSetIndex(mSetIndex);
+                        // Reset active set index to max possible
+                        // (in case it's greater than max set index for whatever reason)
+                        mSetIndex = mMaxSetIndex;
 
-                    // Ensure that next page arrow is invisible
-                    mNextArrow.setVisibility(View.INVISIBLE);
+                        // Update the active set index in the activity
+                        mThisActivity.setActiveSetIndex(mSetIndex);
+
+                        // Change image resource
+                        // Or in this case, 'brighten' arrow to indicate a unique transition
+                        mNextArrow.setColorFilter(Color.argb(125, 0, 255, 0));
+
+                        // Set layout params
+                        RelativeLayout.LayoutParams nextArrowParams = (RelativeLayout.LayoutParams) mNextArrow.getLayoutParams();
+                        nextArrowParams.topMargin = 140;
+                        nextArrowParams.rightMargin = 210;
+                        mNextArrow.setLayoutParams(nextArrowParams);
+
+                        // Add a new listener
+                        mNextArrow.setOnClickListener(null);
+                        mNextArrow.setOnClickListener(new ImageView.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                // Disable touch words
+                                touchWordsEnabled = false;
+
+                                // Hide arrow
+                                mNextArrow.setVisibility(View.INVISIBLE);
+                                mPreviousArrow.setVisibility(View.INVISIBLE);
+
+                                // Play prompt
+                                playPrompt("well_done_you_can_read_sound");
+                            }
+                        });
+
+                    } else {
+
+                        // Update the active set index in the activity
+                        mThisActivity.setActiveSetIndex(mSetIndex);
+
+                        // Ensure that previous page arrow is visible
+                        mPreviousArrow.setVisibility(View.VISIBLE);
+
+                        // Reset colour of next arrow
+                        mNextArrow.setColorFilter(null);
+
+                        // Reset listener for next arrow
+                        mNextArrow.setOnClickListener(null);
+                        mNextArrow.setOnClickListener(new StoryNavListener(mThisActivity, true));
+
+                        // Reset layout params
+                        RelativeLayout.LayoutParams nextArrowParams = (RelativeLayout.LayoutParams) mNextArrow.getLayoutParams();
+                        nextArrowParams.topMargin = 1200;
+                        nextArrowParams.rightMargin = 210;
+                        mNextArrow.setLayoutParams(nextArrowParams);
+                    }
 
                 } else {
 
-                    // Update the active set index in the activity
-                    mThisActivity.setActiveSetIndex(mSetIndex);
+                    // Navigate to previous page
 
-                    // Ensure that previous page arrow is visible
-                    mPreviousArrow.setVisibility(View.VISIBLE);
+                    // Decrement the active set index
+                    mSetIndex--;
+
+                    // If page 0, can't go any backward
+                    if (mSetIndex <= 0) {
+
+                        // Reset active set index to min possible
+                        // (in case it's less than 0 for some odd inexplainable reason)
+                        mSetIndex = 0;
+
+                        // Update the active set index in the activity
+                        mThisActivity.setActiveSetIndex(mSetIndex);
+
+                        // Ensure that previous page arrow is invisible
+                        mPreviousArrow.setVisibility(View.INVISIBLE);
+
+                        // Reset colour of next arrow
+                        mNextArrow.setColorFilter(null);
+
+                        // Reset listener for next arrow
+                        mNextArrow.setOnClickListener(null);
+                        mNextArrow.setOnClickListener(new StoryNavListener(mThisActivity, true));
+
+                        // Reset layout params
+                        RelativeLayout.LayoutParams nextArrowParams = (RelativeLayout.LayoutParams) mNextArrow.getLayoutParams();
+                        nextArrowParams.topMargin = 1200;
+                        nextArrowParams.rightMargin = 210;
+                        mNextArrow.setLayoutParams(nextArrowParams);
+
+                    } else {
+
+                        // Update the active set index in the activity
+                        mThisActivity.setActiveSetIndex(mSetIndex);
+
+                        // Ensure that next page arrow is visible
+                        mNextArrow.setVisibility(View.VISIBLE);
+
+                        // Reset colour of next arrow
+                        mNextArrow.setColorFilter(null);
+
+                        // Reset listener for next arrow
+                        mNextArrow.setOnClickListener(null);
+                        mNextArrow.setOnClickListener(new StoryNavListener(mThisActivity, true));
+
+                        // Reset layout params
+                        RelativeLayout.LayoutParams nextArrowParams = (RelativeLayout.LayoutParams) mNextArrow.getLayoutParams();
+                        nextArrowParams.topMargin = 1200;
+                        nextArrowParams.rightMargin = 210;
+                        mNextArrow.setLayoutParams(nextArrowParams);
+                    }
+                }
+
+                // Navigate to next or previous page, based on above logic
+
+                // Reset active row index, and active word index
+                // Active set index has already been reset
+                mRowIndex = 0;
+                mWordIndex = 0;
+
+                // Update activity's active row and word indexes
+                mThisActivity.setActiveRowIndex(mRowIndex);
+                mThisActivity.setActiveWordIndex(mWordIndex);
+
+                // Clear all story set views
+                mThisActivity.clearAllStorySetViews();
+
+                // Get Image Views for first row of new set
+                mThisActivity.showFullStorySet(mSetIndex);
+            }
+        }
+    }
+
+    public void clearAllStorySetViews() {
+
+        // Clear all existing rows of child views
+        for (int i = 0; i < col.getChildCount(); i++) {
+
+            // Get row
+            LinearLayout row = (LinearLayout) col.getChildAt(i);
+
+            // Remove all views from row
+            row.removeAllViews();
+        }
+
+        // Clear column of all child views
+        col.removeAllViews();
+    }
+
+    public void addSentenceToStorySet(int setIndex, int rowIndex) {
+
+        try {
+            // Get Image Views for next row (sentence)
+            ArrayList<ImageView> imageViews = thisActivity.getImageViewGridSets().get(setIndex).get(rowIndex);
+
+            // Create new linear layout horizontal row
+            LinearLayout row = new LinearLayout(getApplicationContext());
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setBaselineAligned(true);
+
+            // Create row layout params
+            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            row.setLayoutParams(rowParams);
+
+            // Add Image Views to row
+            for (int i = 0; i < imageViews.size(); i++) {
+                row.addView(imageViews.get(i));
+            }
+
+            // Add row to col
+            col.addView(row);
+
+        } catch (Exception ex) {
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.addSentenceToStorySet(" + setIndex +
+                    ", " + rowIndex + ") > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    public void showFullStorySet(int setIndex) {
+
+        try {
+            // Check if columns have rows
+            // They shouldn't
+            if (col.getChildCount() == 0) {
+
+                // No rows exist. We're good to go!
+
+                // Get Image Views for first row of new set
+                ArrayList<ArrayList<ImageView>> imageViewGrid = thisActivity.getImageViewGridSets().get(setIndex);
+
+                for (int i = 0; i < imageViewGrid.size(); i++) {
+
+                    // Get Image Views for the next row (sentence)
+                    ArrayList<ImageView> imageViews = imageViewGrid.get(i);
+
+                    // Create new linear layout horizontal row
+                    LinearLayout row = new LinearLayout(getApplicationContext());
+                    row.setOrientation(LinearLayout.HORIZONTAL);
+                    row.setBaselineAligned(true);
+
+                    // Create row layout params
+                    LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    row.setLayoutParams(rowParams);
+
+                    // Add Image Views to row
+                    for (int j = 0; j < imageViews.size(); j++) {
+                        row.addView(imageViews.get(j));
+                    }
+
+                    // Add row to col
+                    col.addView(row);
                 }
 
             } else {
-
-                // Navigate to previous page
-
-                // Decrement the active set index
-                mSetIndex--;
-
-                // If page 0, can't go any backward
-                if (mSetIndex <= 0) {
-
-                    // Reset active set index to min possible
-                    // (in case it's less than 0 for some odd inexplainable reason)
-                    mSetIndex = 0;
-
-                    // Update the active set index in the activity
-                    mThisActivity.setActiveSetIndex(mSetIndex);
-
-                    // Ensure that previous page arrow is invisible
-                    mPreviousArrow.setVisibility(View.INVISIBLE);
-
-                } else {
-
-                    // Update the active set index in the activity
-                    mThisActivity.setActiveSetIndex(mSetIndex);
-
-                    // Ensure that next page arrow is visible
-                    mNextArrow.setVisibility(View.VISIBLE);
-                }
+                throw new Exception("Column still has rows. " +
+                        "Ensure that all views have been cleared first");
             }
-
-            // Navigate to next or previous page, based on above logic
-
-            // Clear all existing rows of child views
-            for (int i = 0; i < col.getChildCount(); i++) {
-
-                // Get row
-                LinearLayout row = (LinearLayout) col.getChildAt(i);
-
-                // Remove all views from row
-                row.removeAllViews();
+        } catch (Exception ex) {
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.showFullStorySet(" + setIndex +
+                    ") > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
             }
-
-            // Clear column of all child views
-            col.removeAllViews();
-
-            // Reset active row index, and active word index
-            // Active set index has already been reset
-            mRowIndex = 0;
-            mWordIndex = 0;
-
-            // Update activity's active row and word indexes
-            mThisActivity.setActiveRowIndex(mRowIndex);
-            mThisActivity.setActiveWordIndex(mWordIndex);
-
-            // Get Image Views for first row of new set
-            ArrayList<ArrayList<ImageView>> imageViewGrid = thisActivity.getImageViewGridSets().get(mSetIndex);
-
-            for (int i = 0; i < imageViewGrid.size(); i++) {
-
-                // Get Image Views for the next row (sentence)
-                ArrayList<ImageView> imageViews = imageViewGrid.get(i);
-
-                // Create new linear layout horizontal row
-                LinearLayout row = new LinearLayout(getApplicationContext());
-                row.setOrientation(LinearLayout.HORIZONTAL);
-                row.setBaselineAligned(true);
-
-                // Create row layout params
-                LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                row.setLayoutParams(rowParams);
-
-                // Add Image Views to row
-                for (int j = 0; j < imageViews.size(); j++) {
-                    row.addView(imageViews.get(j));
-                }
-
-                // Add row to col
-                col.addView(row);
-            }
+            finish();
         }
     }
 
