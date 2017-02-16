@@ -103,7 +103,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
     private ImageView mNextArrow;
     private ImageView mPreviousArrow;
 
-    private int mComprehensionQuestionSetIndex;
+    private int mComprehensionQuestionIndex;
+    private boolean mComprehensionTouchEnabled;
 
     private final int STATE_0 = 0;
     private final int STATE_1 = 1;
@@ -437,7 +438,11 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     }
                     case "now_answer_sound": {
 
-                        playComprehensionQuestion(0);
+                        // Reset comprehension question set index
+                        mThisActivity.setComprehensionQuestionIndex(0);
+
+                        // Play comprehension question
+                        mThisActivity.playComprehensionQuestion(mThisActivity.getComprehensionQuestionIndex());
 
                         break;
                     }
@@ -1349,6 +1354,26 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.reset();
             try {
 
+                // Get the answer type
+                boolean isTouchTypeQuestion = mThisActivity.getComprehensionAnswerTypes().get(mQuestionIndex);
+
+                // Logic depending on answer type
+                if (isTouchTypeQuestion) {
+
+                    // Touch based answer required
+
+                    // Enable touch
+                    mThisActivity.setComprehensionTouchEnabled(true);
+
+                } else {
+
+                    // Microphone based answer required
+
+                    // Disable touch
+                    mThisActivity.setComprehensionTouchEnabled(false);
+
+                }
+
             } catch (Exception ex) {
                 System.err.println("============================================================");
                 System.out.println(":: SimpleStoryActivity.ComprehensionQuestionListener(class).onCompletion()." + mQuestionIndex +
@@ -1480,6 +1505,77 @@ public class SimpleStoryActivity extends AppCompatActivity {
         }
     }
 
+    class ComprehensionTouchListener implements ImageView.OnClickListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+
+        private SimpleStoryActivity mThisActivity;
+        private int mQuestionIndex;
+
+        public ComprehensionTouchListener(SimpleStoryActivity thisActivity, int questionIndex) {
+            mThisActivity = thisActivity;
+            mQuestionIndex = questionIndex;
+
+            // Update comprehension question index for the activity
+            mThisActivity.setComprehensionQuestionIndex(questionIndex);
+        }
+
+        @Override
+        public void onClick(View v) {
+            try {
+                if (mThisActivity.getComprehensionTouchEnabled()) {
+                    System.out.println(":><: Fuzzy " + mQuestionIndex);
+                }
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onClick." + mQuestionIndex +
+                        ") > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
+
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+            try {
+                mp.start();
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onPrepared." + mQuestionIndex +
+                        ") > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            try {
+                mp.reset();
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onCompletion." + mQuestionIndex +
+                        ") > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+
+        }
+    }
+
     public void setSelectedSetIndex(int selectedSetIndex) {
         mSelectedSetIndex = selectedSetIndex;
     }
@@ -1522,6 +1618,14 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
     public void setComprehensionAnswerSoundPaths(ArrayList<String> comprehensionAnswerSoundPaths) {
         mComprehensionAnswerSoundPaths = comprehensionAnswerSoundPaths;
+    }
+
+    public void setComprehensionQuestionIndex(int comprehensionQuestionIndex) {
+        mComprehensionQuestionIndex = comprehensionQuestionIndex;
+    }
+
+    public void setComprehensionTouchEnabled(boolean comprehensionTouchEnabled) {
+        mComprehensionTouchEnabled = comprehensionTouchEnabled;
     }
 
     public int getSelectedSetIndex() {
@@ -1594,6 +1698,14 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
     public ArrayList<Boolean> getComprehensionAnswerTypes() {
         return mComprehensionAnswerTypes;
+    }
+
+    public int getComprehensionQuestionIndex() {
+        return mComprehensionQuestionIndex;
+    }
+
+    public boolean getComprehensionTouchEnabled() {
+        return mComprehensionTouchEnabled;
     }
 
     private void initData(){
@@ -1990,6 +2102,9 @@ public class SimpleStoryActivity extends AppCompatActivity {
                             imageViewParams.leftMargin = 28; // Some 'padding' between sentence words
                             imageViewParams.rightMargin = 28;
                             imageView.setLayoutParams(imageViewParams);
+
+                            // Add listeners to Image View
+                            imageView.setOnClickListener(new ComprehensionTouchListener(thisActivity, i));
 
                             // Add the Image View to list of comprehension question Image Views
                             comprehensionQuestionImageViews.add(imageView);
