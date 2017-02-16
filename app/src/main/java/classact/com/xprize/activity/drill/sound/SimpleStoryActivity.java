@@ -77,6 +77,13 @@ public class SimpleStoryActivity extends AppCompatActivity {
     // and not java.util.Set *
     private ArrayList<ArrayList<ArrayList<String>>> soundPathGridSets;
 
+    // Comprehension stuff
+    private ArrayList<ArrayList<ImageView>> mComprehensionQuestionImageViewSets;
+    private ArrayList<ArrayList<Boolean>> mComprehensionQuestionAnswerSets;
+    private ArrayList<String> mComprehensionQuestionSoundPaths;
+    private ArrayList<String> mComprehensionAnswerSoundPaths;
+    private ArrayList<Boolean> mComprehensionAnswerTypes;
+
     private final int STARTING_SET = 0;
     private final int BLACK_WORD = 0;
     private final int RED_WORD = 1;
@@ -95,6 +102,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
     private ImageView mNextArrow;
     private ImageView mPreviousArrow;
+
+    private int mComprehensionQuestionSetIndex;
 
     private final int STATE_0 = 0;
     private final int STATE_1 = 1;
@@ -149,7 +158,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
             }
         });
         handler = new Handler();
-        /*initialiseData();
+        /*initializeData();
         //  playReadEachSentenceAfterMother();
         populateAndShowSentence();*/
 
@@ -172,305 +181,21 @@ public class SimpleStoryActivity extends AppCompatActivity {
         // Do this before creating rows, in case there is an override for number of
         // sentences per set
         // * Note: NO override exists at the moment *
-        initialiseData();
+        initData();
 
-        // In the DB, Set numbers start from 1 instead of 0
-        int startingSetIndex = STARTING_SET + 1;
+        // Initialize story and corresponding objects and views
+        // Populates 'col;
+        initStory();
 
-        // Initialize the current set
-        int currentSet = -1;
-
-        // Loop through sentences to create Linear Layout rows
-        // and populate with Image View rows
-        try {
-            if (sentences != null) {
-
-                // Initialize Image View grid sets
-                imageViewGridSets = new ArrayList<>();
-
-                // Initialize black word grid sets
-                blackWordGridSets = new ArrayList<>();
-
-                // Initialize red word grid sets
-                redWordGridSets = new ArrayList<>();
-
-                // Initialize sound path grid sets
-                soundPathGridSets = new ArrayList<>();
-
-                // Create a grid to store list of Image Views
-                ArrayList<ArrayList<ImageView>> imageViewGrid = null;
-
-                // Create a grid to store list of black word resource ids
-                ArrayList<ArrayList<Integer>> blackWordGrid = null;
-
-                // Create a grid to store list of red word resource ids
-                ArrayList<ArrayList<Integer>> redWordGrid = null;
-
-                // Create a grid to store list of sound paths
-                ArrayList<ArrayList<String>> soundPathGrid = null;
-
-                // Loopy loop ...
-                for (int i = 0; i < sentences.length(); i++) {
-
-                    // Instantiate sentence object
-                    JSONArray sentence = sentences.getJSONArray(i);
-
-                    // Validate sentence object
-                    if (sentence == null) {
-                        throw new Exception("Sentence (" + i + ") is null");
-                    }
-
-                    // Create list of Image Views that will hold sentence words
-                    ArrayList<ImageView> imageViews = new ArrayList<>();
-
-                    // Create list of black word resource ids per sentence word
-                    ArrayList<Integer> blackWords = new ArrayList<>();
-
-                    // Create list of red word resource ids per sentence word
-                    ArrayList<Integer> redWords = new ArrayList<>();
-
-                    // Create list of sound paths that will hold sound paths per sentence word
-                    ArrayList<String> soundPaths = new ArrayList<>();
-
-                    // Grab each sentence word
-                    // To do so, loop through each sentence
-                    for (int j = 0; j < sentence.length(); j++) {
-                        // Get the sentence word
-                        JSONObject sentenceWord = sentence.getJSONObject(j);
-
-                        // Check if new grids should be created
-                        // Note that grids exists per set
-                        // Check the current set number using JSON "set_no"
-                        final int sentenceSet = sentenceWord.getInt("set_no");
-                        if (sentenceSet != currentSet) {
-
-                            // Add previous Image View grid to Image View grid sets
-                            if (imageViewGrid != null && imageViewGrid.size() > 0) {
-                                imageViewGridSets.add(imageViewGrid);
-                            }
-
-                            // Add previous black word grid to black word grid sets
-                            if (blackWordGrid != null && blackWordGrid.size() > 0) {
-                                blackWordGridSets.add(blackWordGrid);
-                            }
-
-                            // Add previous red word grid to red word grid sets
-                            if (redWordGrid != null && redWordGrid.size() > 0) {
-                                redWordGridSets.add(redWordGrid);
-                            }
-
-                            // Add previous sound path grid to sound path grid sets
-                            if (soundPathGrid != null && soundPathGrid.size() > 0) {
-                                soundPathGridSets.add(soundPathGrid);
-                            }
-
-                            // Assign new Image View grid for the new set
-                            imageViewGrid = new ArrayList<>();
-
-                            // Assign new black word grid for the new set
-                            blackWordGrid = new ArrayList<>();
-
-                            // Assign new red word grid for the new set
-                            redWordGrid = new ArrayList<>();
-
-                            // Assign new sound path grid for the new set
-                            soundPathGrid = new ArrayList<>();
-
-                            // Update current set
-                            currentSet = sentenceSet;
-                        }
-
-                        // Get the black word (resource id) of the sentence word
-                        int blackWord = sentenceWord.getInt("black_word");
-
-                        // Get the red word (resource id) of the sentence word
-                        int redWord = sentenceWord.getInt("red_word");
-
-                        // Add black word to black words list
-                        blackWords.add(blackWord);
-
-                        // Add red word to red words list
-                        redWords.add(redWord);
-
-                        // Get the image resource id of the sentence word
-                        // This is coincidentally the 'black word'
-                        int imageResourceId = blackWord;
-
-                        // Create Image View to hold the sentence word
-                        ImageView imageView = new ImageView(getApplicationContext());
-
-                        // Set sentence word's image resource to that of the resourceId
-                        imageView.setImageResource(imageResourceId);
-
-                        // Set layout params of Image View
-                        LinearLayout.LayoutParams imageViewParams = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                        );
-                        imageViewParams.leftMargin = 28; // Some 'padding' between sentence words
-                        imageViewParams.rightMargin = 28;
-                        imageView.setLayoutParams(imageViewParams);
-
-                        // Add listener to ImageView
-                        imageView.setOnClickListener(new SelectedWordListener(thisActivity, soundPathGridSets.size(), soundPathGrid.size(), j));
-
-                        // Add Image View to list of Image Views
-                        imageViews.add(imageView);
-
-                        // Get the sound of the sentence word
-                        String sound = sentenceWord.getString("sound");
-
-                        // Get the sound path
-                        String soundPath = FetchResource.sound(getApplicationContext(), sound);
-
-                        // Add sound path to list of sounds paths
-                        soundPaths.add(soundPath);
-
-                    }
-                    // Add Image Views to Image View Grid
-                    if (imageViewGrid != null) {
-                        imageViewGrid.add(imageViews);
-                    }
-
-                    // Add black words to black word Grid
-                    if (blackWordGrid != null) {
-                        blackWordGrid.add(blackWords);
-                    }
-
-                    // Add red words to red word Grid
-                    if (redWordGrid != null) {
-                        redWordGrid.add(redWords);
-                    }
-
-                    // Add sound paths to sound path grid
-                    if (soundPathGrid != null) {
-                        soundPathGrid.add(soundPaths);
-                    }
-
-                    // If this is the last row (sentence), add grids to grid sets here
-                    if (i == sentences.length() - 1) {
-                        // Add final Image View grid to Image View grid sets
-                        if (imageViewGrid != null && imageViewGrid.size() > 0) {
-                            imageViewGridSets.add(imageViewGrid);
-                        }
-
-                        // Add final black word grid to black word grid sets
-                        if (blackWordGrid != null && blackWordGrid.size() > 0) {
-                            blackWordGridSets.add(blackWordGrid);
-                        }
-
-                        // Add final red word grid to red word grid sets
-                        if (redWordGrid != null && redWordGrid.size() > 0) {
-                            redWordGridSets.add(redWordGrid);
-                        }
-
-                        // Add final sound path grid to sound path grid sets
-                        if (soundPathGrid != null && soundPathGrid.size() > 0) {
-                            soundPathGridSets.add(soundPathGrid);
-                        }
-                    }
-
-                    // See if the current set's Image Views must be displayed
-                    // Do this by checking if the current set is the 'starting set'
-                    if (currentSet == startingSetIndex && imageViewGrid.size() == 1) {
-
-                        // Create new linear layout horizontal row
-                        LinearLayout row = new LinearLayout(getApplicationContext());
-
-                        // Custom colour the background (testing purposes)
-                        // Even number colouring variations
-                        /*if (i % 2 == 0) {
-                            row.setBackgroundColor(Color.CYAN);
-                        } else {
-                            row.setBackgroundColor(Color.MAGENTA);
-                        }*/
-                        row.setOrientation(LinearLayout.HORIZONTAL);
-                        row.setBaselineAligned(true);
-
-                        // Create row layout params
-                        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                        );
-                        row.setLayoutParams(rowParams);
-
-                        // Add Image Views to row
-                        for (int j = 0; j < imageViews.size(); j++) {
-                            row.addView(imageViews.get(j));
-                        }
-
-                        // Add row to col
-                        col.addView(row);
-                    }
-                }
-
-                // Create next arrow
-                mNextArrow = new ImageView(getApplicationContext());
-                mNextArrow.setImageResource(R.drawable.simple_story_next);
-                mNextArrow.setScaleX(0.9f);
-                mNextArrow.setScaleY(0.9f);
-
-                // Create row layout params
-                RelativeLayout.LayoutParams nextArrowParams = new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.WRAP_CONTENT,
-                        RelativeLayout.LayoutParams.WRAP_CONTENT
-                );
-                nextArrowParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                nextArrowParams.topMargin = 1200;
-                nextArrowParams.rightMargin = 210;
-                mNextArrow.setLayoutParams(nextArrowParams);
-
-                // Create previous arrow
-                mPreviousArrow = new ImageView(getApplicationContext());
-                mPreviousArrow.setImageResource(R.drawable.simple_story_next);
-                mPreviousArrow.setScaleX(-0.9f);
-                mPreviousArrow.setScaleY(0.9f);
-
-                // Create row layout params
-                RelativeLayout.LayoutParams previousArrowParams = new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.WRAP_CONTENT,
-                        RelativeLayout.LayoutParams.WRAP_CONTENT
-                );
-                previousArrowParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                previousArrowParams.topMargin = 1200;
-                previousArrowParams.leftMargin = 210;
-                mPreviousArrow.setLayoutParams(previousArrowParams);
-
-                // Add listeners to next and previous arrows
-                mNextArrow.setOnClickListener(new StoryNavListener(thisActivity, true));
-                mPreviousArrow.setOnClickListener(new StoryNavListener(thisActivity, false));
-
-                // Set the arrows invisible
-                mNextArrow.setVisibility(View.INVISIBLE);
-                mPreviousArrow.setVisibility(View.INVISIBLE);
-
-                // Add arrows to root view
-                rootView.addView(mNextArrow);
-                rootView.addView(mPreviousArrow);
-
-            } else {
-                // Throw exception. Cannot work with null sentences
-                throw new Exception("Sentences are null");
-            }
-        } catch (Exception ex) {
-            // Finish the activity - it's bugged
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.onCreate > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
-            ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
-        }
+        // Initialize comprehension and corresponding objects and views
+        initComprehension();
 
         container.addView(col);
 
         currentState = STATE_0;
 
         //playPrompt("read_each_sentence_after_mother_sound");
-        playPrompt("listen_to_the_whole_story");
+        playPrompt("now_answer_sound");
     }
 
     class PromptListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
@@ -711,6 +436,9 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         break;
                     }
                     case "now_answer_sound": {
+
+                        playComprehensionQuestion(0);
+
                         break;
                     }
                     case "comprehension_question_sound": {
@@ -1489,6 +1217,269 @@ public class SimpleStoryActivity extends AppCompatActivity {
         }
     }
 
+    public void showComprehensionSet(int setIndex) {
+
+        try {
+            // Get Image Views for next row (sentence)
+            ArrayList<ImageView> imageViews = thisActivity.getComprehensionQuestionImageViewSets().get(setIndex);
+
+            // Create new linear layout horizontal row
+            LinearLayout row = new LinearLayout(getApplicationContext());
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setBaselineAligned(true);
+
+            // Create row layout params
+            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            row.setLayoutParams(rowParams);
+
+            // Get answer type
+            // 'true' = Touch type question
+            // 'false' = Speech type question
+            boolean isTouchAnswer = mComprehensionAnswerTypes.get(setIndex);
+
+            System.out.println("!!There are " + imageViews.size() + " images!!");
+
+            // Add Image Views to row
+            for (int i = 0; i < imageViews.size(); i++) {
+
+                row.addView(imageViews.get(i));
+
+                /*
+                // Validate answer type
+                if (isTouchAnswer) {
+
+                    System.out.println(">> IS touch answer");
+
+                    // Is touch type
+                    // Show all images
+                    row.addView(imageViews.get(i));
+
+                } else {
+
+                    System.out.println("<< IS NOT touch answer");
+
+                    // Is not touch type
+                    // Only show 'correct' image
+                    boolean isCorrectAnswer = mComprehensionQuestionAnswerSets.get(setIndex).get(i);
+
+                    // Only add if it's the correct answer
+                    if (isCorrectAnswer) {
+                        // Break out
+                        // Only correct image view is required
+                        row.addView(imageViews.get(i));
+                        break;
+                    }
+
+                }
+                */
+            }
+
+            System.out.println(":@#$: " + row.getChildCount());
+
+            // Add row to col
+            col.addView(row);
+
+        } catch (Exception ex) {
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.showComprehensionSet(" + setIndex +
+                    ") > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    class ComprehensionQuestionListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+
+        private SimpleStoryActivity mThisActivity;
+        private int mQuestionIndex;
+
+        public ComprehensionQuestionListener(SimpleStoryActivity thisActivity, int questionIndex) {
+            mQuestionIndex = questionIndex;
+            mThisActivity = thisActivity;
+        }
+
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+            // Reset volume to max (in case it was muted before)
+            mp.setVolume(1, 1);
+
+            try {
+                // Play da beatz ♫♪
+                mp.start();
+
+                // Fade out existing 'questions' (or any text) on screen
+                // and fade in new questions
+                Fade fadeIn = new Fade(Fade.IN);
+                // Fade fadeOut = new Fade(Fade.OUT);
+
+                /*TransitionManager.beginDelayedTransition(col, fadeOut);
+
+                // Clear all existing views
+                clearAllStorySetViews();*/
+
+                TransitionManager.beginDelayedTransition(col, fadeIn);
+
+                // Show image views for comprehension question
+                showComprehensionSet(mQuestionIndex);
+
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.out.println(":: SimpleStoryActivity.ComprehensionQuestionListener(class).onPrepared()." + mQuestionIndex +
+                        " > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            mp.reset();
+            try {
+
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.out.println(":: SimpleStoryActivity.ComprehensionQuestionListener(class).onCompletion()." + mQuestionIndex +
+                        " > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
+    }
+
+    public void playComprehensionQuestion(int questionIndex) {
+        try {
+            // Get sound path from sound path grid sets
+            String soundPath = mComprehensionQuestionSoundPaths.get(questionIndex);
+
+            // Initialize media player if need be
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+
+            // Media player jazz ♫♪
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new ComprehensionQuestionListener(thisActivity, questionIndex));
+            mp.setOnCompletionListener(new ComprehensionQuestionListener(thisActivity, questionIndex));
+            mp.prepare();
+
+        } catch (Exception ex) {
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.playComprehensionQuestion(" + questionIndex +
+                    ") > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    class ComprehensionAnswerListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+
+        private SimpleStoryActivity mThisActivity;
+        private int mAnswerIndex;
+
+        public ComprehensionAnswerListener(SimpleStoryActivity thisActivity, int answerIndex) {
+            mThisActivity = thisActivity;
+            mAnswerIndex = answerIndex;
+        }
+
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+            // Reset volume to max (in case it was muted before)
+            mp.setVolume(1, 1);
+
+            try {
+                // Play da beatz ♫♪
+                mp.start();
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.out.println(":: SimpleStoryActivity.ComprehensionAnswerListener(class).onPrepared()." + mAnswerIndex +
+                        " > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            mp.reset();
+            try {
+
+
+
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.out.println(":: SimpleStoryActivity.ComprehensionAnswerListener(class).onCompletion()." + mAnswerIndex +
+                        " > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
+    }
+
+    public void playComprehensionAnswer(int answerIndex) {
+        try {
+            // Get sound path from sound path grid sets
+            String soundPath = mComprehensionQuestionSoundPaths.get(answerIndex);
+
+            // Initialize media player if need be
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+
+            // Media player jazz ♫♪
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new ComprehensionAnswerListener(thisActivity, answerIndex));
+            mp.setOnCompletionListener(new ComprehensionAnswerListener(thisActivity, answerIndex));
+            mp.prepare();
+
+        } catch (Exception ex) {
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.playComprehensionAnswer(" + answerIndex +
+                    ") > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
     public void setSelectedSetIndex(int selectedSetIndex) {
         mSelectedSetIndex = selectedSetIndex;
     }
@@ -1523,6 +1514,14 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
     public void setActiveWordDuration(int activeWordDuration) {
         mActiveWordDuration = activeWordDuration;
+    }
+
+    public void setComprehensionQuestionSoundPaths(ArrayList<String> comprehensionQuestionSoundPaths) {
+        mComprehensionQuestionSoundPaths = comprehensionQuestionSoundPaths;
+    }
+
+    public void setComprehensionAnswerSoundPaths(ArrayList<String> comprehensionAnswerSoundPaths) {
+        mComprehensionAnswerSoundPaths = comprehensionAnswerSoundPaths;
     }
 
     public int getSelectedSetIndex() {
@@ -1577,7 +1576,27 @@ public class SimpleStoryActivity extends AppCompatActivity {
         return soundPathGridSets;
     }
 
-    private void initialiseData(){
+    public ArrayList<ArrayList<ImageView>> getComprehensionQuestionImageViewSets() {
+        return mComprehensionQuestionImageViewSets;
+    }
+
+    public ArrayList<ArrayList<Boolean>> getComprehensionQuestionAnswerSets() {
+        return mComprehensionQuestionAnswerSets;
+    }
+
+    public ArrayList<String> getComprehensionQuestionSoundPaths() {
+        return mComprehensionQuestionSoundPaths;
+    }
+
+    public ArrayList<String> getComprehensionAnswerSoundPaths() {
+        return mComprehensionAnswerSoundPaths;
+    }
+
+    public ArrayList<Boolean> getComprehensionAnswerTypes() {
+        return mComprehensionAnswerTypes;
+    }
+
+    private void initData(){
 
         // Debug
         System.out.println(":: SimpleStoryActivity.initialiseData > Debug: METHOD CALLED");
@@ -1586,12 +1605,459 @@ public class SimpleStoryActivity extends AppCompatActivity {
             drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
             sentences = allData.getJSONArray("sentences");
+            questions = allData.getJSONArray("questions");
             currentSound = 0;
             currentSentence = 0;
         }
         catch (Exception ex){
             ex.printStackTrace();
             if (mp != null){
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    private void initStory() {
+
+        // Initialize story
+        // Loop through sentences to create Linear Layout rows
+        // and populate with Image View rows
+        // These rows will be added to the 'column' that holds all story-related views
+        try {
+
+            // In the DB, Set numbers start from 1 instead of 0
+            int startingSetIndex = STARTING_SET + 1;
+
+            // Initialize the current set
+            int currentSet = -1;
+
+
+            if (sentences != null) {
+
+                // Initialize Image View grid sets
+                imageViewGridSets = new ArrayList<>();
+
+                // Initialize black word grid sets
+                blackWordGridSets = new ArrayList<>();
+
+                // Initialize red word grid sets
+                redWordGridSets = new ArrayList<>();
+
+                // Initialize sound path grid sets
+                soundPathGridSets = new ArrayList<>();
+
+                // Create a grid to store list of Image Views
+                ArrayList<ArrayList<ImageView>> imageViewGrid = null;
+
+                // Create a grid to store list of black word resource ids
+                ArrayList<ArrayList<Integer>> blackWordGrid = null;
+
+                // Create a grid to store list of red word resource ids
+                ArrayList<ArrayList<Integer>> redWordGrid = null;
+
+                // Create a grid to store list of sound paths
+                ArrayList<ArrayList<String>> soundPathGrid = null;
+
+                // Loopy loop ...
+                for (int i = 0; i < sentences.length(); i++) {
+
+                    // Instantiate sentence object
+                    JSONArray sentence = sentences.getJSONArray(i);
+
+                    // Validate sentence object
+                    if (sentence == null) {
+                        throw new Exception("Sentence (" + i + ") is null");
+                    }
+
+                    // Create list of Image Views that will hold sentence words
+                    ArrayList<ImageView> imageViews = new ArrayList<>();
+
+                    // Create list of black word resource ids per sentence word
+                    ArrayList<Integer> blackWords = new ArrayList<>();
+
+                    // Create list of red word resource ids per sentence word
+                    ArrayList<Integer> redWords = new ArrayList<>();
+
+                    // Create list of sound paths that will hold sound paths per sentence word
+                    ArrayList<String> soundPaths = new ArrayList<>();
+
+                    // Grab each sentence word
+                    // To do so, loop through each sentence
+                    for (int j = 0; j < sentence.length(); j++) {
+                        // Get the sentence word
+                        JSONObject sentenceWord = sentence.getJSONObject(j);
+
+                        // Check if new grids should be created
+                        // Note that grids exists per set
+                        // Check the current set number using JSON "set_no"
+                        final int sentenceSet = sentenceWord.getInt("set_no");
+                        if (sentenceSet != currentSet) {
+
+                            // Add previous Image View grid to Image View grid sets
+                            if (imageViewGrid != null && imageViewGrid.size() > 0) {
+                                imageViewGridSets.add(imageViewGrid);
+                            }
+
+                            // Add previous black word grid to black word grid sets
+                            if (blackWordGrid != null && blackWordGrid.size() > 0) {
+                                blackWordGridSets.add(blackWordGrid);
+                            }
+
+                            // Add previous red word grid to red word grid sets
+                            if (redWordGrid != null && redWordGrid.size() > 0) {
+                                redWordGridSets.add(redWordGrid);
+                            }
+
+                            // Add previous sound path grid to sound path grid sets
+                            if (soundPathGrid != null && soundPathGrid.size() > 0) {
+                                soundPathGridSets.add(soundPathGrid);
+                            }
+
+                            // Assign new Image View grid for the new set
+                            imageViewGrid = new ArrayList<>();
+
+                            // Assign new black word grid for the new set
+                            blackWordGrid = new ArrayList<>();
+
+                            // Assign new red word grid for the new set
+                            redWordGrid = new ArrayList<>();
+
+                            // Assign new sound path grid for the new set
+                            soundPathGrid = new ArrayList<>();
+
+                            // Update current set
+                            currentSet = sentenceSet;
+                        }
+
+                        // Get the black word (resource id) of the sentence word
+                        int blackWord = sentenceWord.getInt("black_word");
+
+                        // Get the red word (resource id) of the sentence word
+                        int redWord = sentenceWord.getInt("red_word");
+
+                        // Add black word to black words list
+                        blackWords.add(blackWord);
+
+                        // Add red word to red words list
+                        redWords.add(redWord);
+
+                        // Get the image resource id of the sentence word
+                        // This is coincidentally the 'black word'
+                        int imageResourceId = blackWord;
+
+                        // Create Image View to hold the sentence word
+                        ImageView imageView = new ImageView(getApplicationContext());
+
+                        // Set sentence word's image resource to that of the resourceId
+                        imageView.setImageResource(imageResourceId);
+
+                        // Set layout params of Image View
+                        LinearLayout.LayoutParams imageViewParams = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                        );
+                        imageViewParams.leftMargin = 28; // Some 'padding' between sentence words
+                        imageViewParams.rightMargin = 28;
+                        imageView.setLayoutParams(imageViewParams);
+
+                        // Add listener to ImageView
+                        imageView.setOnClickListener(new SelectedWordListener(thisActivity, soundPathGridSets.size(), soundPathGrid.size(), j));
+
+                        // Add Image View to list of Image Views
+                        imageViews.add(imageView);
+
+                        // Get the sound of the sentence word
+                        String sound = sentenceWord.getString("sound");
+
+                        // Get the sound path
+                        String soundPath = FetchResource.sound(getApplicationContext(), sound);
+
+                        // Add sound path to list of sounds paths
+                        soundPaths.add(soundPath);
+
+                    }
+                    // Add Image Views to Image View Grid
+                    if (imageViewGrid != null) {
+                        imageViewGrid.add(imageViews);
+                    }
+
+                    // Add black words to black word Grid
+                    if (blackWordGrid != null) {
+                        blackWordGrid.add(blackWords);
+                    }
+
+                    // Add red words to red word Grid
+                    if (redWordGrid != null) {
+                        redWordGrid.add(redWords);
+                    }
+
+                    // Add sound paths to sound path grid
+                    if (soundPathGrid != null) {
+                        soundPathGrid.add(soundPaths);
+                    }
+
+                    // If this is the last row (sentence), add grids to grid sets here
+                    if (i == sentences.length() - 1) {
+                        // Add final Image View grid to Image View grid sets
+                        if (imageViewGrid != null && imageViewGrid.size() > 0) {
+                            imageViewGridSets.add(imageViewGrid);
+                        }
+
+                        // Add final black word grid to black word grid sets
+                        if (blackWordGrid != null && blackWordGrid.size() > 0) {
+                            blackWordGridSets.add(blackWordGrid);
+                        }
+
+                        // Add final red word grid to red word grid sets
+                        if (redWordGrid != null && redWordGrid.size() > 0) {
+                            redWordGridSets.add(redWordGrid);
+                        }
+
+                        // Add final sound path grid to sound path grid sets
+                        if (soundPathGrid != null && soundPathGrid.size() > 0) {
+                            soundPathGridSets.add(soundPathGrid);
+                        }
+                    }
+
+                    // See if the current set's Image Views must be displayed
+                    // Do this by checking if the current set is the 'starting set'
+                    if (currentSet == startingSetIndex && imageViewGrid.size() == 1) {
+
+                        // Create new linear layout horizontal row
+                        LinearLayout row = new LinearLayout(getApplicationContext());
+
+                        // Custom colour the background (testing purposes)
+                        // Even number colouring variations
+                        /*if (i % 2 == 0) {
+                            row.setBackgroundColor(Color.CYAN);
+                        } else {
+                            row.setBackgroundColor(Color.MAGENTA);
+                        }*/
+                        row.setOrientation(LinearLayout.HORIZONTAL);
+                        row.setBaselineAligned(true);
+
+                        // Create row layout params
+                        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                        );
+                        row.setLayoutParams(rowParams);
+
+                        // Add Image Views to row
+                        for (int j = 0; j < imageViews.size(); j++) {
+                            row.addView(imageViews.get(j));
+                        }
+
+                        // Add row to col
+                        col.addView(row);
+                    }
+                }
+
+                // Create next arrow
+                mNextArrow = new ImageView(getApplicationContext());
+                mNextArrow.setImageResource(R.drawable.simple_story_next);
+                mNextArrow.setScaleX(0.9f);
+                mNextArrow.setScaleY(0.9f);
+
+                // Create row layout params
+                RelativeLayout.LayoutParams nextArrowParams = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT
+                );
+                nextArrowParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                nextArrowParams.topMargin = 1200;
+                nextArrowParams.rightMargin = 210;
+                mNextArrow.setLayoutParams(nextArrowParams);
+
+                // Create previous arrow
+                mPreviousArrow = new ImageView(getApplicationContext());
+                mPreviousArrow.setImageResource(R.drawable.simple_story_next);
+                mPreviousArrow.setScaleX(-0.9f);
+                mPreviousArrow.setScaleY(0.9f);
+
+                // Create row layout params
+                RelativeLayout.LayoutParams previousArrowParams = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT
+                );
+                previousArrowParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                previousArrowParams.topMargin = 1200;
+                previousArrowParams.leftMargin = 210;
+                mPreviousArrow.setLayoutParams(previousArrowParams);
+
+                // Add listeners to next and previous arrows
+                mNextArrow.setOnClickListener(new StoryNavListener(thisActivity, true));
+                mPreviousArrow.setOnClickListener(new StoryNavListener(thisActivity, false));
+
+                // Set the arrows invisible
+                mNextArrow.setVisibility(View.INVISIBLE);
+                mPreviousArrow.setVisibility(View.INVISIBLE);
+
+                // Add arrows to root view
+                rootView.addView(mNextArrow);
+                rootView.addView(mPreviousArrow);
+
+            } else {
+                // Throw exception. Cannot work with null sentences
+                throw new Exception("Sentences are null");
+            }
+        } catch (Exception ex) {
+            // Finish the activity - it's bugged
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.initStory > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    private void initComprehension() {
+        mComprehensionQuestionImageViewSets = new ArrayList<>();
+        mComprehensionQuestionAnswerSets = new ArrayList<>();
+        mComprehensionQuestionSoundPaths = new ArrayList<>();
+        mComprehensionAnswerSoundPaths = new ArrayList<>();
+        mComprehensionAnswerTypes = new ArrayList<>();
+
+        try {
+            // Validate questions
+            if (questions != null) {
+
+                // Declare array to hold Image Views per comprehension question set
+                ArrayList<ImageView> comprehensionQuestionImageViews;
+
+                // Declare array to hold answer sets (is it right or wrong) per comprehension question set
+                ArrayList<Boolean> comprehensionQuestionAnswers;
+
+                for (int i = 0; i < questions.length(); i++) {
+
+                    // Extract question
+                    JSONObject question = questions.getJSONObject(i);
+
+                    // Extract question images array
+                    JSONArray questionImages = question.getJSONArray("images");
+
+                    // Initialize array to hold Image Views per comprehension question set
+                    comprehensionQuestionImageViews = new ArrayList<>();
+
+                    // Initialize array to hold answer sets (is it right or wrong) per comprehension question set
+                    comprehensionQuestionAnswers = new ArrayList<>();
+
+                    // Initialize array of image resource ids
+                    // Used to validate and remove any duplicate images if existing the data String
+                    ArrayList<Integer> imageResourceIds = new ArrayList<>();
+
+                    // Loop through each question image and add to list of
+                    // comprehension question Image Views
+                    for (int j = 0; j < questionImages.length(); j++) {
+
+                        // Extract question image object
+                        JSONObject questionImage = questionImages.getJSONObject(j);
+
+                        /* * * * * * * * * * *
+                         * PROCESS IMAGE VIEW *
+                         * * * * * * * * * * * */
+
+                        // Get the image (resource id) of the comprehension question image
+                        int imageResourceId = questionImage.getInt("image");
+
+                        if (!imageResourceIds.contains(imageResourceId)) {
+
+                            // Add image resource id to list of image resource ids
+                            imageResourceIds.add(imageResourceId);
+
+                            // Create Image View to hold the comprehension question image
+                            ImageView imageView = new ImageView(getApplicationContext());
+
+                            // Set comprehension question's image resource to that of the resourceId
+                            imageView.setImageResource(imageResourceId);
+
+                            // Set adjust view bounds to true
+                            imageView.setAdjustViewBounds(true);
+
+                            // Set Image View max width
+                            imageView.setMaxWidth(500);
+
+                            // Set layout params of Image View
+                            LinearLayout.LayoutParams imageViewParams = new LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                                    LinearLayout.LayoutParams.WRAP_CONTENT
+                            );
+                            imageViewParams.leftMargin = 28; // Some 'padding' between sentence words
+                            imageViewParams.rightMargin = 28;
+                            imageView.setLayoutParams(imageViewParams);
+
+                            // Add the Image View to list of comprehension question Image Views
+                            comprehensionQuestionImageViews.add(imageView);
+
+                        /* * * * * * * * * * * * * *
+                         * PROCESS QUESTION ANSWER *
+                         * * * * * * * * * * * * * */
+
+                            int questionAnswer = questionImage.getInt("is_right");
+
+                            // Convert question answer
+                            boolean comprehensionQuestionAnswer = (questionAnswer == 1);
+
+                            // Store comprehension question answer
+                            comprehensionQuestionAnswers.add(comprehensionQuestionAnswer);
+                        }
+                    }
+
+                    // Add list of comprehension question Image Views to set
+                    mComprehensionQuestionImageViewSets.add(comprehensionQuestionImageViews);
+
+                    // Add list of comprehension question answers to set
+                    mComprehensionQuestionAnswerSets.add(comprehensionQuestionAnswers);
+
+                    /* * * * * * * * * * * * * * * * *
+                     * PROCESS QUESTION SOUND PATHS *
+                     * * * * * * * * * * * * * * * */
+
+                    // Extract sound path
+                    String comprehensionQuestionSoundPath = FetchResource.sound(getApplicationContext(),
+                            question.getString("question_sound"));
+
+                    // Add sound path to list of comprehension question sound paths
+                    mComprehensionQuestionSoundPaths.add(comprehensionQuestionSoundPath);
+
+                    /* * * * * * * * * * * * * * *
+                     * PROCESS ANSWER SOUND PATHS *
+                     * * * * * * * * * * * * * * * */
+
+                    // Extract sound path
+                    String comprehensionAnswerSoundPath = FetchResource.sound(getApplicationContext(),
+                            question.getString("answer_sound"));
+
+                    // Add sound path to list of comprehension answer sound paths
+                    mComprehensionAnswerSoundPaths.add(comprehensionAnswerSoundPath);
+
+                    /* * * * * * * * * * * * *
+                     * PROCESS ANSWER TYPES *
+                     * * * * * * * * * * * */
+
+                    boolean comprehensionAnswerType = (question.getInt("is_touch") == 0);
+
+                    // Add sound path to list of comprehension answer sound paths
+                    mComprehensionAnswerTypes.add(comprehensionAnswerType);
+                }
+
+            } else {
+                // Throw exception. Cannot work with null questions
+                throw new Exception("Comprehension questions are null");
+            }
+        } catch (Exception ex) {
+            // Finish the activity - it's bugged
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.initComprehension > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
                 mp.release();
             }
             finish();
