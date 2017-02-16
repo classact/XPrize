@@ -441,8 +441,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         // Reset comprehension question set index
                         mThisActivity.setComprehensionQuestionIndex(0);
 
-                        // Play comprehension question
-                        mThisActivity.playComprehensionQuestion(mThisActivity.getComprehensionQuestionIndex());
+                        // Prepare views and ask next comprehension question
+                        prepareViewsAndAskNextComprehensionQuestion();
 
                         break;
                     }
@@ -1110,6 +1110,309 @@ public class SimpleStoryActivity extends AppCompatActivity {
         }
     }
 
+    class ComprehensionQuestionListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+
+        private SimpleStoryActivity mThisActivity;
+        private int mQuestionIndex;
+
+        public ComprehensionQuestionListener(SimpleStoryActivity thisActivity, int questionIndex) {
+            mQuestionIndex = questionIndex;
+            mThisActivity = thisActivity;
+        }
+
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+            // Reset volume to max (in case it was muted before)
+            mp.setVolume(1, 1);
+
+            try {
+                // Play da beatz ♫♪
+                mp.start();
+
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.out.println(":: SimpleStoryActivity.ComprehensionQuestionListener(class).onPrepared()." + mQuestionIndex +
+                        " > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            mp.reset();
+            try {
+
+                // Get the answer type
+                boolean isTouchTypeQuestion = mThisActivity.getComprehensionAnswerTypes().get(mQuestionIndex);
+
+                // Logic depending on answer type
+                if (isTouchTypeQuestion) {
+
+                    // Touch based answer required
+
+                    // Enable touch
+                    mThisActivity.setComprehensionTouchEnabled(true);
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mThisActivity.playComprehensionAnswer(mThisActivity.getComprehensionQuestionIndex());
+                        }
+                    }, 1000);
+
+                } else {
+
+                    // Microphone based answer required
+
+                    // Disable touch
+                    mThisActivity.setComprehensionTouchEnabled(false);
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mThisActivity.playComprehensionAnswer(mThisActivity.getComprehensionQuestionIndex());
+                        }
+                    }, 1000);
+
+                }
+
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.out.println(":: SimpleStoryActivity.ComprehensionQuestionListener(class).onCompletion()." + mQuestionIndex +
+                        " > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
+    }
+
+    public void playComprehensionQuestion(int questionIndex) {
+        try {
+            // Get sound path from sound path grid sets
+            String soundPath = mComprehensionQuestionSoundPaths.get(questionIndex);
+
+            // Initialize media player if need be
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+
+            // Media player jazz ♫♪
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new ComprehensionQuestionListener(thisActivity, questionIndex));
+            mp.setOnCompletionListener(new ComprehensionQuestionListener(thisActivity, questionIndex));
+            mp.prepare();
+
+        } catch (Exception ex) {
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.playComprehensionQuestion(" + questionIndex +
+                    ") > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    class ComprehensionAnswerListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+
+        private SimpleStoryActivity mThisActivity;
+        private int mAnswerIndex;
+
+        public ComprehensionAnswerListener(SimpleStoryActivity thisActivity, int answerIndex) {
+            mThisActivity = thisActivity;
+            mAnswerIndex = answerIndex;
+        }
+
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+            // Reset volume to max (in case it was muted before)
+            mp.setVolume(1, 1);
+
+            try {
+
+                // Disable touch
+                mThisActivity.setComprehensionTouchEnabled(false);
+
+                // Play da beatz ♫♪
+                mp.start();
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.out.println(":: SimpleStoryActivity.ComprehensionAnswerListener(class).onPrepared()." + mAnswerIndex +
+                        " > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            mp.reset();
+            try {
+
+                int maxQuestions = mThisActivity.getComprehensionQuestionSoundPaths().size();
+                int nextQuestionIndex = mAnswerIndex + 1;
+
+                if (nextQuestionIndex >= maxQuestions) {
+
+                    // Time to end it
+
+                } else {
+
+                    // On to next question
+                    mThisActivity.setComprehensionQuestionIndex(nextQuestionIndex);
+
+                    // Clear views for comprehension
+                    clearViewsForComprehension();
+
+                    // Play question after 500 millisecond delay
+                    handler.postDelayed(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+                            // Prepare views and ask next comprehension question
+                            prepareViewsAndAskNextComprehensionQuestion();
+                        }
+                    }, 700);
+                }
+
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.out.println(":: SimpleStoryActivity.ComprehensionAnswerListener(class).onCompletion()." + mAnswerIndex +
+                        " > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
+    }
+
+    public void playComprehensionAnswer(int answerIndex) {
+        try {
+            // Get sound path from sound path grid sets
+            String soundPath = mComprehensionAnswerSoundPaths.get(answerIndex);
+
+            // Initialize media player if need be
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+
+            // Media player jazz ♫♪
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new ComprehensionAnswerListener(thisActivity, answerIndex));
+            mp.setOnCompletionListener(new ComprehensionAnswerListener(thisActivity, answerIndex));
+            mp.prepare();
+
+        } catch (Exception ex) {
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.playComprehensionAnswer(" + answerIndex +
+                    ") > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    class ComprehensionTouchListener implements ImageView.OnClickListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+
+        private SimpleStoryActivity mThisActivity;
+        private int mQuestionIndex;
+
+        public ComprehensionTouchListener(SimpleStoryActivity thisActivity, int questionIndex) {
+            mThisActivity = thisActivity;
+            mQuestionIndex = questionIndex;
+
+            // Update comprehension question index for the activity
+            mThisActivity.setComprehensionQuestionIndex(questionIndex);
+        }
+
+        @Override
+        public void onClick(View v) {
+            try {
+                if (mThisActivity.getComprehensionTouchEnabled()) {
+                    System.out.println(":><: Fuzzy " + mQuestionIndex);
+                }
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onClick." + mQuestionIndex +
+                        ") > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
+
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+            try {
+                mp.start();
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onPrepared." + mQuestionIndex +
+                        ") > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        }
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            try {
+                mp.reset();
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onCompletion." + mQuestionIndex +
+                        ") > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+
+        }
+    }
+
     public void clearAllStorySetViews() {
 
         // Clear all existing rows of child views
@@ -1222,11 +1525,32 @@ public class SimpleStoryActivity extends AppCompatActivity {
         }
     }
 
-    public void showComprehensionSet(int setIndex) {
+    public void clearViewsForComprehension() {
+        // Clear all existing views
+        if (col.getChildCount() > 0) {
+
+            // Fade out existing 'questions' (or any text) on screen
+            Fade fadeOut = new Fade(Fade.OUT);
+
+            // Ensure that next transition on col is a fade out
+            TransitionManager.beginDelayedTransition(col, fadeOut);
+
+            // Clear all story views
+            clearAllStorySetViews();
+        }
+    }
+
+    public void showViewsForComprehension(int questionIndex) {
 
         try {
+            // Create new 'fade in' for next transition
+            Fade fadeIn = new Fade(Fade.IN);
+
+            // Ensure that next transition on col is a fade in
+            TransitionManager.beginDelayedTransition(col, fadeIn);
+
             // Get Image Views for next row (sentence)
-            ArrayList<ImageView> imageViews = thisActivity.getComprehensionQuestionImageViewSets().get(setIndex);
+            ArrayList<ImageView> imageViews = thisActivity.getComprehensionQuestionImageViewSets().get(questionIndex);
 
             // Create new linear layout horizontal row
             LinearLayout row = new LinearLayout(getApplicationContext());
@@ -1243,7 +1567,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
             // Get answer type
             // 'true' = Touch type question
             // 'false' = Speech type question
-            boolean isTouchAnswer = mComprehensionAnswerTypes.get(setIndex);
+            boolean isTouchAnswer = mComprehensionAnswerTypes.get(questionIndex);
 
             System.out.println("!!There are " + imageViews.size() + " images!!");
 
@@ -1289,7 +1613,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         } catch (Exception ex) {
             System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.showComprehensionSet(" + setIndex +
+            System.err.println("SimpleStoryActivity.showViewsForComprehension(" + questionIndex +
                     ") > Exception: " + ex.getMessage());
             System.err.println("------------------------------------------------------------");
             ex.printStackTrace();
@@ -1301,279 +1625,22 @@ public class SimpleStoryActivity extends AppCompatActivity {
         }
     }
 
-    class ComprehensionQuestionListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+    public void prepareViewsAndAskNextComprehensionQuestion() {
 
-        private SimpleStoryActivity mThisActivity;
-        private int mQuestionIndex;
+        // Clear views for comprehension
+        clearViewsForComprehension();
 
-        public ComprehensionQuestionListener(SimpleStoryActivity thisActivity, int questionIndex) {
-            mQuestionIndex = questionIndex;
-            mThisActivity = thisActivity;
-        }
+        // Show views for comprehension question
+        showViewsForComprehension(mComprehensionQuestionIndex);
 
-        @Override
-        public void onPrepared(MediaPlayer mp) {
-            // Reset volume to max (in case it was muted before)
-            mp.setVolume(1, 1);
+        // Play comprehension question after 1100 milliseconds
+        handler.postDelayed(new Runnable() {
 
-            try {
-                // Play da beatz ♫♪
-                mp.start();
-
-                // Fade out existing 'questions' (or any text) on screen
-                // and fade in new questions
-                Fade fadeIn = new Fade(Fade.IN);
-                // Fade fadeOut = new Fade(Fade.OUT);
-
-                /*TransitionManager.beginDelayedTransition(col, fadeOut);
-
-                // Clear all existing views
-                clearAllStorySetViews();*/
-
-                TransitionManager.beginDelayedTransition(col, fadeIn);
-
-                // Show image views for comprehension question
-                showComprehensionSet(mQuestionIndex);
-
-            } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.ComprehensionQuestionListener(class).onPrepared()." + mQuestionIndex +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
-                ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
+            @Override
+            public void run() {
+                playComprehensionQuestion(mComprehensionQuestionIndex);
             }
-        }
-
-        @Override
-        public void onCompletion(MediaPlayer mp) {
-            mp.reset();
-            try {
-
-                // Get the answer type
-                boolean isTouchTypeQuestion = mThisActivity.getComprehensionAnswerTypes().get(mQuestionIndex);
-
-                // Logic depending on answer type
-                if (isTouchTypeQuestion) {
-
-                    // Touch based answer required
-
-                    // Enable touch
-                    mThisActivity.setComprehensionTouchEnabled(true);
-
-                } else {
-
-                    // Microphone based answer required
-
-                    // Disable touch
-                    mThisActivity.setComprehensionTouchEnabled(false);
-
-                }
-
-            } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.ComprehensionQuestionListener(class).onCompletion()." + mQuestionIndex +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
-                ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
-            }
-        }
-    }
-
-    public void playComprehensionQuestion(int questionIndex) {
-        try {
-            // Get sound path from sound path grid sets
-            String soundPath = mComprehensionQuestionSoundPaths.get(questionIndex);
-
-            // Initialize media player if need be
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-
-            // Media player jazz ♫♪
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new ComprehensionQuestionListener(thisActivity, questionIndex));
-            mp.setOnCompletionListener(new ComprehensionQuestionListener(thisActivity, questionIndex));
-            mp.prepare();
-
-        } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.playComprehensionQuestion(" + questionIndex +
-                    ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
-            ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    class ComprehensionAnswerListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
-
-        private SimpleStoryActivity mThisActivity;
-        private int mAnswerIndex;
-
-        public ComprehensionAnswerListener(SimpleStoryActivity thisActivity, int answerIndex) {
-            mThisActivity = thisActivity;
-            mAnswerIndex = answerIndex;
-        }
-
-        @Override
-        public void onPrepared(MediaPlayer mp) {
-            // Reset volume to max (in case it was muted before)
-            mp.setVolume(1, 1);
-
-            try {
-                // Play da beatz ♫♪
-                mp.start();
-            } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.ComprehensionAnswerListener(class).onPrepared()." + mAnswerIndex +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
-                ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
-            }
-        }
-
-        @Override
-        public void onCompletion(MediaPlayer mp) {
-            mp.reset();
-            try {
-
-
-
-            } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.ComprehensionAnswerListener(class).onCompletion()." + mAnswerIndex +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
-                ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
-            }
-        }
-    }
-
-    public void playComprehensionAnswer(int answerIndex) {
-        try {
-            // Get sound path from sound path grid sets
-            String soundPath = mComprehensionQuestionSoundPaths.get(answerIndex);
-
-            // Initialize media player if need be
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-
-            // Media player jazz ♫♪
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new ComprehensionAnswerListener(thisActivity, answerIndex));
-            mp.setOnCompletionListener(new ComprehensionAnswerListener(thisActivity, answerIndex));
-            mp.prepare();
-
-        } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.playComprehensionAnswer(" + answerIndex +
-                    ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
-            ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    class ComprehensionTouchListener implements ImageView.OnClickListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
-
-        private SimpleStoryActivity mThisActivity;
-        private int mQuestionIndex;
-
-        public ComprehensionTouchListener(SimpleStoryActivity thisActivity, int questionIndex) {
-            mThisActivity = thisActivity;
-            mQuestionIndex = questionIndex;
-
-            // Update comprehension question index for the activity
-            mThisActivity.setComprehensionQuestionIndex(questionIndex);
-        }
-
-        @Override
-        public void onClick(View v) {
-            try {
-                if (mThisActivity.getComprehensionTouchEnabled()) {
-                    System.out.println(":><: Fuzzy " + mQuestionIndex);
-                }
-            } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onClick." + mQuestionIndex +
-                        ") > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
-                ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
-            }
-        }
-
-        @Override
-        public void onPrepared(MediaPlayer mp) {
-            try {
-                mp.start();
-            } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onPrepared." + mQuestionIndex +
-                        ") > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
-                ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
-            }
-        }
-
-        @Override
-        public void onCompletion(MediaPlayer mp) {
-            try {
-                mp.reset();
-            } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onCompletion." + mQuestionIndex +
-                        ") > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
-                ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
-            }
-
-        }
+        }, 1150);
     }
 
     public void setSelectedSetIndex(int selectedSetIndex) {
