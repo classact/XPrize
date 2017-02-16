@@ -55,7 +55,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
     private LinearLayout col;
 
-    private ImageView storyBackgroundView;
+    private ImageView subBackgroundView;
 
     // Image View grid sets
     // * Note that a 'set' refers to a 'sentence set'
@@ -469,7 +469,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         currentState = STATE_0;
 
-        playPrompt("read_each_sentence_after_mother_sound");
+        //playPrompt("read_each_sentence_after_mother_sound");
+        playPrompt("listen_to_the_whole_story");
     }
 
     class PromptListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
@@ -487,6 +488,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
             // Reset volume to max (in case it was muted before)
             mp.setVolume(1, 1);
 
+            try {
             switch (mPrompt) {
                 case "read_each_sentence_after_mother_sound": {
                     break;
@@ -532,6 +534,24 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     break;
                 }
                 case "now_answer_sound": {
+
+                    Fade fadeIn = new Fade(Fade.IN);
+                    Fade fadeOut = new Fade(Fade.OUT);
+
+                    subBackgroundView = new ImageView(getApplicationContext());
+                    subBackgroundView.setBackgroundResource(R.drawable.backgound_comprehension);
+                    LinearLayout.LayoutParams storyBackgroundViewParams = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.MATCH_PARENT
+                    );
+                    subBackgroundView.setLayoutParams(storyBackgroundViewParams);
+
+                    TransitionManager.beginDelayedTransition(col, fadeOut);
+                    TransitionManager.beginDelayedTransition(rootView, fadeIn);
+
+                    rootView.addView(subBackgroundView, 0);
+                    clearAllStorySetViews();
+
                     break;
                 }
                 case "comprehension_question_sound": {
@@ -547,6 +567,18 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
             // Play da beatz ♫♪
             mp.start();
+            } catch (Exception ex) {
+                System.err.println("============================================================");
+                System.out.println(":: SimpleStoryActivity.PromptListener(class).onPrepared()." + mPrompt +
+                        " > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("============================================================");
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
         }
 
         @Override
@@ -582,18 +614,18 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         Fade fadeIn = new Fade(Fade.IN);
                         Fade fadeOut = new Fade(Fade.OUT);
 
-                        storyBackgroundView = new ImageView(getApplicationContext());
-                        storyBackgroundView.setBackgroundResource(allData.getInt("story_image"));
+                        subBackgroundView = new ImageView(getApplicationContext());
+                        subBackgroundView.setBackgroundResource(allData.getInt("story_image"));
                         LinearLayout.LayoutParams storyBackgroundViewParams = new LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.MATCH_PARENT,
                                 LinearLayout.LayoutParams.MATCH_PARENT
                         );
-                        storyBackgroundView.setLayoutParams(storyBackgroundViewParams);
+                        subBackgroundView.setLayoutParams(storyBackgroundViewParams);
 
                         TransitionManager.beginDelayedTransition(col, fadeOut);
                         TransitionManager.beginDelayedTransition(rootView, fadeIn);
 
-                        rootView.addView(storyBackgroundView, rootView.getChildCount());
+                        rootView.addView(subBackgroundView, rootView.getChildCount());
                         clearAllStorySetViews();
 
                         // Play prompt
@@ -602,7 +634,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
                             public void run() {
                                 playPrompt("full_story_sound");
                             }
-                        }, 1000);
+                        }, 1200);
 
                         break;
                     }
@@ -625,8 +657,11 @@ public class SimpleStoryActivity extends AppCompatActivity {
                                 // Get Image Views for first row of new set
                                 mThisActivity.showFullStorySet(0);
 
-                                TransitionManager.beginDelayedTransition(rootView, fadeOut);
-                                rootView.removeViewAt(rootView.getChildCount() - 1);
+                                if (subBackgroundView != null) {
+                                    TransitionManager.beginDelayedTransition(rootView, fadeOut);
+                                    rootView.removeView(subBackgroundView);
+                                    subBackgroundView = null;
+                                }
 
                                 // Play prompt
                                 handler.postDelayed(new Runnable() {
@@ -634,9 +669,9 @@ public class SimpleStoryActivity extends AppCompatActivity {
                                     public void run() {
                                         playPrompt("now_read_whole_story_sound");
                                     }
-                                }, 700);
+                                }, 850);
                             }
-                        }, 300);
+                        }, 500);
 
                         break;
                     }
@@ -659,11 +694,20 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     }
                     case "touch_the_arrow": {
                         // Enable narration on touch
-                        touchWordsEnabled = true;
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                touchWordsEnabled = true;
+                            }
+                        }, 250);
 
                         break;
                     }
                     case "well_done_you_can_read_sound": {
+
+                        //Play prompt
+                        playPrompt("now_answer_sound");
+
                         break;
                     }
                     case "now_answer_sound": {
@@ -681,7 +725,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 }
             } catch (Exception ex) {
                 System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.PromptListener(class).onCompletion() > Exception: " + ex.getMessage());
+                System.out.println(":: SimpleStoryActivity.PromptListener(class).onCompletion()." + mPrompt +
+                        " > Exception: " + ex.getMessage());
                 System.err.println("------------------------------------------------------------");
                 ex.printStackTrace();
                 System.err.println("============================================================");
