@@ -90,6 +90,19 @@ public class MathDrillJsonBuilder {
                                            String eightSound,
                                            String nineSound,
                                            String tenSound){
+
+        // Debug
+        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: oneSound = " + oneSound);
+        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: twoSound = " + twoSound);
+        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: threeSound = " + threeSound);
+        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: fourSound = " + fourSound);
+        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: fiveSound = " + fiveSound);
+        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: sixSound = " + sixSound);
+        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: sevenSound = " + sevenSound);
+        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: eightSound = " + eightSound);
+        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: nineSound = " + nineSound);
+        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: tenSound = " + tenSound);
+
         String drillData =  "{\"monkey_wants_to_eat\":" + ResourceDecoder.getIdentifier(context,monkeyWantsToEatSound,"raw") + "," +
                 "\"number_of_items_sound\":" + ResourceDecoder.getIdentifier(context,numberOfItemsSound,"raw") + "," +
                 "\"drag_sound\":" + ResourceDecoder.getIdentifier(context,dragSound,"raw") + "," +

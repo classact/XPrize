@@ -28,13 +28,13 @@ import classact.com.xprize.utils.ResourceDecoder;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final boolean ALLOW_DB_RECOPY = true;
+    private final boolean ALLOW_DB_RECOPY = false;
 
     // Database hack related
-    private final boolean HACK_NEXT_UNIT = true;
+    private final boolean HACK_NEXT_UNIT = false;
     private final int HACK_UNIT_ID = 1;
     private final int HACK_UNIT_SUB_ID_IN_PROGRESS = 0;
-    private final int HACK_DRILL_LAST_PLAYED = 17;
+    private final int HACK_DRILL_LAST_PLAYED = 21;
     private final int HACK_UNIT_FIRST_TIME = 0;
     private final int HACK_UNIT_FIRST_TIME_MOVIE = 1;
 

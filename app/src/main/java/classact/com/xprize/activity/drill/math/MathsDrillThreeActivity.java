@@ -28,6 +28,10 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
     private int targetItems = 0;
     private int itemResId;
     private boolean isInReceptacle;
+    private boolean dragEnabled;
+    private boolean drillComplete;
+    private boolean endDrill;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,45 +42,84 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
         itemsReceptacle.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
-                int action = event.getAction();
-                if (action == DragEvent.ACTION_DRAG_ENTERED)
-                    isInReceptacle = true;
-                else if (action == DragEvent.ACTION_DRAG_EXITED)
-                    isInReceptacle = false;
-                else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle) {
-                    try {
-                        draggedItems ++;
-                        if ( draggedItems <= targetItems) {
-                            placeOnTable();
+                if (dragEnabled && !drillComplete) {
+                    int action = event.getAction();
+                    if (action == DragEvent.ACTION_DRAG_ENTERED)
+                        isInReceptacle = true;
+                    else if (action == DragEvent.ACTION_DRAG_EXITED)
+                        isInReceptacle = false;
+                    else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle) {
+                        try {
+                            draggedItems++;
+                            System.out.println("DRAGGED ITEMS:::::: " + draggedItems);
+                            if (draggedItems <= targetItems) {
+                                placeOnTable();
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            finish();
                         }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        finish();
-                    }
-                }
-                else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle) {
-                    try {
-                        if ( draggedItems > targetItems) {
-                            playSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
+                    } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle) {
+                        try {
+                            if (draggedItems > targetItems) {
+                                playSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
+                            } else {
+                                ImageView view = (ImageView) event.getLocalState();
+                                view.setVisibility(View.INVISIBLE);
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            finish();
                         }
-                        else{
-                            ImageView view = (ImageView) event.getLocalState();
-                            view.setVisibility(View.INVISIBLE);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        finish();
                     }
                 }
                 return true;
             }
         });
+        dragEnabled = false;
+        drillComplete = false;
+        endDrill = false;
+        handler = new Handler();
         initialiseData();
+    }
+
+    private void initialiseData(){
+        try {
+            String drillData = getIntent().getExtras().getString("data");
+            allData = new JSONObject(drillData);
+            targetItems = allData.getInt("number_of_items");
+            placeObjects();
+            int sound = allData.getInt("monkey_wants_to_eat");
+            mp = MediaPlayer.create(this, sound);
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    sayNumber();
+                }
+            });
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mp.start();
+                }
+            }, 1000);
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
+            finish();
+        }
     }
 
     private int getNumberSound(){
         int sound = 0;
         try{
+
+            System.out.println("DRAGGED ITEMS>>>>>> " + draggedItems);
+
             switch (draggedItems){
                 case 1:
                     sound = allData.getInt("one_sound");
@@ -112,6 +155,9 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
         return sound;
@@ -123,7 +169,8 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
         item.setVisibility(View.VISIBLE);
         playSound(getNumberSound());
         if (draggedItems == targetItems){
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable(){public void run(){finish();}},3000);
+            drillComplete = true;
+            dragEnabled = false;
         }
     }
 
@@ -138,11 +185,26 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
+                    if (drillComplete && !endDrill) {
+                        endDrill = true;
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                playSound(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
+                            }
+                        }, 300);
+                    } else if (endDrill) {
+                        mp.release();
+                        finish();
+                    }
                 }
             });
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -152,8 +214,10 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
             ClipData data = ClipData.newPlainText("", "");
             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
                     view);
-            view.startDrag(data, shadowBuilder, view, 0);
-            isInReceptacle = false;
+            view.startDragAndDrop(data, shadowBuilder, view, 0);
+            if (dragEnabled && !drillComplete) {
+                isInReceptacle = false;
+            }
             //view.setVisibility(View.INVISIBLE);
             return true;
         } else {
@@ -180,29 +244,9 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
-        }
-    }
-
-    private void initialiseData(){
-        try {
-            String drillData = getIntent().getExtras().getString("data");
-            allData = new JSONObject(drillData);
-            targetItems = allData.getInt("number_of_items");
-            placeObjects();
-            int sound = allData.getInt("monkey_wants_to_eat");
-            mp = MediaPlayer.create(this, sound);
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    sayNumber();
-                }
-            });
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -228,6 +272,9 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -252,6 +299,9 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -267,21 +317,17 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
+                    dragEnabled = true;
                 }
             });
             mp.start();
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
-        }
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if (mp != null){
-            mp.release();
         }
     }
 }

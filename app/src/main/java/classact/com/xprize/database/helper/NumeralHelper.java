@@ -94,7 +94,7 @@ public class NumeralHelper {
             cursor.close();
         }
     }
-    public static ArrayList<Integer> getNumeralsBelowLimit(SQLiteDatabase db, int languageID, int limit,  int boyGirl){
+    public static ArrayList<Integer> getNumeralsBelowLimit(SQLiteDatabase db, int languageID, int limit, int boyGirl){
         ArrayList<Integer> numerals = new ArrayList<Integer>();
         Cursor cursor = db.rawQuery("SELECT _id FROM tbl_Numerals where LanguageID = "+languageID+ " and BoyGirl = " + boyGirl + " AND Number > 0 AND Number <= " + limit +" order by _id;", null);
         int numeral = 0;

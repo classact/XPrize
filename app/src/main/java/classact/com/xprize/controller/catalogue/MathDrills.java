@@ -133,16 +133,16 @@ public class MathDrills {
                     mathDrillFlowWord.getDrillSound1(), MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getTestNumber(), MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getNumberOfImagesSound(),
                     mathDrillFlowWord.getDrillSound2(), mathDrillFlowWord.getDrillSound3(), MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getNumberOfImages(),
                     MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageName(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(0)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(1)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(2)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(3)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(4)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(5)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(6)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(7)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(8)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, numerals.get(9)).getSound()
+                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(0)).getSound(),
+                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(1)).getSound(),
+                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(2)).getSound(),
+                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(3)).getSound(),
+                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(4)).getSound(),
+                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(5)).getSound(),
+                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(6)).getSound(),
+                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(7)).getSound(),
+                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(8)).getSound(),
+                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(9)).getSound()
             );
             intent = new Intent(context, MathsDrillThreeActivity.class);
             intent.putExtra("data", drillData);

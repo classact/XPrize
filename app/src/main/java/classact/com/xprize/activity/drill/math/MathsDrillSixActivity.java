@@ -23,7 +23,9 @@ public class MathsDrillSixActivity extends AppCompatActivity {
     private ImageView circle;
     private JSONObject allData;
     private MediaPlayer mp;
-    private boolean drillEnd;
+    private boolean touchEnabled;
+    private boolean endDrill;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +54,9 @@ public class MathsDrillSixActivity extends AppCompatActivity {
                 objectClicked("circle");
             }
         });
-        drillEnd = false;
+        handler = new Handler();
+        touchEnabled = false;
+        endDrill = false;
         initialise();
     }
 
@@ -84,16 +88,22 @@ public class MathsDrillSixActivity extends AppCompatActivity {
     private void playSound(int soundId){
         try {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            mp.setDataSource(getApplicationContext(), myUri);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
-
-                    if (drillEnd) {
+                    if (endDrill) {
                         if (mp != null) {
                             mp.release();
                         }
@@ -101,6 +111,7 @@ public class MathsDrillSixActivity extends AppCompatActivity {
                     }
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -112,22 +123,23 @@ public class MathsDrillSixActivity extends AppCompatActivity {
     }
 
     private void objectClicked(String touchedObject){
-        try{
-            String objectToTouch = allData.getString("object_to_touch");
-            if (objectToTouch.equalsIgnoreCase(touchedObject)){
-                drillEnd = true;
-                playSound(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
+        if (touchEnabled) {
+            try {
+                String objectToTouch = allData.getString("object_to_touch");
+                if (objectToTouch.equalsIgnoreCase(touchedObject)) {
+                    touchEnabled = false;
+                    endDrill = true;
+                    playSound(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
+                } else {
+                    playSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
             }
-            else{
-                playSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
-            }
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -135,9 +147,17 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         try {
             int sound = allData.getInt("this_is_sound");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -145,7 +165,7 @@ public class MathsDrillSixActivity extends AppCompatActivity {
                     sayObject();
                 }
             });
-            mp.start();
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -160,9 +180,17 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         try {
             int sound = allData.getInt("object_sound");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -170,7 +198,7 @@ public class MathsDrillSixActivity extends AppCompatActivity {
                     sayRepeat();
                 }
             });
-            mp.start();
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -185,9 +213,17 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         try {
             int sound = allData.getInt("repeat_afterme_sound");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -195,7 +231,7 @@ public class MathsDrillSixActivity extends AppCompatActivity {
                     sayObjectAgain();
                 }
             });
-            mp.start();
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -210,9 +246,17 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         try {
             int sound = allData.getInt("object_sound");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -220,7 +264,7 @@ public class MathsDrillSixActivity extends AppCompatActivity {
                     sayTouch();
                 }
             });
-            mp.start();
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -237,9 +281,17 @@ public class MathsDrillSixActivity extends AppCompatActivity {
             objectsContainer.setVisibility(View.VISIBLE);
             int sound = allData.getInt("touch_sound");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -247,7 +299,7 @@ public class MathsDrillSixActivity extends AppCompatActivity {
                     sayObjectLastTime();
                 }
             });
-            mp.start();
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -262,16 +314,30 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         try {
             int sound = allData.getInt("object_sound");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            touchEnabled = true;
+                        }
+                    }, 500);
                 }
             });
-            mp.start();
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();

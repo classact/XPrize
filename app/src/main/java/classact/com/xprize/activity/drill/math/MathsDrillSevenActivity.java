@@ -3,6 +3,7 @@ package classact.com.xprize.activity.drill.math;
 import android.content.ClipData;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.DragEvent;
@@ -31,6 +32,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
     private int draggedItemIndex;
     private int currentItem = 0;
     private ImageView pattern;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +117,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
                 return dragItem(v,event);
             }
         });
+        handler = new Handler();
         resetFillers();
         initialiseData();
     }
@@ -126,7 +129,6 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
             pattern.setImageResource(allData.getInt("demo_pattern"));
             int sound = allData.getInt("pattern_introduction_sound");
             mp = MediaPlayer.create(this, sound);
-            mp.start();
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -134,9 +136,18 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
                     sayPattern();
                 }
             });
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mp.start();
+                }
+            }, 500);
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -159,6 +170,9 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -182,6 +196,9 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -204,6 +221,9 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -225,6 +245,9 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -238,6 +261,9 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -251,6 +277,9 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
         return isCorrectItem;
@@ -272,6 +301,9 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -293,6 +325,9 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
         }
     }
@@ -302,7 +337,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
             ClipData data = ClipData.newPlainText("", "");
             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
                     view);
-            view.startDrag(data, shadowBuilder, view, 0);
+            view.startDragAndDrop(data, shadowBuilder, view, 0);
             isInReceptacle = false;
             return true;
         } else {
@@ -352,15 +387,10 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
             finish();
-        }
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if (mp != null){
-            mp.release();
         }
     }
 }

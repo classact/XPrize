@@ -21,6 +21,8 @@ public class MathsDrillFourActivity extends AppCompatActivity {
     private JSONObject allData;
     private MediaPlayer mp;
     private int segment = 1;
+    private boolean touchEnabled;
+    private boolean drillComplete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,38 +44,70 @@ public class MathsDrillFourActivity extends AppCompatActivity {
                 clicked(false);
             }
         });
+        touchEnabled = false;
+        drillComplete = false;
         initialise();
     }
 
-    private void clicked(boolean left){
+    private void initialise(){
         try{
-            String checkBigger = allData.getString("check_bigger");
-            int leftItems = allData.getInt("number_of_left_items");
-            int rightItems = allData.getInt("number_of_right_items");
-            boolean isRight = false;
-            if (checkBigger.equalsIgnoreCase("yes")){
-                if (left && leftItems > rightItems)
-                    isRight = true;
-                else if (!left && rightItems > leftItems)
-                    isRight = true;
-            }
-            else{
-                if (left && leftItems < rightItems)
-                    isRight = true;
-                else if (!left && rightItems < leftItems)
-                    isRight = true;
-            }
-            if (isRight){
-                playSound(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
-                finish();
-            }
-            else{
-                playSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
-            }
+            String drillData = getIntent().getExtras().getString("data");
+            allData = new JSONObject(drillData);
+            setupItems();
+            int sound = allData.getInt("monkey_has");
+            mp = MediaPlayer.create(this, sound);
+            mp.start();
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    sayNumber();
+                }
+            });
         }
         catch (Exception ex){
             ex.printStackTrace();
+            ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
+        }
+    }
+
+    private void clicked(boolean left){
+        if (touchEnabled && !drillComplete) {
+            try {
+                String checkBigger = allData.getString("check_bigger");
+                int leftItems = allData.getInt("number_of_left_items");
+                int rightItems = allData.getInt("number_of_right_items");
+                boolean isRight = false;
+                if (checkBigger.equalsIgnoreCase("yes")) {
+                    if (left && leftItems > rightItems)
+                        isRight = true;
+                    else if (!left && rightItems > leftItems)
+                        isRight = true;
+                } else {
+                    if (left && leftItems < rightItems)
+                        isRight = true;
+                    else if (!left && rightItems < leftItems)
+                        isRight = true;
+                }
+                if (isRight) {
+                    touchEnabled = false;
+                    drillComplete = true;
+                    playSound(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
+                } else {
+                    playSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                ex.printStackTrace();
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
         }
     }
 
@@ -88,11 +122,19 @@ public class MathsDrillFourActivity extends AppCompatActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
+                    if (drillComplete) {
+                        mp.release();
+                        finish();
+                    }
                 }
             });
         }
         catch (Exception ex){
             ex.printStackTrace();
+            ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -129,28 +171,10 @@ public class MathsDrillFourActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
-        }
-    }
-
-    private void initialise(){
-        try{
-            String drillData = getIntent().getExtras().getString("data");
-            allData = new JSONObject(drillData);
-            setupItems();
-            int sound = allData.getInt("monkey_has");
-            mp = MediaPlayer.create(this, sound);
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    sayNumber();
-                }
-            });
-        }
-        catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -178,6 +202,10 @@ public class MathsDrillFourActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -200,6 +228,10 @@ public class MathsDrillFourActivity extends AppCompatActivity {
             mp.start();
         } catch (Exception ex) {
             ex.printStackTrace();
+            ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -222,6 +254,10 @@ public class MathsDrillFourActivity extends AppCompatActivity {
             mp.start();
         } catch (Exception ex) {
             ex.printStackTrace();
+            ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -238,21 +274,16 @@ public class MathsDrillFourActivity extends AppCompatActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
+                    touchEnabled = true;
                 }
             });
             mp.start();
         } catch (Exception ex) {
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if (mp != null){
-            mp.release();
-        }
-    }
-
 }
