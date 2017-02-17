@@ -14,7 +14,7 @@ import classact.com.xprize.database.model.SimpleStoryWord;
 public class SimpleStoryWordHelper {
     public static SimpleStoryWord getSimpleStoryWord(SQLiteDatabase db, int simpleStoryWordId) {
 
-        String[] columns = new String[]{"_id", "LanguageID", "UnitID", "SentenceID", "SentenceNo", "WordNo", "WordName", "WordSound"};
+        String[] columns = new String[]{"_id", "LanguageID", "UnitID", "SentenceID", "SentenceNo", "WordNo", "BlackWord", "RedWord", "Sound", "SentenceSetNo"};
         String OrderBy = "_id asc";
         Cursor cursor = db.query("tbl_SimpleStoryWords", columns, "_id=?", new String[]{String.valueOf(simpleStoryWordId)}, null, null, OrderBy);
         SimpleStoryWord simpleStoryWord = new SimpleStoryWord();
@@ -30,6 +30,7 @@ public class SimpleStoryWordHelper {
             simpleStoryWord.setBlackWord(cursor.getString(6));
             simpleStoryWord.setRedWord(cursor.getString(7));
             simpleStoryWord.setSound(cursor.getString(8));
+            simpleStoryWord.setSentenceSetNo(cursor.getInt(9));
         }
         cursor.close();
         return simpleStoryWord;

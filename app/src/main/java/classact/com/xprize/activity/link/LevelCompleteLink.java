@@ -10,11 +10,10 @@ import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.locale.Languages;
 import classact.com.xprize.utils.FetchResource;
-import classact.com.xprize.utils.ResourceDecoder;
 
 public class LevelCompleteLink extends LinkTemplate {
 
-    private final String SWAHILI_PREFIX = "";
+    private final String SWAHILI_PREFIX = "s_";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
