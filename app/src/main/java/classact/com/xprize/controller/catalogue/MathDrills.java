@@ -115,6 +115,9 @@ public class MathDrills {
         Intent intent;
 
         try {
+
+            // Need to fix this
+
             // Debug
             System.out.println("MathDrills.D3 > Debug: PREPARING");
 
@@ -478,6 +481,7 @@ public class MathDrills {
         Intent intent;
 
         try {
+
             // Debug
             System.out.println("MathDrills.D6E > Debug: PREPARING");
 
