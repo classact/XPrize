@@ -424,10 +424,10 @@ public class SoundDrillFourActivity extends AppCompatActivity {
             System.err.println("------------------------------------------------------");
             ex.printStackTrace();
             System.err.println("------------------------------------------------------");
-            if (mp != null) {
+            /*if (mp != null) {
                 mp.release();
             }
-            finish();
+            finish();*/
         }
     }
 

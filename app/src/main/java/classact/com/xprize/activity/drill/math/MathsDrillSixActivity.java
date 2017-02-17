@@ -23,6 +23,7 @@ public class MathsDrillSixActivity extends AppCompatActivity {
     private ImageView circle;
     private JSONObject allData;
     private MediaPlayer mp;
+    private boolean drillEnd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,33 @@ public class MathsDrillSixActivity extends AppCompatActivity {
                 objectClicked("circle");
             }
         });
+        drillEnd = false;
         initialise();
+    }
+
+    private void initialise(){
+        try {
+            String drillData = getIntent().getExtras().getString("data");
+            allData = new JSONObject(drillData);
+            demoShape.setImageResource(allData.getInt("demo_object"));
+            int sound = allData.getInt("lets_look_at_shapes");
+            mp = MediaPlayer.create(this, sound);
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    sayThisIsA();
+                }
+            });
+            mp.start();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
     }
 
     private void playSound(int soundId){
@@ -65,11 +92,21 @@ public class MathsDrillSixActivity extends AppCompatActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
+
+                    if (drillEnd) {
+                        if (mp != null) {
+                            mp.release();
+                        }
+                        finish();
+                    }
                 }
             });
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -78,12 +115,8 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         try{
             String objectToTouch = allData.getString("object_to_touch");
             if (objectToTouch.equalsIgnoreCase(touchedObject)){
+                drillEnd = true;
                 playSound(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable(){
-                    public void run(){
-                        finish();
-                    }
-                },500);
             }
             else{
                 playSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
@@ -91,28 +124,9 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
-        }
-    }
-
-    private void initialise(){
-        try {
-            String drillData = getIntent().getExtras().getString("data");
-            allData = new JSONObject(drillData);
-            demoShape.setImageResource(allData.getInt("demo_object"));
-            int sound = allData.getInt("lets_look_at_shapes");
-            mp = MediaPlayer.create(this, sound);
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    sayThisIsA();
-                }
-            });
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -135,6 +149,9 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -157,6 +174,9 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -179,6 +199,9 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -201,6 +224,9 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -225,6 +251,9 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
         }
     }
@@ -246,15 +275,10 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
             finish();
-        }
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if (mp != null){
-            mp.release();
         }
     }
 }

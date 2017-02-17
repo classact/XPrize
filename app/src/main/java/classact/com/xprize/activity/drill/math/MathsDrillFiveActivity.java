@@ -106,6 +106,30 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
         initialise();
     }
 
+    private void initialise(){
+        try {
+            String drillData = getIntent().getExtras().getString("data");
+            allData = new JSONObject(drillData);
+            setupObjects();
+            numbers = allData.getJSONArray("numerals");
+            setupNumbers();
+            int sound = allData.getInt("help_monkey_pack");
+            mp = MediaPlayer.create(this, sound);
+            mp.start();
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    dragItems();
+                }
+            });
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            finish();
+        }
+    }
+
     private void placeOnShelf(View view){
         try {
             ImageView destination = (ImageView) itemsReceptacle.getChildAt(draggedItems - 1);
@@ -297,30 +321,6 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
             mp.prepare();
             mp.start();
 
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            finish();
-        }
-    }
-
-    private void initialise(){
-        try {
-            String drillData = getIntent().getExtras().getString("data");
-            allData = new JSONObject(drillData);
-            setupObjects();
-            numbers = allData.getJSONArray("numerals");
-            setupNumbers();
-            int sound = allData.getInt("help_monkey_pack");
-            mp = MediaPlayer.create(this, sound);
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    dragItems();
-                }
-            });
         }
         catch (Exception ex){
             ex.printStackTrace();

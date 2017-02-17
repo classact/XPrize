@@ -34,9 +34,12 @@ import classact.com.xprize.database.model.Numerals;
 public class MathDrills {
 
     public static Intent D1(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
-        Intent intent = null;
+        Intent intent;
 
         try {
+            // Debug
+            System.out.println("MathDrills.D1 > Debug: PREPARING");
+
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
             ArrayList<Integer> numeralsFromDB = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
             ArrayList<Numeral> numerals = new ArrayList<>();
@@ -57,21 +60,24 @@ public class MathDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D1: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D1: " + ex.getMessage());
+            throw new Exception("D1: " + ex.getMessage());
         }
         return intent;
     }
 
     public static Intent D2(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
-        Intent intent = null;
+        Intent intent;
 
         try {
+            // Debug
+            System.out.println("MathDrills.D2 > Debug: PREPARING");
+
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
 
-            ArrayList<Integer>  numeralsFromDB = new ArrayList();
+            ArrayList<Integer>  numeralsFromDB;
             numeralsFromDB = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
 
-            ArrayList<Integer>  mathImageList = new ArrayList();
+            ArrayList<Integer>  mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
             MathImages mathImages = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)); // drill 2 only has one record per unit. So we can select one at a time.
 
@@ -100,20 +106,23 @@ public class MathDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D2: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D2: " + ex.getMessage());
+            throw new Exception("D2: " + ex.getMessage());
         }
         return intent;
     }
 
     public static Intent D3(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
-        Intent intent = null;
+        Intent intent;
 
         try {
+            // Debug
+            System.out.println("MathDrills.D3 > Debug: PREPARING");
+
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
-            ArrayList<Integer>  numerals = new ArrayList();
+            ArrayList<Integer>  numerals;
             numerals = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
 
-            ArrayList<Integer>  mathImageList = new ArrayList();
+            ArrayList<Integer>  mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
 
 
@@ -138,20 +147,23 @@ public class MathDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D3: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D3: " + ex.getMessage());
+            throw new Exception("D3: " + ex.getMessage());
         }
         return intent;
     }
 
     public static Intent D4(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
-        Intent intent = null;
+        Intent intent;
 
         try {
+            // Debug
+            System.out.println("MathDrills.D4 > Debug: PREPARING");
+
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId,languageId);
-            ArrayList<Integer>  numerals = new ArrayList();
+            ArrayList<Integer>  numerals;
             numerals = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
 
-            ArrayList<Integer> mathImageList = new ArrayList();
+            ArrayList<Integer> mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
 
             String drillData = MathDrillJsonBuilder.getDrillFourJson(
@@ -176,18 +188,21 @@ public class MathDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D4: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D4: " + ex.getMessage());
+            throw new Exception("D4: " + ex.getMessage());
         }
         return intent;
     }
 
     public static Intent D5A(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
-        Intent intent = null;
+        Intent intent;
 
         try {
+            // Debug
+            System.out.println("MathDrills.D5A > Debug: PREPARING");
+
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
 
-            ArrayList<Integer> mathImageList = new ArrayList();
+            ArrayList<Integer> mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
 
             ArrayList<ObjectAndSound<String>> items = new ArrayList<>();
@@ -202,7 +217,7 @@ public class MathDrills {
 
             ArrayList<DraggableImage<String>> numerals = new ArrayList<>();
 
-            ArrayList<Integer> numeralsFromDB_2_Only = new ArrayList();
+            ArrayList<Integer> numeralsFromDB_2_Only;
             numeralsFromDB_2_Only = NumeralHelper.getNumeralsBelowLimitRandom(dbHelper.getReadableDatabase(), languageId,10, 2, correctTestNumber, boyGirl);
             for (int i=0; i < numeralsFromDB_2_Only.size(); i++ ) {
                 Numerals numeralFromDB = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB_2_Only.get(i));
@@ -211,7 +226,7 @@ public class MathDrills {
             Numerals numeralCorrectAnswer = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, correctTestNumber);
             numerals.add(new DraggableImage<>(0, 1, numeralCorrectAnswer.getBlackImage()));
 
-            ArrayList<Integer> numeralsFromDB = new ArrayList();
+            ArrayList<Integer> numeralsFromDB;
             numeralsFromDB = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
             String drillData = MathDrillJsonBuilder.getDrillFiveJson(context, mathDrillFlowWord.getDrillSound1(), mathDrillFlowWord.getDrillSound2(),
                     mathDrillFlowWord.getDrillSound3(), items, numerals,
@@ -232,17 +247,20 @@ public class MathDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D5A: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D5A: " + ex.getMessage());
+            throw new Exception("D5A: " + ex.getMessage());
         }
         return intent;
     }
 
     public static Intent D5B(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
-        Intent intent = null;
+        Intent intent;
 
         try {
+            // Debug
+            System.out.println("MathDrills.D5B > Debug: PREPARING");
+
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
-            ArrayList<Integer> mathImageList = new ArrayList();
+            ArrayList<Integer> mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
 
             ArrayList<ObjectAndSound<String>> items = new ArrayList<>();
@@ -262,7 +280,7 @@ public class MathDrills {
 
             ArrayList<DraggableImage<String>> numerals = new ArrayList<>();
 
-            ArrayList<Integer> numeralsFromDB_2_Only = new ArrayList();
+            ArrayList<Integer> numeralsFromDB_2_Only;
             numeralsFromDB_2_Only = NumeralHelper.getNumeralsBelowLimitRandom(dbHelper.getReadableDatabase(), languageId, 20, 2, correctTestNumber, boyGirl);
             for (int i=0; i < numeralsFromDB_2_Only.size(); i++ ) {
                 Numerals numeralFromDB = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB_2_Only.get(i));
@@ -271,7 +289,7 @@ public class MathDrills {
             Numerals numeralCorrectAnswer = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, correctTestNumber);
             numerals.add(new DraggableImage<>(0, 1, numeralCorrectAnswer.getBlackImage()));
 
-            ArrayList<Integer> numeralsFromDB = new ArrayList();
+            ArrayList<Integer> numeralsFromDB;
             numeralsFromDB = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
             String drillData = MathDrillJsonBuilder.getDrillFiveAndOneJson(context, mathDrillFlowWord.getDrillSound1(), mathDrillFlowWord.getDrillSound2(),
                     answerSound, mathDrillFlowWord.getDrillSound3(), items, numerals,
@@ -302,27 +320,32 @@ public class MathDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D5B: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D5B: " + ex.getMessage());
+            throw new Exception("D5B: " + ex.getMessage());
         }
         return intent;
     }
 
     public static Intent D6A(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
-        Intent intent = null;
+        Intent intent;
 
         try {
+            // Debug
+            System.out.println("MathDrills.D6A > Debug: PREPARING");
+
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId,languageId);
 
-            ArrayList<Integer> mathImageList = new ArrayList();
+            ArrayList<Integer> mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
 
-            String drillData = MathDrillJsonBuilder.getDrillSixJson(context, "yes",
+            String drillData = MathDrillJsonBuilder.getDrillSixJson(context,
                     mathDrillFlowWord.getDrillSound1(),
                     mathDrillFlowWord.getDrillSound2(),
                     MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageSound(),
                     mathDrillFlowWord.getDrillSound3(),
                     mathDrillFlowWord.getDrillSound4(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageName());
+                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageName(),
+                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageName()
+            );
 
             intent = new Intent(context, MathsDrillSixActivity.class);
             intent.putExtra("data", drillData);
@@ -330,18 +353,21 @@ public class MathDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D5A: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D5A: " + ex.getMessage());
+            throw new Exception("D5A: " + ex.getMessage());
         }
         return intent;
     }
 
     public static Intent D6B(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
-        Intent intent = null;
+        Intent intent;
 
         try {
+            // Debug
+            System.out.println("MathDrills.D6B > Debug: PREPARING");
+
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId,languageId);
 
-            ArrayList<Integer> mathImageList = new ArrayList();
+            ArrayList<Integer> mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
 
             String drillData = MathDrillJsonBuilder.getDrillSixAndOneJson(context,
@@ -359,18 +385,21 @@ public class MathDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D6B: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D6B: " + ex.getMessage());
+            throw new Exception("D6B: " + ex.getMessage());
         }
         return intent;
     }
 
     public static Intent D6C(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
-        Intent intent = null;
+        Intent intent;
 
         try {
+            // Debug
+            System.out.println("MathDrills.D6C > Debug: PREPARING");
+
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId,languageId);
 
-            ArrayList<Integer> mathImageList = new ArrayList();
+            ArrayList<Integer> mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
 
             String drillData = MathDrillJsonBuilder.getDrillSixAndTwoJson(context,
@@ -391,18 +420,21 @@ public class MathDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D6C: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D6C: " + ex.getMessage());
+            throw new Exception("D6C: " + ex.getMessage());
         }
         return intent;
     }
 
     public static Intent D6D(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
-        Intent intent = null;
+        Intent intent;
 
         try {
+            // Debug
+            System.out.println("MathDrills.D6D > Debug: PREPARING");
+
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
 
-            ArrayList<Integer> mathImageList = new ArrayList();
+            ArrayList<Integer> mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
 
             MathImages mathImages = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0));
@@ -410,7 +442,7 @@ public class MathDrills {
 
             ArrayList<DraggableImage<String>> numerals = new ArrayList<>();
 
-            ArrayList<Integer> numeralsFromDB_2_Only = new ArrayList();
+            ArrayList<Integer> numeralsFromDB_2_Only;
             numeralsFromDB_2_Only = NumeralHelper.getNumeralsBelowLimitRandom(dbHelper.getReadableDatabase(), languageId,20, 2, correctTestNumber, boyGirl);
             for (int i=0; i < numeralsFromDB_2_Only.size(); i++ ) {
                 Numerals numeralFromDB = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB_2_Only.get(i));
@@ -437,18 +469,21 @@ public class MathDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D6D: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D6D: " + ex.getMessage());
+            throw new Exception("D6D: " + ex.getMessage());
         }
         return intent;
     }
 
     public static Intent D6E(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
-        Intent intent = null;
+        Intent intent;
 
         try {
+            // Debug
+            System.out.println("MathDrills.D6E > Debug: PREPARING");
+
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
 
-            ArrayList<Integer> mathImageList = new ArrayList();
+            ArrayList<Integer> mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
 
             MathImages mathImages = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0));
@@ -456,7 +491,7 @@ public class MathDrills {
 
             ArrayList<DraggableImage<String>> numerals = new ArrayList<>();
 
-            ArrayList<Integer> numeralsFromDB_2_Only = new ArrayList();
+            ArrayList<Integer> numeralsFromDB_2_Only;
             numeralsFromDB_2_Only = NumeralHelper.getNumeralsBelowLimitRandom(dbHelper.getReadableDatabase(), languageId, 20, 2, correctTestNumber, boyGirl);
             for (int i=0; i < numeralsFromDB_2_Only.size(); i++ ) {
                 Numerals numeralFromDB = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB_2_Only.get(i));
@@ -488,17 +523,20 @@ public class MathDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D6E: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D6E: " + ex.getMessage());
+            throw new Exception("D6E: " + ex.getMessage());
         }
         return intent;
     }
 
     public static Intent D7A(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
-        Intent intent = null;
+        Intent intent;
 
         try {
+            // Debug
+            System.out.println("MathDrills.D7A > Debug: PREPARING");
+
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
-            ArrayList<Integer> mathImageList = new ArrayList();
+            ArrayList<Integer> mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
             int patternIndexNumber=0;
             ArrayList<DraggableImage<String>> itemsToCompletePattern = new ArrayList<>();
@@ -514,7 +552,7 @@ public class MathDrills {
                     MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(patternIndexNumber)).getNumberOfImagesSound(),
                     itemsToCompletePattern,
                     mathDrillFlowWord.getDrillSound2(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getNumberOfImagesSound(),
+                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageSound(),
                     mathDrillFlowWord.getDrillSound3());
             intent = new Intent(context, MathsDrillSevenActivity.class);
             intent.putExtra("data", drillData);
@@ -522,18 +560,21 @@ public class MathDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D7A: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D7A: " + ex.getMessage());
+            throw new Exception("D7A: " + ex.getMessage());
         }
         return intent;
     }
 
     public static Intent D7B(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
-        Intent intent = null;
+        Intent intent;
 
         try {
+            // Debug
+            System.out.println("MathDrills.D7B > Debug: PREPARING");
+
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
             ArrayList<String> patternToComplete = new ArrayList<String>();
-            ArrayList<Integer> mathImageList = new ArrayList();
+            ArrayList<Integer> mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
             int patternIndexNumber=0;
             ArrayList<DraggableImage<String>> itemsToCompletePattern = new ArrayList<>();
@@ -559,7 +600,7 @@ public class MathDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D7B: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D7B: " + ex.getMessage());
+            throw new Exception("D7B: " + ex.getMessage());
         }
         return intent;
     }

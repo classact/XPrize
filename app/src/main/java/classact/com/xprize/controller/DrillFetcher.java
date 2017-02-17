@@ -478,6 +478,7 @@ public class DrillFetcher {
                     } else {
                         throw new Exception("getMathDrill: Math drill #" + drillId + " has an invalid unitId (" + unitId + ")");
                     }
+                    break;
                 }
                 case 7: {
                     if (unitId < 10) {
