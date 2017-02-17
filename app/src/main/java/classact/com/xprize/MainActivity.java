@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private final boolean HACK_NEXT_UNIT = false;
     private final int HACK_UNIT_ID = 1;
     private final int HACK_UNIT_SUB_ID_IN_PROGRESS = 0;
-    private final int HACK_DRILL_LAST_PLAYED = 15;
+    private final int HACK_DRILL_LAST_PLAYED = 21;
     private final int HACK_UNIT_FIRST_TIME = 0;
     private final int HACK_UNIT_FIRST_TIME_MOVIE = 1;
 
@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
                         // * Unit has not been completed
                         // * Last drill has been played
                         //   - Determine this by checking <drill last played> is equal to <sum of number of drills (language, maths) in unit >
-                    } else if (u.getUnitCompleted() == 0 && drillLastPlayed == sumOfDrillsPlayed) {
+                    } else if (u.getUnitCompleted() == 0 && drillLastPlayed > sumOfDrillsPlayed) {
 
                         // Debug
                         System.out.println("MainActivity.determineNextItem > Debug: Chapter End (" + drillLastPlayed + "/" + sumOfDrillsPlayed + ")");

@@ -90,7 +90,7 @@ public class DrillFetcher {
                     break;
                 }
                 case 3: {
-                    int limit = 5; // 5 repeats for this drill so we choose 5 incorrect letters
+                    int limit = 5; // 5 cupcakes selectable
 
                     // Fetch D3
                     intent = PhonicsDrills.D3(context, dbHelper, unitId, drillId, languageId, letterId, limit);
@@ -478,6 +478,7 @@ public class DrillFetcher {
                     } else {
                         throw new Exception("getMathDrill: Math drill #" + drillId + " has an invalid unitId (" + unitId + ")");
                     }
+                    break;
                 }
                 case 7: {
                     if (unitId < 10) {

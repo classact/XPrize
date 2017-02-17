@@ -30,8 +30,8 @@ public class MathImageHelper {
         return mathImages;
     }
 
-    public static ArrayList getMathImageList(SQLiteDatabase db, int unitID, int drillID, int languageID){
-        ArrayList mathImages = new ArrayList();
+    public static ArrayList<Integer> getMathImageList(SQLiteDatabase db, int unitID, int drillID, int languageID){
+        ArrayList<Integer> mathImages = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT _id FROM tbl_MathImages where LanguageID = "+languageID+ " and UnitID = "+unitID+ " and DrillID = " + drillID +";", null);
         int mathImage = 0;
         try {
