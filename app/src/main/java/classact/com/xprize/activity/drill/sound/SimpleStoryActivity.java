@@ -195,8 +195,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         currentState = STATE_0;
 
-        //playPrompt("read_each_sentence_after_mother_sound");
-        playPrompt("now_answer_sound");
+        playPrompt("read_each_sentence_after_mother_sound");
+        // playPrompt("now_answer_sound");
     }
 
     class PromptListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
@@ -1157,14 +1157,21 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     // Touch based answer required
 
                     // Enable touch
-                    mThisActivity.setComprehensionTouchEnabled(true);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mThisActivity.setComprehensionTouchEnabled(true);
+                        }
+                    }, 500);
 
+                    /*
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             mThisActivity.playComprehensionAnswer(mThisActivity.getComprehensionQuestionIndex());
                         }
                     }, 1000);
+                    */
 
                 } else {
 
@@ -1178,7 +1185,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         public void run() {
                             mThisActivity.playComprehensionAnswer(mThisActivity.getComprehensionQuestionIndex());
                         }
-                    }, 1000);
+                    }, 2500);
 
                 }
 
@@ -1274,7 +1281,51 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
                 if (nextQuestionIndex >= maxQuestions) {
 
-                    // Time to end it
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // Fade in black view (mimic fade out)
+                            Fade fadeIn = new Fade(Fade.IN);
+
+                            subBackgroundView = new ImageView(getApplicationContext());
+                            subBackgroundView.setBackgroundResource(R.drawable.maths_link_bg);
+                            LinearLayout.LayoutParams storyBackgroundViewParams = new LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.MATCH_PARENT,
+                                    LinearLayout.LayoutParams.MATCH_PARENT
+                            );
+                            subBackgroundView.setLayoutParams(storyBackgroundViewParams);
+
+                            TransitionManager.beginDelayedTransition(rootView, fadeIn);
+
+                            rootView.addView(subBackgroundView, rootView.getChildCount());
+
+                            // End drill after 1000 milliseconds
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    endDrill();
+                                }
+                            }, 1000);
+                        }
+                    }, 1500);
+                    /*
+                    // Clear views for comprehension
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            clearViewsForComprehension();
+
+                            // Play end drill affirmation after 500 milliseconds
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    playEndDrillAffirmation();
+                                }
+                            }, 750);
+                        }
+                    }, 500);
+                    */
 
                 } else {
 
@@ -1346,10 +1397,12 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         private SimpleStoryActivity mThisActivity;
         private int mQuestionIndex;
+        private int mOptionIndex;
 
-        public ComprehensionTouchListener(SimpleStoryActivity thisActivity, int questionIndex) {
+        public ComprehensionTouchListener(SimpleStoryActivity thisActivity, int questionIndex, int optionIndex) {
             mThisActivity = thisActivity;
             mQuestionIndex = questionIndex;
+            mOptionIndex = optionIndex;
 
             // Update comprehension question index for the activity
             mThisActivity.setComprehensionQuestionIndex(questionIndex);
@@ -1358,9 +1411,14 @@ public class SimpleStoryActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             try {
+
                 if (mThisActivity.getComprehensionTouchEnabled()) {
-                    System.out.println(":><: Fuzzy " + mQuestionIndex);
+
+                    // Play touch result
+                    playComprehensionTouchResult(mQuestionIndex, mOptionIndex);
+
                 }
+
             } catch (Exception ex) {
                 System.err.println("============================================================");
                 System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onClick." + mQuestionIndex +
@@ -1379,6 +1437,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
         public void onPrepared(MediaPlayer mp) {
             try {
                 mp.start();
+
             } catch (Exception ex) {
                 System.err.println("============================================================");
                 System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onPrepared." + mQuestionIndex +
@@ -1397,6 +1456,22 @@ public class SimpleStoryActivity extends AppCompatActivity {
         public void onCompletion(MediaPlayer mp) {
             try {
                 mp.reset();
+
+                // Check if it's the answer
+                boolean isAnswer = mThisActivity.getComprehensionQuestionAnswerSets().get(mQuestionIndex).get(mOptionIndex);
+
+                // If it's the answer
+                if (isAnswer) {
+
+                    // Play the comprehension answer after 250 milliseconds
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            playComprehensionAnswer(mQuestionIndex);
+                        }
+                    }, 250);
+                }
+
             } catch (Exception ex) {
                 System.err.println("============================================================");
                 System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onCompletion." + mQuestionIndex +
@@ -1410,6 +1485,105 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 finish();
             }
 
+        }
+    }
+
+    public void playComprehensionTouchResult(int questionIndex, int optionIndex) {
+        try {
+            // Get sound path from sound path grid sets
+            boolean isAnswer = mComprehensionQuestionAnswerSets.get(questionIndex).get(optionIndex);
+
+            // Declare sound path
+            String soundPath;
+
+            // Determine sound path
+            if (isAnswer) {
+
+                // Disable comprehension touch
+                setComprehensionTouchEnabled(false);
+
+                // Set sound path to positive affirmations
+                soundPath = "android.resource://" + getApplicationContext().getPackageName() +
+                        "/" + ResourceSelector.getPositiveAffirmationSound(getApplicationContext());
+
+            } else {
+
+                // Set sound path to negative affirmations
+                soundPath = "android.resource://" + getApplicationContext().getPackageName() +
+                        "/" + ResourceSelector.getNegativeAffirmationSound(getApplicationContext());
+            }
+
+            // Initialize media player if need be
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+
+            // Media player jazz ♫♪
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new ComprehensionTouchListener(thisActivity, questionIndex, optionIndex));
+            mp.setOnCompletionListener(new ComprehensionTouchListener(thisActivity, questionIndex, optionIndex));
+            mp.prepare();
+
+        } catch (Exception ex) {
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.playComprehensionTouchResult(" + questionIndex +
+                    ", " + optionIndex + ") > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
+    public void playEndDrillAffirmation() {
+        try {
+
+            // Declare sound path
+            String soundPath = "android.resource://" + getApplicationContext().getPackageName() +
+                    "/" + ResourceSelector.getPositiveAffirmationSound(getApplicationContext());
+
+            // Initialize media player if need be
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+
+            // Media player jazz ♫♪
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            endDrill();
+                        }
+                    }, 500);
+                }
+            });
+            mp.prepare();
+
+        } catch (Exception ex) {
+            System.err.println("============================================================");
+            System.err.println("SimpleStoryActivity.playEndDrillAffirmation > Exception: " + ex.getMessage());
+            System.err.println("------------------------------------------------------------");
+            ex.printStackTrace();
+            System.err.println("============================================================");
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
         }
     }
 
@@ -1641,6 +1815,14 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 playComprehensionQuestion(mComprehensionQuestionIndex);
             }
         }, 1150);
+    }
+
+    public void endDrill() {
+        if (mp != null) {
+            mp.release();
+        }
+        finish();
+        overridePendingTransition(android.R.anim.fade_out, android.R.anim.fade_in);
     }
 
     public void setSelectedSetIndex(int selectedSetIndex) {
@@ -2171,14 +2353,14 @@ public class SimpleStoryActivity extends AppCompatActivity {
                             imageView.setLayoutParams(imageViewParams);
 
                             // Add listeners to Image View
-                            imageView.setOnClickListener(new ComprehensionTouchListener(thisActivity, i));
+                            imageView.setOnClickListener(new ComprehensionTouchListener(thisActivity, i, j));
 
                             // Add the Image View to list of comprehension question Image Views
                             comprehensionQuestionImageViews.add(imageView);
 
-                        /* * * * * * * * * * * * * *
-                         * PROCESS QUESTION ANSWER *
-                         * * * * * * * * * * * * * */
+                            /* * * * * * * * * * * * * *
+                             * PROCESS QUESTION ANSWER *
+                             * * * * * * * * * * * * * */
 
                             int questionAnswer = questionImage.getInt("is_right");
 
