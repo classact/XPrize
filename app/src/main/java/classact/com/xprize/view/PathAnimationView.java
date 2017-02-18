@@ -67,6 +67,12 @@ public class PathAnimationView extends View {
         donePaths = new ArrayList<Path>();
     }
 
+    public void clearCanvas() {
+        mPath.reset();
+        invalidate();
+    }
+
+
     public void animateThisPath(){
         try {
             currentItem = 0;

@@ -762,11 +762,6 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         // Call the super always
         super.onPause();
 
-        // Release media player
-        if (mp != null) {
-            mp.release();
-        }
-
         // Debug
         System.out.println("-- SoundTrillTwelveActivity.onPause > Debug: METHOD CALLED");
     }

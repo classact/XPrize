@@ -127,15 +127,44 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
 
             JSONArray pictures = data.getJSONObject(currentTripple).getJSONArray("pictures");
             int[] shuffledArrayIndexes = FisherYates.shuffle(pictures.length()); // Randomized indexes
-            for(int i = 0; i < pictures.length();i++) {
+            boolean foundCorrectItem = false;
+            for(int i = 0; i < items.length;i++) {
                 int si = shuffledArrayIndexes[i];
                 System.out.println("SoundDrillSevenActivity.showTripple > Debug: Shuffled index is (" + si + ")");
                 JSONObject pictureObject = pictures.getJSONObject(si);
                 items[i].setImageResource(pictureObject.getInt("picture"));
                 if (pictureObject.getInt("correct") == 1) {
+                    foundCorrectItem = true;
                     correctItem = i;
                     System.out.println("SoundDrillSevenActivity.showTripple > Debug: correctItem is (" + correctItem + ")");
                 }
+            }
+            // Double check that an image with correct picture exists
+            if (!foundCorrectItem) {
+
+                // Debug
+                System.out.println("SoundDrillSevenActivity.showTripple > Debug: Hacking correct item, as it hasn't been found yet");
+
+                JSONObject correctObject = null;
+
+                for (int i = 0; i < pictures.length(); i++) {
+                    JSONObject pictureObject = pictures.getJSONObject(i);
+                    if (pictureObject.getInt("correct") == 1) {
+                        correctObject = pictureObject;
+                        System.out.println("SoundDrillSevenActivity.showTripple > Debug: correctItem is (" + correctItem + ")");
+                        break;
+                    }
+                }
+
+                // Validate that a correct object has been found
+                if (correctObject == null) {
+                    throw new Exception("Correct item could not be found at all");
+                }
+
+                // Otherwise, assign correct item to last item
+                shuffledArrayIndexes = FisherYates.shuffle(items.length);
+                correctItem = shuffledArrayIndexes[0];
+                items[correctItem].setImageResource(correctObject.getInt("picture"));
             }
             playListenToWordAndTouch();
         }
@@ -218,7 +247,8 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            playLetterSounds(0);
         }
     }
 
@@ -323,6 +353,51 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
         }
     }
 
+    private void playLetterSounds(final int i) {
+        try{
+            // base case
+            if (i == currentWord.size()) {
+                if (!roundEnd) {
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            itemsEnabled = true;
+                        }
+                    }, 250);
+                }
+            } else {
+                String sound = letterSounds[i];
+                String soundPath = FetchResource.sound(getApplicationContext(), sound);
+                if (mp == null) {
+                    mp = new MediaPlayer();
+                }
+                mp.reset();
+                mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mp.start();
+                    }
+                });
+                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        mp.reset();
+                        playLetterSounds(i + 1);
+                    }
+                });
+                mp.prepare();
+            }
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            if (mp != null){
+                mp.release();
+            }
+            finish();
+        }
+    }
+
     public void playFullWord() {
         try{
             String sound = letterSounds[0];
@@ -367,7 +442,23 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
             if (mp != null){
                 mp.release();
             }
-            finish();
+            mp = null;
+            currentTripple++;
+            if (currentTripple < data.length()) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        showTripple();
+                    }
+                }, 1000);
+            } else {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        theEnd();
+                    }
+                }, 1000);
+            }
         }
     }
 
@@ -409,18 +500,14 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
     }
 
     private void theEnd() {
+
+        // Debug
+        System.out.println("SoundDrillSevenActivity.theEnd > Debug: THE END!!!!");
+
         if (mp != null) {
             mp.release();
         }
         finish();
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if (mp != null){
-            mp.release();
-        }
     }
 
 //    @Override

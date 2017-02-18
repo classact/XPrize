@@ -33,6 +33,8 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
     private int currentItem = 0;
     private ImageView pattern;
     private Handler handler;
+    private boolean dragEnabled;
+    private boolean endDrill;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,37 +44,42 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         itemsContainer.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
-                int action = event.getAction();
-                if (action == DragEvent.ACTION_DRAG_ENTERED)
-                    isInReceptacle = true;
-                else if (action == DragEvent.ACTION_DRAG_EXITED)
-                    isInReceptacle = false;
-                else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle) {
-                    try {
-                        if ( isCorrectItem()) {
-                            placeItem();
+                if (dragEnabled) {
+                    int action = event.getAction();
+                    if (action == DragEvent.ACTION_DRAG_ENTERED)
+                        isInReceptacle = true;
+                    else if (action == DragEvent.ACTION_DRAG_EXITED)
+                        isInReceptacle = false;
+                    else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle) {
+                        try {
+                            if (isCorrectItem()) {
+                                placeItem();
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            finish();
                         }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        finish();
+                    } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle) {
+                        try {
+                            if (!isCorrectItem()) {
+                                playSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
+                            } else {
+                                ImageView view = (ImageView) event.getLocalState();
+                                view.setVisibility(View.INVISIBLE);
+                                dragEnabled = false;
+                                playSoundAndFinish(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            if (mp != null) {
+                                mp.release();
+                            }
+                            finish();
+                        }
                     }
+                    return true;
                 }
-                else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle) {
-                    try {
-                        if ( !isCorrectItem()) {
-                            playSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
-                        }
-                        else{
-                            ImageView view = (ImageView) event.getLocalState();
-                            view.setVisibility(View.INVISIBLE);
-                            playSoundAndFinish(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        finish();
-                    }
-                }
-                return true;
+                return false;
             }
         });
         itemToFill = (ImageView)findViewById(R.id.missing);
@@ -118,6 +125,8 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
             }
         });
         handler = new Handler();
+        dragEnabled = false;
+        endDrill = false;
         resetFillers();
         initialiseData();
     }
@@ -156,10 +165,17 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         try {
             int soundId = allData.getInt("pattern_sound");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            mp.setDataSource(getApplicationContext(), myUri);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -167,6 +183,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
                     sayDrag();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -182,9 +199,17 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
             setUpExercise();
             int sound = allData.getInt("drag_sound");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -192,7 +217,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
                     sayObjectToDrag();
                 }
             });
-            mp.start();
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -207,9 +232,17 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         try{
             int sound = allData.getInt("object_sound");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -217,7 +250,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
                     sayIntoTheSpace();
                 }
             });
-            mp.start();
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -232,16 +265,30 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         try{
             int sound = allData.getInt("into_the_space_sound");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            dragEnabled = true;
+                        }
+                    }, 500);
                 }
             });
-            mp.start();
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -338,7 +385,9 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
                     view);
             view.startDragAndDrop(data, shadowBuilder, view, 0);
-            isInReceptacle = false;
+            if (dragEnabled) {
+                isInReceptacle = false;
+            }
             return true;
         } else {
             return false;

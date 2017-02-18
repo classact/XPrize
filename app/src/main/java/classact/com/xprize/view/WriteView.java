@@ -82,6 +82,11 @@ public class WriteView extends View {
         return drew;
     }
 
+    public void clearCanvas() {
+        mPath.reset();
+        invalidate();
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);

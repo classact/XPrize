@@ -178,7 +178,13 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startSecondItem();
+                }
+            }, 800);
         }
     }
 
@@ -264,7 +270,13 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playIntro();
+                }
+            }, 800);
         }
     }
 
