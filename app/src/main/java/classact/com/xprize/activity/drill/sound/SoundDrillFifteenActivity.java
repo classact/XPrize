@@ -821,15 +821,6 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
         }
     }
 
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if (mp != null){
-            mp.release();
-        }
-    }
-
 //    @Override
 //    public void onBackPressed() {
 //    }

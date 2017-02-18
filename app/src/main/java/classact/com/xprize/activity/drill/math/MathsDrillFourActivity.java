@@ -115,9 +115,13 @@ public class MathsDrillFourActivity extends AppCompatActivity {
         try {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
             mp.reset();
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
+            mp.setDataSource(getApplicationContext(), myUri);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -128,6 +132,7 @@ public class MathsDrillFourActivity extends AppCompatActivity {
                     }
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -187,7 +192,12 @@ public class MathsDrillFourActivity extends AppCompatActivity {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -198,7 +208,7 @@ public class MathsDrillFourActivity extends AppCompatActivity {
                         sayWhich();
                 }
             });
-            mp.start();
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -217,7 +227,12 @@ public class MathsDrillFourActivity extends AppCompatActivity {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -225,7 +240,7 @@ public class MathsDrillFourActivity extends AppCompatActivity {
                     sayNumber();
                 }
             });
-            mp.start();
+            mp.prepare();
         } catch (Exception ex) {
             ex.printStackTrace();
             ex.printStackTrace();
@@ -243,7 +258,12 @@ public class MathsDrillFourActivity extends AppCompatActivity {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -251,7 +271,7 @@ public class MathsDrillFourActivity extends AppCompatActivity {
                     sayTouch();
                 }
             });
-            mp.start();
+            mp.prepare();
         } catch (Exception ex) {
             ex.printStackTrace();
             ex.printStackTrace();
@@ -269,7 +289,12 @@ public class MathsDrillFourActivity extends AppCompatActivity {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
             mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -277,7 +302,7 @@ public class MathsDrillFourActivity extends AppCompatActivity {
                     touchEnabled = true;
                 }
             });
-            mp.start();
+            mp.prepare();
         } catch (Exception ex) {
             ex.printStackTrace();
             if (mp != null) {

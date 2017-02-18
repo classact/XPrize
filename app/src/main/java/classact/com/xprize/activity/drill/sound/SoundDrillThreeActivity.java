@@ -467,14 +467,6 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
         item2.setEnabled(enable);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mp != null) {
-            mp.release();
-        }
-    }
-
     /*
     @Override
     public void onPause(){

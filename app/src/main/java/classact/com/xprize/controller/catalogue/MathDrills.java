@@ -99,7 +99,9 @@ public class MathDrills {
                     mathImages.getNumberOfImages(),
                     mathImages.getImageName(),
                     mathDrillFlowWord.getDrillSound2(),
-                    mathImages.getImageSound(), numbers);
+                    numbers.get(0).getObjectSound(),
+                    numbers
+            );
             intent = new Intent(context, MathsDrillTwoActivity.class);
             intent.putExtra("data", drillData);
 
@@ -163,8 +165,11 @@ public class MathDrills {
             System.out.println("MathDrills.D4 > Debug: PREPARING");
 
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId,languageId);
-            ArrayList<Integer>  numerals;
-            numerals = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
+            ArrayList<Integer>  numeralIds = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
+            ArrayList<Numerals> numerals = new ArrayList<>();
+            for (int i = 0; i < numeralIds.size(); i++) {
+                numerals.add(NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralIds.get(i)));
+            }
 
             ArrayList<Integer> mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
@@ -180,10 +185,9 @@ public class MathDrills {
                     mathDrillFlowWord.getDrillSound4(),
                     MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getNumberOfImages(),
                     MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageName(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(0)).getBlackImage(),
                     MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(1)).getNumberOfImages(),
                     MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(1)).getImageName(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(1)).getBlackImage()
+                    numerals
             );
             intent = new Intent(context, MathsDrillFourActivity.class);
             intent.putExtra("data", drillData);
@@ -347,7 +351,7 @@ public class MathDrills {
                     mathDrillFlowWord.getDrillSound3(),
                     mathDrillFlowWord.getDrillSound4(),
                     MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageName(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageName()
+                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageSound()
             );
 
             intent = new Intent(context, MathsDrillSixActivity.class);

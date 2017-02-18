@@ -412,12 +412,12 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
                 mp.prepare();
             } catch (Exception ex) {
                 ex.printStackTrace();
-                /*
                 if (mp != null){
                     mp.release();
                 }
-                finish();
-                */
+                mp = null;
+                checkProgress();
+                // finish();
             }
         }
     }
@@ -449,14 +449,6 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
             item2.setVisibility(View.INVISIBLE);
             item3.setVisibility(View.INVISIBLE);
             item4.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if (mp != null){
-            mp.release();
         }
     }
 

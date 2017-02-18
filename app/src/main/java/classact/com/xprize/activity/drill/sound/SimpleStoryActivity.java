@@ -551,7 +551,9 @@ public class SimpleStoryActivity extends AppCompatActivity {
         @Override
         public void onCompletion(MediaPlayer mp) {
             try {
-                mp.reset();
+                if (mp != null) {
+                    mp.reset();
+                }
                 flipActiveWord(BLACK_WORD, mSetIndex, mRowIndex, mWordIndex);
 
                 // Get duration of active word
@@ -734,23 +736,33 @@ public class SimpleStoryActivity extends AppCompatActivity {
             // Get sound path from sound path grid sets
             String soundPath = soundPathGridSets.get(setIndex).get(rowIndex).get(wordIndex);
 
-            // Initialize media player if need be
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
+            // Check if sound path is valid
+            if (!soundPath.equalsIgnoreCase("0")) {
 
-            // Check if media player is playing
-            if (mp.isPlaying() && mActiveWordFlipped) {
-                mp.stop();
-                flipActiveWord(BLACK_WORD, mActiveSetIndex, mActiveRowIndex, mActiveWordIndex);
-            }
+                // It is valid
 
-            // Media player jazz ♫♪
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new ActiveWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex));
-            mp.setOnCompletionListener(new ActiveWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex));
-            mp.prepare();
+                // Initialize media player if need be
+                if (mp == null) {
+                    mp = new MediaPlayer();
+                }
+
+                // Check if media player is playing
+                if (mp.isPlaying() && mActiveWordFlipped) {
+                    mp.stop();
+                    flipActiveWord(BLACK_WORD, mActiveSetIndex, mActiveRowIndex, mActiveWordIndex);
+                }
+
+                // Media player jazz ♫♪
+                mp.reset();
+                mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+                mp.setOnPreparedListener(new ActiveWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex));
+                mp.setOnCompletionListener(new ActiveWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex));
+                mp.prepare();
+
+            } else {
+                // Fire off the completion event
+                (new ActiveWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex)).onCompletion(null);
+            }
 
         } catch (Exception ex) {
             System.err.println("============================================================");
@@ -762,7 +774,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            (new ActiveWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex)).onCompletion(null);
         }
     }
 
@@ -838,7 +851,9 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         @Override
         public void onCompletion(MediaPlayer mp) {
-            mp.reset();
+            if (mp != null) {
+                mp.reset();
+            }
             flipSelectedWord(BLACK_WORD, mSetIndex, mRowIndex, mWordIndex);
 
         }
@@ -862,23 +877,33 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 // Get sound path from sound path grid sets
                 String soundPath = soundPathGridSets.get(setIndex).get(rowIndex).get(wordIndex);
 
-                // Initialize media player if need be
-                if (mp == null) {
-                    mp = new MediaPlayer();
-                }
+                // Check if sound path is valid
+                if (!soundPath.equalsIgnoreCase("0")) {
 
-                // Check if media player is playing
-                if (mp.isPlaying() && mSelectedWordFlipped) {
-                    mp.stop();
-                    flipSelectedWord(BLACK_WORD, mSelectedSetIndex, mSelectedRowIndex, mSelectedWordIndex);
-                }
+                    // It is valid
 
-                // Media player jazz ♫♪
-                mp.reset();
-                mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-                mp.setOnPreparedListener(new SelectedWordListener(thisActivity, setIndex, rowIndex, wordIndex));
-                mp.setOnCompletionListener(new SelectedWordListener(thisActivity, setIndex, rowIndex, wordIndex));
-                mp.prepare();
+                    // Initialize media player if need be
+                    if (mp == null) {
+                        mp = new MediaPlayer();
+                    }
+
+                    // Check if media player is playing
+                    if (mp.isPlaying() && mSelectedWordFlipped) {
+                        mp.stop();
+                        flipSelectedWord(BLACK_WORD, mSelectedSetIndex, mSelectedRowIndex, mSelectedWordIndex);
+                    }
+
+                    // Media player jazz ♫♪
+                    mp.reset();
+                    mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+                    mp.setOnPreparedListener(new SelectedWordListener(thisActivity, setIndex, rowIndex, wordIndex));
+                    mp.setOnCompletionListener(new SelectedWordListener(thisActivity, setIndex, rowIndex, wordIndex));
+                    mp.prepare();
+
+                } else {
+                    // Fire off onCompletion event
+                    (new SelectedWordListener(thisActivity, setIndex, rowIndex, wordIndex)).onCompletion(null);
+                }
 
             } catch (Exception ex) {
                 System.err.println("============================================================");
@@ -890,7 +915,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 if (mp != null) {
                     mp.release();
                 }
-                finish();
+                mp = null;
+                (new SelectedWordListener(thisActivity, setIndex, rowIndex, wordIndex)).onCompletion(null);
             }
 
         } else {
@@ -2122,20 +2148,32 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         imageViewParams.rightMargin = 28;
                         imageView.setLayoutParams(imageViewParams);
 
-                        // Add listener to ImageView
-                        imageView.setOnClickListener(new SelectedWordListener(thisActivity, soundPathGridSets.size(), soundPathGrid.size(), j));
-
-                        // Add Image View to list of Image Views
-                        imageViews.add(imageView);
-
                         // Get the sound of the sentence word
                         String sound = sentenceWord.getString("sound");
 
-                        // Get the sound path
-                        String soundPath = FetchResource.sound(getApplicationContext(), sound);
+                        // Declare sound path
+                        String soundPath = null;
+
+                        // If sound path is valid, get it
+                        // Otherwise, assign it a value of "0"
+                        if (!sound.equalsIgnoreCase("0")) {
+
+                            // Get the sound path
+                            soundPath = FetchResource.sound(getApplicationContext(), sound);
+
+                            // Add listener to ImageView
+                            imageView.setOnClickListener(new SelectedWordListener(thisActivity, soundPathGridSets.size(), soundPathGrid.size(), j));
+
+                        } else {
+                            // Otherwise, assign "0"
+                            soundPath = "0";
+                        }
 
                         // Add sound path to list of sounds paths
                         soundPaths.add(soundPath);
+
+                        // Add Image View to list of Image Views
+                        imageViews.add(imageView);
 
                     }
                     // Add Image Views to Image View Grid

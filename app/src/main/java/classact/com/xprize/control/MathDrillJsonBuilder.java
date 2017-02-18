@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
+import classact.com.xprize.database.model.Numerals;
 import classact.com.xprize.utils.ResourceDecoder;
 
 /**
@@ -48,6 +49,15 @@ public class MathDrillJsonBuilder {
                                          String numeralSound,
                                          ArrayList<ObjectAndSound<String>> numbers
                                          ){
+
+        // Debug
+        System.out.println("MathDrillJsonBuilder.getDrillTwoJson > Debug: monkeyHasSound = " + monkeyHasSound);
+        System.out.println("MathDrillJsonBuilder.getDrillTwoJson > Debug: numberOfObjectsSound = " + numberOfObjectsSound);
+        System.out.println("MathDrillJsonBuilder.getDrillTwoJson > Debug: numberOfObjects = " + numberOfObjects);
+        System.out.println("MathDrillJsonBuilder.getDrillTwoJson > Debug: objectImage = " + objectImage);
+        System.out.println("MathDrillJsonBuilder.getDrillTwoJson > Debug: touchSound = " + touchSound);
+        System.out.println("MathDrillJsonBuilder.getDrillTwoJson > Debug: numeralSound = " + numeralSound);
+
         String drillData = "{\"monkey_has\":" + ResourceDecoder.getIdentifier(context,monkeyHasSound,"raw") + "," +
                 "\"object\":" + ResourceDecoder.getIdentifier(context,objectImage,"drawable") + "," +
                 "\"number_of_objects\":" + numberOfObjects + "," +
@@ -134,10 +144,37 @@ public class MathDrillJsonBuilder {
                                           String touchTheBiggerSound,
                                           int numberOfLeftItems,
                                           String leftItemItem,
-                                          String leftNumberImage,
                                           int numberOfRightItems,
                                           String rightItemItem,
-                                          String rightNumberImage){
+                                          ArrayList<Numerals> numerals){
+
+        String leftNumberImage = null;
+        String rightNumberImage = null;
+
+        for (int i = 0; i < numerals.size(); i++) {
+
+            // Get numeral
+            Numerals numeral = numerals.get(i);
+
+            // Check if either left or right number images are null
+            if (leftNumberImage == null || rightNumberImage == null) {
+
+                // Set left number image if found
+                if (numeral.getNumber() == numberOfLeftItems) {
+                    leftNumberImage = numeral.getBlackImage();
+                }
+
+                // Set right number image if found
+                if (numeral.getNumber() == numberOfRightItems) {
+                    rightNumberImage = numeral.getBlackImage();
+                }
+
+            } else {
+                // Break out of loop
+                break;
+            }
+        }
+
         String drillData = "{\"monkey_has\":" + ResourceDecoder.getIdentifier(context,monkeyHasSound,"raw") + "," +
                 "\"check_bigger\":" + checkBigger + "," +
                 "\"number_of_left_items_sound\":" + ResourceDecoder.getIdentifier(context,numberOfLeftItemsSound,"raw") + "," +

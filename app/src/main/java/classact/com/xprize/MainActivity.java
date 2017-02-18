@@ -32,9 +32,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Database hack related
     private final boolean HACK_NEXT_UNIT = false;
-    private final int HACK_UNIT_ID = 1;
+    private final int HACK_UNIT_ID = 2;
     private final int HACK_UNIT_SUB_ID_IN_PROGRESS = 0;
-    private final int HACK_DRILL_LAST_PLAYED = 21;
+    private final int HACK_DRILL_LAST_PLAYED = 22;
     private final int HACK_UNIT_FIRST_TIME = 0;
     private final int HACK_UNIT_FIRST_TIME_MOVIE = 1;
 
@@ -149,6 +149,17 @@ public class MainActivity extends AppCompatActivity {
 
             // Get current unit
             int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
+
+            // Finale override hack on unit 3
+            if (unitId == 3) {
+
+                // Just go to finale. We still need to figure out how to get 20 chapter
+                // videos into the sparse image ... for now, only till chapter 2
+                success = true;
+                throw new Exception(":: HACK :: MainActivity.determineNextItem > Debug: " +
+                        "Unit id is (" + unitId + "), auto moving to finale, as we don't have enough 'video space' (yet)");
+            }
+
             Unit u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);
 
             // Debug
@@ -259,6 +270,7 @@ public class MainActivity extends AppCompatActivity {
                         // Show ending splash
                         intent = new Intent(this, LevelCompleteLink.class);
                         intent.putExtra(Code.RES_NAME, "level" + unitId);
+                        intent.putExtra(Code.NEXT_BG_RES, "star_level_" + unitId);
                         resultCode = Code.CHAPTER_END;
 
                         // Let's roll with the drill
@@ -521,12 +533,12 @@ public class MainActivity extends AppCompatActivity {
                     int currentDrill = u.getUnitDrillLastPlayed() + 1;
                     int nextDrill = currentDrill + 1;
                     ArrayList<Integer> buggedDrills = new ArrayList<>();
-                    if (unitId == 1) {
+                    //if (unitId == 1) {
                         // No Word drills #13, 14 and 15 for unit 1
                         buggedDrills.add(13);
                         buggedDrills.add(14);
                         buggedDrills.add(15);
-                    }
+                    //}
                     if (buggedDrills.size() > 0) {
                         for (Integer buggedDrill : buggedDrills) {
                             if (buggedDrill >= nextDrill) {

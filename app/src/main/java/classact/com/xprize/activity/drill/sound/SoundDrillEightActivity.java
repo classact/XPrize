@@ -141,6 +141,11 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         try{
             drawArea.removeAllViews();
             drawArea.addView(letter);
+
+            animationView = new PathAnimationView(this);
+            animationView.setAlpha(0.6f);
+            animationView.setPaths(getPathArray());
+
             //write the small letter
             playWatch();
         }
@@ -386,13 +391,6 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         }
     }
 
-    @Override
-    public void onPause(){
-        super.onPause();
-        if (mp != null){
-            mp.release();
-        }
-    }
    // @Override
    // public void onBackPressed() {
    // }

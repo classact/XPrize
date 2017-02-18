@@ -392,7 +392,7 @@ public class SoundDrillFourActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
         }
     }
 
@@ -541,13 +541,5 @@ public class SoundDrillFourActivity extends AppCompatActivity {
         item4.setEnabled(enable);
         item5.setEnabled(enable);
         item6.setEnabled(enable);
-    }
-
-    @Override
-    protected void onPause(){
-        super.onPause();
-        if (mp != null){
-            mp.release();
-        }
     }
 }

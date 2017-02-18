@@ -10,6 +10,8 @@ import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.locale.Languages;
 import classact.com.xprize.utils.FetchResource;
+import classact.com.xprize.utils.ResourceDecoder;
+import classact.com.xprize.utils.ResourceSelector;
 
 public class LevelCompleteLink extends LinkTemplate {
 
@@ -26,6 +28,11 @@ public class LevelCompleteLink extends LinkTemplate {
         // Get audio file to play
         // Requires data from invoker intent
         Intent intent = getIntent();
+
+        String levelCompleteBackground = intent.getStringExtra(Code.NEXT_BG_RES);
+        int levelCompleteBackgroundResourceId = ResourceDecoder.getIdentifier(getApplicationContext(),
+                levelCompleteBackground, "drawable");
+        mBackground.setBackgroundResource(levelCompleteBackgroundResourceId);
 
         // Append appropriate language identifier if required
         // (Default is English)

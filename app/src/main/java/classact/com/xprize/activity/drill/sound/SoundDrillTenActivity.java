@@ -695,10 +695,6 @@ public class SoundDrillTenActivity extends AppCompatActivity {
 
         // Debug
         System.out.println("-- SoundTrillTenActivity.onPause > Debug: METHOD CALLED");
-
-        if (mp != null){
-            mp.release();
-        }
     }
 
 //    @Override
