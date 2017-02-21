@@ -242,7 +242,7 @@ public class WordDrills {
     }
 
     public static Intent D4(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
-                            Letter letter, Word word1, Word word2, Word word3, Word word4,
+                            Letter letter, Word word1, Word word2, Word word3,
                             String drillSound1, String drillSound2) throws SQLiteException, Exception {
         Intent intent = null;
 

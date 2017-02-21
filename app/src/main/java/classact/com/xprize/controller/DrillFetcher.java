@@ -317,7 +317,6 @@ public class DrillFetcher {
                             WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(0)),
                             WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(1)),
                             WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(2)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(3)),
                             drillFlowWord.getDrillSound1(),
                             drillFlowWord.getDrillSound2()
                     );

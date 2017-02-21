@@ -456,28 +456,31 @@ public class SoundDrillJsonBuilder {
         String drillData = "{\"drag_the_letters_to_write\":" + ResourceDecoder.getIdentifier(context,dragLettersToWriteSound,"raw") + "," +
                 "\"you_got\":" + ResourceDecoder.getIdentifier(context,youGotSound,"raw") + "," +
                 "\"words\":[";
-        int i = 0;
-        for(SpelledWord obj: words) {
-            if (i == 0)
-                drillData += "{\"word\":" + obj.getWord().getSpelling() +"," +
-                        "\"sound\":" + ResourceDecoder.getIdentifier(context,obj.getWord().getObjectSound(),"raw") + "," +
-                        "\"letters\": [" ;
-            else
-                drillData += ",{\"word\":" + obj.getWord().getSpelling() +"," +
-                        "\"sound\":" + ResourceDecoder.getIdentifier(context,obj.getWord().getObjectSound(),"raw") + "," +
+
+        for (int i = 0; i < words.size(); i++) {
+            SpelledWord obj = words.get(i);
+
+            if (i != 0) {
+                drillData += ",";
+            }
+
+            drillData += "{\"word\":" + obj.getWord().getSpelling() +"," +
+                    "\"sound\":" + ResourceDecoder.getIdentifier(context,obj.getWord().getObjectSound(),"raw") + "," +
                     "\"letters\": [" ;
-            int j = 0;
-            for(DraggableImage<String> image: obj.getLettersImages()) {
-                if (j == 0)
-                    drillData += "{\"letter\":" + ResourceDecoder.getIdentifier(context,image.getcontent(),"drawable")  +
-                            ",\"positions\":[" + image.getExtraData()+ "]}";
-                else
-                    drillData += ",{\"letter\":" + ResourceDecoder.getIdentifier(context,image.getcontent(),"drawable")  +
-                            ",\"positions\":[" + image.getExtraData()+ "]}";
-                j++;
+
+            ArrayList<DraggableImage<String>> letterImages = obj.getLettersImages();
+
+            for (int j = 0; j < letterImages.size(); j++) {
+                DraggableImage<String> image = letterImages.get(j);
+
+                if (j != 0) {
+                    drillData += ",";
+                }
+
+                drillData += "{\"letter\":" + ResourceDecoder.getIdentifier(context,image.getcontent(),"drawable") +
+                        ",\"positions\":[" + image.getExtraData()+ "]}";
             }
             drillData += "]}";
-            i++;
         }
         drillData += "]}";
         return drillData;
