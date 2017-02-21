@@ -25,14 +25,6 @@ import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillThirteenActivity extends AppCompatActivity {
-    private ImageView item1;
-    private ImageView item2;
-    private ImageView item3;
-    private ImageView item4;
-    private ImageView item5;
-    private ImageView item6;
-    private ImageView item7;
-    private ImageView item8;
 
     private LinearLayout container1;
     private LinearLayout container2;
@@ -52,24 +44,11 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
     private ImageView receptacle7;
     private ImageView receptacle8;
 
-    public boolean entered1;
-    public boolean entered2;
-    public boolean entered3;
-    public boolean entered4;
-    public boolean entered5;
-    public boolean entered6;
-    public boolean entered7;
-    public boolean entered8;
     private int currentItem;
     public JSONArray drills;
     private int currentDrill;
-    JSONArray letters;
     private MediaPlayer mp;
     private int correctItems;
-    private int totalPositions;
-    private int filledPositions;
-    private ImageView[] currentOccupants;
-    private boolean[] positionIsCorrect;
     private JSONObject allData;
 
     private LinearLayout[] mContainers;
@@ -80,9 +59,18 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
     private int[] mLetterImageResourceIds;
     private int[] mLetterOrder;
     private boolean[] mReceptacleEntries;
+    private boolean mDrillComplete;
+    private boolean mEndDrill;
     private SoundDrillThirteenActivity mThisActivity;
 
+    private String mDragTheLettersToWriteSound;
+    private String mYouGotSound;
+    private String mCurrentWordSound;
+
     private final int MAX_LETTERS = 8;
+    private final String DRAG_THE_LETTERS_TO_WRITE = "drag_the_letters_to_write";
+    private final String YOU_GOT = "you_got";
+    private final String SOUND = "sound";
     private final String YAY = "YAY_001";
     private final String NAY = "NAY_001";
 
@@ -202,9 +190,12 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
         try{
             allData = new JSONObject(drillData);
+            mDragTheLettersToWriteSound = allData.getString("drag_the_letters_to_write");
+            mYouGotSound = allData.getString("you_got");
             drills = allData.getJSONArray("words");
             currentDrill = 0;
             mGameOn = false;
+            mEndDrill = false;
         }
         catch (Exception ex){
             System.err.println("==============================");
@@ -221,7 +212,11 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         System.out.println("SDThirteenActivity.prepareDrill > Debug: MC");
 
         try{
+            mDrillComplete = false;
+
             JSONObject drill = drills.getJSONObject(currentDrill);
+
+            mCurrentWordSound = drill.getString("sound");
 
             JSONArray letters = drill.getJSONArray("letters");
 
@@ -310,7 +305,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
             System.out.println(":: prepareDrill D");
 
-            mGameOn = true;
+            playSound(DRAG_THE_LETTERS_TO_WRITE, mDragTheLettersToWriteSound);
         }
         catch (Exception ex){
             System.err.println("==============================");
@@ -321,13 +316,13 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         }
     }
 
-    class TouchAndDragListener implements View.OnTouchListener, View.OnDragListener {
+    private class TouchAndDragListener implements View.OnTouchListener, View.OnDragListener {
 
         private SoundDrillThirteenActivity mThisActivity;
         private int mShuffledIndex;
         private int mActualIndex;
 
-        public TouchAndDragListener(SoundDrillThirteenActivity thisActivity, int shuffledIndex, int actualIndex) {
+        private TouchAndDragListener(SoundDrillThirteenActivity thisActivity, int shuffledIndex, int actualIndex) {
             mThisActivity = thisActivity;
             mShuffledIndex = shuffledIndex;
             mActualIndex = actualIndex;
@@ -447,18 +442,21 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                                 // Check if max drills reached
                                 if (currentDrill == drills.length()) {
 
-                                    // End
-                                    if (mp != null) {
-                                        mp.release();
-                                    }
-                                    finish();
+                                    // Set end drill to true
+                                    mEndDrill = true;
+
+                                    // Play affirmation sound
+                                    mThisActivity.playSound(YAY, YAY);
 
                                 } else {
                                     // Otherwise update drill no
                                     mThisActivity.setCurrentDrill(currentDrill);
 
-                                    // Prepare next drill
-                                    mThisActivity.prepareDrill();
+                                    // Set drill complete to true
+                                    mThisActivity.setDrillComplete(true);
+
+                                    // Play affirmation sound
+                                    mThisActivity.playSound(YAY, YAY);
                                 }
                             } else {
                                 // Update correct items
@@ -468,13 +466,13 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                                 mThisActivity.setGameOn(true);
 
                                 // Play affirmation sound
-                                playSound(YAY);
+                                playSound(YAY, YAY);
                             }
                         } else {
                             // Re-enable game interactions
                             mThisActivity.setGameOn(true);
 
-                            playSound(NAY);
+                            playSound(NAY, NAY);
                         }
 
                         /**
@@ -524,7 +522,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         return false;
     }
 
-    public void playSound(String sound) {
+    public void playSound(String tag, String sound) {
 
         // Debug
         System.out.println("SDThirteenActivity.playSound > Debug: MC");
@@ -556,8 +554,8 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
             mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
 
             // Set listeners
-            mp.setOnPreparedListener(new SoundListener(mThisActivity, sound, soundPath));
-            mp.setOnCompletionListener(new SoundListener(mThisActivity, sound, soundPath));
+            mp.setOnPreparedListener(new SoundListener(mThisActivity, tag, sound, soundPath));
+            mp.setOnCompletionListener(new SoundListener(mThisActivity, tag, sound, soundPath));
 
             // Prepare media player to Rock and Rumble ~ ♩ ♪ ♫ ♬
             mp.prepare();
@@ -571,18 +569,20 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                 mp.release();
             }
             mp = null;
-            (new SoundListener(mThisActivity, sound, null)).onCompletion(null);
+            (new SoundListener(mThisActivity, tag, sound, null)).onCompletion(null);
         }
     }
 
-    class SoundListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+    private class SoundListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
         private SoundDrillThirteenActivity mThisActivity;
+        private String mTag;
         private String mSound;
         private String mSoundPath;
 
-        public SoundListener(SoundDrillThirteenActivity thisActivity, String sound, String soundPath) {
+        private SoundListener(SoundDrillThirteenActivity thisActivity, String tag, String sound, String soundPath) {
             mThisActivity = thisActivity;
+            mTag = tag;
             mSound = sound;
             mSoundPath = soundPath;
         }
@@ -593,16 +593,16 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
             // Debug
             System.out.println("SDThirteenActivity.SoundListener(class).onPrepared > Debug: MC");
 
-            switch (mSound) {
-                case "drag_the_letters_to_write": {
+            switch (mTag) {
+                case DRAG_THE_LETTERS_TO_WRITE: {
                     mp.start();
                     break;
                 }
-                case "you_got": {
+                case YOU_GOT: {
                     mp.start();
                     break;
                 }
-                case "sound": {
+                case SOUND: {
                     mp.start();
                     break;
                 }
@@ -626,20 +626,35 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
             // Debug
             System.out.println("SDThirteenActivity.SoundListener(class).onCompletion > Debug: MC");
 
-            switch (mSound) {
-                case "drag_the_letters_to_write": {
+            switch (mTag) {
+                case DRAG_THE_LETTERS_TO_WRITE: {
+                    mThisActivity.playSound(SOUND, mThisActivity.getCurrentWordSound());
                     break;
                 }
-                case "you_got": {
+                case YOU_GOT: {
                     break;
                 }
-                case "sound": {
+                case SOUND: {
+                    mThisActivity.setGameOn(true);
                     break;
                 }
                 case NAY: {
                     break;
                 }
                 case YAY: {
+                    if (mThisActivity.getEndDrill()) {
+
+                        // Release media player
+                        mp.release();
+
+                        // Finish activity
+                        mThisActivity.finish();
+
+                    } else if (mThisActivity.getDrillComplete()) {
+
+                        // Prepare next drill
+                        mThisActivity.prepareDrill();
+                    }
                     break;
                 }
                 default: {
@@ -751,6 +766,10 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         currentDrill = drill;
     }
 
+    public void setCurrentWordSound(String currentWordSound) {
+        mCurrentWordSound = currentWordSound;
+    }
+
     public void setCurrentItem(int item) {
         currentItem = item;
     }
@@ -763,12 +782,24 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         mGameOn = gameOn;
     }
 
+    public void setEndDrill(boolean endDrill) {
+        mEndDrill = endDrill;
+    }
+
+    public void setDrillComplete(boolean drillComplete) {
+        mDrillComplete = drillComplete;
+    }
+
     public JSONArray getDrills() {
         return drills;
     }
 
     public int getCurrentDrill() {
         return currentDrill;
+    }
+
+    public String getCurrentWordSound() {
+        return mCurrentWordSound;
     }
 
     public int getCurrentItem() {
@@ -781,6 +812,14 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
     public boolean getGameOn() {
         return mGameOn;
+    }
+
+    public boolean getEndDrill() {
+        return mEndDrill;
+    }
+
+    public boolean getDrillComplete() {
+        return mDrillComplete;
     }
 
     public LinearLayout[] getContainers() {

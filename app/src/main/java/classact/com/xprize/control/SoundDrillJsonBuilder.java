@@ -453,8 +453,8 @@ public class SoundDrillJsonBuilder {
                                             String dragLettersToWriteSound,
                                             String youGotSound,
                                             ArrayList<SpelledWord> words){
-        String drillData = "{\"drag_the_letters_to_write\":" + ResourceDecoder.getIdentifier(context,dragLettersToWriteSound,"raw") + "," +
-                "\"you_got\":" + ResourceDecoder.getIdentifier(context,youGotSound,"raw") + "," +
+        String drillData = "{\"drag_the_letters_to_write\":\"" + dragLettersToWriteSound + "\"," +
+                "\"you_got\":\"" + youGotSound + "\"," +
                 "\"words\":[";
 
         for (int i = 0; i < words.size(); i++) {
@@ -465,7 +465,7 @@ public class SoundDrillJsonBuilder {
             }
 
             drillData += "{\"word\":" + obj.getWord().getSpelling() +"," +
-                    "\"sound\":" + ResourceDecoder.getIdentifier(context,obj.getWord().getObjectSound(),"raw") + "," +
+                    "\"sound\":\"" + obj.getWord().getObjectSound() + "\"," +
                     "\"letters\": [" ;
 
             ArrayList<DraggableImage<String>> letterImages = obj.getLettersImages();
