@@ -137,7 +137,7 @@ public class DrillFetcher {
 
                     //This will get 5 random words based on the specific unit ID
                     ArrayList<Integer> rightDrillWordIds = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
-                    ArrayList<Integer> wrongDrillWordIds = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, wrongWordLimit);
+                    ArrayList<Integer> wrongDrillWordIds = DrillWordHelper.getWrongDrillWordsByLetter(dbHelper.getReadableDatabase(), languageId, wordType, letter.getLetterName(), wrongWordLimit);
                     DrillFlowWords drillFlowWord = drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
                     // Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
@@ -327,7 +327,7 @@ public class DrillFetcher {
                     int wordType = 2; // drill 1 only uses phonic words, which is WordType 1
                     int limit = 3; // 5 words for this drill
 
-                    System.out.println("DrillFetcher.getWordDrill.case 13 > Debug: languageId " +
+                    System.out.println("DrillFetcher.getWordDrill.case 14 > Debug: languageId " +
                             languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
                             drillId + ", wordType " + wordType + ", limit " + limit);
 
@@ -421,6 +421,11 @@ public class DrillFetcher {
                     if (languageId == Languages.ENGLISH) {
                         boyGirl = 2;
                     }
+
+                    System.out.println("DrillFetcher.getMathDrill.case 2 > Debug: languageId " +
+                            languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
+                            drillId + ", boyGirl " + boyGirl + ", limit " + limit);
+
                     // Fetch D2
                     intent = MathDrills.D2(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
                     break;
@@ -428,6 +433,11 @@ public class DrillFetcher {
                 case 3: {
                     limit = 10;
                     subId = 0;
+
+                    System.out.println("DrillFetcher.getMathDrill.case 3 > Debug: languageId " +
+                            languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
+                            drillId + ", boyGirl " + boyGirl + ", limit " + limit);
+
                     // Fetch D3
                     intent = MathDrills.D3(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
                     break;
@@ -436,8 +446,13 @@ public class DrillFetcher {
                     limit = 5;
                     subId = 0;
                     if (languageId == Languages.ENGLISH) {
-                        boyGirl = 2;
+                        boyGirl = 4;
                     }
+
+                    System.out.println("DrillFetcher.getMathDrill.case 2 > Debug: languageId " +
+                            languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
+                            drillId + ", boyGirl " + boyGirl + ", limit " + limit);
+
                     // Fetch D4
                     intent = MathDrills.D4(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
                     break;
@@ -446,6 +461,11 @@ public class DrillFetcher {
                     if (unitId < 9) {
                         limit = 10;
                         subId = 0;
+
+                        System.out.println("DrillFetcher.getMathDrill.case 5 > Debug: languageId " +
+                                languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
+                                drillId + ", boyGirl " + boyGirl + ", limit " + limit);
+
                         // Fetch D5A
                         intent = MathDrills.D5A(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
                     } else {

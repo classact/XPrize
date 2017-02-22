@@ -99,4 +99,27 @@ public class LetterHelper {
             cursor.close();
         }
     }
+
+    public static ArrayList<Integer> getWrongSingleLetters(SQLiteDatabase db, int languageID, int letterID, int limit){
+        ArrayList<Integer> letters = new ArrayList<>();
+        Cursor cursor = db.rawQuery("" +
+                "SELECT _id FROM tbl_Letter " +
+                "where LanguageID = "+languageID+" " +
+                "and _id <> " + letterID + " " +
+                "and length(letterName) = 1 " +
+                "ORDER BY RANDOM() LIMIT " + limit +";", null);
+        int letter=0;
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    //drillWord = new DrillWords();
+                    letter = cursor.getInt(0);
+                    letters.add(letter);
+                } while (cursor.moveToNext());
+            }
+            return letters;
+        }finally {
+            cursor.close();
+        }
+    }
 }

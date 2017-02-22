@@ -311,6 +311,7 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                             System.out.println("SoundDrillNineActivity.CustomWriteView.onTouchEvent > Debug: Last Drawn Time (" +
                                     lastDrawnTime + ")");
 
+                            handler.removeCallbacks(countDown);
                             handler.postDelayed(countDown, DRAW_WAIT_TIME);
 
                             // Debug

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import classact.com.xprize.R;
 import classact.com.xprize.control.SimpleStorySentence;
 import classact.com.xprize.utils.FetchResource;
+import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ImageHelper;
 import classact.com.xprize.utils.ResourceSelector;
 
@@ -195,8 +196,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         currentState = STATE_0;
 
-        playPrompt("read_each_sentence_after_mother_sound");
-        // playPrompt("now_answer_sound");
+        // playPrompt("read_each_sentence_after_mother_sound");
+        playPrompt("now_answer_sound");
     }
 
     class PromptListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
@@ -2350,12 +2351,21 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     // Used to validate and remove any duplicate images if existing the data String
                     ArrayList<Integer> imageResourceIds = new ArrayList<>();
 
+                    // Get total number of question images
+                    int noOfQuestionImages = questionImages.length();
+
+                    // Get shuffled indexes
+                    int[] shuffled = FisherYates.shuffle(noOfQuestionImages);
+
                     // Loop through each question image and add to list of
                     // comprehension question Image Views
-                    for (int j = 0; j < questionImages.length(); j++) {
+                    for (int j = 0; j < noOfQuestionImages; j++) {
+
+                        // Get shuffled index k
+                        int k = shuffled[j];
 
                         // Extract question image object
-                        JSONObject questionImage = questionImages.getJSONObject(j);
+                        JSONObject questionImage = questionImages.getJSONObject(k);
 
                         /* * * * * * * * * * *
                          * PROCESS IMAGE VIEW *
@@ -2391,7 +2401,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
                             imageView.setLayoutParams(imageViewParams);
 
                             // Add listeners to Image View
-                            imageView.setOnClickListener(new ComprehensionTouchListener(thisActivity, i, j));
+                            imageView.setOnClickListener(new ComprehensionTouchListener(thisActivity, i, k));
 
                             // Add the Image View to list of comprehension question Image Views
                             comprehensionQuestionImageViews.add(imageView);
