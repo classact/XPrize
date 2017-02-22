@@ -308,8 +308,8 @@ public class DrillFetcher {
                     Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
                     System.out.println("DrillFetcher.getWordDrill.case 13 > Debug: languageId " +
-                            languageId + ", unitId " + unitId + ", subId " + subId + ", drillId" +
-                            drillId + ", wordType" + wordType + ", limit " + limit);
+                            languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
+                            drillId + ", wordType " + wordType + ", limit " + limit);
 
                     // Fetch D4
                     intent = WordDrills.D4(context, dbHelper, unitId, drillId, languageId,
@@ -326,6 +326,10 @@ public class DrillFetcher {
                     int wordType = 2; // drill 1 only uses phonic words, which is WordType 1
                     int limit = 3; // 5 words for this drill
 
+                    System.out.println("DrillFetcher.getWordDrill.case 13 > Debug: languageId " +
+                            languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
+                            drillId + ", wordType " + wordType + ", limit " + limit);
+
                     //This will get 5 random words based on the specific unit ID
                     ArrayList<Integer>  rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
                     DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
@@ -337,7 +341,7 @@ public class DrillFetcher {
                             WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(0)),
                             WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(1)),
                             WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(2)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(3)),
+                            //WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(3)),
                             drillFlowWord.getDrillSound1(),
                             drillFlowWord.getDrillSound2(),
                             drillFlowWord.getDrillSound3()

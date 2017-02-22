@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import classact.com.xprize.activity.drill.sound.SoundDrillElevenActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillFifteenActivity;
+import classact.com.xprize.activity.drill.sound.SoundDrillFourteenActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillTenActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillThirteenActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillTwelveActivity;
@@ -38,7 +39,11 @@ public class WordDrills {
                             Word word1, Word word2, Word word3, Word word4, Word word5,
                             String drillSound1, String drillSound2
     ) throws SQLiteException, Exception {
-        Intent intent = null;
+
+        // Debug
+        System.out.println("WordDrills.D1 > Debug: MC");
+
+        Intent intent;
 
         try {
             // Create words list
@@ -70,6 +75,10 @@ public class WordDrills {
                             Word word1, Word word2, Word word3, Word word4, Word word5,
                             String drillSound1, String drillSound2)
             throws SQLiteException, Exception {
+
+        // Debug
+        System.out.println("WordDrills.D2 > Debug: MC");
+
         Intent intent;
 
         try {
@@ -124,7 +133,10 @@ public class WordDrills {
                             ArrayList<Numerals> numerals)
             throws SQLiteException, Exception {
 
-        Intent intent = null;
+        // Debug
+        System.out.println("WordDrills.D3 > Debug: MC");
+
+        Intent intent;
         int wordsPerSet = 3;
 
         try {
@@ -244,7 +256,11 @@ public class WordDrills {
     public static Intent D4(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
                             Letter letter, Word word1, Word word2, Word word3,
                             String drillSound1, String drillSound2) throws SQLiteException, Exception {
-        Intent intent = null;
+
+        // Debug
+        System.out.println("WordDrills.D4 > Debug: MC");
+
+        Intent intent;
 
         try {
             ArrayList<SpelledWord> words = new ArrayList<>();
@@ -354,15 +370,19 @@ public class WordDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D4: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D4: " + ex.getMessage());
+            throw new Exception("D4: " + ex.getMessage());
         }
         return intent;
     }
 
     public static Intent D5(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
-                            Letter letter, Word word1, Word word2, Word word3, Word word4,
+                            Letter letter, Word word1, Word word2, Word word3, //Word word4,
                             String drillSound1, String drillSound2, String drillSound3) throws SQLiteException, Exception {
-        Intent intent = null;
+
+        // Debug
+        System.out.println("WordDrills.D5 > Debug: MC");
+
+        Intent intent;
 
         try {
             ArrayList<SpelledWord> words = new ArrayList<>();
@@ -438,19 +458,23 @@ public class WordDrills {
         words.add(set);
         // */
             String drillData = SoundDrillJsonBuilder.getSoundDrillFourteenJson(context, drillSound1, drillSound2, drillSound3, words);
-            intent = new Intent(context, SoundDrillThirteenActivity.class);
+            intent = new Intent(context, SoundDrillFourteenActivity.class);
             intent.putExtra("data", drillData);
 
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D5: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D5: " + ex.getMessage());
+            throw new Exception("D5: " + ex.getMessage());
         }
         return intent;
     }
 
     public static Intent D6(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId) throws SQLiteException, Exception {
-        Intent intent = null;
+
+        // Debug
+        System.out.println("WordDrills.D6 > Debug: MC");
+
+        Intent intent;
 
         try {
             ArrayList<Sentence> sentences = new ArrayList<>();
@@ -488,7 +512,7 @@ public class WordDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D6: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D6: " + ex.getMessage());
+            throw new Exception("D6: " + ex.getMessage());
         }
         return intent;
     }

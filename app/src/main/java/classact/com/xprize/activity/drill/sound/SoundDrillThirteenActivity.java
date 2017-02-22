@@ -670,15 +670,16 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         System.out.println("SDThirteenActivity.resetListeners > Debug: MC");
 
         try {
-            for (int i = 0; i < mLetterImageViews.length; i++) {
-                // Get container
-                ImageView letterImageView = mLetterImageViews[i];
+            if (mLetterImageViews != null) {
 
-                // Remove drag listener
-                letterImageView.setOnDragListener(null);
+                for (ImageView letterImageView: mLetterImageViews) {
 
-                // Remove touch listener
-                letterImageView.setOnTouchListener(null);
+                    // Remove drag listener
+                    letterImageView.setOnDragListener(null);
+
+                    // Remove touch listener
+                    letterImageView.setOnTouchListener(null);
+                }
             }
         } catch (Exception ex) {
             System.err.println("==============================");
@@ -695,15 +696,16 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         System.out.println("SDThirteenActivity.resetContainers > Debug: MC");
 
         try {
-            for (int i = 0; i < mContainers.length; i++) {
-                // Get container
-                LinearLayout container = mContainers[i];
+            if (mContainers != null) {
 
-                // Remove all views for container
-                container.removeAllViews();
+                for (LinearLayout container: mContainers) {
 
-                // Make container invisible
-                container.setVisibility(View.INVISIBLE);
+                    // Remove all views for container
+                    container.removeAllViews();
+
+                    // Make container invisible
+                    container.setVisibility(View.INVISIBLE);
+                }
             }
         } catch (Exception ex) {
             System.err.println("==============================");
@@ -720,20 +722,26 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         System.out.println("SDThirteenActivity.resetReceptacles > Debug: MC");
 
         try {
-            mReceptaclesParent.removeAllViews();
+            if (mReceptaclesParent != null) {
 
-            for (int i = 0; i < mReceptacles.length; i++) {
-                // Get image view
-                ImageView receptacle = mReceptacles[i];
+                mReceptaclesParent.removeAllViews();
 
-                // Reset image resource
-                receptacle.setImageResource(R.drawable.line);
+                if (mReceptacles != null) {
 
-                // Reset visibility of receptacle
-                receptacle.setVisibility(View.INVISIBLE);
+                    for (ImageView receptacle: mReceptacles) {
 
-                // Re-add receptacle to receptacles parent
-                mReceptaclesParent.addView(receptacle);
+                        // Reset image resource
+                        receptacle.setImageResource(R.drawable.line);
+
+                        // Reset visibility of receptacle
+                        receptacle.setVisibility(View.INVISIBLE);
+
+                        // Re-add receptacle to receptacles parent
+                        mReceptaclesParent.addView(receptacle);
+                    }
+                }
+            } else {
+                throw new Exception("Receptacles parent is null!");
             }
         } catch (Exception ex) {
             System.err.println("==============================");
