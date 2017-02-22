@@ -129,8 +129,9 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
             displayContainer.setVisibility(View.INVISIBLE);
             writingContainer.removeAllViews();
             mRootView.removeView(mTimer);
-            writingView = new DrillFourteenWriteView(this,0);
+            writingView = new DrillFourteenWriteView(this, 0, true);
             writingView.setThisActivity(this);
+            writingView.setAlpha(0.95f);
             writingContainer.addView(writingView);
 
             // Add draw timer
@@ -141,12 +142,12 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
             mTimer.setText(String.valueOf(mTimerCounter));
             mTimer.setTypeface(null, Typeface.BOLD);
             mTimer.setTextSize(115.0f);
-            mTimer.setAlpha(0.2f);
-            mTimer.setTextColor(Color.DKGRAY);
+            mTimer.setAlpha(0.4f);
+            mTimer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
             LinearLayout.LayoutParams timerLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
-            timerLayoutParams.topMargin = 175;
-            timerLayoutParams.leftMargin = 2100;
+            timerLayoutParams.topMargin = 105;
+            timerLayoutParams.leftMargin = 2170;
             mTimer.setLayoutParams(timerLayoutParams);
             mTimer.setVisibility(View.INVISIBLE);
             mRootView.addView(mTimer);
@@ -492,8 +493,8 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
 
         private SoundDrillFourteenActivity mThisActivity;
 
-        private DrillFourteenWriteView(Context context, int background) {
-            super(context, background);
+        private DrillFourteenWriteView(Context context, int background, boolean transparent) {
+            super(context, background, transparent);
         }
 
         private void setThisActivity(SoundDrillFourteenActivity thisActivity) {
