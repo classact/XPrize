@@ -21,6 +21,7 @@ import classact.com.xprize.database.helper.NumeralHelper;
 import classact.com.xprize.database.helper.UnitHelper;
 import classact.com.xprize.database.helper.WordHelper;
 import classact.com.xprize.database.model.DrillFlowWords;
+import classact.com.xprize.database.model.DrillWords;
 import classact.com.xprize.database.model.Letter;
 import classact.com.xprize.database.model.Numerals;
 import classact.com.xprize.database.model.Unit;
@@ -136,7 +137,7 @@ public class DrillFetcher {
 
                     //This will get 5 random words based on the specific unit ID
                     ArrayList<Integer> rightDrillWordIds = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
-                    ArrayList<Integer> wrongDrillWordIds = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, wrongWordLimit);
+                    ArrayList<Integer> wrongDrillWordIds = DrillWordHelper.getWrongDrillWordsByLetter(dbHelper.getReadableDatabase(), languageId, wordType, letter.getLetterName(), wrongWordLimit);
                     DrillFlowWords drillFlowWord = drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
                     // Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
@@ -308,8 +309,8 @@ public class DrillFetcher {
                     Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
                     System.out.println("DrillFetcher.getWordDrill.case 13 > Debug: languageId " +
-                            languageId + ", unitId " + unitId + ", subId " + subId + ", drillId" +
-                            drillId + ", wordType" + wordType + ", limit " + limit);
+                            languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
+                            drillId + ", wordType " + wordType + ", limit " + limit);
 
                     // Fetch D4
                     intent = WordDrills.D4(context, dbHelper, unitId, drillId, languageId,
@@ -317,7 +318,6 @@ public class DrillFetcher {
                             WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(0)),
                             WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(1)),
                             WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(2)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(3)),
                             drillFlowWord.getDrillSound1(),
                             drillFlowWord.getDrillSound2()
                     );
@@ -327,18 +327,25 @@ public class DrillFetcher {
                     int wordType = 2; // drill 1 only uses phonic words, which is WordType 1
                     int limit = 3; // 5 words for this drill
 
+                    System.out.println("DrillFetcher.getWordDrill.case 14 > Debug: languageId " +
+                            languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
+                            drillId + ", wordType " + wordType + ", limit " + limit);
+
                     //This will get 5 random words based on the specific unit ID
                     ArrayList<Integer>  rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
                     DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
                     Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
+                    // Extract drill words
+                    ArrayList<Word> drillWords = new ArrayList<>();
+                    for (int i = 0; i < rightDrillWordIDs.size(); i++) {
+                        drillWords.add(WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i)));
+                    }
+
                     // Fetch D5
                     intent = WordDrills.D5(context, dbHelper, unitId, drillId, languageId,
                             letter,
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(0)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(1)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(2)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(3)),
+                            drillWords,
                             drillFlowWord.getDrillSound1(),
                             drillFlowWord.getDrillSound2(),
                             drillFlowWord.getDrillSound3()
@@ -414,6 +421,11 @@ public class DrillFetcher {
                     if (languageId == Languages.ENGLISH) {
                         boyGirl = 2;
                     }
+
+                    System.out.println("DrillFetcher.getMathDrill.case 2 > Debug: languageId " +
+                            languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
+                            drillId + ", boyGirl " + boyGirl + ", limit " + limit);
+
                     // Fetch D2
                     intent = MathDrills.D2(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
                     break;
@@ -421,6 +433,11 @@ public class DrillFetcher {
                 case 3: {
                     limit = 10;
                     subId = 0;
+
+                    System.out.println("DrillFetcher.getMathDrill.case 3 > Debug: languageId " +
+                            languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
+                            drillId + ", boyGirl " + boyGirl + ", limit " + limit);
+
                     // Fetch D3
                     intent = MathDrills.D3(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
                     break;
@@ -429,8 +446,13 @@ public class DrillFetcher {
                     limit = 5;
                     subId = 0;
                     if (languageId == Languages.ENGLISH) {
-                        boyGirl = 2;
+                        boyGirl = 4;
                     }
+
+                    System.out.println("DrillFetcher.getMathDrill.case 2 > Debug: languageId " +
+                            languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
+                            drillId + ", boyGirl " + boyGirl + ", limit " + limit);
+
                     // Fetch D4
                     intent = MathDrills.D4(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
                     break;
@@ -439,6 +461,11 @@ public class DrillFetcher {
                     if (unitId < 9) {
                         limit = 10;
                         subId = 0;
+
+                        System.out.println("DrillFetcher.getMathDrill.case 5 > Debug: languageId " +
+                                languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
+                                drillId + ", boyGirl " + boyGirl + ", limit " + limit);
+
                         // Fetch D5A
                         intent = MathDrills.D5A(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
                     } else {

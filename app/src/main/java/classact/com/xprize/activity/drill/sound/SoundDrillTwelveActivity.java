@@ -26,6 +26,10 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
     private final int COUNTDOWN_LEFT_MARGIN = 564;
     private final int TWO_DIGIT_OFFSET = 117;
     private final int ONE_DIGIT_OFFSET = 40;
+    
+    private final String LOSE_RED = "#cc0000";
+    private final String ERR_RED = "#ff0000";
+    private final String WIN_CYAN = "#33ccff";
 
     private String mDrillData;
 
@@ -36,16 +40,17 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
     private TextView timeView;
     private int time;
     public JSONArray wordSets;
-    final Handler timeHandler = new Handler();
-    final Handler setHandler = new Handler();
-    final Handler emergencyHandler = new Handler();
-    final Handler buttonEnablingHandler = new Handler();
+    private Handler timeHandler = new Handler();
+    private Handler setHandler = new Handler();
+    private Handler emergencyHandler = new Handler();
+    private Handler buttonEnablingHandler = new Handler();
     private int currentSet = 0;
     private int correctWord = 0;
     private JSONObject params;
 
     private boolean gameOver;
     private Runnable mNextAction;
+    private int mLastButtonWordClicked;
     private boolean emergencyRed;
 
     @Override
@@ -222,7 +227,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 // Update colour of text
-                                timeView.setTextColor(Color.parseColor("#cc0000"));
+                                timeView.setTextColor(Color.parseColor(LOSE_RED));
 
                                 startConcluding();
                             }
@@ -266,7 +271,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 // Update colour of text
-                                timeView.setTextColor(Color.parseColor("#cc0000"));
+                                timeView.setTextColor(Color.parseColor(LOSE_RED));
 
                                 startConcluding();
                             }
@@ -353,24 +358,32 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         // Debug
         System.out.println("-- SoundTrillTwelveActivity.wordClicked > Debug: METHOD CALLED");
 
+        // Update last button word clicked
+        mLastButtonWordClicked = word;
+
         if (!gameOver) {
             try {
                 if (word == correctWord) {
                     // Disable buttons
                     setButtonsEnabled(false);
 
-                    switch (currentSet) {
+                    // Reset color tints
+                    buttonWord1.setColorFilter(Color.TRANSPARENT);
+                    buttonWord2.setColorFilter(Color.TRANSPARENT);
+                    buttonWord3.setColorFilter(Color.TRANSPARENT);
+
+                    // Update color tint of 'winning' button
+                    switch (word) {
                         case 0:
-                            //reward1.setImageResource(R.drawable.rewardball1colour);
+                            buttonWord1.setColorFilter(Color.parseColor(WIN_CYAN));
                             break;
                         case 1:
-                            //reward2.setImageResource(R.drawable.rewardball1colour);
+                            buttonWord2.setColorFilter(Color.parseColor(WIN_CYAN));
                             break;
                         case 2:
-                            //reward3.setImageResource(R.drawable.rewardball1colour);
+                            buttonWord3.setColorFilter(Color.parseColor(WIN_CYAN));
                             break;
                         case 3:
-                            //reward4.setImageResource(R.drawable.rewardball1colour);
                             break;
                     }
 
@@ -379,7 +392,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                         // The last set has completed
                         gameOver = true;
                         // Update colour of text
-                        timeView.setTextColor(Color.parseColor("#33ccff"));
+                        timeView.setTextColor(Color.parseColor(WIN_CYAN));
                     }
 
                     mNextAction = new Runnable() {
@@ -403,7 +416,73 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
 
                     playSoundWithActionAfterCompletion(ResourceSelector.getPositiveAffirmationSound(this));
                 } else {
-                    playSound(ResourceSelector.getNegativeAffirmationSound(this));
+
+                    // Highlight clicked word as errored
+                    switch (word) {
+                        case 0:
+                            buttonWord1.setColorFilter(Color.parseColor(ERR_RED));
+                            buttonWord2.setColorFilter(Color.TRANSPARENT);
+                            buttonWord3.setColorFilter(Color.TRANSPARENT);
+                            break;
+                        case 1:
+                            buttonWord1.setColorFilter(Color.TRANSPARENT);
+                            buttonWord2.setColorFilter(Color.parseColor(ERR_RED));
+                            buttonWord3.setColorFilter(Color.TRANSPARENT);
+                            break;
+                        case 2:
+                            buttonWord1.setColorFilter(Color.TRANSPARENT);
+                            buttonWord2.setColorFilter(Color.TRANSPARENT);
+                            buttonWord3.setColorFilter(Color.parseColor(ERR_RED));
+                            break;
+                        case 3:
+                            break;
+                    }
+
+                    // After completion of negative sound, ensure that
+                    // all button words revert back to original colour
+                    mNextAction = new Runnable() {
+
+                        @Override
+                        public void run() {
+                            if (!gameOver) {
+                                buttonWord1.setColorFilter(Color.TRANSPARENT);
+                                buttonWord2.setColorFilter(Color.TRANSPARENT);
+                                buttonWord3.setColorFilter(Color.TRANSPARENT);
+                            } else {
+                                setHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        // Update colour of text
+                                        timeView.setTextColor(Color.parseColor(LOSE_RED));
+
+                                        // Update colour tint of word to LOSE_RED
+                                        switch (mLastButtonWordClicked) {
+                                            case 0:
+                                                buttonWord1.setColorFilter(Color.parseColor(LOSE_RED));
+                                                buttonWord2.setColorFilter(Color.TRANSPARENT);
+                                                buttonWord3.setColorFilter(Color.TRANSPARENT);
+                                                break;
+                                            case 1:
+                                                buttonWord1.setColorFilter(Color.TRANSPARENT);
+                                                buttonWord2.setColorFilter(Color.parseColor(LOSE_RED));
+                                                buttonWord3.setColorFilter(Color.TRANSPARENT);
+                                                break;
+                                            case 2:
+                                                buttonWord1.setColorFilter(Color.TRANSPARENT);
+                                                buttonWord2.setColorFilter(Color.TRANSPARENT);
+                                                buttonWord3.setColorFilter(Color.parseColor(LOSE_RED));
+                                                break;
+                                            case 3:
+                                                break;
+                                        }
+
+                                        startConcluding();
+                                    }
+                                }, 350);
+                            }
+                        }
+                    };
+                    playSoundWithActionAfterCompletion(ResourceSelector.getNegativeAffirmationSound(this));
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -464,7 +543,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             // Update colour of text
-                            timeView.setTextColor(Color.parseColor("#cc0000"));
+                            timeView.setTextColor(Color.parseColor(LOSE_RED));
 
                             startConcluding();
                         }
@@ -680,6 +759,25 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         @Override
         public void run() {
 
+            // Change color tint back to normal
+            switch (correctWord) {
+                case 0:
+                    buttonWord1.setColorFilter(Color.TRANSPARENT);
+                    //reward1.setImageResource(R.drawable.rewardball1colour);
+                    break;
+                case 1:
+                    buttonWord2.setColorFilter(Color.TRANSPARENT);
+                    //reward2.setImageResource(R.drawable.rewardball1colour);
+                    break;
+                case 2:
+                    buttonWord3.setColorFilter(Color.TRANSPARENT);
+                    //reward3.setImageResource(R.drawable.rewardball1colour);
+                    break;
+                case 3:
+                    //reward4.setImageResource(R.drawable.rewardball1colour);
+                    break;
+            }
+
             // Debug
             System.out.println("-- SoundTrillTwelveActivity.playNextSet.run(Runnable) > Debug: METHOD CALLED");
 
@@ -773,5 +871,36 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
 
         // Debug
         System.out.println("-- SoundTrillTwelveActivity.onResume > Debug: METHOD CALLED");
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Call the super always
+        super.onDestroy();
+
+        if (mp != null) {
+            mp.release();
+            mp = null;
+        }
+
+        if (timeHandler != null) {
+            timeHandler.removeCallbacksAndMessages(null);
+            timeHandler = null;
+        }
+
+        if (setHandler != null) {
+            setHandler.removeCallbacksAndMessages(null);
+            setHandler = null;
+        }
+
+        if (emergencyHandler != null) {
+            emergencyHandler.removeCallbacksAndMessages(null);
+            emergencyHandler = null;
+        }
+
+        if (buttonEnablingHandler != null) {
+            buttonEnablingHandler.removeCallbacksAndMessages(null);
+            buttonEnablingHandler = null;
+        }
     }
 }

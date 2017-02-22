@@ -81,12 +81,16 @@ public class MathDrills {
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
             MathImages mathImages = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)); // drill 2 only has one record per unit. So we can select one at a time.
 
+            int numberOfImages = mathImages.getNumberOfImages();
+            int chosenNumberIndex = 0;
+
             ArrayList<ObjectAndSound<String>> numbers = new ArrayList<>();
             for (int i=0; i < numeralsFromDB.size(); i++ ) {
                 Numerals numeralFromDB = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(i));
                 ObjectAndSound<String> number = new ObjectAndSound<>(numeralFromDB.getBlackImage(), numeralFromDB.getSound(), "");
-                if (i==0){
+                if (numeralFromDB.getNumber() == numberOfImages){
                     number.setCustomData("1");
+                    chosenNumberIndex = i;
                 } else {
                     number.setCustomData("0");
                 }
@@ -99,7 +103,7 @@ public class MathDrills {
                     mathImages.getNumberOfImages(),
                     mathImages.getImageName(),
                     mathDrillFlowWord.getDrillSound2(),
-                    numbers.get(0).getObjectSound(),
+                    numbers.get(chosenNumberIndex).getObjectSound(),
                     numbers
             );
             intent = new Intent(context, MathsDrillTwoActivity.class);

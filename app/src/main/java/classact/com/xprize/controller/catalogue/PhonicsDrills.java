@@ -60,7 +60,7 @@ public class PhonicsDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D1: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D1: " + ex.getMessage());
+            throw new Exception("D1: " + ex.getMessage());
         }
         return intent;
     }
@@ -73,11 +73,9 @@ public class PhonicsDrills {
         try {
             DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
             Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
-            ArrayList<Integer> rightDrillWordIDs = new ArrayList();
-            rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
-            ArrayList<Integer> wrongDrillWordIDs = new ArrayList();
-            wrongDrillWordIDs = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
-            ArrayList<RightWrongPair> pairs = new ArrayList<RightWrongPair>();
+            ArrayList<Integer> rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
+            ArrayList<Integer> wrongDrillWordIDs = DrillWordHelper.getWrongDrillWordsByLetter(dbHelper.getReadableDatabase(), languageId, wordType, letter.getLetterName(), limit);
+            ArrayList<RightWrongPair> pairs = new ArrayList<>();
             for (int i=0; i < rightDrillWordIDs.size(); i++ ){ // we have the same amount of right and wrong words. So just loop over right words.
                 Word rightWord = WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i));
                 Word wrongWord = WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(i));
@@ -99,7 +97,7 @@ public class PhonicsDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D2: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D2: " + ex.getMessage());
+            throw new Exception("D2: " + ex.getMessage());
         }
         return intent;
     }
@@ -113,7 +111,7 @@ public class PhonicsDrills {
             DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
             Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
             ArrayList<SoundDrillThreeObject> sets = new ArrayList<>();
-            ArrayList<Integer> wrongLetters = LetterHelper.getWrongLetters(dbHelper.getReadableDatabase(), languageId, letterId, limit);
+            ArrayList<Integer> wrongLetters = LetterHelper.getWrongSingleLetters(dbHelper.getReadableDatabase(), languageId, letterId, limit);
             ObjectAndSound<String> objectAndSound = new ObjectAndSound<>(letter.getLetterPictureLowerCaseBlackURI(), letter.getLetterSoundURI(), letter.getPhonicSoundURI());
 
             for (int i=0; i < wrongLetters.size(); i++ ) { //
@@ -132,7 +130,7 @@ public class PhonicsDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D3: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D3: " + ex.getMessage());
+            throw new Exception("D3: " + ex.getMessage());
         }
         return intent;
     }
@@ -157,7 +155,7 @@ public class PhonicsDrills {
                 lastPosition=i;
             }
 
-            ArrayList<Integer> wrongDrillWordIDs = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, wronglimit);
+            ArrayList<Integer> wrongDrillWordIDs = DrillWordHelper.getWrongDrillWordsByLetter(dbHelper.getReadableDatabase(), languageId, wordType, letter.getLetterName(), wronglimit);
             for (int i=0; i < wrongDrillWordIDs.size(); i++ ){
                 Word word = WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(i));
 
@@ -173,7 +171,7 @@ public class PhonicsDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D4: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D4: " + ex.getMessage());
+            throw new Exception("D4: " + ex.getMessage());
         }
         return intent;
     }
@@ -197,7 +195,7 @@ public class PhonicsDrills {
 
             System.out.println("===== C =====");
             ArrayList<Integer> rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, rightlimit);
-            ArrayList<Integer> wrongDrillWordIDs = DrillWordHelper.getWrongDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, wronglimit);
+            ArrayList<Integer> wrongDrillWordIDs = DrillWordHelper.getWrongDrillWordsByLetter(dbHelper.getReadableDatabase(), languageId, wordType, letter.getLetterName(), wronglimit);
 
             System.out.println("===== D =====");
             System.out.println("rightDrillWordIDs.size(): " + rightDrillWordIDs.size());
@@ -279,7 +277,7 @@ public class PhonicsDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D6: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D6: " + ex.getMessage());
+            throw new Exception("D6: " + ex.getMessage());
         }
         return intent;
     }
@@ -384,7 +382,7 @@ public class PhonicsDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D8: " + sqlex.getMessage());
         } catch (Exception ex) {
-            throw new SQLiteException("D8: " + ex.getMessage());
+            throw new Exception("D8: " + ex.getMessage());
         }
         return intent;
     }

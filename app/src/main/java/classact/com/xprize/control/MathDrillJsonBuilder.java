@@ -519,12 +519,12 @@ public class MathDrillJsonBuilder {
                                            String intoTheSpaceSound){
 
         // Debug
-        System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: patternIntrodution = " + patternIntrodution);
-        System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: demoPattern = " + demoPattern);
-        System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: patternSound = " + patternSound);
-        System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: dragSound = " + dragSound);
-        System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: objectToDragSound = " + objectToDragSound);
-        System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: intoTheSpaceSound = " + intoTheSpaceSound);
+        System.out.println("MathDrillJsonBuilder.getDrillSevenJson > Debug: patternIntrodution = " + patternIntrodution);
+        System.out.println("MathDrillJsonBuilder.getDrillSevenJson > Debug: demoPattern = " + demoPattern);
+        System.out.println("MathDrillJsonBuilder.getDrillSevenJson > Debug: patternSound = " + patternSound);
+        System.out.println("MathDrillJsonBuilder.getDrillSevenJson > Debug: dragSound = " + dragSound);
+        System.out.println("MathDrillJsonBuilder.getDrillSevenJson > Debug: objectToDragSound = " + objectToDragSound);
+        System.out.println("MathDrillJsonBuilder.getDrillSevenJson > Debug: intoTheSpaceSound = " + intoTheSpaceSound);
 
         String drillData = "{\"pattern_introduction_sound\":" + ResourceDecoder.getIdentifier(context,patternIntrodution,"raw") + "," +
                 "\"drag_sound\":" + ResourceDecoder.getIdentifier(context,dragSound,"raw") + "," +

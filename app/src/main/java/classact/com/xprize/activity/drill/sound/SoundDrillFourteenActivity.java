@@ -1,16 +1,25 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.Date;
 
 import classact.com.xprize.R;
 import classact.com.xprize.view.WriteView;
@@ -36,7 +45,7 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
     private ImageView receptable9;
     private LinearLayout writingContainer;
     private LinearLayout displayContainer;
-    private WriteView writingView;
+    private DrillFourteenWriteView writingView;
     private JSONArray words;
     private int currentWord;
     private MediaPlayer mp;
@@ -45,6 +54,19 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
 
     String textholder;
     Handler handler;
+
+    private boolean mCanWrite;
+    private boolean mIsWriting;
+    private long mLastWrittenTime;
+    private TextView mTimer;
+    private int mTimerCounter;
+    private boolean mTimerReset;
+    private RelativeLayout mRootView;
+    private LinearLayout mItemsParent;
+    private LinearLayout mReceptaclesParent;
+
+    private final int TIMER_MAX = 2;
+    private final int DRAW_WAIT_TIME = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +92,14 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
         receptable9 = (ImageView) findViewById(R.id.loc9);
         writingContainer = (LinearLayout) findViewById(R.id.writing_canvas_container);
         displayContainer = (LinearLayout)findViewById(R.id.layout1);
+        mRootView = (RelativeLayout) displayContainer.getParent();
+        mItemsParent = (LinearLayout) item1.getParent();
+        mReceptaclesParent = (LinearLayout) receptable1.getParent();
+
+        // mItemsParent.setGravity(Gravity.CENTER);
+        // mReceptaclesParent.setGravity(Gravity.CENTER);
+        // displayContainer.setGravity(Gravity.CENTER);
+
         String drillData = getIntent().getExtras().getString("data");
         handler = new Handler();
         initialiseData(drillData);
@@ -90,11 +120,39 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
 
     private void startDrill(){
         try {
+            mCanWrite = false;
+            mTimerReset = true;
+            mIsWriting = false;
+            mLastWrittenTime = 0;
+
             loadWord();
             displayContainer.setVisibility(View.INVISIBLE);
             writingContainer.removeAllViews();
-            writingView = new WriteView(this,0);
+            mRootView.removeView(mTimer);
+            writingView = new DrillFourteenWriteView(this,0);
+            writingView.setThisActivity(this);
             writingContainer.addView(writingView);
+
+            // Add draw timer
+            mTimer = new TextView(getApplicationContext());
+            mTimer.setBackgroundResource(android.R.color.transparent);
+            mTimerCounter = TIMER_MAX;
+
+            mTimer.setText(String.valueOf(mTimerCounter));
+            mTimer.setTypeface(null, Typeface.BOLD);
+            mTimer.setTextSize(115.0f);
+            mTimer.setAlpha(0.2f);
+            mTimer.setTextColor(Color.DKGRAY);
+            LinearLayout.LayoutParams timerLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            timerLayoutParams.topMargin = 175;
+            timerLayoutParams.leftMargin = 2100;
+            mTimer.setLayoutParams(timerLayoutParams);
+            mTimer.setVisibility(View.INVISIBLE);
+            mRootView.addView(mTimer);
+
+            // Get position on scree
+
             int sound = allData.getInt("write");
             if (mp == null)
                 mp = MediaPlayer.create(this, sound);
@@ -129,7 +187,7 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
-                    handler.postDelayed(showWordRunnable,4000);
+                    mCanWrite = true;
                 }
             });
         }
@@ -247,9 +305,17 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
             displayContainer.setVisibility(View.VISIBLE);
             int sound = allData.getInt("this_is");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -257,10 +323,15 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                     repeatWord();
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
+            if (mp != null) {
+                mp.release();
+            }
+            mp = null;
+            repeatWord();
         }
     }
 
@@ -268,9 +339,17 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
         try {
             int sound =  words.getJSONObject(currentWord - 1).getInt("sound");
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -278,10 +357,15 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                     handler.postDelayed(wereYouCorrectRunnable,100);
                 }
             });
+            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
+            if (mp != null) {
+                mp.release();
+            }
+            mp = null;
+            handler.postDelayed(wereYouCorrectRunnable,100);
         }
     }
 
@@ -291,9 +375,17 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
             try {
                 int sound = allData.getInt("were_you_correct");
                 Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+                if (mp == null) {
+                    mp = new MediaPlayer();
+                }
+                mp.reset();
                 mp.setDataSource(getApplicationContext(), myUri);
-                mp.prepare();
-                mp.start();
+                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mp.start();
+                    }
+                });
                 mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
@@ -301,10 +393,15 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                         handler.postDelayed(continueRunnable, 2000);
                     }
                 });
+                mp.prepare();
             }
             catch (Exception ex){
                 ex.printStackTrace();
-                finish();
+                if (mp != null) {
+                    mp.release();
+                }
+                mp = null;
+                handler.postDelayed(continueRunnable, 2000);
             }
         }
     };
@@ -313,10 +410,14 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
         @Override
         public void run() {
             currentWord++;
-            if (currentWord <= 5)
+            if (currentWord <= words.length()) {
                 startDrill();
-            else
+            } else {
+                if (mp != null) {
+                    mp.release();
+                }
                 finish();
+            }
         }
     };
 
@@ -349,9 +450,17 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
     private void playSound(int sound){
         try {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -363,22 +472,131 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                         finish();
                 }
             });
+            mp.prepare();
         }
          catch (Exception ex){
              ex.printStackTrace();
-             finish();
+             if (mp != null) {
+                 mp.release();
+             }
+             mp = null;
+             currentWord++;
+             if (currentWord <= 5)
+                 startDrill();
+             else
+                 finish();
          }
     }
 
-    Runnable checkProgress = new Runnable() {
+    private class DrillFourteenWriteView extends WriteView {
+
+        private SoundDrillFourteenActivity mThisActivity;
+
+        private DrillFourteenWriteView(Context context, int background) {
+            super(context, background);
+        }
+
+        private void setThisActivity(SoundDrillFourteenActivity thisActivity) {
+            mThisActivity = thisActivity;
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            super.onTouchEvent(event);
+
+            if (mCanWrite) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mThisActivity.setIsWriting(true);
+                        mThisActivity.setLastWrittenTime(0);
+                        mThisActivity.showTimer(false);
+                        System.out.println("Writing not complete!");
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        mThisActivity.setIsWriting(false);
+                        mThisActivity.setTimerReset(true);
+                        mThisActivity.setLastWrittenTime(new Date().getTime());
+
+                        handler.removeCallbacks(countDown);
+                        handler.postDelayed(countDown, DRAW_WAIT_TIME);
+
+                        System.out.println("Writing complete!");
+                        break;
+                }
+            }
+            return true;
+        }
+    }
+
+    private Runnable countDown = new Runnable() {
         @Override
         public void run() {
-            currentTries ++;
-            //checkWriting();
+            try {
+
+                System.out.println("Starting countdown!! " + mIsWriting + ", " + mLastWrittenTime);
+
+                long currentTime = new Date().getTime();
+
+                if (!(mIsWriting || mLastWrittenTime == 0l || (currentTime - mLastWrittenTime) < DRAW_WAIT_TIME )) {
+                    if (mTimerReset) {
+                        mTimerReset = false;
+                        mTimerCounter = TIMER_MAX;
+                    }
+
+                    mTimer.setText(String.valueOf(mTimerCounter));
+                    mTimer.setVisibility(View.VISIBLE);
+
+                    if (mTimerCounter > 0) {
+                        mTimerCounter--;
+                        handler.postDelayed(countDown, 1000);
+                    } else {
+                        mCanWrite = false;
+                        mTimer.setTextColor(Color.parseColor("#33ccff"));
+                        handler.postDelayed(showWordRunnable, 500);
+                    }
+                }
+            } catch (Exception ex) {
+                System.err.println("==========================================");
+                System.err.println("SDFourteenActivity.countDown > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("==========================================");
+            }
         }
     };
 
-//    @Override
-//    public void onBackPressed() {
-//    }
+    public void showTimer(boolean showTimer) {
+        if (showTimer) {
+            mTimer.setVisibility(View.VISIBLE);
+        } else {
+            mTimer.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void setIsWriting(boolean isWriting) {
+        mIsWriting = isWriting;
+    }
+
+    public void setTimerReset(boolean timerReset) {
+        mTimerReset = timerReset;
+    }
+
+    public void setLastWrittenTime(long lastWrittenTime) {
+        mLastWrittenTime = lastWrittenTime;
+    }
+
+    public boolean getIsWriting() {
+        return mIsWriting;
+    }
+
+    public boolean getTimerReset() {
+        return mTimerReset;
+    }
+
+    public long getLastWrittenTime() {
+        return mLastWrittenTime;
+    }
 }

@@ -2,6 +2,7 @@ package classact.com.xprize;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -32,9 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Database hack related
     private final boolean HACK_NEXT_UNIT = false;
-    private final int HACK_UNIT_ID = 2;
+    private final int HACK_UNIT_ID = 1;
     private final int HACK_UNIT_SUB_ID_IN_PROGRESS = 0;
-    private final int HACK_DRILL_LAST_PLAYED = 22;
+    private final int HACK_DRILL_LAST_PLAYED = 0;
     private final int HACK_UNIT_FIRST_TIME = 0;
     private final int HACK_UNIT_FIRST_TIME_MOVIE = 1;
 
@@ -45,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        System.out.println("!!!!!!!!!!!!!!!!!!!! " + Build.VERSION.SECURITY_PATCH + ", " + Build.VERSION.RELEASE);
 
         mInitialized = false;
 
@@ -151,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
             int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
 
             // Finale override hack on unit 3
-            if (unitId == 3) {
+            if (unitId == 4) {
 
                 // Just go to finale. We still need to figure out how to get 20 chapter
                 // videos into the sparse image ... for now, only till chapter 2
@@ -533,12 +536,12 @@ public class MainActivity extends AppCompatActivity {
                     int currentDrill = u.getUnitDrillLastPlayed() + 1;
                     int nextDrill = currentDrill + 1;
                     ArrayList<Integer> buggedDrills = new ArrayList<>();
-                    //if (unitId == 1) {
+                    if (unitId == 1) {
                         // No Word drills #13, 14 and 15 for unit 1
                         buggedDrills.add(13);
                         buggedDrills.add(14);
                         buggedDrills.add(15);
-                    //}
+                    }
                     if (buggedDrills.size() > 0) {
                         for (Integer buggedDrill : buggedDrills) {
                             if (buggedDrill >= nextDrill) {

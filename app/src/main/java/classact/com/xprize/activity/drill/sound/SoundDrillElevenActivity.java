@@ -433,7 +433,11 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
 
     private void playThisSound(String sound){
         try {
+            System.out.println("SoundDrillElevenActivity.playThisSound(\"" + sound + "\") > Debug: METHOD CALLED");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
             mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -458,7 +462,10 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            if (startPair == 2) {
+                handler.postDelayed(isCorrectPair, 500);
+            }
         }
     }
 
@@ -487,6 +494,10 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
     private void playSound(int soundid){
         try {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -514,6 +525,10 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
     private void playSoundAndEnd(int soundid){
         try {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
             mp.setDataSource(getApplicationContext(), myUri);
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
