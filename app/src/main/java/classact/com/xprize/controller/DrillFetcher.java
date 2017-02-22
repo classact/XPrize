@@ -446,7 +446,7 @@ public class DrillFetcher {
                     limit = 5;
                     subId = 0;
                     if (languageId == Languages.ENGLISH) {
-                        boyGirl = 4;
+                        boyGirl = 2;
                     }
 
                     System.out.println("DrillFetcher.getMathDrill.case 2 > Debug: languageId " +

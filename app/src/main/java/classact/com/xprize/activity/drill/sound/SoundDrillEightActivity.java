@@ -243,9 +243,9 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
     public void prepareWritingCanvas(){
         mCanDraw = false;
 
-        writingView = new DrillEightWriteView(this,R.drawable.backgroundtrace1);
+        writingView = new DrillEightWriteView(this, R.drawable.backgroundtrace1, true);
         writingView.setThisActivity(this);
-        writingView.setAlpha(0.6f);
+        writingView.setAlpha(0.675f);
         writingView.setLayoutParams(drawArea.getLayoutParams());
         drawArea.removeAllViews();
         drawArea.addView(letter);
@@ -261,11 +261,11 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         mTimer.setTypeface(null, Typeface.BOLD);
         mTimer.setTextSize(115.0f);
         mTimer.setAlpha(0.4f);
-        mTimer.setTextColor(Color.DKGRAY);
+        mTimer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
         LinearLayout.LayoutParams timerLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
-        timerLayoutParams.topMargin = 175;
-        timerLayoutParams.leftMargin = 2100;
+        timerLayoutParams.topMargin = 225;
+        timerLayoutParams.leftMargin = 1800;
         mTimer.setLayoutParams(timerLayoutParams);
         mTimer.setVisibility(View.INVISIBLE);
         drawArea.addView(mTimer);
@@ -475,8 +475,8 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
 
         private SoundDrillEightActivity mThisActivity;
 
-        private DrillEightWriteView(Context context, int background) {
-            super(context, background);
+        private DrillEightWriteView(Context context, int background, boolean transparent) {
+            super(context, background, transparent);
         }
 
         private void setThisActivity(SoundDrillEightActivity thisActivity) {
