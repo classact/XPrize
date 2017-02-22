@@ -376,7 +376,7 @@ public class WordDrills {
     }
 
     public static Intent D5(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
-                            Letter letter, Word word1, Word word2, Word word3, //Word word4,
+                            Letter letter, ArrayList<Word> words,
                             String drillSound1, String drillSound2, String drillSound3) throws SQLiteException, Exception {
 
         // Debug
@@ -385,79 +385,32 @@ public class WordDrills {
         Intent intent;
 
         try {
-            ArrayList<SpelledWord> words = new ArrayList<>();
-            SpelledWord set = new SpelledWord();
-            ObjectAndSound<String> word = new ObjectAndSound<>("", word1.getWordSoundURI(), "");
-            word.setSpelling(word1.getWordName());
-            set.setWord(word);
-            ArrayList<DraggableImage<String>> items = new ArrayList<>();
+            ArrayList<SpelledWord> spelledWords = new ArrayList<>();
 
-            int count = 0;
-            for (int i = 0; i < word1.getWordName().length(); i++) {
-                Letter thisLetter = LetterHelper.getLetterByName(dbHelper.getReadableDatabase(), languageId, Character.toString(word1.getWordName().charAt(i)));
-                DraggableImage<String> item = new DraggableImage<>(0, 0, thisLetter.getLetterPictureLowerCaseBlackURI());
-                count = word1.getWordName().length() - word1.getWordName().substring(0, word1.getWordName().length() - 1).replaceAll(thisLetter.getLetterName(), "").length();
-                item.setExtraData(String.valueOf(i+1));
-                items.add(item);
+            for (int i = 0; i < words.size(); i++) {
+
+                // Get word
+                Word word = words.get(i);
+
+                SpelledWord set = new SpelledWord();
+                ObjectAndSound<String> onsWord = new ObjectAndSound<>("", word.getWordSoundURI(), "");
+                onsWord.setSpelling(word.getWordName());
+                set.setWord(onsWord);
+
+                ArrayList<DraggableImage<String>> items = new ArrayList<>();
+
+                for (int j = 0; j < word.getWordName().length(); j++) {
+                    Letter thisLetter = LetterHelper.getLetterByName(dbHelper.getReadableDatabase(), languageId, Character.toString(word.getWordName().charAt(j)));
+                    DraggableImage<String> item = new DraggableImage<>(0, 0, thisLetter.getLetterPictureLowerCaseBlackURI());
+                    item.setExtraData(String.valueOf(j+1));
+                    items.add(item);
+                }
+
+                set.setLettersImages(items);
+                spelledWords.add(set);
             }
 
-            set.setLettersImages(items);
-            words.add(set);
-            //Two
-            set = new SpelledWord();
-            word = new ObjectAndSound<>("", word2.getWordSoundURI(), "");
-            word.setSpelling(word2.getWordName());
-            set.setWord(word);
-            items = new ArrayList<>();
-
-            count = 0;
-            for (int i = 0; i < word2.getWordName().length(); i++) {
-                Letter thisLetter = LetterHelper.getLetterByName(dbHelper.getReadableDatabase(), languageId, Character.toString(word2.getWordName().charAt(i)));
-                DraggableImage<String> item = new DraggableImage<>(0, 0, thisLetter.getLetterPictureLowerCaseBlackURI());
-                count = word2.getWordName().length() - word2.getWordName().substring(0, word2.getWordName().length() - 1).replaceAll(thisLetter.getLetterName(), "").length();
-                item.setExtraData(String.valueOf(i+1));
-                items.add(item);
-            }
-
-            set.setLettersImages(items);
-            words.add(set);
-            //Three
-            set = new SpelledWord();
-            word = new ObjectAndSound<>("", word3.getWordSoundURI(), "");
-            word.setSpelling(word3.getWordName());
-            set.setWord(word);
-            items = new ArrayList<>();
-
-            count = 0;
-            for (int i = 0; i < word3.getWordName().length(); i++) {
-                Letter thisLetter = LetterHelper.getLetterByName(dbHelper.getReadableDatabase(), languageId, Character.toString(word3.getWordName().charAt(i)));
-                DraggableImage<String> item = new DraggableImage<>(0, 0, thisLetter.getLetterPictureLowerCaseBlackURI());
-                count = word3.getWordName().length() - word3.getWordName().substring(0, word3.getWordName().length() - 1).replaceAll(thisLetter.getLetterName(), "").length();
-                item.setExtraData(String.valueOf(i+1));
-                items.add(item);
-            }
-            set.setLettersImages(items);
-            words.add(set);
-        /*
-        //Four
-        set = new SpelledWord();
-        word = new ObjectAndSound<>("", word4.getWordSoundURI(), "");
-        word.setSpelling(word4.getWordName());
-        set.setWord(word);
-        items = new ArrayList<>();
-
-
-        for (int i = 0; i < word4.getWordName().length(); i++) {
-            Letter thisLetter = LetterHelper.getLetterByName(dbHelper.getReadableDatabase(), languageId, Character.toString(word4.getWordName().charAt(i)));
-            DraggableImage<String> item = new DraggableImage<>(0, 0, thisLetter.getLetterPictureLowerCaseBlackURI());
-            count = word4.getWordName().length() - word4.getWordName().substring(0, word4.getWordName().length() - 1).replaceAll(thisLetter.getLetterName(), "").length();
-            item.setExtraData(String.valueOf(i+1));
-            items.add(item);
-        }
-        set.setLettersImages(items);
-        words.add(set);
-        // */
-            String drillData = SoundDrillJsonBuilder.getSoundDrillFourteenJson(context, drillSound1, drillSound2, drillSound3, words);
+            String drillData = SoundDrillJsonBuilder.getSoundDrillFourteenJson(context, drillSound1, drillSound2, drillSound3, spelledWords);
             intent = new Intent(context, SoundDrillFourteenActivity.class);
             intent.putExtra("data", drillData);
 

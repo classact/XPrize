@@ -21,6 +21,7 @@ import classact.com.xprize.database.helper.NumeralHelper;
 import classact.com.xprize.database.helper.UnitHelper;
 import classact.com.xprize.database.helper.WordHelper;
 import classact.com.xprize.database.model.DrillFlowWords;
+import classact.com.xprize.database.model.DrillWords;
 import classact.com.xprize.database.model.Letter;
 import classact.com.xprize.database.model.Numerals;
 import classact.com.xprize.database.model.Unit;
@@ -335,13 +336,16 @@ public class DrillFetcher {
                     DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
                     Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
+                    // Extract drill words
+                    ArrayList<Word> drillWords = new ArrayList<>();
+                    for (int i = 0; i < rightDrillWordIDs.size(); i++) {
+                        drillWords.add(WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i)));
+                    }
+
                     // Fetch D5
                     intent = WordDrills.D5(context, dbHelper, unitId, drillId, languageId,
                             letter,
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(0)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(1)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(2)),
-                            //WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(3)),
+                            drillWords,
                             drillFlowWord.getDrillSound1(),
                             drillFlowWord.getDrillSound2(),
                             drillFlowWord.getDrillSound3()
