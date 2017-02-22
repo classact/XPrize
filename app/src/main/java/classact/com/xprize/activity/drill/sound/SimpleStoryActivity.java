@@ -196,8 +196,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         currentState = STATE_0;
 
-        // playPrompt("read_each_sentence_after_mother_sound");
-        playPrompt("now_answer_sound");
+        playPrompt("read_each_sentence_after_mother_sound");
+        // playPrompt("now_answer_sound");
     }
 
     class PromptListener implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
@@ -2401,7 +2401,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
                             imageView.setLayoutParams(imageViewParams);
 
                             // Add listeners to Image View
-                            imageView.setOnClickListener(new ComprehensionTouchListener(thisActivity, i, k));
+                            imageView.setOnClickListener(new ComprehensionTouchListener(thisActivity, i, j));
 
                             // Add the Image View to list of comprehension question Image Views
                             comprehensionQuestionImageViews.add(imageView);
