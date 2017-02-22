@@ -199,6 +199,7 @@ public class MathDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D4: " + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new Exception("D4: " + ex.getMessage());
         }
         return intent;
