@@ -228,8 +228,6 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
             resetReceptacleEntries();
 
-            System.out.println(":: prepareDrill A");
-
             // Reset correct items
             correctItems = 0;
 
@@ -243,8 +241,6 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
             mLetterOrder = FisherYates.shuffle(numberOfLetters);
 
-            System.out.println(":: prepareDrill B");
-
             for (int i = 0; i < mContainers.length; i++) {
                 if (i >= numberOfLetters) {
                     // Make rogue containers invisible
@@ -253,17 +249,15 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                     // Remove all rogue receptacles
                     mReceptaclesParent.removeView(mReceptacles[i]);
 
-                    System.out.println(":: prepareDrill CA");
-
                 } else {
 
-                    System.out.println(":: prepareDrill CBA");
-
                     // Get the letter index (a shuffled index)
-                    int letterIndex = mLetterOrder[i];
+                    int containerIndex = mLetterOrder[i];
+
+                    System.out.println(":: BINDING Letter " + i + " to container " + containerIndex);
 
                     // Extract the letter from data
-                    JSONObject letter = letters.getJSONObject(letterIndex);
+                    JSONObject letter = letters.getJSONObject(i);
 
                     // Get letter image resource id
                     int letterImageResourceId = letter.getInt("letter");
@@ -273,19 +267,19 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                     letterImageView.setImageResource(letterImageResourceId);
 
                     // Add touch listener to image view
-                    letterImageView.setOnTouchListener(new TouchAndDragListener(mThisActivity, i, letterIndex));
+                    letterImageView.setOnTouchListener(new TouchAndDragListener(mThisActivity, containerIndex, i));
 
                     // Get container
-                    LinearLayout container = mContainers[i];
+                    LinearLayout container = mContainers[containerIndex];
 
                     // Add image view to container
                     container.addView(letterImageView);
 
                     // Add image view to list of letter image views
-                    mLetterImageViews[letterIndex] = letterImageView;
+                    mLetterImageViews[i] = letterImageView;
 
                     // Add letter image resource id to list of letter image resource ids
-                    mLetterImageResourceIds[letterIndex] = letterImageResourceId;
+                    mLetterImageResourceIds[i] = letterImageResourceId;
 
                     // Get receptacle
                     ImageView receptacle = mReceptacles[i];
@@ -298,12 +292,8 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
                     // Show receptacle
                     receptacle.setVisibility(View.VISIBLE);
-
-                    System.out.println(":: prepareDrill CBB");
                 }
             }
-
-            System.out.println(":: prepareDrill D");
 
             playSound(DRAG_THE_LETTERS_TO_WRITE, mDragTheLettersToWriteSound);
         }
@@ -343,7 +333,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         public boolean onDrag(View v, DragEvent event) {
 
             // Debug
-            System.out.println("SDThirteenActivity.TouchAndDragListener(class).onDrag > Debug: MC");
+            // System.out.println("SDThirteenActivity.TouchAndDragListener(class).onDrag > Debug: MC");
 
             try {
                 // Get game on
@@ -416,6 +406,8 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
                             // Get letter order
                             int[] letterOrder = mThisActivity.getLetterOrder();
+
+                            System.out.println(":: Letter Order: " + letterOrder[mActualIndex]);
 
                             // Get container for dragged image view
                             LinearLayout container = containers[letterOrder[mActualIndex]];
