@@ -1,13 +1,20 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 
 import classact.com.xprize.R;
 import classact.com.xprize.utils.FetchResource;
@@ -28,7 +36,7 @@ import classact.com.xprize.view.WriteView;
 public class SoundDrillEightActivity extends AppCompatActivity implements PathAnimationView.AnimationDone{
     private RelativeLayout drawArea;
     private PathAnimationView animationView;
-    private WriteView writingView;
+    private DrillEightWriteView writingView;
     private JSONObject drillData;
     private JSONArray paths;
     private ImageView letter;
@@ -37,20 +45,48 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
     private int numberOfChecks = 0;
     private int repeat = 1;
 
+    private boolean mCanDraw;
+    private boolean mIsDrawing;
+    private long mLastDrawnTime;
+    private TextView mTimer;
+    private int mTimerCounter;
+    private boolean mTimerReset;
+
+    private final int TIMER_MAX = 2;
+    private final int DRAW_WAIT_TIME = 1000;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_eight);
         letter = (ImageView)findViewById(R.id.item1);
-        drawArea =(RelativeLayout) findViewById(R.id.draw_area);
+        drawArea = (RelativeLayout) findViewById(R.id.draw_area);
         String drillData = getIntent().getExtras().getString("data");
         initialiseData(drillData);
         handler = new Handler(Looper.getMainLooper());
         startDrill();
     }
 
+    private void initialiseData(String data){
+        try {
+            drillData = new JSONObject(data);
+            //getWindow().getDecorView().getRootView().setBackgroundResource(drillData.getInt("background"));
+            //int item = drillData.getInt("letter");
+            //letter.setImageResource(item);
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            if (mp != null) {
+                mp.release();
+            }
+            finish();
+        }
+    }
+
     private void startDrill(){
         try {
+            mCanDraw = false;
+
             drawArea.removeAllViews();
             drawArea.addView(letter);
             int item = drillData.getInt("big_letter");
@@ -205,12 +241,35 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
     }
 
     public void prepareWritingCanvas(){
-        writingView = new WriteView(this,R.drawable.backgroundtrace1);
+        mCanDraw = false;
+
+        writingView = new DrillEightWriteView(this,R.drawable.backgroundtrace1);
+        writingView.setThisActivity(this);
         writingView.setAlpha(0.6f);
         writingView.setLayoutParams(drawArea.getLayoutParams());
         drawArea.removeAllViews();
         drawArea.addView(letter);
         drawArea.addView(writingView);
+
+        // Add draw timer
+        drawArea.removeView(mTimer);
+        mTimer = new TextView(getApplicationContext());
+        mTimer.setBackgroundResource(android.R.color.transparent);
+        mTimerCounter = TIMER_MAX;
+
+        mTimer.setText(String.valueOf(mTimerCounter));
+        mTimer.setTypeface(null, Typeface.BOLD);
+        mTimer.setTextSize(115.0f);
+        mTimer.setAlpha(0.4f);
+        mTimer.setTextColor(Color.DKGRAY);
+        LinearLayout.LayoutParams timerLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        timerLayoutParams.topMargin = 175;
+        timerLayoutParams.leftMargin = 2100;
+        mTimer.setLayoutParams(timerLayoutParams);
+        mTimer.setVisibility(View.INVISIBLE);
+        drawArea.addView(mTimer);
+
         playYouTry();
     }
 
@@ -234,7 +293,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
-                    handler.postDelayed(checkDone,4000);
+                    mCanDraw = true;
                 }
             });
             mp.prepare();
@@ -277,7 +336,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
                     }
                 });
                 mp.prepare();
-            } else {
+            } /* else {
                 if (numberOfChecks % 2 == 0) {
                     playYouTry();
                 } else {
@@ -285,7 +344,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
                 }
                 numberOfChecks++;
 
-            }
+            } */
         } catch (IOException ioex) {
             System.err.println("SoundDrillEightActivity.checkIsDone() > IOException: " + ioex.getMessage());
             ioex.printStackTrace();
@@ -375,20 +434,116 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         return pathsArray;
     }
 
-    private void initialiseData(String data){
-        try {
-            drillData = new JSONObject(data);
-            //getWindow().getDecorView().getRootView().setBackgroundResource(drillData.getInt("background"));
-            //int item = drillData.getInt("letter");
-            //letter.setImageResource(item);
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
+    private Runnable countDown = new Runnable() {
+        @Override
+        public void run() {
+            try {
+
+                System.out.println("Starting countdown!! " + mIsDrawing + ", " + mLastDrawnTime);
+
+                long currentTime = new Date().getTime();
+
+                if (!(mIsDrawing || mLastDrawnTime == 0l || (currentTime - mLastDrawnTime) < DRAW_WAIT_TIME )) {
+                    if (mTimerReset) {
+                        mTimerReset = false;
+                        mTimerCounter = TIMER_MAX;
+                    }
+
+                    mTimer.setText(String.valueOf(mTimerCounter));
+                    mTimer.setVisibility(View.VISIBLE);
+
+                    if (mTimerCounter > 0) {
+                        mTimerCounter--;
+                        handler.postDelayed(countDown, 1000);
+                    } else {
+                        mCanDraw = false;
+                        mTimer.setTextColor(Color.parseColor("#33ccff"));
+                        handler.postDelayed(checkDone, 500);
+                    }
+                }
+            } catch (Exception ex) {
+                System.err.println("==========================================");
+                System.err.println("SDFourteenActivity.countDown > Exception: " + ex.getMessage());
+                System.err.println("------------------------------------------");
+                ex.printStackTrace();
+                System.err.println("==========================================");
             }
-            finish();
         }
+    };
+
+    private class DrillEightWriteView extends WriteView {
+
+        private SoundDrillEightActivity mThisActivity;
+
+        private DrillEightWriteView(Context context, int background) {
+            super(context, background);
+        }
+
+        private void setThisActivity(SoundDrillEightActivity thisActivity) {
+            mThisActivity = thisActivity;
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            super.onTouchEvent(event);
+
+            if (mCanDraw) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mThisActivity.setIsDrawing(true);
+                        mThisActivity.setLastDrawnTime(0);
+                        mThisActivity.showTimer(false);
+                        System.out.println("Drawing not complete!");
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        mThisActivity.setIsDrawing(false);
+                        mThisActivity.setTimerReset(true);
+                        mThisActivity.setLastDrawnTime(new Date().getTime());
+
+                        handler.removeCallbacks(countDown);
+                        handler.postDelayed(countDown, DRAW_WAIT_TIME);
+
+                        System.out.println("Drawing complete!");
+                        break;
+                }
+            }
+            return true;
+        }
+    }
+
+    public void showTimer(boolean showTimer) {
+        if (showTimer) {
+            mTimer.setVisibility(View.VISIBLE);
+        } else {
+            mTimer.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void setIsDrawing(boolean isDrawing) {
+        mIsDrawing = isDrawing;
+    }
+
+    public void setTimerReset(boolean timerReset) {
+        mTimerReset = timerReset;
+    }
+
+    public void setLastDrawnTime(long lastDrawnTime) {
+        mLastDrawnTime = lastDrawnTime;
+    }
+
+    public boolean getIsDrawing() {
+        return mIsDrawing;
+    }
+
+    public boolean getTimerReset() {
+        return mTimerReset;
+    }
+
+    public long getLastDrawnTime() {
+        return mLastDrawnTime;
     }
 
    // @Override
