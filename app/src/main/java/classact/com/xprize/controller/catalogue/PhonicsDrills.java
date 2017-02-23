@@ -60,6 +60,7 @@ public class PhonicsDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D1: " + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new Exception("D1: " + ex.getMessage());
         }
         return intent;
@@ -97,6 +98,7 @@ public class PhonicsDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D2: " + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new Exception("D2: " + ex.getMessage());
         }
         return intent;
@@ -130,6 +132,7 @@ public class PhonicsDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D3: " + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new Exception("D3: " + ex.getMessage());
         }
         return intent;
@@ -171,6 +174,7 @@ public class PhonicsDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D4: " + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new Exception("D4: " + ex.getMessage());
         }
         return intent;
@@ -256,6 +260,7 @@ public class PhonicsDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D5: " + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new Exception("D5: " + ex.getMessage());
         }
         return intent;
@@ -277,6 +282,7 @@ public class PhonicsDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D6: " + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new Exception("D6: " + ex.getMessage());
         }
         return intent;
@@ -382,6 +388,7 @@ public class PhonicsDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D8: " + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new Exception("D8: " + ex.getMessage());
         }
         return intent;
@@ -403,6 +410,7 @@ public class PhonicsDrills {
         } catch (SQLiteException sqlex) {
             throw new SQLiteException("D9 > SQLiteException: " + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new Exception("D9 > Exception: " + ex.getMessage());
         }
         return intent;
