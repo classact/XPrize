@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import classact.com.xprize.R;
+import classact.com.xprize.common.Code;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 import classact.com.xprize.view.PathAnimationView;
@@ -546,7 +548,23 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         return mLastDrawnTime;
     }
 
-   // @Override
-   // public void onBackPressed() {
-   // }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            onBackPressed();
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mp != null) {
+            mp.stop();
+            mp.release();
+        }
+        setResult(Code.NAV_MENU);
+        finish();
+    }
 }

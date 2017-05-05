@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.view.DragEvent;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import classact.com.xprize.R;
+import classact.com.xprize.common.Code;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class MathsDrillSixAndThreeActivity extends AppCompatActivity {
@@ -399,4 +401,23 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            onBackPressed();
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mp != null) {
+            mp.stop();
+            mp.release();
+        }
+        setResult(Code.NAV_MENU);
+        finish();
+    }
 }
