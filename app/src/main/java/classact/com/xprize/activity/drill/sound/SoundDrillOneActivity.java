@@ -1,17 +1,21 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.widget.ImageView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.menu.LanguageSelect;
+import classact.com.xprize.common.Code;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.SoundPrescence;
 
@@ -348,8 +352,24 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             finish();
         }
     }
-//    @Override
-//    public void onBackPressed() {
-//    }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            onBackPressed();
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mp != null) {
+            mp.stop();
+            mp.release();
+        }
+        setResult(Code.NAV_MENU);
+        finish();
+    }
 }

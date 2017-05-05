@@ -6,9 +6,12 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.widget.RelativeLayout;
 
 import java.io.IOException;
+
+import classact.com.xprize.common.Code;
 
 public abstract class LinkTemplate extends AppCompatActivity {
 
@@ -202,4 +205,21 @@ public abstract class LinkTemplate extends AppCompatActivity {
     }
 
     public abstract void finishIntent();
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            onBackPressed();
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        stopPlayer();
+        setResult(Code.NAV_MENU);
+        finish();
+    }
 }
