@@ -31,4 +31,5 @@ public class Code {
     public final static int CHAPTER_END_SPLASH = 12;
 
     public final static int NAV_MENU = 13;
+    public final static int EXIT = 999999;
 }

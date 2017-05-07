@@ -3,11 +3,14 @@ package classact.com.xprize.activity.menu;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -107,7 +110,9 @@ public class LanguageSelect extends AppCompatActivity {
             // Set chapter spinner selected item
             chapterSpinner.setSelection(chapterId, true);
             // Init chapter spinner listener
-            chapterSpinnerListener = new ChapterSpinnerListener(getApplicationContext(), 0);
+            chapterSpinnerListener = new ChapterSpinnerListener(
+                    getApplicationContext(),
+                    chapterSpinner.getSelectedItemPosition());
             // Set chapter spinner listener
             chapterSpinner.setOnItemSelectedListener(chapterSpinnerListener);
             // Add chapter spinner to layout
@@ -187,7 +192,9 @@ public class LanguageSelect extends AppCompatActivity {
             // Set chapter activity spinner selected item
             chapterActivitySpinner.setSelection(chapterActivityId, true);
             // Init chapter activity spinner listener
-            chapterActivitySpinnerListener = new ChapterActivitySpinnerListener(getApplicationContext(), 0);
+            chapterActivitySpinnerListener = new ChapterActivitySpinnerListener(
+                    getApplicationContext(),
+                    chapterActivitySpinner.getSelectedItemPosition());
             // Set chapter activity spinner listener
             chapterActivitySpinner.setOnItemSelectedListener(chapterActivitySpinnerListener);
             // Add chapter activity spinner to layout
@@ -219,7 +226,9 @@ public class LanguageSelect extends AppCompatActivity {
             // Set chapter activity drill spinner selected item
             chapterActivityDrillSpinner.setSelection(chapterActivityDrillId, true);
             // Init chapter activity drill spinner listener
-            chapterActivityDrillSpinnerListener = new ChapterActivityDrillSpinnerListener(getApplicationContext(), 0);
+            chapterActivityDrillSpinnerListener = new ChapterActivityDrillSpinnerListener(
+                    getApplicationContext(),
+                    chapterActivityDrillSpinner.getSelectedItemPosition());
             // Set chapter activity drill spinner listener
             chapterActivityDrillSpinner.setOnItemSelectedListener(chapterActivityDrillSpinnerListener);
             // Check if chapter activity drill spinner is blank
@@ -430,6 +439,31 @@ public class LanguageSelect extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event)  {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             // onBackPressed();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Hey, Smart Little Monkey!");
+            builder.setMessage("Want to stop reading?");
+            builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    setResult(Code.EXIT);
+                    finish();
+                }
+            });
+            builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            final AlertDialog alertDialog = builder.create();
+            alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(android.R.color.holo_blue_light, null));
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(android.R.color.holo_blue_light, null));
+                }
+            });
+            alertDialog.show();
             return true;
         } else {
             return super.onKeyDown(keyCode, event);
@@ -530,6 +564,9 @@ public class LanguageSelect extends AppCompatActivity {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             // Check if it's a different position
+            System.out.println("CSL First position: " + firstPosition);
+            System.out.println("CSL Previous position: " + previousPosition);
+            System.out.println("CSL Current position: " + position);
             if (position != previousPosition) {
                 // Get new chapter activity names
                 String[] newChapterActivityNames = bookController.getChapterActivityNames(position);
@@ -572,6 +609,9 @@ public class LanguageSelect extends AppCompatActivity {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             // Check if it's a different position
+            System.out.println("CASL First position: " + firstPosition);
+            System.out.println("CASL Previous position: " + previousPosition);
+            System.out.println("CASL Current position: " + position);
             if (position != previousPosition) {
                 // Get new chapter activity drill names
                 String[] newChapterActivityDrillNames = bookController.getChapterActivityDrillNames(
@@ -595,8 +635,12 @@ public class LanguageSelect extends AppCompatActivity {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             // Check if it's a different position
+            System.out.println("CADSL First position: " + firstPosition);
+            System.out.println("CADSL Previous position: " + previousPosition);
+            System.out.println("CADSL Current position: " + position);
             if (position != previousPosition) {
                 // Update previous position
+                System.out.println("NEW POSITION FOR CHAPTER ACTIVITY DRILL SPINNER");
                 previousPosition = position;
             }
             // Enable or disable button accordingly
@@ -623,44 +667,138 @@ public class LanguageSelect extends AppCompatActivity {
                     int chapterActivityId = chapterActivitySpinner.getSelectedItemPosition();
                     int chapterActivityDrillId = chapterActivityDrillSpinner.getSelectedItemPosition();
 
-                    // Get unit
-                    Unit u = UnitHelper.getUnitInfo(mDbHelper.getWritableDatabase(), chapterId);
+                    // Get unitId
+                    int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
+                    Unit u;
+                    int result;
+
+                    // Need to compare new unitId vs current
+                    // Update all previous units accordingly if required
+                    if (chapterId > unitId) {
+                        for (int i = unitId; i < chapterId; i++) {
+                            u = UnitHelper.getUnitInfo(mDbHelper.getWritableDatabase(), i);
+
+                            // Update unit model's data
+                            u.setUnitUnlocked(1);
+                            u.setUnitDateLastPlayed(Globals.STANDARD_DATE_TIME_STRING(new Date()));
+                            u.setUnitInProgress(0);
+                            u.setUnitSubIDInProgress(0);
+                            u.setUnitCompleted(1);
+                            u.setUnitDrillLastPlayed(0);
+                            u.setUnitFirstTime(1);
+                            u.setUnitFirstTimeMovie(1);
+
+                            // Update unit in database
+                            result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                            System.out.println("LanguageSelect: Unit <<" + u.getUnitId() + ">> programmatically completed ...");
+                        }
+                    }
+
+                    // Now set unit to new unitId
+                    u = UnitHelper.getUnitInfo(mDbHelper.getWritableDatabase(), chapterId);
 
                     if (chapterId == Globals.INTRO_ID) {
                         if (chapterActivityId == 0) {
 
+                            // No activity drills
+                            // Movie time
+                            u.setUnitUnlocked(1);
+                            u.setUnitDateLastPlayed("0");
+                            u.setUnitInProgress(1);
+                            u.setUnitSubIDInProgress(0);
+                            u.setUnitCompleted(0);
+                            u.setUnitDrillLastPlayed(0);
+                            u.setUnitFirstTime(0);
+                            u.setUnitFirstTimeMovie(0);
+
                         } else if (chapterActivityId == 1) {
+
+                            // No activity drills
+                            // Tutorial time
+                            u.setUnitUnlocked(1);
+                            u.setUnitDateLastPlayed("0");
+                            u.setUnitInProgress(1);
+                            u.setUnitSubIDInProgress(0);
+                            u.setUnitCompleted(0);
+                            u.setUnitDrillLastPlayed(0);
+                            u.setUnitFirstTime(0);
+                            u.setUnitFirstTimeMovie(1);
 
                         }
                     } else if (chapterId == Globals.FINALE_ID) {
 
+                        // Only 1 activity and no drills (so far...)
+                        // Movie time
+                        u.setUnitUnlocked(1);
+                        u.setUnitDateLastPlayed("0");
+                        u.setUnitInProgress(1);
+                        u.setUnitSubIDInProgress(0);
+                        u.setUnitCompleted(0);
+                        u.setUnitDrillLastPlayed(0);
+                        u.setUnitFirstTime(1);
+                        u.setUnitFirstTimeMovie(0);
+
                     } else {
+
+                        int maxDrills = u.getNumberOfLanguageDrills() + u.getNumberOfMathDrills();
+                        if (unitId == 1) {
+                            maxDrills += 3; // As unit 1 only has 3 word drills
+                        }
+
                         if (chapterActivityId == 0) { // Movie
+
+                            // No activity drills
+                            // Movie time
+                            u.setUnitUnlocked(1);
+                            u.setUnitDateLastPlayed("0");
+                            u.setUnitInProgress(1);
+                            u.setUnitSubIDInProgress(0);
+                            u.setUnitCompleted(0);
+                            u.setUnitDrillLastPlayed(0);
+                            u.setUnitFirstTime(0);
+                            u.setUnitFirstTimeMovie(0);
 
                         } else if (chapterActivityId == 5) { // Chapter End
 
-                        } else if (chapterActivityId == 1) { // Phonics
+                            // No activity drills
+                            // Chapter end "STAR!!!" time
+                            u.setUnitUnlocked(1);
+                            u.setUnitDateLastPlayed("0");
+                            u.setUnitInProgress(1);
+                            u.setUnitSubIDInProgress(0);
+                            u.setUnitCompleted(0);
+                            u.setUnitDrillLastPlayed(maxDrills + 1);
+                            u.setUnitFirstTime(1);
+                            u.setUnitFirstTimeMovie(1);
 
-                        } else if (chapterActivityId == 2) { // Words
+                        } else { // Drill time!
 
-                        } else if (chapterActivityId == 3) { // Simple Story
+                            // Determine drill last played
+                            int drillLastPlayed;
+                            if (chapterActivityId == 1) { // Phonics
+                                drillLastPlayed = chapterActivityDrillId;
+                            } else if (chapterActivityId == 2) { // Words
+                                drillLastPlayed = chapterActivityDrillId + Globals.WORDS_STARTING_ID - 1;
+                            } else if (chapterActivityId == 3) { // Simple story
+                                drillLastPlayed = chapterActivityDrillId + Globals.STORY_STARTING_ID - 1;
+                            } else { // Maths
+                                drillLastPlayed = chapterActivityDrillId + Globals.MATHS_STARTING_ID - 1;
+                            }
 
-                        } else if (chapterActivityId == 4) { // Math
-
-                        } else { // Chapter End
-
+                            u.setUnitUnlocked(1);
+                            u.setUnitDateLastPlayed("0");
+                            u.setUnitInProgress(1);
+                            u.setUnitSubIDInProgress(0);
+                            u.setUnitCompleted(0);
+                            u.setUnitDrillLastPlayed(drillLastPlayed);
+                            u.setUnitFirstTime(0);
+                            u.setUnitFirstTimeMovie(1);
                         }
                     }
 
-                    // Update unit model's data
-                    u.setUnitUnlocked(1);
-                    u.setUnitDateLastPlayed(Globals.STANDARD_DATE_TIME_STRING(new Date()));
-                    u.setUnitInProgress(0);
-                    u.setUnitSubIDInProgress(0);
-                    u.setUnitCompleted(1);
-                    u.setUnitDrillLastPlayed(0);
-                    u.setUnitFirstTime(1);
-                    u.setUnitFirstTimeMovie(1);
+                    // Update unit in database
+                    result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                    System.out.println("LanguageSelect: Unit <<" + u.getUnitId() + ">> programmatically updated ...");
 
                     // Close database
                     dbClose();
