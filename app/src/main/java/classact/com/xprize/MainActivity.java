@@ -36,9 +36,9 @@ public class MainActivity extends AppCompatActivity {
     private final boolean HACK_NEXT_UNIT = false;
     private final int HACK_UNIT_ID = 1;
     private final int HACK_UNIT_SUB_ID_IN_PROGRESS = 0;
-    private final int HACK_DRILL_LAST_PLAYED = 0;
+    private final int HACK_DRILL_LAST_PLAYED = 8;
     private final int HACK_UNIT_FIRST_TIME = 0;
-    private final int HACK_UNIT_FIRST_TIME_MOVIE = 0;
+    private final int HACK_UNIT_FIRST_TIME_MOVIE = 1;
 
     private boolean mInitialized;
     private DbHelper mDbHelper;
@@ -155,14 +155,14 @@ public class MainActivity extends AppCompatActivity {
             int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
 
             // Finale override hack on unit 3
-            if (unitId == 4) {
+            /* if (unitId == 4) {
 
                 // Just go to finale. We still need to figure out how to get 20 chapter
                 // videos into the sparse image ... for now, only till chapter 2
                 success = true;
                 throw new Exception(":: HACK :: MainActivity.determineNextItem > Debug: " +
                         "Unit id is (" + unitId + "), auto moving to finale, as we don't have enough 'video space' (yet)");
-            }
+            }*/
 
             Unit u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);
 
@@ -375,10 +375,10 @@ public class MainActivity extends AppCompatActivity {
         return success;
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
+    /**
+     * Exists to reset splash
+     */
+    public void resetUnitFirstTIme() {
         try {
             // Establish database connectivity
             if (!dbEstablsh(!mInitialized)) {
@@ -415,6 +415,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        resetUnitFirstTIme();
+    }
+
     /**
      * On Activity Result
      * Responsible for database updates after receiving response
@@ -428,298 +435,307 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("MainActivity.onActivityResult > Debug: Request (" + requestCode + ") and Result (" + resultCode + ")");
         System.out.println("-----------------------------------------------------------------------------");
 
-        // Flag if everything processed 100%
-        boolean success = false;
-        boolean finaleComplete = false;
-        boolean showNavMenu = false;
+        if (resultCode == Code.EXIT) {
+            finish();
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        } else {
 
-        /* Resolve request completion
-         * ==========================
-         * - requestCode = finished activity's type (ie. Language-select, movie, drill)
-         * - resultCode = unitId of finished activity
-         */
-        try {
-            // Establish database connectivity
-            if (!dbEstablsh(!mInitialized)) {
-                throw new Exception("Db Connection unsuccessful");
-            }
-            System.out.println("MainActivity.onActivityResult > Debug: Db Connection successful");
+            // Flag if everything processed 100%
+            boolean success = false;
+            boolean finaleComplete = false;
+            boolean showNavMenu = false;
 
-            // Get current unit
-            int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
-            Unit u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);
-            Unit u2; // next unit
-            int result;
+            /* Resolve request completion
+             * ==========================
+             * - requestCode = finished activity's type (ie. Language-select, movie, drill)
+             * - resultCode = unitId of finished activity
+             */
+            try {
+                // Establish database connectivity
+                if (!dbEstablsh(!mInitialized)) {
+                    throw new Exception("Db Connection unsuccessful");
+                }
+                System.out.println("MainActivity.onActivityResult > Debug: Db Connection successful");
 
-            if (resultCode == Code.NAV_MENU) {
-                showNavMenu = true;
-            } else {
-                switch (requestCode) {
-                    case Code.LANG:
-                        // Get selected language
-                        int selectedLanguage = data.getIntExtra(Code.SELECT_LANG, 1);
+                // Get current unit
+                int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
+                Unit u = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId);
+                Unit u2; // next unit
+                int result;
 
-                        // Update Globals (if not already)
-                        Globals.SELECTED_LANGUAGE = selectedLanguage;
+                if (resultCode == Code.NAV_MENU) {
+                    showNavMenu = true;
+                } else {
+                    switch (requestCode) {
+                        case Code.LANG:
+                            // Get selected language
+                            int selectedLanguage = data.getIntExtra(Code.SELECT_LANG, 1);
 
-                        // Update database
-                        // TO DO
-                        break;
+                            // Update Globals (if not already)
+                            Globals.SELECTED_LANGUAGE = selectedLanguage;
 
-                    case Code.INTRO:
-                        // Validate that current unit vs request code
-                        if (unitId != Globals.INTRO_ID) {
-                            throw new Exception("Request Code (" + requestCode + ") - Intro request code detected, but unitId (" + unitId + ") does not match that");
-                        }
+                            // Update database
+                            // TO DO
+                            break;
 
-                        // Update unit u model
-                        u.setUnitFirstTimeMovie(1); // Intro/Chapter/Ending Movie has been watched
+                        case Code.INTRO:
+                            // Validate that current unit vs request code
+                            if (unitId != Globals.INTRO_ID) {
+                                throw new Exception("Request Code (" + requestCode + ") - Intro request code detected, but unitId (" + unitId + ") does not match that");
+                            }
 
-                        // Update unit u in database
-                        result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
-                        System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() + ") successfull updated in database");
-                        break;
+                            // Update unit u model
+                            u.setUnitFirstTimeMovie(1); // Intro/Chapter/Ending Movie has been watched
 
-                    case Code.TUTORIAL:
-                        // Validate that current unit vs request code
-                        if (unitId != Globals.INTRO_ID) {
-                            throw new Exception("Request Code (" + requestCode + ") - Intro request code detected, but unitId (" + unitId + ") does not match that");
-                        }
+                            // Update unit u in database
+                            result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                            System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() + ") successfull updated in database");
+                            break;
 
-                        // Update unit u model
-                        u.setUnitFirstTime(1); // Mark tutorial as having completed
-                        u.setUnitCompleted(1); // Mark unit as completed (as we don't have any drills - unless the tutorial is a drill)
-                        u.setUnitInProgress(0); // Flag the unit as no longer being 'in progress'
-                        u.setUnitDateLastPlayed(Globals.STANDARD_DATE_TIME_STRING(new Date())); // Flag last-played datetime
+                        case Code.TUTORIAL:
+                            // Validate that current unit vs request code
+                            if (unitId != Globals.INTRO_ID) {
+                                throw new Exception("Request Code (" + requestCode + ") - Intro request code detected, but unitId (" + unitId + ") does not match that");
+                            }
 
-                        // Update unit u in database
-                        result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
-                        System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() + ") successfull updated in database");
+                            // Update unit u model
+                            u.setUnitFirstTime(1); // Mark tutorial as having completed
+                            u.setUnitCompleted(1); // Mark unit as completed (as we don't have any drills - unless the tutorial is a drill)
+                            u.setUnitInProgress(0); // Flag the unit as no longer being 'in progress'
+                            u.setUnitDateLastPlayed(Globals.STANDARD_DATE_TIME_STRING(new Date())); // Flag last-played datetime
 
-                        // Get next unit u2
-                        u2 = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId + 1);
+                            // Update unit u in database
+                            result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                            System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() + ") successfull updated in database");
 
-                        // Validate unit u2
-                        if (u2 == null) {
-                            throw new Exception("Request Code (" + requestCode + ") - Could not retrieve next unit u2 (" + (unitId + 1) + ")");
-                        }
+                            // Get next unit u2
+                            u2 = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId + 1);
 
-                        // Update unit u2
-                        u2.setUnitUnlocked(1); // Unlock unit
-                        u2.setUnitCompleted(0); // Reset completion if previously completed
-                        u2.setUnitInProgress(1); // Update unit to being in progress
-                        u2.setUnitDrillLastPlayed(0); // Reset drill progress
-                        u2.setUnitSubIDInProgress(0); // Reset subId progress
-                        u2.setUnitFirstTimeMovie(0); // Reset chapter movie
-                        u2.setUnitFirstTime(0); // Reset splash/tutorial
+                            // Validate unit u2
+                            if (u2 == null) {
+                                throw new Exception("Request Code (" + requestCode + ") - Could not retrieve next unit u2 (" + (unitId + 1) + ")");
+                            }
 
-                        // Update unit u2 in database
-                        result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u2);
-                        System.out.println("Request Code (" + requestCode + ") - Unit u2 (" + u2.getUnitId() + ") successfull updated in database");
-                        break;
+                            // Update unit u2
+                            u2.setUnitUnlocked(1); // Unlock unit
+                            u2.setUnitCompleted(0); // Reset completion if previously completed
+                            u2.setUnitInProgress(1); // Update unit to being in progress
+                            u2.setUnitDrillLastPlayed(0); // Reset drill progress
+                            u2.setUnitSubIDInProgress(0); // Reset subId progress
+                            u2.setUnitFirstTimeMovie(0); // Reset chapter movie
+                            u2.setUnitFirstTime(0); // Reset splash/tutorial
 
-                    case Code.MOVIE:
-                        // Update unit u model
-                        u.setUnitFirstTimeMovie(1); // Intro/Chapter/Ending Movie has been watched
+                            // Update unit u2 in database
+                            result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u2);
+                            System.out.println("Request Code (" + requestCode + ") - Unit u2 (" + u2.getUnitId() + ") successfull updated in database");
+                            break;
 
-                        // Update unit u in database
-                        result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
-                        System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() + ") successfull updated in database");
-                        break;
+                        case Code.MOVIE:
+                            // Update unit u model
+                            u.setUnitFirstTimeMovie(1); // Intro/Chapter/Ending Movie has been watched
 
-                    case Code.DRILL_SPLASH:
-                        // Update unit u model
-                        u.setUnitFirstTime(1); // Splash/Tutorial has been watched
+                            // Update unit u in database
+                            result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                            System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() + ") successfull updated in database");
+                            break;
 
-                        // Update unit u in database
-                        result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
-                        System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() + ") successfull updated in database");
-                        break;
+                        case Code.DRILL_SPLASH:
+                            // Update unit u model
+                            u.setUnitFirstTime(1); // Splash/Tutorial has been watched
 
-                    case Code.RUN_DRILL:
-                        // Hax to avoid bugged drills
-                        int currentDrill = u.getUnitDrillLastPlayed() + 1;
-                        int nextDrill = currentDrill + 1;
-                        ArrayList<Integer> buggedDrills = new ArrayList<>();
-                        if (unitId == 1) {
-                            // No Word drills #13, 14 and 15 for unit 1
-                            buggedDrills.add(13);
-                            buggedDrills.add(14);
-                            buggedDrills.add(15);
-                        }
-                        if (buggedDrills.size() > 0) {
-                            for (Integer buggedDrill : buggedDrills) {
-                                if (buggedDrill >= nextDrill) {
-                                    if (nextDrill == buggedDrill) {
-                                        System.err.println("Skipping drill " + nextDrill);
-                                        nextDrill++;
-                                    } else {
-                                        System.out.println("Next drill is " + nextDrill);
-                                        break;
+                            // Update unit u in database
+                            result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                            System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() + ") successfull updated in database");
+                            break;
+
+                        case Code.RUN_DRILL:
+                            // Hax to avoid bugged drills
+                            int currentDrill = u.getUnitDrillLastPlayed() + 1;
+                            int nextDrill = currentDrill + 1;
+                            ArrayList<Integer> buggedDrills = new ArrayList<>();
+                            if (unitId == 1) {
+                                // No Word drills #13, 14 and 15 for unit 1
+                                buggedDrills.add(13);
+                                buggedDrills.add(14);
+                                buggedDrills.add(15);
+                            }
+                            if (buggedDrills.size() > 0) {
+                                for (Integer buggedDrill : buggedDrills) {
+                                    if (buggedDrill >= nextDrill) {
+                                        if (nextDrill == buggedDrill) {
+                                            System.err.println("Skipping drill " + nextDrill);
+                                            nextDrill++;
+                                        } else {
+                                            System.out.println("Next drill is " + nextDrill);
+                                            break;
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        // Update unit u model
-                        u.setUnitDrillLastPlayed(nextDrill - 1); // Update drill progress. Note that subId update is handled separately
+                            // Update unit u model
+                            u.setUnitDrillLastPlayed(nextDrill - 1); // Update drill progress. Note that subId update is handled separately
 
-                        // Check if next drill requires splash
-                        // Update unit u model accordingly
-                        if (nextDrill == Globals.PHONICS_STARTING_ID ||
-                                nextDrill == Globals.WORDS_STARTING_ID ||
-                                nextDrill == Globals.STORY_STARTING_ID ||
-                                nextDrill == Globals.MATHS_STARTING_ID) {
-                            // Reset UnitFirstTime 'Splash' Flag
-                            u.setUnitFirstTime(0);
-                        }
+                            // Check if next drill requires splash
+                            // Update unit u model accordingly
+                            if (nextDrill == Globals.PHONICS_STARTING_ID ||
+                                    nextDrill == Globals.WORDS_STARTING_ID ||
+                                    nextDrill == Globals.STORY_STARTING_ID ||
+                                    nextDrill == Globals.MATHS_STARTING_ID) {
+                                // Reset UnitFirstTime 'Splash' Flag
+                                u.setUnitFirstTime(0);
+                            }
 
-                        // Update unit u in database
-                        result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
-                        System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() + ") successfull updated in database");
-                        break;
+                            // Update unit u in database
+                            result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                            System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() + ") successfull updated in database");
+                            break;
 
-                    case Code.CHAPTER_END:
-                        // Update unit u model
-                        u.setUnitCompleted(1); // Mark unit as completed (as we don't have any drills - unless the tutorial is a drill)
-                        u.setUnitInProgress(0); // Flag the unit as no longer being 'in progress'
-                        u.setUnitDateLastPlayed(Globals.STANDARD_DATE_TIME_STRING(new Date())); // Flag last-played datetime
+                        case Code.CHAPTER_END:
+                            // Update unit u model
+                            u.setUnitCompleted(1); // Mark unit as completed (as we don't have any drills - unless the tutorial is a drill)
+                            u.setUnitInProgress(0); // Flag the unit as no longer being 'in progress'
+                            u.setUnitDateLastPlayed(Globals.STANDARD_DATE_TIME_STRING(new Date())); // Flag last-played datetime
 
-                        // Update unit u in database
-                        result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
-                        System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() + ") successfull updated in database");
+                            // Update unit u in database
+                            result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                            System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() + ") successfull updated in database");
 
-                        // Get next unit u2
-                        u2 = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId + 1);
+                            // Get next unit u2
+                            u2 = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), unitId + 1);
 
-                        // Validate unit u2
-                        if (u2 == null) {
-                            throw new Exception("Request Code (" + requestCode + ") - Could not retrieve next unit u2 (" + (unitId + 1) + ")");
-                        }
+                            // Validate unit u2
+                            if (u2 == null) {
+                                throw new Exception("Request Code (" + requestCode + ") - Could not retrieve next unit u2 (" + (unitId + 1) + ")");
+                            }
 
-                        // Update unit u2
-                        u2.setUnitUnlocked(1); // Unlock unit
-                        u2.setUnitCompleted(0); // Reset completion if previously completed
-                        u2.setUnitInProgress(1); // Update unit to being in progress
-                        u2.setUnitDrillLastPlayed(0); // Reset drill progress
-                        u2.setUnitSubIDInProgress(0); // Reset subId progress
-                        u2.setUnitFirstTimeMovie(0); // Reset chapter movie
-                        u2.setUnitFirstTime(0); // Reset splash/tutorial
+                            // Update unit u2
+                            u2.setUnitUnlocked(1); // Unlock unit
+                            u2.setUnitCompleted(0); // Reset completion if previously completed
+                            u2.setUnitInProgress(1); // Update unit to being in progress
+                            u2.setUnitDrillLastPlayed(0); // Reset drill progress
+                            u2.setUnitSubIDInProgress(0); // Reset subId progress
+                            u2.setUnitFirstTimeMovie(0); // Reset chapter movie
+                            u2.setUnitFirstTime(0); // Reset splash/tutorial
 
-                        // Update unit u2 in database
-                        result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u2);
-                        System.out.println("Request Code (" + requestCode + ") - Unit u2 (" + u2.getUnitId() + ") successfull updated in database");
-                        break;
+                            // Update unit u2 in database
+                            result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u2);
+                            System.out.println("Request Code (" + requestCode + ") - Unit u2 (" + u2.getUnitId() + ") successfull updated in database");
+                            break;
 
-                    case Code.FINALE:
-                        // Validate that current unit vs request code
+                        case Code.FINALE:
+                            // Validate that current unit vs request code
                         /* if (unitId != Globals.FINALE_ID) {
                             throw new Exception("Request Code (" + requestCode + ") - Finale request code detected, but unitId (" + unitId + ") does not match that");
                         } */
 
-                        // Update unit u model
-                        u.setUnitFirstTimeMovie(1); // Mark finale as having completed
-                        u.setUnitCompleted(1); // Mark unit as completed (as we don't have any drills - unless any finale items are added in the future)
-                        u.setUnitInProgress(0); // Flag the unit as no longer being 'in progress'
-                        u.setUnitDateLastPlayed(Globals.STANDARD_DATE_TIME_STRING(new Date())); // Flag last-played datetime
+                            // Update unit u model
+                            u.setUnitFirstTimeMovie(1); // Mark finale as having completed
+                            u.setUnitCompleted(1); // Mark unit as completed (as we don't have any drills - unless any finale items are added in the future)
+                            u.setUnitInProgress(0); // Flag the unit as no longer being 'in progress'
+                            u.setUnitDateLastPlayed(Globals.STANDARD_DATE_TIME_STRING(new Date())); // Flag last-played datetime
 
-                        // Update unit u in database
-                        result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
-                        System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() + ") successfull updated in database");
+                            // Update unit u in database
+                            result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                            System.out.println("Request Code (" + requestCode + ") - Unit u (" + u.getUnitId() + ") successfull updated in database");
 
-                        // Get next unit u2
-                        u2 = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), Globals.INTRO_ID); // Go back to beginning
+                            // Get next unit u2
+                            u2 = UnitHelper.getUnitInfo(mDbHelper.getReadableDatabase(), Globals.INTRO_ID); // Go back to beginning
 
-                        // Validate unit u2
-                        if (u2 == null) {
-                            throw new Exception("Request Code (" + requestCode + ") - Could not retrieve next unit u2 (" + (Globals.INTRO_ID) + ")");
-                        }
+                            // Validate unit u2
+                            if (u2 == null) {
+                                throw new Exception("Request Code (" + requestCode + ") - Could not retrieve next unit u2 (" + (Globals.INTRO_ID) + ")");
+                            }
 
-                        // Update unit u2
-                        u2.setUnitUnlocked(1); // Unlock unit
-                        u2.setUnitCompleted(0); // Reset completion if previously completed
-                        u2.setUnitInProgress(1); // Update unit to being in progress
-                        u2.setUnitDrillLastPlayed(0); // Reset drill progress
-                        u2.setUnitSubIDInProgress(0); // Reset subId progress
-                        u2.setUnitFirstTimeMovie(0); // Reset chapter movie
-                        u2.setUnitFirstTime(0); // Reset splash/tutorial
+                            // Update unit u2
+                            u2.setUnitUnlocked(1); // Unlock unit
+                            u2.setUnitCompleted(0); // Reset completion if previously completed
+                            u2.setUnitInProgress(1); // Update unit to being in progress
+                            u2.setUnitDrillLastPlayed(0); // Reset drill progress
+                            u2.setUnitSubIDInProgress(0); // Reset subId progress
+                            u2.setUnitFirstTimeMovie(0); // Reset chapter movie
+                            u2.setUnitFirstTime(0); // Reset splash/tutorial
 
-                        // Update unit u2 in database
-                        result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u2);
-                        System.out.println("Request Code (" + requestCode + ") - Unit u2 (" + u2.getUnitId() + ") successfull updated in database");
+                            // Update unit u2 in database
+                            result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u2);
+                            System.out.println("Request Code (" + requestCode + ") - Unit u2 (" + u2.getUnitId() + ") successfull updated in database");
 
-                        // Set finaleComplete to true
-                        finaleComplete = true;
-                        break;
+                            // Set finaleComplete to true
+                            finaleComplete = true;
+                            break;
 
-                    default:
-                        throw new Exception("Request Code (" + requestCode + ") - Invalid");
-                }
+                        default:
+                            throw new Exception("Request Code (" + requestCode + ") - Invalid");
+                    }
 
                 /* // After all the above database updates, let's get the unitId of the next unit-to-play
                 unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase()); */
 
-                // Debug
-                System.out.println("-----------------------------------------------------------------------------");
+                    // Debug
+                    System.out.println("-----------------------------------------------------------------------------");
 
-                // Flag success
-                success = true;
-            }
-        } catch(SQLiteException sqlex){
-            System.err.println("MainActivity.onActivityResult > SQLiteException: " + sqlex.getMessage());
+                    // Flag success
+                    success = true;
+                }
+            } catch (SQLiteException sqlex) {
+                System.err.println("MainActivity.onActivityResult > SQLiteException: " + sqlex.getMessage());
 
-        } catch(Exception ex){
-            System.err.println("MainActivity.onActivityResult > Exception: " + ex.getMessage());
+            } catch (Exception ex) {
+                System.err.println("MainActivity.onActivityResult > Exception: " + ex.getMessage());
 
-        } finally{
-            // Close database connection
-            if (mDbHelper != null) {
-                mDbHelper.close();
-                mDbHelper = null;
-            }
-
-            if (showNavMenu) {
-
-                // Go to language select screen
-                Intent intent = new Intent(this, LanguageSelect.class);
-                startActivityForResult(intent, Code.LANG);
-                overridePendingTransition(0, android.R.anim.fade_out);
-
-            } else if (finaleComplete) {
-
-                // Go to language select screen
-                Intent intent = new Intent(this, LanguageSelect.class);
-
-                // Determine next splash bg
-                int[] nextSplashBg = determineNextSplashBg();
-
-                if (nextSplashBg != null) {
-                    if (nextSplashBg[0] != -1) {
-                        intent.putExtra(Code.NEXT_BG_CODE, nextSplashBg[0]);
-                    }
-                    if (nextSplashBg[1] != -1) {
-                        intent.putExtra(Code.NEXT_BG_RES, nextSplashBg[1]);
-                    }
+            } finally {
+                // Close database connection
+                if (mDbHelper != null) {
+                    mDbHelper.close();
+                    mDbHelper = null;
                 }
 
-                startActivityForResult(intent, Code.LANG);
-                overridePendingTransition(0, android.R.anim.fade_out);
+                if (showNavMenu) {
 
-            } else if (success) {
-                // Determine the next item (a.k.a. 'Activity / Intent') to play
-                determineNextItem();
+                    // Reset unit first time
+                    resetUnitFirstTIme();
 
-            } else {
-                // Debug error: force finale
-                System.err.println("MainActivity.determineNextItem > Error: Forcing finale");
+                    // Go to language select screen
+                    Intent intent = new Intent(this, LanguageSelect.class);
+                    startActivityForResult(intent, Code.LANG);
+                    overridePendingTransition(0, android.R.anim.fade_out);
 
-                // Force play finale movie ... for now
-                Intent intent = new Intent(this, Movie.class);
-                intent.putExtra(Code.RES_NAME, "finale_movie");
-                intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
-                resultCode = Code.FINALE;
-                startActivityForResult(intent, resultCode);
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                } else if (finaleComplete) {
+
+                    // Go to language select screen
+                    Intent intent = new Intent(this, LanguageSelect.class);
+
+                    // Determine next splash bg
+                    int[] nextSplashBg = determineNextSplashBg();
+
+                    if (nextSplashBg != null) {
+                        if (nextSplashBg[0] != -1) {
+                            intent.putExtra(Code.NEXT_BG_CODE, nextSplashBg[0]);
+                        }
+                        if (nextSplashBg[1] != -1) {
+                            intent.putExtra(Code.NEXT_BG_RES, nextSplashBg[1]);
+                        }
+                    }
+
+                    startActivityForResult(intent, Code.LANG);
+                    overridePendingTransition(0, android.R.anim.fade_out);
+
+                } else if (success) {
+                    // Determine the next item (a.k.a. 'Activity / Intent') to play
+                    determineNextItem();
+
+                } else {
+                    // Debug error: force finale
+                    System.err.println("MainActivity.determineNextItem > Error: Forcing finale");
+
+                    // Force play finale movie ... for now
+                    Intent intent = new Intent(this, Movie.class);
+                    intent.putExtra(Code.RES_NAME, "finale_movie");
+                    intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
+                    resultCode = Code.FINALE;
+                    startActivityForResult(intent, resultCode);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                }
             }
         }
     }

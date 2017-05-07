@@ -71,7 +71,6 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp == null) {
                 mp = new MediaPlayer();
             }
-            mp.reset();
             mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -105,7 +104,6 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp == null) {
                 mp = new MediaPlayer();
             }
-            mp.reset();
             mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -145,7 +143,6 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp == null) {
                 mp = new MediaPlayer();
             }
-            mp.reset();
             mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -178,7 +175,6 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp == null) {
                 mp = new MediaPlayer();
             }
-            mp.reset();
             mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -218,7 +214,6 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp == null) {
                 mp = new MediaPlayer();
             }
-            mp.reset();
             mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -279,7 +274,6 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp == null) {
                 mp = new MediaPlayer();
             }
-            mp.reset();
             mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -320,7 +314,6 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp == null) {
                 mp = new MediaPlayer();
             }
-            mp.reset();
             mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
