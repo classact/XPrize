@@ -20,7 +20,13 @@ public class Globals {
     public static final int STORY_STARTING_ID = 16;
     public static final int MATHS_STARTING_ID = 17;
 
-    public static final int DEFAULT_UNIT_SUB_ID = 1;
+    public static final int PHONICS_MAX_SUB_ID = 2;
+    public static final int WORDS_MAX_SUB_ID = 0;
+    public static final int STORY_MAX_SUB_ID = 0;
+    public static final int MATHS_MAX_SUB_ID = 0;
+
+    public static final String[] EN_ALPHABET = {"A","B","C","D","E","F","G","H","I",
+        "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
 
     // Determined values
     public static int SELECTED_LANGUAGE = Languages.ENGLISH;
