@@ -20,6 +20,7 @@ import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
@@ -289,7 +290,14 @@ public class SoundDrillTenActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    showNextWord.run();
+                }
+            }, 1300);
         }
     }
 
@@ -331,8 +339,9 @@ public class SoundDrillTenActivity extends AppCompatActivity {
         // Debug
         System.out.println("-- SoundTrillTenActivity.playWordSound > Debug: METHOD CALLED");
 
+        String sound = "";
         try{
-            String sound = objects[currentWord].getString("sound");
+            sound = objects[currentWord].getString("sound");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             mp.reset();
             mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
@@ -361,7 +370,14 @@ public class SoundDrillTenActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    buttonsEnabled = true;
+                }
+            }, 550);
         }
     }
 
@@ -370,9 +386,10 @@ public class SoundDrillTenActivity extends AppCompatActivity {
         // Debug
         System.out.println("-- SoundTrillTenActivity.sayTouchWord > Debug: METHOD CALLED");
 
+        String sound = "";
         try {
             // Extra sound resourcefrom 'allData' array
-            String sound = allData.getString("touch");
+            sound = allData.getString("touch");
 
             // Get sound path
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
@@ -414,7 +431,14 @@ public class SoundDrillTenActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playWordSound();
+                }
+            }, 800);
         }
     }
 

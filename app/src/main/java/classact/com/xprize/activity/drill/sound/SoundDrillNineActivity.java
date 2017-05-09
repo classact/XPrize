@@ -24,6 +24,7 @@ import java.util.Date;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.view.WriteView;
 
@@ -158,8 +159,9 @@ public class SoundDrillNineActivity extends AppCompatActivity {
     }
 
     private void playLetterSound(){
+        String sound = "";
         try{
-            String sound = params.getString("sound");
+            sound = params.getString("sound");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -185,7 +187,14 @@ public class SoundDrillNineActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    enableDrawing.run();
+                }
+            }, 1100);
         }
     }
 
