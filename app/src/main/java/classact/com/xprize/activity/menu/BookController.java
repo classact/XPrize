@@ -98,15 +98,15 @@ public class BookController {
                     ItemCollection chapterActivity = (ItemCollection) chapter.getItem(j);
                     if (chapterActivity.getName().equals("Phonics")) {
                         // Phonics logic
-                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D1-A"));
-                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D2-A"));
-                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D3-A"));
-                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D4-A"));
-                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D5-A"));
-                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D6-A"));
-                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D7-A"));
-                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D8-A"));
-                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D9-A"));
+                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D1"));
+                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D2"));
+                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D3"));
+                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D4"));
+                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D5"));
+                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D6"));
+                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D7"));
+                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D8"));
+                        chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D9"));
                     } else if (chapterActivity.getName().equals("Words")) {
                         // Words logic
                         chapterActivity.addItem(new ChapterActivityDrill((ChapterActivity) chapterActivity, "D1"));

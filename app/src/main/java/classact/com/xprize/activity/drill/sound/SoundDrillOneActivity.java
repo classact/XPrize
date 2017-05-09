@@ -342,7 +342,16 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    currentObject ++;
+                    if (currentObject < 3){
+                        handler.postDelayed(soundAndObjectRunnable,1000);
+                    }
+                }
+            }, 800);
         }
     }
 

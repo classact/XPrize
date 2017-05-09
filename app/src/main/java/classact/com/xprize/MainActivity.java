@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
                         // Phonics Splash
                         if (drillLastPlayed + 1 < Globals.WORDS_STARTING_ID) {
                             drillSplashActivity = PhonicsLink.class;
-                        // Words Splashh
+                        // Words Splash
                         } else if (drillLastPlayed + 1 < Globals.STORY_STARTING_ID) {
                             drillSplashActivity = WordsLink.class;
                         // Story Splash
@@ -291,13 +291,36 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         int languageId = Globals.SELECTED_LANGUAGE;
-                        int subId = 0;
 
+                        /* Sub id logic START */
+                        int subId = 0;
+                        // Check drill type
                         if (drillId < Globals.WORDS_STARTING_ID) {
-                            subId = 1;
+                            // It's a phonics drill
+                            // Get sub id from database
+                            subId = u.getUnitSubIDInProgress();
+                            // Check sub id is 0 (no subs have been played yet)
+                            if (subId == 0) {
+                                // set the sub id to 1 programmatically
+                                subId = 1;
+                                // update sub id value in database model
+                                u.setUnitSubIDInProgress(subId);
+                                // Update unit in database
+                                int result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);
+                                // Check if database update unsuccessful
+                                if (result == 0) {
+                                    // Print the issue out ... but don't throw exception ... lol
+                                    System.out.println("Could not update sub id :-( ...");
+                                }
+                            }
+                            // Print out sub id
+                            System.out.println("Next item's sub id is: " + subId);
                         } else if (drillId < Globals.STORY_STARTING_ID) {
+                            // It's a word drill
                             subId = 0;
                         }
+                        // NOTE: The 'next sub id' logic is determined by onActivityResult method.
+                        /* Sub id logic END */
 
                         // Debug
                         System.out.println("MainActivity.determineNextItem > Debug: Running drill for (" + unitId + ", " + drillId + ", " + languageId + ", " + subId + ")");
@@ -549,9 +572,13 @@ public class MainActivity extends AppCompatActivity {
                             break;
 
                         case Code.RUN_DRILL:
-                            // Hax to avoid bugged drills
+
+                            // Get drill data
                             int currentDrill = u.getUnitDrillLastPlayed() + 1;
                             int nextDrill = currentDrill + 1;
+                            int subId = u.getUnitSubIDInProgress();
+
+                            // Hax to avoid bugged drills
                             ArrayList<Integer> buggedDrills = new ArrayList<>();
                             if (unitId == 1) {
                                 // No Word drills #13, 14 and 15 for unit 1
@@ -573,18 +600,47 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
 
-                            // Update unit u model
-                            u.setUnitDrillLastPlayed(nextDrill - 1); // Update drill progress. Note that subId update is handled separately
+                            // Print out current sub id
+                            System.out.println("Current sub id: " + subId);
+                            /* Sub id logic START */
+                            // Check if next drill is a word drill (a.k.a, after phonics)
+                            if (nextDrill == Globals.WORDS_STARTING_ID) {
+                                // It will be a word drill
+                                // Check subId to determine if I should 'go back' to phonics
+                                // This is based on sub id
+                                // Check if the max sub ids for phonics hasn't been reached
+                                if (subId < Globals.PHONICS_MAX_SUB_ID) {
+                                    // Not it hasn't
+                                    // So increase the sub id
+                                    u.setUnitSubIDInProgress(++subId);
+                                    // set next drill to start of phonics
+                                    // note that, as next drill is decremented later,
+                                    // will result in a negative drill id
+                                    // but ... determineNextItem method takes care of that
+                                    nextDrill = Globals.PHONICS_STARTING_ID;
+                                } else {
+                                    // Set sub id back to 0, as phonics have been completed
+                                    u.setUnitSubIDInProgress(0);
+                                }
+                            }
+                            // Print out new sub id
+                            System.out.println("New sub id: " + u.getUnitSubIDInProgress());
+                            /* Sub id logic END */
 
-                            // Check if next drill requires splash
+                            /* Drill splash logic START */
+                            // It should additionally apply to when sub id = 0 (no prior sub ids played)
                             // Update unit u model accordingly
-                            if (nextDrill == Globals.PHONICS_STARTING_ID ||
+                            if ((nextDrill == Globals.PHONICS_STARTING_ID && subId == 0) ||
                                     nextDrill == Globals.WORDS_STARTING_ID ||
                                     nextDrill == Globals.STORY_STARTING_ID ||
                                     nextDrill == Globals.MATHS_STARTING_ID) {
                                 // Reset UnitFirstTime 'Splash' Flag
                                 u.setUnitFirstTime(0);
                             }
+                            /* Drill splash logic END */
+
+                            // Update unit u model
+                            u.setUnitDrillLastPlayed(nextDrill - 1); // Update drill progress
 
                             // Update unit u in database
                             result = UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), u);

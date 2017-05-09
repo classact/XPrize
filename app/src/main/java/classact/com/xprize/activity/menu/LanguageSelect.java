@@ -49,10 +49,12 @@ public class LanguageSelect extends AppCompatActivity {
     Button selectEnglishButton;
     Button selectKiswahiliButton;
 
-    private String[] chapterNames, chapterActivityNames, chapterActivityDrillNames;
-    private Spinner chapterSpinner, chapterActivitySpinner, chapterActivityDrillSpinner;
-    private ArrayAdapter<String> chapterSpinnerAdapter, chapterActivitySpinnerAdapter, chapterActivityDrillSpinnerAdapter;
-    private SpinnerListener chapterSpinnerListener, chapterActivitySpinnerListener, chapterActivityDrillSpinnerListener;
+    private String[] chapterNames, chapterActivityNames, chapterActivityDrillNames, chapterActivitySubDrillNames;;
+    private Spinner chapterSpinner, chapterActivitySpinner, chapterActivityDrillSpinner, chapterActivitySubDrillSpinner;
+    private ArrayAdapter<String> chapterSpinnerAdapter, chapterActivitySpinnerAdapter, chapterActivityDrillSpinnerAdapter,
+            chapterActivitySubDrillSpinnerAdapter;
+    private SpinnerListener chapterSpinnerListener, chapterActivitySpinnerListener, chapterActivityDrillSpinnerListener,
+            chapterActivitySubDrillSpinnerListener;
     private ButtonListener updateButtonerListener;
     private TextView chapterActivityDrillTotalTextView;
     private Button updateButton;
@@ -87,6 +89,11 @@ public class LanguageSelect extends AppCompatActivity {
             int chapterId = 0;
             int chapterActivityId = 0;
             int chapterActivityDrillId = 0;
+            int chapterActivitySubDrillId = 0;
+            boolean isPhonicsActivity = false;
+            boolean isWordsActivity = false;
+            boolean isSimpleStoryActivity = false;
+            boolean isMathsActivity = false;
 
             // Get database data
             int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
@@ -94,34 +101,6 @@ public class LanguageSelect extends AppCompatActivity {
 
             // Set chapter id
             chapterId = unitId;
-
-            // Init book controller
-            bookController = new BookController(new Book("Smart Little Monkey")).init();
-
-            // Chapter Spinner
-            // Get chapter names
-            chapterNames = bookController.getChapterNames();
-            // Init chapter spinner
-            chapterSpinner = new Spinner(getApplicationContext());
-            // Init chapter spinner adapter
-            chapterSpinnerAdapter = new ArrayAdapter<>(this, R.layout.spinner_nav_menu, chapterNames);
-            // Set chapter spinner adapter
-            chapterSpinner.setAdapter(chapterSpinnerAdapter);
-            // Set chapter spinner selected item
-            chapterSpinner.setSelection(chapterId, true);
-            // Init chapter spinner listener
-            chapterSpinnerListener = new ChapterSpinnerListener(
-                    getApplicationContext(),
-                    chapterSpinner.getSelectedItemPosition());
-            // Set chapter spinner listener
-            chapterSpinner.setOnItemSelectedListener(chapterSpinnerListener);
-            // Add chapter spinner to layout
-            layoutContainer.addView(chapterSpinner);
-            // Set chapter spinner layout params
-            RelativeLayout.LayoutParams chapterSpinnerLayoutParams = (RelativeLayout.LayoutParams) chapterSpinner.getLayoutParams();
-            chapterSpinnerLayoutParams.leftMargin = 20;
-            chapterSpinnerLayoutParams.topMargin = 20;
-            chapterSpinner.setLayoutParams(chapterSpinnerLayoutParams);
 
             // Determine chapter activity id
             if (unitId == Globals.INTRO_ID) {
@@ -152,33 +131,69 @@ public class LanguageSelect extends AppCompatActivity {
                         if (nextDrill < Globals.WORDS_STARTING_ID) { // +1, need to determine current (the next) drill
                             chapterActivityId = 1; // Phonics activity
                             chapterActivityDrillId = drillLastPlayed;
+                            // As sub units start from 1, yet spinner indexes start from 0,
+                            // one must subtract 1 from updated chapter activity sub drill id
+                            chapterActivitySubDrillId = u.getUnitSubIDInProgress() - 1; // subtract one
+                            if (chapterActivitySubDrillId < 0) {
+                                chapterActivitySubDrillId = 0; // as spinner indexes can't be negative
+                            }
+                            isPhonicsActivity = true;
                         } else if (nextDrill < Globals.STORY_STARTING_ID) {
                             if (unitId == 1) { // Check unit 1 as it has 3 less word drills (though db is updated)
                                 if (nextDrill + 3 >= Globals.STORY_STARTING_ID) {
                                     chapterActivityId = 3; // Simple story activity
                                     chapterActivityDrillId = 0; // No other drills
+                                    isSimpleStoryActivity = true;
                                 } else {
                                     chapterActivityId = 2; // Words activity
                                     chapterActivityDrillId = nextDrill - Globals.WORDS_STARTING_ID;
+                                    isWordsActivity = true;
                                 }
                             } else {
                                 chapterActivityId = 2; // Words activity
                                 chapterActivityDrillId = nextDrill - Globals.WORDS_STARTING_ID;
+                                isWordsActivity = true;
                             }
                         } else if (nextDrill < Globals.MATHS_STARTING_ID) {
                             chapterActivityId = 3; // Simple story activity
                             chapterActivityDrillId = nextDrill - Globals.STORY_STARTING_ID;
+                            isSimpleStoryActivity = true;
                         } else {
                             chapterActivityId = 4; // Maths activity
                             chapterActivityDrillId = nextDrill - Globals.MATHS_STARTING_ID;
+                            isMathsActivity = true;
                         }
                     }
                 }
-                /* int maxChapterActivityDrills = u.getNumberOfLanguageDrills() + u.getNumberOfMathDrills();
-                if (unitId == 1) {
-                    maxChapterActivityDrills += 3; // Unit 1 skips 3 word drills
-                }*/
             }
+
+            // Init book controller
+            bookController = new BookController(new Book("Smart Little Monkey")).init();
+
+            // Chapter Spinner
+            // Get chapter names
+            chapterNames = bookController.getChapterNames();
+            // Init chapter spinner
+            chapterSpinner = new Spinner(getApplicationContext());
+            // Init chapter spinner adapter
+            chapterSpinnerAdapter = new ArrayAdapter<>(this, R.layout.spinner_nav_menu, chapterNames);
+            // Set chapter spinner adapter
+            chapterSpinner.setAdapter(chapterSpinnerAdapter);
+            // Set chapter spinner selected item
+            chapterSpinner.setSelection(chapterId, true);
+            // Init chapter spinner listener
+            chapterSpinnerListener = new ChapterSpinnerListener(
+                    getApplicationContext(),
+                    chapterSpinner.getSelectedItemPosition());
+            // Set chapter spinner listener
+            chapterSpinner.setOnItemSelectedListener(chapterSpinnerListener);
+            // Add chapter spinner to layout
+            layoutContainer.addView(chapterSpinner);
+            // Set chapter spinner layout params
+            RelativeLayout.LayoutParams chapterSpinnerLayoutParams = (RelativeLayout.LayoutParams) chapterSpinner.getLayoutParams();
+            chapterSpinnerLayoutParams.leftMargin = 20;
+            chapterSpinnerLayoutParams.topMargin = 20;
+            chapterSpinner.setLayoutParams(chapterSpinnerLayoutParams);
 
             // Chapter Activity Spinner
             // Get chapter activity names
@@ -235,6 +250,57 @@ public class LanguageSelect extends AppCompatActivity {
             if (chapterActivityDrillNames[0].equals(" ")) {
                 // Disable chapter activity drill spinner
                 chapterActivityDrillSpinner.setEnabled(false);
+                // Set a transparency to 'hide' it
+                chapterActivityDrillSpinner.setAlpha(0.6f);
+            }
+
+            // Chapter Activity Sub Drill Spinner
+            // Check if sub ids apply
+            if (isPhonicsActivity) {
+                chapterActivitySubDrillNames = new String[Globals.PHONICS_MAX_SUB_ID];
+            } else if (isWordsActivity) {
+                chapterActivitySubDrillNames = new String[Globals.WORDS_MAX_SUB_ID];
+            } else if (isSimpleStoryActivity) {
+                chapterActivitySubDrillNames = new String[Globals.STORY_MAX_SUB_ID];
+            } else if (isMathsActivity) {
+                chapterActivitySubDrillNames = new String[Globals.MATHS_MAX_SUB_ID];
+            }
+            // Check if no chapter activity drills exist
+            if (chapterActivitySubDrillNames.length == 0) {
+                // Tweak data
+                chapterActivitySubDrillNames = new String[1];
+                chapterActivitySubDrillNames[0] = " ";
+            } else {
+                // Alphabetize the variations
+                for (int i = 0; i < chapterActivitySubDrillNames.length; i++) {
+                    chapterActivitySubDrillNames[i] = Globals.EN_ALPHABET[i];
+                }
+            }
+            // Standardize chapter activity sub drill id, in case it is larger than spinner's max value
+            if (chapterActivitySubDrillId + 1 > chapterActivitySubDrillNames.length &&
+                    chapterActivitySubDrillNames.length != 0) {
+                chapterActivitySubDrillId = chapterActivitySubDrillNames.length - 1;
+            }
+            // Init chapter activity drill spinner
+            chapterActivitySubDrillSpinner = new Spinner(getApplicationContext());
+            // Init chapter spinner adapter
+            chapterActivitySubDrillSpinnerAdapter = new ArrayAdapter<>(this, R.layout.spinner_nav_menu, chapterActivitySubDrillNames);
+            // Set chapter activity drill spinner adapter
+            chapterActivitySubDrillSpinner.setAdapter(chapterActivitySubDrillSpinnerAdapter);
+            // Set chapter activity drill spinner selected item
+            chapterActivitySubDrillSpinner.setSelection(chapterActivitySubDrillId, true);
+            // Init chapter activity drill spinner listener
+            chapterActivitySubDrillSpinnerListener = new ChapterActivityDrillSpinnerListener(
+                    getApplicationContext(),
+                    chapterActivitySubDrillSpinner.getSelectedItemPosition());
+            // Set chapter activity drill spinner listener
+            chapterActivitySubDrillSpinner.setOnItemSelectedListener(chapterActivitySubDrillSpinnerListener);
+            // Check if chapter activity drill spinner is blank
+            if (chapterActivitySubDrillNames[0].equals(" ")) {
+                // Disable chapter activity drill spinner
+                chapterActivitySubDrillSpinner.setEnabled(false);
+                // Set a transparency to 'hide' it
+                chapterActivitySubDrillSpinner.setAlpha(0.6f);
             }
 
             // Init custom relative Layout for chapter activity drill views
@@ -250,13 +316,21 @@ public class LanguageSelect extends AppCompatActivity {
             // Add custom layout to main layout
             layoutContainer.addView(ll);
 
-            // Add chapter activity drill spinner to custom relative layout
-            LinearLayout llLeft = new LinearLayout(getApplicationContext());
-            LinearLayout.LayoutParams llLeftParams = new LinearLayout.LayoutParams(
+            // Add chapter activity drill spinner to custom linear layout
+            LinearLayout ll1 = new LinearLayout(getApplicationContext());
+            LinearLayout.LayoutParams ll1Params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
-            llLeft.setLayoutParams(llLeftParams);
-            llLeft.addView(chapterActivityDrillSpinner);
+            ll1.setLayoutParams(ll1Params);
+            ll1.addView(chapterActivityDrillSpinner);
+
+            // Add chapter activity sub drill spinner to custom linear layout
+            LinearLayout ll2 = new LinearLayout(getApplicationContext());
+            LinearLayout.LayoutParams ll2Params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            ll2.setLayoutParams(ll2Params);
+            ll2.addView(chapterActivitySubDrillSpinner);
 
             // Chapter activity drill total text view
             // Init chapter activity drill total text view
@@ -267,16 +341,17 @@ public class LanguageSelect extends AppCompatActivity {
             updateChapterActivityDrillTotalTextView();
             // Add chapter activity drill total text view to custom layout
 
-            LinearLayout llRight = new LinearLayout(getApplicationContext());
-            LinearLayout.LayoutParams llRightParams = new LinearLayout.LayoutParams(
+            LinearLayout ll3 = new LinearLayout(getApplicationContext());
+            LinearLayout.LayoutParams ll3Params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
-            llRight.setLayoutParams(llRightParams);
-            llRight.addView(chapterActivityDrillTotalTextView);
+            ll3.setLayoutParams(ll3Params);
+            ll3.addView(chapterActivityDrillTotalTextView);
 
             // Add llLeft and llRight to ll
-            ll.addView(llLeft);
-            ll.addView(llRight);
+            ll.addView(ll1);
+            ll.addView(ll2);
+            ll.addView(ll3);
 
             // Update button
             updateButton = new Button(getApplicationContext());
@@ -525,12 +600,58 @@ public class LanguageSelect extends AppCompatActivity {
         }
         chapterActivityDrillSpinnerAdapter = new ArrayAdapter<>(context, R.layout.spinner_nav_menu, chapterActivityDrillNames);
         chapterActivityDrillSpinner.setAdapter(chapterActivityDrillSpinnerAdapter);
+
+        // Init data [] for chapter activity sub drill
+        String[] subDrillData = new String[0];
+
         if (chapterActivityDrillNames[0].equals(" ")) {
             chapterActivityDrillSpinner.setEnabled(false);
+            chapterActivityDrillSpinner.setAlpha(0.6f);
         } else {
             chapterActivityDrillSpinner.setEnabled(true);
+            chapterActivityDrillSpinner.setAlpha(1f);
+            // logic for getting chapter activity sub drill spinner data
+            int chapter = chapterSpinner.getSelectedItemPosition();
+            int chapterActivity = chapterActivitySpinner.getSelectedItemPosition();
+            // Chapter activity sub drill logic
+            if (!(chapter == Globals.INTRO_ID || chapter == Globals.FINALE_ID)) { // not intro nor finale
+                if (!(chapterActivity == 0 || chapterActivity == 5)) { // not movie nor chapter-end
+                    if (chapterActivity == 1) { // Phonics
+                        subDrillData = new String[Globals.PHONICS_MAX_SUB_ID];
+                    } else if (chapterActivity == 2) { // Words
+                        subDrillData = new String[Globals.WORDS_MAX_SUB_ID];
+                    } else if (chapterActivity == 3) { // Simple story
+                        subDrillData = new String[Globals.STORY_MAX_SUB_ID];
+                    } else if (chapterActivity == 4) { // Maths
+                        subDrillData = new String[Globals.MATHS_MAX_SUB_ID];
+                    }
+                }
+            }
         }
         updateChapterActivityDrillTotalTextView();
+        updateChapterActivitySubDrillSpinner(context, subDrillData);
+    }
+
+    private void updateChapterActivitySubDrillSpinner(Context context, String[] data) {
+        chapterActivitySubDrillNames = data;
+        if (chapterActivitySubDrillNames.length == 0) {
+            chapterActivitySubDrillNames = new String[1];
+            chapterActivitySubDrillNames[0] = " ";
+        } else {
+            // Alphabetize the variations
+            for (int i = 0; i < chapterActivitySubDrillNames.length; i++) {
+                chapterActivitySubDrillNames[i] = Globals.EN_ALPHABET[i];
+            }
+        }
+        chapterActivitySubDrillSpinnerAdapter = new ArrayAdapter<>(context, R.layout.spinner_nav_menu, chapterActivitySubDrillNames);
+        chapterActivitySubDrillSpinner.setAdapter(chapterActivitySubDrillSpinnerAdapter);
+        if (chapterActivitySubDrillNames[0].equals(" ")) {
+            chapterActivitySubDrillSpinner.setEnabled(false);
+            chapterActivitySubDrillSpinner.setAlpha(0.6f);
+        } else {
+            chapterActivitySubDrillSpinner.setEnabled(true);
+            chapterActivitySubDrillSpinner.setAlpha(1f);
+        }
     }
 
     private void updateChapterActivityDrillTotalTextView() {
@@ -548,7 +669,8 @@ public class LanguageSelect extends AppCompatActivity {
     private boolean spinnerInputsHaveChanged() {
         return (chapterSpinnerListener.getFirstPosition() != chapterSpinnerListener.getPreviousPosition() ||
                 chapterActivitySpinnerListener.getFirstPosition() != chapterActivitySpinnerListener.getPreviousPosition() ||
-                chapterActivityDrillSpinnerListener.getFirstPosition() != chapterActivityDrillSpinnerListener.getPreviousPosition());
+                chapterActivityDrillSpinnerListener.getFirstPosition() != chapterActivityDrillSpinnerListener.getPreviousPosition() ||
+                chapterActivitySubDrillSpinnerListener.getFirstPosition() != chapterActivitySubDrillSpinnerListener.getPreviousPosition());
     }
 
     /**
@@ -648,6 +770,28 @@ public class LanguageSelect extends AppCompatActivity {
         }
     }
 
+    private class ChapterActivitySubDrillSpinnerListener extends SpinnerListener {
+
+        public ChapterActivitySubDrillSpinnerListener(Context context, int position) {
+            super(context, position);
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            // Check if it's a different position
+            System.out.println("CASDSL First position: " + firstPosition);
+            System.out.println("CASDSL Previous position: " + previousPosition);
+            System.out.println("CASDSL Current position: " + position);
+            if (position != previousPosition) {
+                // Update previous position
+                System.out.println("NEW POSITION FOR CHAPTER ACTIVITY DRILL SPINNER");
+                previousPosition = position;
+            }
+            // Enable or disable button accordingly
+            updateButton.setEnabled(spinnerInputsHaveChanged());
+        }
+    }
+
     public class UpdateButtonListener extends ButtonListener {
 
         public UpdateButtonListener(Context context) {
@@ -666,6 +810,7 @@ public class LanguageSelect extends AppCompatActivity {
                     int chapterId = chapterSpinner.getSelectedItemPosition();
                     int chapterActivityId = chapterActivitySpinner.getSelectedItemPosition();
                     int chapterActivityDrillId = chapterActivityDrillSpinner.getSelectedItemPosition();
+                    int chapterActivitySubDrillId = chapterActivitySubDrillSpinner.getSelectedItemPosition();
 
                     // Get unitId
                     int unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
@@ -775,8 +920,13 @@ public class LanguageSelect extends AppCompatActivity {
 
                             // Determine drill last played
                             int drillLastPlayed;
+                            int subId = 0;
                             if (chapterActivityId == 1) { // Phonics
                                 drillLastPlayed = chapterActivityDrillId;
+                                // Determine sub id if required
+                                if (chapterActivitySubDrillSpinner.isEnabled()) {
+                                    subId = chapterActivitySubDrillId + 1; // as spinner ids start from 0
+                                }
                             } else if (chapterActivityId == 2) { // Words
                                 drillLastPlayed = chapterActivityDrillId + Globals.WORDS_STARTING_ID - 1;
                             } else if (chapterActivityId == 3) { // Simple story
@@ -788,7 +938,7 @@ public class LanguageSelect extends AppCompatActivity {
                             u.setUnitUnlocked(1);
                             u.setUnitDateLastPlayed("0");
                             u.setUnitInProgress(1);
-                            u.setUnitSubIDInProgress(0);
+                            u.setUnitSubIDInProgress(subId);
                             u.setUnitCompleted(0);
                             u.setUnitDrillLastPlayed(drillLastPlayed);
                             u.setUnitFirstTime(0);
@@ -808,6 +958,7 @@ public class LanguageSelect extends AppCompatActivity {
                 chapterSpinnerListener.setFirstPosition(chapterSpinnerListener.getPreviousPosition());
                 chapterActivitySpinnerListener.setFirstPosition(chapterActivitySpinnerListener.getPreviousPosition());
                 chapterActivityDrillSpinnerListener.setFirstPosition(chapterActivityDrillSpinnerListener.getPreviousPosition());
+                chapterActivitySubDrillSpinnerListener.setFirstPosition(chapterActivitySubDrillSpinnerListener.getPreviousPosition());
             }
         }
     }

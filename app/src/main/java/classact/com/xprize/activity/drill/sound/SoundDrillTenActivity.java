@@ -345,7 +345,7 @@ public class SoundDrillTenActivity extends AppCompatActivity {
                         public void run() {
                             buttonsEnabled = true;
                         }
-                    }, mp.getDuration() - 150);
+                    }, mp.getDuration() - 250);
                 }
             });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
