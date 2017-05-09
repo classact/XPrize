@@ -17,6 +17,7 @@ import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
@@ -148,8 +149,8 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
     }
 
     private void playFirstSound(){
+        String sound = "";
         try {
-            String sound = "";
             if (correctItem == 1)
                 sound = pairs.getJSONObject(currentPair - 1).getString("correctsound");
             else
@@ -181,6 +182,7 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
                 mp.release();
             }
             mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -239,8 +241,8 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
     };
 
     private void playSecondSound(){
+        String sound = "";
         try {
-            String sound = "";
             if (correctItem == 2) {
                 sound = pairs.getJSONObject(currentPair - 1).getString("correctsound");
             } else {
@@ -273,6 +275,7 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
                 mp.release();
             }
             mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -354,7 +357,16 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mRunnable != null) {
+                        mRunnable.run();
+                    }
+                }
+            }, 800);
         }
     }
 

@@ -6,8 +6,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.ImageView;
 
 import org.json.JSONArray;
@@ -16,6 +18,7 @@ import org.json.JSONObject;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.menu.LanguageSelect;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.SoundPrescence;
 
@@ -65,9 +68,10 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
     // Play the introduction sound.  This is the letter
     //
     private void playIntro(){
+        String sound = "";
         try {
-            String intro = drillData.getString("intro");
-            String soundPath = FetchResource.sound(getApplicationContext(), intro);
+            sound = drillData.getString("intro");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
             }
@@ -93,14 +97,22 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playNormalLetterSound();
+                }
+            }, 800);
         }
     }
 
     public void playNormalLetterSound(){
+        String sound = "";
         try {
-            String letterSound = drillData.getString("letter_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), letterSound);
+            sound = drillData.getString("letter_sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
             }
@@ -125,7 +137,14 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playPhonicSoundIntro();
+                }
+            }, 800);
         }
     }
 
@@ -137,8 +156,9 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
     };
 
     public void playPhonicSoundIntro(){
+        String sound = "";
         try {
-            String sound = drillData.getString("it_makes_sound");
+            sound = drillData.getString("it_makes_sound");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -164,14 +184,22 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playletterSound();
+                }
+            }, 800);
         }
     }
 
     public void playletterSound(){
+        String sound = "";
         try {
-            String letterSound = drillData.getString("letter_phonic_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), letterSound);
+            sound = drillData.getString("letter_phonic_sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
             }
@@ -196,7 +224,14 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    nowYouTry();
+                }
+            }, 800);
         }
     }
 
@@ -208,8 +243,9 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
     };
 
     private void nowYouTry(){
+        String sound = "";
         try {
-            String sound = drillData.getString("now_you_try");
+            sound = drillData.getString("now_you_try");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -235,7 +271,14 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    intiatePrescence();
+                }
+            }, 800);
         }
     }
 
@@ -266,11 +309,12 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
     };
 
     private void soundAndObject(){
+        String sound = "";
         try {
             int image = objects.getJSONObject(currentObject).getInt("object");
             letter.setImageResource(image);
-            String letterSound = drillData.getString("letter_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), letterSound);
+            sound = drillData.getString("letter_sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
             }
@@ -295,7 +339,13 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playObject();
+                }
+            }, 800);
         }
     }
 
@@ -308,9 +358,10 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
     };
 
     private void playObject(){
+        String sound = "";
         try {
-            String letterSound = objects.getJSONObject(currentObject).getString("object_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), letterSound);
+            sound = objects.getJSONObject(currentObject).getString("object_sound");
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
             }
@@ -328,8 +379,7 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                     currentObject ++;
                     if (currentObject < 3){
                         handler.postDelayed(soundAndObjectRunnable,1000);
-                    }
-                    else{
+                    } else {
                         mp.release();
                         finish();
                     }
@@ -342,6 +392,7 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             if (mp != null) {
                 mp.release();
             }
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
             mp = null;
             handler.postDelayed(new Runnable() {
                 @Override
@@ -349,6 +400,8 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
                     currentObject ++;
                     if (currentObject < 3){
                         handler.postDelayed(soundAndObjectRunnable,1000);
+                    } else {
+                        finish();
                     }
                 }
             }, 800);

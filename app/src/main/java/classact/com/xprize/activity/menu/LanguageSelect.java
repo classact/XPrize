@@ -264,6 +264,8 @@ public class LanguageSelect extends AppCompatActivity {
                 chapterActivitySubDrillNames = new String[Globals.STORY_MAX_SUB_ID];
             } else if (isMathsActivity) {
                 chapterActivitySubDrillNames = new String[Globals.MATHS_MAX_SUB_ID];
+            } else {
+                chapterActivitySubDrillNames = new String[0];
             }
             // Check if no chapter activity drills exist
             if (chapterActivitySubDrillNames.length == 0) {
