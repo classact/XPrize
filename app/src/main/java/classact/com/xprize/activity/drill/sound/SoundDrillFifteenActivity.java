@@ -22,6 +22,7 @@ import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
@@ -583,6 +584,7 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
                 mp.release();
             }
             mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
             (new SoundDrillFifteenActivity.SoundListener(mThisActivity, tag, sound, null)).onCompletion(null);
         }
     }

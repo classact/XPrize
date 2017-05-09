@@ -29,6 +29,7 @@ import java.util.Date;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 import classact.com.xprize.view.PathAnimationView;
@@ -136,8 +137,9 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
     }
 
     public void playLetterSound(){
+        String sound = "";
         try {
-            String sound = drillData.getString("letter_sound");
+            sound = drillData.getString("letter_sound");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -164,7 +166,14 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    prepareToWrite();
+                }
+            }, 800);
         }
     }
 

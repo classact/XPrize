@@ -74,15 +74,16 @@ public class MathDrills {
 
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
 
-            ArrayList<Integer>  numeralsFromDB;
-            numeralsFromDB = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
-
             ArrayList<Integer>  mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
             MathImages mathImages = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)); // drill 2 only has one record per unit. So we can select one at a time.
 
             int numberOfImages = mathImages.getNumberOfImages();
             int chosenNumberIndex = 0;
+
+            ArrayList<Integer> numeralsFromDB;
+            numeralsFromDB = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId,
+                    numberOfImages + 2, boyGirl); // add 2 extra images (learning help?)
 
             ArrayList<ObjectAndSound<String>> numbers = new ArrayList<>();
             for (int i=0; i < numeralsFromDB.size(); i++ ) {
@@ -96,6 +97,9 @@ public class MathDrills {
                 }
                 numbers.add(number);
             }
+
+            System.out.println("Chosen number sound: " + numbers.get(chosenNumberIndex).getObjectSound());
+
             String drillData = MathDrillJsonBuilder.getDrillTwoJson(
                     context,
                     mathDrillFlowWord.getDrillSound1(),

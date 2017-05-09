@@ -18,6 +18,7 @@ import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
@@ -465,6 +466,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
                 mp.release();
             }
             mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
             if (startPair == 2) {
                 handler.postDelayed(isCorrectPair, 500);
             }

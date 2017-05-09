@@ -21,6 +21,7 @@ import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
@@ -347,10 +348,19 @@ public class SoundDrillSixActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
             if (mp != null){
                 mp.release();
             }
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", drillSound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (runnable != null) {
+                        runnable.run();
+                    }
+                }
+            }, 800);
         }
     }
 
@@ -385,10 +395,17 @@ public class SoundDrillSixActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
             if (mp != null){
                 mp.release();
             }
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", drillSound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playInTwoWays();
+                }
+            }, 1150);
         }
     }
 

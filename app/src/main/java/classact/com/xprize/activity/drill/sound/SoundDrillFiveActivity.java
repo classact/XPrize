@@ -18,6 +18,7 @@ import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
@@ -230,7 +231,14 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
             if (mp != null){
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", currentItemName).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playSheNeedsSomethingElse();
+                }
+            }, 1300);
         }
     }
 
@@ -302,7 +310,14 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
             if (mp != null){
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", currentSound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    itemsEnabled = true;
+                }
+            }, 700);
         }
     }
 

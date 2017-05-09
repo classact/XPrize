@@ -1,5 +1,6 @@
 package classact.com.xprize.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
@@ -10,6 +11,9 @@ import android.view.Gravity;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
+
+import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 
 /**
  * Created by hyunchanjeong on 2017/01/25.
@@ -89,7 +93,7 @@ public class FetchResource {
         String path;
 
         try {
-            // Get MP4 path
+            // Get MP3/wav path
             String packageName = context.getPackageName();
             int resourceId = context.getResources().getIdentifier(name, "raw", packageName);
             path = "android.resource://" + packageName + "/" + resourceId;
@@ -99,6 +103,38 @@ public class FetchResource {
             path = null;
         }
 
+        return path;
+    }
+
+    public static int imageId(Context context, String name) {
+        int imageId = 0;
+        try {
+            if (name.equals(Code.BLANK_IMAGE)) {
+                return 0;
+            } else {
+                imageId = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
+                if (imageId == 0) {
+                    throw new Exception("FetchResource.imageId: invalid resource name");
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Globals.bugBar(((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content), "image", name);
+        }
+        return imageId;
+    }
+
+    public static String imagePath(Context context, String name) {
+        String path = null;
+        try {
+            String packageName = context.getPackageName();
+            int resourceId = context.getResources().getIdentifier(name, "drawable", packageName);
+            path = "android.resource://" + packageName + "/" + resourceId;
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Globals.bugBar(((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content), "image", name);
+        }
         return path;
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
+import classact.com.xprize.common.Code;
 import classact.com.xprize.database.model.Numerals;
 import classact.com.xprize.utils.ResourceDecoder;
 
@@ -16,24 +17,18 @@ public class MathDrillJsonBuilder {
                                          String itsTimeToCount,
                                          String sayNumbersWithMe,
                                          ArrayList<Numeral> numerals){
-        String drillData = "{\"its_time_to_count\":" + ResourceDecoder.getIdentifier(context,itsTimeToCount,"raw") + "," +
-                "\"say_numbers_with_me\":" + ResourceDecoder.getIdentifier(context,sayNumbersWithMe,"raw") + "," +
+        String drillData = "{\"its_time_to_count\":\"" + itsTimeToCount + "\"," +
+                "\"say_numbers_with_me\":\"" + sayNumbersWithMe + "\"," +
                 "\"numerals\":[";
-        int i = 0;
-        for (Numeral numeral: numerals) {
-            if (i == 0){
-                drillData +=  "{\"sound\":" + ResourceDecoder.getIdentifier(context,numeral.getSound(),"raw") + "," +
-                        "\"numeral\":" + ResourceDecoder.getIdentifier(context,numeral.getBlackImage(),"drawable") + "," +
-                        "\"numeral_sparkling\":" +  ResourceDecoder.getIdentifier(context,numeral.getSparklingImage(),"drawable") +
-                        "}";
+        for (int i = 0; i < numerals.size(); i++) {
+            if (i > 0) { // add comma in front logic
+                drillData += ",";
             }
-            else{
-                drillData +=  ",{\"sound\":" + ResourceDecoder.getIdentifier(context,numeral.getSound(),"raw") + "," +
-                        "\"numeral\":" + ResourceDecoder.getIdentifier(context,numeral.getBlackImage(),"drawable") + "," +
-                        "\"numeral_sparkling\":" +  ResourceDecoder.getIdentifier(context,numeral.getSparklingImage(),"drawable") +
-                        "}";
-            }
-            i++;
+            Numeral numeral = numerals.get(i);
+            drillData +=  "{\"sound\":\"" + numeral.getSound() + "\"," +
+                    "\"numeral\":\"" + numeral.getBlackImage() + "\"," +
+                    "\"numeral_sparkling\":\"" + numeral.getSparklingImage() + "\"" +
+                    "}";
         }
         drillData += "]}";
 
@@ -58,27 +53,24 @@ public class MathDrillJsonBuilder {
         System.out.println("MathDrillJsonBuilder.getDrillTwoJson > Debug: touchSound = " + touchSound);
         System.out.println("MathDrillJsonBuilder.getDrillTwoJson > Debug: numeralSound = " + numeralSound);
 
-        String drillData = "{\"monkey_has\":" + ResourceDecoder.getIdentifier(context,monkeyHasSound,"raw") + "," +
-                "\"object\":" + ResourceDecoder.getIdentifier(context,objectImage,"drawable") + "," +
-                "\"number_of_objects\":" + numberOfObjects + "," +
-                "\"number_of_objects_sound\":" +  ResourceDecoder.getIdentifier(context,numberOfObjectsSound,"raw") + "," +
-                "\"numeral_sound\":" +  ResourceDecoder.getIdentifier(context,numeralSound,"raw") + "," +
-                "\"can_you_find_and_touch\":" + ResourceDecoder.getIdentifier(context,touchSound,"raw") + "," +
-                "\"numerals\":[" +
-                "{\"sound\":" +  ResourceDecoder.getIdentifier(context,numbers.get(0).getObjectSound(),"raw")  + "," +
-                "\"image\":" + ResourceDecoder.getIdentifier(context,numbers.get(0).getObjectImage(),"drawable") + "," +
-                "\"right\":" + numbers.get(0).getCustomData() +
-                "}," +
-                "{\"sound\":" +  ResourceDecoder.getIdentifier(context,numbers.get(1).getObjectSound(),"raw")  + "," +
-                "\"image\":" + ResourceDecoder.getIdentifier(context,numbers.get(1).getObjectImage(),"drawable") + "," +
-                "\"right\":" + numbers.get(1).getCustomData() +
-                "}," +
-                "{\"sound\":" +  ResourceDecoder.getIdentifier(context,numbers.get(2).getObjectSound(),"raw")  + "," +
-                "\"image\":" + ResourceDecoder.getIdentifier(context,numbers.get(2).getObjectImage(),"drawable") + "," +
-                "\"right\":" + numbers.get(2).getCustomData() +
-                "}" +
-                "]}";
-
+        String drillData = "{\"monkey_has\":\"" + monkeyHasSound + "\"," +
+                "\"object\":\"" + objectImage + "\"," +
+                "\"number_of_objects\":" + numberOfObjects + "," + // int
+                "\"number_of_objects_sound\":\"" + numberOfObjectsSound + "\"," +
+                "\"numeral_sound\":\"" + numeralSound + "\"," +
+                "\"can_you_find_and_touch\":\"" + touchSound + "\"," +
+                "\"numerals\":[";
+        for (int i = 0; i < numbers.size(); i++) {
+            ObjectAndSound<String> number = numbers.get(i);
+            if (i > 0) {
+                drillData += ",";
+            }
+            drillData += "{\"sound\":\"" + number.getObjectSound() + "\"," +
+                    "\"image\":\"" + number.getObjectImage() + "\"," +
+                    "\"right\":" + number.getCustomData() + // int
+                    "}";
+        }
+        drillData += "]}";
         return drillData;
     }
 
@@ -113,23 +105,23 @@ public class MathDrillJsonBuilder {
         System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: nineSound = " + nineSound);
         System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: tenSound = " + tenSound);
 
-        String drillData =  "{\"monkey_wants_to_eat\":" + ResourceDecoder.getIdentifier(context,monkeyWantsToEatSound,"raw") + "," +
-                "\"number_of_items_sound\":" + ResourceDecoder.getIdentifier(context,numberOfItemsSound,"raw") + "," +
-                "\"drag_sound\":" + ResourceDecoder.getIdentifier(context,dragSound,"raw") + "," +
-                "\"to_the_table_sound\":" + ResourceDecoder.getIdentifier(context,toTheTableSound,"raw") + "," +
-                "\"number_of_items\":" + numberOfItems + "," +
-                "\"total_items\":" + totalItems + "," +
-                "\"item\":" + ResourceDecoder.getIdentifier(context,item,"drawable") + "," +
-                "\"one_sound\":" + ResourceDecoder.getIdentifier(context,oneSound,"raw") + "," +
-                "\"two_sound\":" + ResourceDecoder.getIdentifier(context,twoSound,"raw") + "," +
-                "\"three_sound\":" + ResourceDecoder.getIdentifier(context,threeSound,"raw") + "," +
-                "\"four_sound\":" + ResourceDecoder.getIdentifier(context,fourSound,"raw") + "," +
-                "\"five_sound\":" + ResourceDecoder.getIdentifier(context,fiveSound     ,"raw") + "," +
-                "\"six_sound\":" + ResourceDecoder.getIdentifier(context,sixSound,"raw") + "," +
-                "\"seven_sound\":" + ResourceDecoder.getIdentifier(context,sevenSound,"raw") + "," +
-                "\"eight_sound\":" + ResourceDecoder.getIdentifier(context,eightSound,"raw") + "," +
-                "\"nine_sound\":" + ResourceDecoder.getIdentifier(context,nineSound,"raw") + "," +
-                "\"ten_sound\":" + ResourceDecoder.getIdentifier(context,tenSound,"raw") +
+        String drillData =  "{\"monkey_wants_to_eat\":\"" + monkeyWantsToEatSound + "\"," +
+                "\"number_of_items_sound\":\"" + numberOfItemsSound + "\"," +
+                "\"drag_sound\":\"" + dragSound + "\"," +
+                "\"to_the_table_sound\":\"" + toTheTableSound + "\"," +
+                "\"number_of_items\":\"" + numberOfItems + "\"," +
+                "\"total_items\":\"" + totalItems + "\"," +
+                "\"item\":\"" + item + "\"," +
+                "\"one_sound\":\"" + oneSound + "\"," +
+                "\"two_sound\":\"" + twoSound + "\"," +
+                "\"three_sound\":\"" + threeSound + "\"," +
+                "\"four_sound\":\"" + fourSound + "\"," +
+                "\"five_sound\":\"" + fiveSound + "\"," +
+                "\"six_sound\":\"" + sixSound + "\"," +
+                "\"seven_sound\":\"" + sevenSound + "\"," +
+                "\"eight_sound\":\"" + eightSound + "\"," +
+                "\"nine_sound\":\"" + nineSound + "\"," +
+                "\"ten_sound\":\"" + tenSound + "\"" +
                 "}";
         return drillData;
     }
@@ -175,20 +167,20 @@ public class MathDrillJsonBuilder {
             }
         }
 
-        String drillData = "{\"monkey_has\":" + ResourceDecoder.getIdentifier(context,monkeyHasSound,"raw") + "," +
-                "\"check_bigger\":" + checkBigger + "," +
-                "\"number_of_left_items_sound\":" + ResourceDecoder.getIdentifier(context,numberOfLeftItemsSound,"raw") + "," +
-                "\"number_of_right_items_sound\":" + ResourceDecoder.getIdentifier(context,numberOfRightItemsSound,"raw") + "," +
-                "\"and_sound\":" + ResourceDecoder.getIdentifier(context,andSound,"raw") + "," +
-                "\"more_of_question\":" + ResourceDecoder.getIdentifier(context,moreOfQuestion,"raw") + "," +
-                "\"number_of_left_items_sound\":" + ResourceDecoder.getIdentifier(context,numberOfLeftItemsSound,"raw") + "," +
-                "\"touch_the_number\":" + ResourceDecoder.getIdentifier(context,touchTheBiggerSound,"raw") + "," +
-                "\"number_of_left_items\":" + numberOfLeftItems + "," +
-                "\"left_items_item\":" + ResourceDecoder.getIdentifier(context,leftItemItem,"drawable") + "," +
-                "\"left_number_image\":" + ResourceDecoder.getIdentifier(context,leftNumberImage,"drawable") + "," +
-                "\"number_of_right_items\":" + numberOfRightItems + "," +
-                "\"right_items_item\":" + ResourceDecoder.getIdentifier(context,rightItemItem,"drawable") + "," +
-                "\"right_number_image\":" + ResourceDecoder.getIdentifier(context,rightNumberImage,"drawable") +
+        String drillData = "{\"monkey_has\":\"" + monkeyHasSound + "\"," +
+                "\"check_bigger\":\"" + checkBigger + "\"," +
+                "\"number_of_left_items_sound\":\"" + numberOfLeftItemsSound + "\"," +
+                "\"number_of_right_items_sound\":\"" + numberOfRightItemsSound + "\"," +
+                "\"and_sound\":\"" + andSound + "\"," +
+                "\"more_of_question\":\"" + moreOfQuestion + "\"," +
+                "\"number_of_left_items_sound\":\"" + numberOfLeftItemsSound + "\"," +
+                "\"touch_the_number\":\"" + touchTheBiggerSound + "\"," +
+                "\"number_of_left_items\":\"" + numberOfLeftItems + "\"," +
+                "\"left_items_item\":\"" + leftItemItem + "\"," +
+                "\"left_number_image\":\"" + leftNumberImage + "\"," +
+                "\"number_of_right_items\":\"" + numberOfRightItems + "\"," +
+                "\"right_items_item\":\"" + rightItemItem + "\"," +
+                "\"right_number_image\":\"" + rightNumberImage + "\"" +
                 "}";
         return drillData;
     }
@@ -209,48 +201,41 @@ public class MathDrillJsonBuilder {
                                           String eightSound,
                                           String nineSound,
                                           String tenSound){
-        String drillData = "{\"help_monkey_pack\":" + ResourceDecoder.getIdentifier(context,helpMonkeyPackSound,"raw") + "," +
-                "\"drag_items_onto_shelf\":" +  ResourceDecoder.getIdentifier(context,dragItemsOntoShelfSound,"raw") + "," +
-                "\"can_you_find_and_touch\":" + ResourceDecoder.getIdentifier(context,touchSound,"raw") + "," +
+        String drillData = "{\"help_monkey_pack\":\"" + helpMonkeyPackSound + "\"," +
+                "\"drag_items_onto_shelf\":\"" + dragItemsOntoShelfSound + "\"," +
+                "\"can_you_find_and_touch\":\"" + touchSound + "\"," +
                 "\"items\":[";
-        int i = 0;
-        for (ObjectAndSound<String> item: items) {
-            if (i == 0)
-            drillData += "{\"sound\":" + ResourceDecoder.getIdentifier(context, item.getObjectSound(), "raw") + "," +
-                    "\"image\":" + ResourceDecoder.getIdentifier(context, item.getObjectImage(), "drawable") + "," +
-                    "\"number\":" + item.getCustomData() +
+        for (int i = 0; i < items.size(); i++) {
+            ObjectAndSound<String> item = items.get(i);
+            if (i > 0) {
+                drillData += ",";
+            }
+            drillData += "{\"sound\":\"" +  item.getObjectSound() + "\"," +
+                    "\"image\":\"" +  item.getObjectImage() + "\"," +
+                    "\"number\":\"" + item.getCustomData() + "\"" +
                     "}";
-            else
-                drillData += ",{\"sound\":" + ResourceDecoder.getIdentifier(context, item.getObjectSound(), "raw") + "," +
-                        "\"image\":" + ResourceDecoder.getIdentifier(context, item.getObjectImage(), "drawable") + "," +
-                        "\"number\":" + item.getCustomData() +
-                        "}";
-            i++;
         }
         drillData += "],\"numerals\":[";
-        i = 0;
-        for (DraggableImage<String> item: numerals) {
-            if (i == 0)
-                drillData += "{\"image\":" + ResourceDecoder.getIdentifier(context, item.getcontent(), "drawable") + "," +
-                        "\"right\":" + item.isRight() +
-                        "}";
-            else
-                drillData += ",{\"image\":" + ResourceDecoder.getIdentifier(context, item.getcontent(), "drawable") + "," +
-                        "\"right\":" + item.isRight() +
-                        "}";
-            i++;
+        for (int i = 0; i < numerals.size(); i++) {
+            DraggableImage<String> item = numerals.get(i);
+            if (i > 0) {
+                drillData += ",";
+            }
+            drillData += "{\"image\":\"" +  item.getcontent() + "\"," +
+                    "\"right\":\"" + item.isRight() + "\"" +
+                    "}";
         }
         drillData += "]," +
-                "\"one_sound\":" + ResourceDecoder.getIdentifier(context,oneSound,"raw") + "," +
-                "\"two_sound\":" + ResourceDecoder.getIdentifier(context,twoSound,"raw") + "," +
-                "\"three_sound\":" + ResourceDecoder.getIdentifier(context,threeSound,"raw") + "," +
-                "\"four_sound\":" + ResourceDecoder.getIdentifier(context,fourSound,"raw") + "," +
-                "\"five_sound\":" + ResourceDecoder.getIdentifier(context,fiveSound     ,"raw") + "," +
-                "\"six_sound\":" + ResourceDecoder.getIdentifier(context,sixSound,"raw") + "," +
-                "\"seven_sound\":" + ResourceDecoder.getIdentifier(context,sevenSound,"raw") + "," +
-                "\"eight_sound\":" + ResourceDecoder.getIdentifier(context,eightSound,"raw") + "," +
-                "\"nine_sound\":" + ResourceDecoder.getIdentifier(context,nineSound,"raw") + "," +
-                "\"ten_sound\":" + ResourceDecoder.getIdentifier(context,tenSound,"raw") +
+                "\"one_sound\":\"" + oneSound + "\"," +
+                "\"two_sound\":\"" + twoSound + "\"," +
+                "\"three_sound\":\"" + threeSound + "\"," +
+                "\"four_sound\":\"" + fourSound + "\"," +
+                "\"five_sound\":\"" + fiveSound      + "\"," +
+                "\"six_sound\":\"" + sixSound + "\"," +
+                "\"seven_sound\":\"" + sevenSound + "\"," +
+                "\"eight_sound\":\"" + eightSound + "\"," +
+                "\"nine_sound\":\"" + nineSound + "\"," +
+                "\"ten_sound\":\"" + tenSound + "\"" +
                 "}";
 
         return drillData;
@@ -284,62 +269,55 @@ public class MathDrillJsonBuilder {
                                                 String eighteenSound,
                                                 String nineteenSound,
                                                 String twentySound){
-        String drillData = "{\"help_dama_with_maths\":" + ResourceDecoder.getIdentifier(context,helpDamaWithMathsSound,"raw") + "," +
-                "\"drag_items_onto_table\":" +  ResourceDecoder.getIdentifier(context,dragItemsOntoTableSound,"raw") + "," +
-                "\"can_you_find_and_touch\":" + ResourceDecoder.getIdentifier(context,touchTheNumber,"raw") + "," +
-                "\"equation_sound\":" + ResourceDecoder.getIdentifier(context,equationSound,"raw") + "," +
-                "\"answer_image\":" + ResourceDecoder.getIdentifier(context,answerImage,"drawable") + "," +
+        String drillData = "{\"help_dama_with_maths\":\"" + helpDamaWithMathsSound + "\"," +
+                "\"drag_items_onto_table\":\"" + dragItemsOntoTableSound + "\"," +
+                "\"can_you_find_and_touch\":\"" + touchTheNumber + "\"," +
+                "\"equation_sound\":\"" + equationSound + "\"," +
+                "\"answer_image\":\"" + answerImage + "\"," +
                 "\"items\":[";
-        int i = 0;
-        for (ObjectAndSound<String> item: items) {
-            if (i == 0)
-                drillData += "{\"sound\":" + ResourceDecoder.getIdentifier(context, item.getObjectSound(), "raw") + "," +
-                        "\"image\":" + ResourceDecoder.getIdentifier(context, item.getObjectImage(), "drawable") + "," +
-                        "\"numeral\":" + ResourceDecoder.getIdentifier(context, item.getObjectPhonicSound(), "drawable") + "," +
-                        "\"number\":" + item.getCustomData() +
-                        "}";
-            else
-                drillData += ",{\"sound\":" + ResourceDecoder.getIdentifier(context, item.getObjectSound(), "raw") + "," +
-                        "\"image\":" + ResourceDecoder.getIdentifier(context, item.getObjectImage(), "drawable") + "," +
-                        "\"numeral\":" + ResourceDecoder.getIdentifier(context, item.getObjectPhonicSound(), "drawable") + "," +
-                        "\"number\":" + item.getCustomData() +
-                        "}";
-            i++;
+        for (int i = 0; i < items.size(); i++) {
+            ObjectAndSound<String> item = items.get(i);
+            if (i > 0) {
+                drillData += ",";
+            }
+            drillData += "{\"sound\":\"" +  item.getObjectSound() + "\"," +
+                    "\"image\":\"" +  item.getObjectImage() + "\"," +
+                    "\"numeral\":\"" +  item.getObjectPhonicSound() + "\"," +
+                    "\"number\":\"" + item.getCustomData() + "\"" +
+                    "}";
+
         }
         drillData += "],\"numerals\":[";
-        i = 0;
-        for (DraggableImage<String> item: numerals) {
-            if (i == 0)
-                drillData += "{\"image\":" + ResourceDecoder.getIdentifier(context, item.getcontent(), "drawable") + "," +
-                        "\"right\":" + item.isRight() +
-                        "}";
-            else
-                drillData += ",{\"image\":" + ResourceDecoder.getIdentifier(context, item.getcontent(), "drawable") + "," +
-                        "\"right\":" + item.isRight() +
-                        "}";
-            i++;
+        for (int i = 0; i < numerals.size(); i++) {
+            DraggableImage<String> item = numerals.get(i);
+            if (i > 0) {
+                drillData += ",";
+            }
+            drillData += "{\"image\":\"" +  item.getcontent() + "\"," +
+                    "\"right\":\"" + item.isRight() + "\"" +
+                    "}";
         }
         drillData += "]," +
-                "\"one_sound\":" + ResourceDecoder.getIdentifier(context,oneSound,"raw") + "," +
-                "\"two_sound\":" + ResourceDecoder.getIdentifier(context,twoSound,"raw") + "," +
-                "\"three_sound\":" + ResourceDecoder.getIdentifier(context,threeSound,"raw") + "," +
-                "\"four_sound\":" + ResourceDecoder.getIdentifier(context,fourSound,"raw") + "," +
-                "\"five_sound\":" + ResourceDecoder.getIdentifier(context,fiveSound     ,"raw") + "," +
-                "\"six_sound\":" + ResourceDecoder.getIdentifier(context,sixSound,"raw") + "," +
-                "\"seven_sound\":" + ResourceDecoder.getIdentifier(context,sevenSound,"raw") + "," +
-                "\"eight_sound\":" + ResourceDecoder.getIdentifier(context,eightSound,"raw") + "," +
-                "\"nine_sound\":" + ResourceDecoder.getIdentifier(context,nineSound,"raw") + "," +
-                "\"ten_sound\":" + ResourceDecoder.getIdentifier(context,tenSound,"raw") + "," +
-                "\"eleven_sound\":" + ResourceDecoder.getIdentifier(context,elevenSound,"raw") + "," +
-                "\"twelve_sound\":" + ResourceDecoder.getIdentifier(context,twelveSound,"raw") + "," +
-                "\"thirteen_sound\":" + ResourceDecoder.getIdentifier(context,thirteenSound,"raw") + "," +
-                "\"fourteen_sound\":" + ResourceDecoder.getIdentifier(context,fourteenSound,"raw") + "," +
-                "\"fifteen_sound\":" + ResourceDecoder.getIdentifier(context,fifteenSound,"raw") + "," +
-                "\"sixteen_sound\":" + ResourceDecoder.getIdentifier(context,sixteenSound,"raw") + "," +
-                "\"seventeen_sound\":" + ResourceDecoder.getIdentifier(context,seventeenSound,"raw") + "," +
-                "\"eighteen_sound\":" + ResourceDecoder.getIdentifier(context,eighteenSound,"raw") + "," +
-                "\"nineteen_sound\":" + ResourceDecoder.getIdentifier(context,nineteenSound,"raw") + "," +
-                "\"twenty_sound\":" + ResourceDecoder.getIdentifier(context,twentySound,"raw") +
+                "\"one_sound\":\"" + oneSound + "\"," +
+                "\"two_sound\":\"" + twoSound + "\"," +
+                "\"three_sound\":\"" + threeSound + "\"," +
+                "\"four_sound\":\"" + fourSound + "\"," +
+                "\"five_sound\":\"" + fiveSound      + "\"," +
+                "\"six_sound\":\"" + sixSound + "\"," +
+                "\"seven_sound\":\"" + sevenSound + "\"," +
+                "\"eight_sound\":\"" + eightSound + "\"," +
+                "\"nine_sound\":\"" + nineSound + "\"," +
+                "\"ten_sound\":\"" + tenSound + "\"," +
+                "\"eleven_sound\":\"" + elevenSound + "\"," +
+                "\"twelve_sound\":\"" + twelveSound + "\"," +
+                "\"thirteen_sound\":\"" + thirteenSound + "\"," +
+                "\"fourteen_sound\":\"" + fourteenSound + "\"," +
+                "\"fifteen_sound\":\"" + fifteenSound + "\"," +
+                "\"sixteen_sound\":\"" + sixteenSound + "\"," +
+                "\"seventeen_sound\":\"" + seventeenSound + "\"," +
+                "\"eighteen_sound\":\"" + eighteenSound + "\"," +
+                "\"nineteen_sound\":\"" + nineteenSound + "\"," +
+                "\"twenty_sound\":\"" + twentySound + "\"" +
                 "}";
 
         return drillData;
@@ -363,13 +341,13 @@ public class MathDrillJsonBuilder {
         System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: demoObject = " + demoObject);
         System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: objectToTouch = " + objectToTouch);
 
-        String drillData = "{\"lets_look_at_shapes\":" + ResourceDecoder.getIdentifier(context,letsLookAtShapesSound,"raw") + "," +
-                "\"this_is_sound\":" + ResourceDecoder.getIdentifier(context,thisIsASound,"raw") + "," +
-                "\"object_sound\":" + ResourceDecoder.getIdentifier(context,objectSound,"raw") + "," +
-                "\"repeat_afterme_sound\":" + ResourceDecoder.getIdentifier(context,repeatAfterMeSound,"raw") + "," +
-                "\"touch_sound\":" + ResourceDecoder.getIdentifier(context,touchSound,"raw") + "," +
-                "\"demo_object\":" + ResourceDecoder.getIdentifier(context,demoObject,"drawable") + "," +
-                "\"object_to_touch\":" + objectToTouch + "}";
+        String drillData = "{\"lets_look_at_shapes\":\"" + letsLookAtShapesSound + "\"," +
+                "\"this_is_sound\":\"" + thisIsASound + "\"," +
+                "\"object_sound\":\"" + objectSound + "\"," +
+                "\"repeat_afterme_sound\":\"" + repeatAfterMeSound + "\"," +
+                "\"touch_sound\":\"" + touchSound + "\"," +
+                "\"demo_object\":\"" + demoObject + "\"," +
+                "\"object_to_touch\":\"" + objectToTouch + "\"}";
         return drillData;
     }
 
@@ -383,14 +361,14 @@ public class MathDrillJsonBuilder {
                                                 String objectToTouchSound,
                                                 String demoObject,
                                                 String objectToTouch){
-        String drillData = "{\"lets_look_at_shapes\":" + ResourceDecoder.getIdentifier(context,letsLookAtShapesSound,"raw") + "," +
-                "\"these_are_sound\":" + ResourceDecoder.getIdentifier(context,theseAreSound,"raw") + "," +
-                "\"objects_sound\":" + ResourceDecoder.getIdentifier(context,objectSound,"raw") + "," +
-                "\"repeat_afterme_sound\":" + ResourceDecoder.getIdentifier(context,repeatAfterMeSound,"raw") + "," +
-                "\"touch_sound\":" + ResourceDecoder.getIdentifier(context,touchSound,"raw") + "," +
-                "\"object_to_touch_sound\":" + ResourceDecoder.getIdentifier(context,objectToTouchSound,"raw") + "," +
-                "\"demo_object\":" + ResourceDecoder.getIdentifier(context,demoObject,"drawable") + "," +
-                "\"object_to_touch\":" + objectToTouch + "}";
+        String drillData = "{\"lets_look_at_shapes\":\"" + letsLookAtShapesSound + "\"," +
+                "\"these_are_sound\":\"" + theseAreSound + "\"," +
+                "\"objects_sound\":\"" + objectSound + "\"," +
+                "\"repeat_afterme_sound\":\"" + repeatAfterMeSound + "\"," +
+                "\"touch_sound\":\"" + touchSound + "\"," +
+                "\"object_to_touch_sound\":\"" + objectToTouchSound + "\"," +
+                "\"demo_object\":\"" + demoObject + "\","+
+                "\"object_to_touch\":\"" + objectToTouch + "\"}";
         return drillData;
     }
 
@@ -407,17 +385,17 @@ public class MathDrillJsonBuilder {
                                                String objectOne,
                                                String objectTwo,
                                                String objectToTouch){
-        String drillData = "{\"lets_look_at_shapes\":" + ResourceDecoder.getIdentifier(context,letsLookAtShapesSound,"raw") + "," +
-                "\"these_are_sound\":" + ResourceDecoder.getIdentifier(context,theseAreSound,"raw") + "," +
-                "\"objects_one_sound\":" + ResourceDecoder.getIdentifier(context,objectsOneSound,"raw") + "," +
-                "\"objects_two_sound\":" + ResourceDecoder.getIdentifier(context,objectsTwoSound,"raw") + "," +
-                "\"and_sound\":" + ResourceDecoder.getIdentifier(context,andSound,"raw") + "," +
-                "\"repeat_afterme_sound\":" + ResourceDecoder.getIdentifier(context,repeatAfterMeSound,"raw") + "," +
-                "\"touch_sound\":" + ResourceDecoder.getIdentifier(context,touchSound,"raw") + "," +
-                "\"object_to_touch_sound\":" + ResourceDecoder.getIdentifier(context,objectToTouchSound,"raw") + "," +
-                "\"object_one\":" + ResourceDecoder.getIdentifier(context,objectOne,"drawable") + "," +
-                "\"object_two\":" + ResourceDecoder.getIdentifier(context,objectTwo,"drawable") + "," +
-                "\"object_to_touch\":" + objectToTouch + "}";
+        String drillData = "{\"lets_look_at_shapes\":\"" + letsLookAtShapesSound + "\"," +
+                "\"these_are_sound\":\"" + theseAreSound + "\"," +
+                "\"objects_one_sound\":\"" + objectsOneSound + "\"," +
+                "\"objects_two_sound\":\"" + objectsTwoSound + "\"," +
+                "\"and_sound\":\"" + andSound + "\"," +
+                "\"repeat_afterme_sound\":\"" + repeatAfterMeSound + "\"," +
+                "\"touch_sound\":\"" + touchSound + "\"," +
+                "\"object_to_touch_sound\":\"" + objectToTouchSound + "\"," +
+                "\"object_one\":\"" + objectOne + "\","+
+                "\"object_two\":\"" + objectTwo + "\","+
+                "\"object_to_touch\":\"" + objectToTouch + "\"}";
         return drillData;
     }
 
@@ -433,28 +411,25 @@ public class MathDrillJsonBuilder {
                                                  String numberOfObjects,
                                                  String numberOfEatenObjects,
                                                  ArrayList<DraggableImage<String>> numerals){
-        String drillData = "{\"monkey_is_hungry\":" + ResourceDecoder.getIdentifier(context,monkeyIsHungryAndEatsSound,"raw") + "," +
-                "\"he_eats_sound\":" + ResourceDecoder.getIdentifier(context,heEatsSound,"raw") + "," +
-                "\"objects_eaten\":" + ResourceDecoder.getIdentifier(context,objectsEatenSound,"raw") + "," +
-                "\"objects_sound\":" + ResourceDecoder.getIdentifier(context,objectsSound,"raw") + "," +
-                "\"drag_sound\":" + ResourceDecoder.getIdentifier(context,dragSound,"raw") + "," +
-                "\"to_the_monkey_sound\":" + ResourceDecoder.getIdentifier(context,toTheMonkeysMouthSound,"raw") + "," +
-                "\"touch_sound\":" + ResourceDecoder.getIdentifier(context,touchSound,"raw") + "," +
-                "\"objects_image\":" + ResourceDecoder.getIdentifier(context,objectsImage,"drawable") + "," +
-                "\"number_of_eaten_objects\":" + numberOfEatenObjects + "," +
-                "\"number_of_objects\":" + numberOfObjects + ",";
+        String drillData = "{\"monkey_is_hungry\":\"" + monkeyIsHungryAndEatsSound + "\"," +
+                "\"he_eats_sound\":\"" + heEatsSound + "\"," +
+                "\"objects_eaten\":\"" + objectsEatenSound + "\"," +
+                "\"objects_sound\":\"" + objectsSound + "\"," +
+                "\"drag_sound\":\"" + dragSound + "\"," +
+                "\"to_the_monkey_sound\":\"" + toTheMonkeysMouthSound + "\"," +
+                "\"touch_sound\":\"" + touchSound + "\"," +
+                "\"objects_image\":\"" + objectsImage + "\","+
+                "\"number_of_eaten_objects\":\"" + numberOfEatenObjects + "\"," +
+                "\"number_of_objects\":\"" + numberOfObjects + "\",";
         drillData += "\"numerals\":[";
-        int i = 0;
-        for (DraggableImage<String> item: numerals) {
-            if (i == 0)
-                drillData += "{\"image\":" + ResourceDecoder.getIdentifier(context, item.getcontent(), "drawable") + "," +
-                        "\"right\":" + item.isRight() +
-                        "}";
-            else
-                drillData += ",{\"image\":" + ResourceDecoder.getIdentifier(context, item.getcontent(), "drawable") + "," +
-                        "\"right\":" + item.isRight() +
-                        "}";
-            i++;
+        for (int i = 0; i < numerals.size(); i++) {
+            DraggableImage<String> item = numerals.get(i);
+            if (i > 0) {
+                drillData += ",";
+            }
+            drillData += "{\"image\":\"" +  item.getcontent() + "\"," +
+                    "\"right\":\"" + item.isRight() + "\"" +
+                    "}";
         }
         drillData += "]}";
         return drillData;
@@ -477,33 +452,30 @@ public class MathDrillJsonBuilder {
                                                  String numberOfGivenObjectsImage,
                                                  String answerImage,
                                                  ArrayList<DraggableImage<String>> numerals){
-        String drillData = "{\"dama_has_sound\":" + ResourceDecoder.getIdentifier(context,damaHasSound,"raw") + "," +
-                "\"number_of_objects_sound\":" + ResourceDecoder.getIdentifier(context,numberOfObjectsSound,"raw") + "," +
-                "\"number_of_given_object_sound\":" + ResourceDecoder.getIdentifier(context,numberOfGivenObjectsSound,"raw") + "," +
-                "\"he_gives_sound\":" + ResourceDecoder.getIdentifier(context,heGivesSound,"raw") + "," +
-                "\"to_monkey_sound\":" + ResourceDecoder.getIdentifier(context,toMonkeySound,"raw") + "," +
-                "\"drag_sound\":" + ResourceDecoder.getIdentifier(context,dragSound,"raw") + "," +
-                "\"to_the_monkey_sound\":" + ResourceDecoder.getIdentifier(context,toTheMonkeySpaceSound,"raw") + "," +
-                "\"equation_sound\":" + ResourceDecoder.getIdentifier(context,equationSound,"raw") + "," +
-                "\"touch_sound\":" + ResourceDecoder.getIdentifier(context,touchSound,"raw") + "," +
-                "\"objects_image\":" + ResourceDecoder.getIdentifier(context,objectsImage,"drawable") + "," +
-                "\"number_of_given_objects\":" + numberOfGivenObjects + "," +
-                "\"number_of_given_objects_image\":" + ResourceDecoder.getIdentifier(context,numberOfGivenObjectsImage,"drawable") + "," +
-                "\"number_of_objects_image\":" + ResourceDecoder.getIdentifier(context,numberOfObjectsImage,"drawable") + "," +
-                "\"answer_image\":" + ResourceDecoder.getIdentifier(context,answerImage,"drawable") + "," +
-                "\"number_of_objects\":" + numberOfObjects + ",";
+        String drillData = "{\"dama_has_sound\":\"" + damaHasSound + "\"," +
+                "\"number_of_objects_sound\":\"" + numberOfObjectsSound + "\"," +
+                "\"number_of_given_object_sound\":\"" + numberOfGivenObjectsSound + "\"," +
+                "\"he_gives_sound\":\"" + heGivesSound + "\"," +
+                "\"to_monkey_sound\":\"" + toMonkeySound + "\"," +
+                "\"drag_sound\":\"" + dragSound + "\"," +
+                "\"to_the_monkey_sound\":\"" + toTheMonkeySpaceSound + "\"," +
+                "\"equation_sound\":\"" + equationSound + "\"," +
+                "\"touch_sound\":\"" + touchSound + "\"," +
+                "\"objects_image\":\"" + objectsImage + "\","+
+                "\"number_of_given_objects\":\"" + numberOfGivenObjects + "\"," +
+                "\"number_of_given_objects_image\":\"" + numberOfGivenObjectsImage + "\","+
+                "\"number_of_objects_image\":\"" + numberOfObjectsImage + "\","+
+                "\"answer_image\":\"" + answerImage + "\","+
+                "\"number_of_objects\":\"" + numberOfObjects + "\",";
         drillData += "\"numerals\":[";
-        int i = 0;
-        for (DraggableImage<String> item: numerals) {
-            if (i == 0)
-                drillData += "{\"image\":" + ResourceDecoder.getIdentifier(context, item.getcontent(), "drawable") + "," +
-                        "\"right\":" + item.isRight() +
-                        "}";
-            else
-                drillData += ",{\"image\":" + ResourceDecoder.getIdentifier(context, item.getcontent(), "drawable") + "," +
-                        "\"right\":" + item.isRight() +
-                        "}";
-            i++;
+        for (int i = 0; i < numerals.size(); i++) {
+            DraggableImage<String> item = numerals.get(i);
+            if (i > 0) {
+                drillData += ",";
+            }
+            drillData += ",{\"image\":\"" +  item.getcontent() + "\"," +
+                    "\"right\":\"" + item.isRight() + "\"" +
+                    "}";
         }
         drillData += "]}";
         return drillData;
@@ -526,24 +498,21 @@ public class MathDrillJsonBuilder {
         System.out.println("MathDrillJsonBuilder.getDrillSevenJson > Debug: objectToDragSound = " + objectToDragSound);
         System.out.println("MathDrillJsonBuilder.getDrillSevenJson > Debug: intoTheSpaceSound = " + intoTheSpaceSound);
 
-        String drillData = "{\"pattern_introduction_sound\":" + ResourceDecoder.getIdentifier(context,patternIntrodution,"raw") + "," +
-                "\"drag_sound\":" + ResourceDecoder.getIdentifier(context,dragSound,"raw") + "," +
-                "\"pattern_sound\":" + ResourceDecoder.getIdentifier(context,patternSound,"raw") + "," +
-                "\"object_sound\":" + ResourceDecoder.getIdentifier(context,objectToDragSound,"raw") + "," +
-                "\"into_the_space_sound\":" + ResourceDecoder.getIdentifier(context,intoTheSpaceSound,"raw") + "," +
-                "\"demo_pattern\":" + ResourceDecoder.getIdentifier(context, demoPattern,"drawable") + ",";
+        String drillData = "{\"pattern_introduction_sound\":\"" + patternIntrodution + "\"," +
+                "\"drag_sound\":\"" + dragSound + "\"," +
+                "\"pattern_sound\":\"" + patternSound + "\"," +
+                "\"object_sound\":\"" + objectToDragSound + "\"," +
+                "\"into_the_space_sound\":\"" + intoTheSpaceSound + "\"," +
+                "\"demo_pattern\":\"" +  demoPattern + "\",";
         drillData += "\"completion_pieces\":[";
-        int i = 0;
-        for (DraggableImage<String> item: completionPieces) {
-            if (i == 0)
-                drillData += "{\"image\":" + ResourceDecoder.getIdentifier(context, item.getcontent(), "drawable") + "," +
-                        "\"isRight\":" + item.isRight() +
-                        "}";
-            else
-                drillData += ",{\"image\":" + ResourceDecoder.getIdentifier(context, item.getcontent(), "drawable") + "," +
-                        "\"isRight\":" + item.isRight() +
-                        "}";
-            i++;
+        for (int i = 0; i < completionPieces.size(); i++) {
+            DraggableImage<String> item = completionPieces.get(i);
+            if (i > 0) {
+                drillData += ",";
+            }
+            drillData += "{\"image\":\"" +  item.getcontent() + "\"," +
+                    "\"isRight\":\"" + item.isRight() + "\"" +
+                    "}";
         }
         drillData += "]}";
         return drillData;
@@ -555,41 +524,34 @@ public class MathDrillJsonBuilder {
                                                  String dragMissingSound,
                                                  ArrayList<String>patternToComplete,
                                                  ArrayList<DraggableImage<String>> completionPieces){
-        String drillData = "{\"pattern_introduction_sound\":" + ResourceDecoder.getIdentifier(context,monkeyIsMissingSound,"raw") + "," +
-                "\"help_monkey_sound\":" + ResourceDecoder.getIdentifier(context,canYouHelpMonkey,"raw") + "," +
-                "\"drag_sound\":" + ResourceDecoder.getIdentifier(context,dragMissingSound,"raw") + ",";
+        String drillData = "{\"pattern_introduction_sound\":\"" + monkeyIsMissingSound + "\"," +
+                "\"help_monkey_sound\":\"" + canYouHelpMonkey + "\"," +
+                "\"drag_sound\":\"" + dragMissingSound + "\",";
         drillData += "\"pattern_to_complete\":[";
-        int i = 0;
-        for (String item: patternToComplete) {
-            if (i == 0) {
-                if (item.equalsIgnoreCase("blank"))
-                    drillData += "0";
-                else
-                    drillData += ResourceDecoder.getIdentifier(context, item, "drawable");
+        for (int i = 0; i < patternToComplete.size(); i++) {
+            String item = patternToComplete.get(i);
+            if (i > 0) {
+                drillData += ",";
             }
-            else {
-                if (item.equalsIgnoreCase("blank"))
-                    drillData += ",0";
-                else
-                    drillData += "," + ResourceDecoder.getIdentifier(context, item, "drawable");
+            if (item.equalsIgnoreCase("blank")) {
+                drillData = "\"" + Code.BLANK_IMAGE + "\"";
+            } else {
+                drillData += "\"" + item + "\"";
             }
-            i++;
+
         }
         drillData += "],\"completion_pieces\":[";
-        i = 0;
-        for (DraggableImage<String> item: completionPieces) {
-            if (i == 0)
-                drillData += "{\"image\":" + ResourceDecoder.getIdentifier(context, item.getcontent(), "drawable") + "," +
-                        "\"isRight\":" + item.isRight() +
-                        "}";
-            else
-                drillData += ",{\"image\":" + ResourceDecoder.getIdentifier(context, item.getcontent(), "drawable") + "," +
-                        "\"isRight\":" + item.isRight() +
-                        "}";
-            i++;
+        for (int i = 0; i < patternToComplete.size(); i++) {
+            DraggableImage<String> item = completionPieces.get(i);
+            if (i > 0) {
+                drillData += ",";
+            }
+            drillData += "{\"image\":\"" +  item.getcontent() + "\"," +
+                    "\"isRight\":\"" + item.isRight() + "\"" +
+                    "}";
+
         }
         drillData += "]}";
         return drillData;
-
     }
 }

@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
@@ -244,7 +245,15 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            setHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    timeView.setTextColor(Color.parseColor(LOSE_RED));
+                    startConcluding();
+                }
+            }, 1150);
         }
     }
 
@@ -599,8 +608,9 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         // Debug
         System.out.println("-- SoundTrillTwelveActivity.sayCorrectCount > Debug: METHOD CALLED");
 
+        String sound = "";
         try {
-            String sound = params.getString("count_0");
+            sound = params.getString("count_0");
             switch (currentSet) {
                 case 1:
                     sound = params.getString("count_1");
@@ -645,7 +655,14 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            setHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    sayWords();
+                }
+            }, 800);
         }
     }
 

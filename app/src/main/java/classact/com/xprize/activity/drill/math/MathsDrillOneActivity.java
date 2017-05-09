@@ -17,6 +17,7 @@ import java.util.Arrays;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.utils.FetchResource;
 
 public class MathsDrillOneActivity extends AppCompatActivity {
     private JSONObject allData;
@@ -38,18 +39,59 @@ public class MathsDrillOneActivity extends AppCompatActivity {
         initialiseData();
     }
 
+    private void playSound(String sound, final Runnable action) {
+        try {
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    if (action != null) {
+                        action.run();
+                    }
+                }
+            });
+            mp.prepare();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            mp = null;
+            if (action != null) {
+                action.run();
+            }
+        }
+    }
+
+    private int getImageIdFromJSONArray(JSONArray jsonArray, int pos, String name) {
+        int imageId = 0;
+        try {
+            imageId = FetchResource.imageId(getApplicationContext(), jsonArray.getJSONObject(pos).getString(name));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return imageId;
+    }
+
     private void initialiseData(){
         try {
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
             numbers = allData.getJSONArray("numerals");
             positionAndShowNumbers();
-            int sound = allData.getInt("its_time_to_count");
-            mp = MediaPlayer.create(this, sound);
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = allData.getString("its_time_to_count");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
+                public void run() {
                     mp.reset();
                     currentNumber = 1;
                     returnRunnable = showNumbersRunnable;
@@ -59,7 +101,6 @@ public class MathsDrillOneActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
         }
     }
 
@@ -71,24 +112,23 @@ public class MathsDrillOneActivity extends AppCompatActivity {
                 for (int i = 0; i < numbers.length(); i++) {
                     int pos = i + 1;
                     positions[pos] = i;
-                    showNumber(numbers.getJSONObject(positions[pos]).getInt("numeral"), pos);
+                    showNumber(getImageIdFromJSONArray(numbers, positions[pos], "numeral"), pos);
                 }
             }
             else {
                 for (int i = 0; i < numbers.length(); i++) {
                     int pos = i;
                     positions[pos] = i;
-                    showNumber(numbers.getJSONObject(positions[pos]).getInt("numeral"), pos);
+                    showNumber(getImageIdFromJSONArray(numbers, positions[pos], "numeral"), pos);
                 }
             }
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
         }
     }
 
-    private void showNumber (int resId,int position){
+    private void showNumber(int resId,int position){
         ImageView number = (ImageView)container.getChildAt(position);
         number.setVisibility(View.VISIBLE);
         number.setImageResource(resId);
@@ -100,7 +140,7 @@ public class MathsDrillOneActivity extends AppCompatActivity {
             for(int i = 0; i < 21 ; i++)
                 if ((currentNumber-1) == positions[i])
                     currentPosition = i;
-            showNumber(numbers.getJSONObject(positions[currentPosition]).getInt("numeral_sparkling"),currentPosition);
+            showNumber(getImageIdFromJSONArray(numbers, positions[currentPosition], "numeral_sparkling"), currentPosition);
             handler.postDelayed(resetNumberRunnable,200);
         }
         catch (Exception ex){
@@ -113,7 +153,7 @@ public class MathsDrillOneActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                showNumber(numbers.getJSONObject(positions[currentPosition]).getInt("numeral"), currentPosition);
+                showNumber(getImageIdFromJSONArray(numbers, positions[currentPosition], "numeral"), currentPosition);
                 currentNumber++;
                 handler.postDelayed(returnRunnable,500);
             }
@@ -138,23 +178,16 @@ public class MathsDrillOneActivity extends AppCompatActivity {
 
     private void showNumbers(){
         try {
-            int sound = numbers.getJSONObject(currentNumber - 1).getInt("sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = numbers.getJSONObject(currentNumber - 1).getString("sound");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     sparkle();
                 }
             });
-            mp.start();
         }
-        catch (Exception ex){
+        catch (Exception ex) {
             ex.printStackTrace();
-            finish();
         }
     }
 
@@ -162,23 +195,16 @@ public class MathsDrillOneActivity extends AppCompatActivity {
         try{
             currentNumber = 1;
             returnRunnable = sayNumbersRunnable;
-            int sound = allData.getInt("say_numbers_with_me");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = allData.getString("say_numbers_with_me");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     sayNumbers();
                 }
             });
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
         }
     }
 
@@ -199,23 +225,16 @@ public class MathsDrillOneActivity extends AppCompatActivity {
 
     private void sayNumbers(){
         try {
-            int sound = numbers.getJSONObject(currentNumber - 1).getInt("sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = numbers.getJSONObject(currentNumber - 1).getString("sound");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     sparkle();
                 }
             });
-            mp.start();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
         }
     }
 
