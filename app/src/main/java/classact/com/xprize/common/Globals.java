@@ -1,10 +1,14 @@
 package classact.com.xprize.common;
 
 
+import android.support.design.widget.Snackbar;
+import android.view.View;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import classact.com.xprize.activity.drill.sound.SoundDrillOneActivity;
 import classact.com.xprize.locale.Languages;
 
 public class Globals {
@@ -37,5 +41,26 @@ public class Globals {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd HH-mm-ss");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf.format(new Date());
+    }
+
+    public static Snackbar bugBar(View view, String type, String subject) {
+        Snackbar bugBar = Snackbar.make(view, "Bugged " + type + ": " + "\"" + subject + "\"", Snackbar.LENGTH_INDEFINITE);
+        bugBar.setAction("CLOSE", new BugBarListener(bugBar));
+        bugBar.setActionTextColor(view.getResources().getColor(android.R.color.holo_blue_light, null));
+        return bugBar;
+    }
+
+    private static class BugBarListener implements View.OnClickListener {
+
+        private Snackbar bugBar;
+
+        private BugBarListener(Snackbar bugBar) {
+            this.bugBar = bugBar;
+        }
+
+        @Override
+        public void onClick(View v) {
+            bugBar.dismiss();
+        }
     }
 }

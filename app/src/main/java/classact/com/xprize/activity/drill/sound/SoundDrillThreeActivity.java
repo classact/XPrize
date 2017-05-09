@@ -18,6 +18,7 @@ import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
@@ -189,7 +190,14 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", currentSound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playItMakes();
+                }
+            }, 800);
         }
     }
 
@@ -254,7 +262,14 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", currentPhonicSound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playNextSound();
+                }
+            }, 800);
         }
     }
 
@@ -327,7 +342,14 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", currentSound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    itemsEnabled = true;
+                }
+            }, 700);
         }
     }
 
@@ -361,7 +383,16 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                   if (mRunnable != null) {
+                       mRunnable.run();
+                   }
+                }
+            }, 800);
         }
     }
 

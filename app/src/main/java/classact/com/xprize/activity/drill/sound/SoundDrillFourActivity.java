@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
@@ -237,15 +238,18 @@ public class SoundDrillFourActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
-            System.err.println("------------------------------------------------------");
-            System.err.println("SoundDrillFourActivity.playDrillSound > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------");
             ex.printStackTrace();
-            System.err.println("------------------------------------------------------");
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", drillSound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playIntoTheBoxSound();
+                }
+            }, 800);
         }
     }
 
@@ -313,15 +317,20 @@ public class SoundDrillFourActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
-            System.err.println("------------------------------------------------------");
-            System.err.println("SoundDrillFourActivity.playSoundAndRunnableAfterCompletion > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------");
             ex.printStackTrace();
-            System.err.println("------------------------------------------------------");
             if (mp != null) {
                 mp.release();
             }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mRunnable != null) {
+                        mRunnable.run();
+                    }
+                }
+            }, 800);
         }
     }
 
@@ -386,15 +395,12 @@ public class SoundDrillFourActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
-            System.err.println("------------------------------------------------------");
-            System.err.println("SoundDrillFourActivity.playSound > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------");
             ex.printStackTrace();
-            System.err.println("------------------------------------------------------");
             if (mp != null) {
                 mp.release();
             }
             mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
         }
     }
 

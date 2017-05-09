@@ -119,15 +119,24 @@ public class Movie extends AppCompatActivity {
             resourceName = SWAHILI_PREFIX + resourceName;
         }
 
-        // Create video path
-        //String videoPath = Environment.getExternalStorageDirectory() + "/Android/media/classact.com.xprize/videos/" + resourceName + ".mp4";
-        String videoPath = FetchResource.video(getApplicationContext(), resourceName);
+        try {
+            // Create video path
+            String videoPath = FetchResource.video(getApplicationContext(), resourceName);
 
-        // Set video URI
-        Uri videoURI = Uri.parse(videoPath);
-        mVideo.setVideoURI(videoURI);
+            // Set video URI
+            Uri videoURI = Uri.parse(videoPath);
+            mVideo.setVideoURI(videoURI);
 
-        addListenersToViews();
+            addListenersToViews();
+
+            // In event of exception whilst loading videoPath, finish
+        } catch (Exception ex) {
+            if (mVideoPlayer != null) {
+                mVideoPlayer.stop();
+            }
+            setResult(Code.NAV_MENU);
+            finish();
+        }
     }
 
     /**

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
@@ -214,8 +215,9 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
     }
 
     public void playSayWordSlowly() {
+        String sound = "";
         try{
-            String sound = data.getJSONObject(currentTripple).getString("segmeted_word_slow_sound");
+            sound = data.getJSONObject(currentTripple).getString("segmeted_word_slow_sound");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -250,6 +252,7 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 mp.release();
             }
             mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
             playLetterSounds(0);
         }
     }
@@ -401,9 +404,11 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
     }
 
     public void playFullWord() {
+        String sound = "";
         try{
-            String sound = letterSounds[0];
-            String soundPath = FetchResource.sound(getApplicationContext(), mWordSound);
+            // sound = letterSounds[0];
+            sound = mWordSound;
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
             }
@@ -445,6 +450,7 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 mp.release();
             }
             mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
             currentTripple++;
             if (currentTripple < data.length()) {
                 handler.postDelayed(new Runnable() {
