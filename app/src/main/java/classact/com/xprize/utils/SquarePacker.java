@@ -54,9 +54,9 @@ public class SquarePacker {
             offset = 0;
 
             // Print out
-            System.out.println("Square packer (" +
+            /* System.out.println("Square packer (" +
                     numHorizontalUnits + "x" +
-                    numVerticalUnits + "): combined height is " + combinedHeight);
+                    numVerticalUnits + "): combined height is " + combinedHeight); */
 
             // Recalibrate area if required
             if (combinedHeight > height) {
@@ -77,7 +77,7 @@ public class SquarePacker {
             }
 
             // Print out
-            System.out.println("Area difference: " + areaDifference);
+            /* System.out.println("Area difference: " + areaDifference); */
 
             // As long as it's not the first index ...
             if (i > 0) {
