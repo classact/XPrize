@@ -197,6 +197,16 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                     // Set coordinates
                     iv.setX((float) square.x);
                     iv.setY((float) square.y);
+
+                    // Setup listener
+                    final int numberIndex = i;
+
+                    iv.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            numberClicked(numberIndex);
+                        }
+                    });
                 }
             }
         } catch (Exception ex) {
@@ -241,6 +251,7 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
         } catch (Exception ex) {
             ex.printStackTrace();
             mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
             if (action != null) {
                 action.run();
             }
@@ -293,53 +304,71 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
     public void numberClicked(int position){
         if (touchEnabled) {
             try {
-                int correct = numbers.getJSONObject(positions[position - 1]).getInt("right");
-                Uri myUri;
-                int sound;
+                int correct = numbers.getJSONObject(position).getInt("right");
+                String sound = numbers.getJSONObject(position).getString("sound");
                 if (correct == 0) {
-                    sound = ResourceSelector.getNegativeAffirmationSound(getApplicationContext());
-                    myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-                    if (mp == null) {
-                        mp = new MediaPlayer();
-                    }
-                    mp.reset();
-                    mp.setDataSource(getApplicationContext(), myUri);
-                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    playSound(sound, new Runnable() {
                         @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            mp.start();
+                        public void run() {
+                            try {
+                                int affirmationSound = ResourceSelector.getNegativeAffirmationSound(getApplicationContext());
+                                Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + affirmationSound);
+                                if (mp == null) {
+                                    mp = new MediaPlayer();
+                                }
+                                mp.reset();
+                                mp.setDataSource(getApplicationContext(), myUri);
+                                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                    @Override
+                                    public void onPrepared(MediaPlayer mp) {
+                                        mp.start();
+                                    }
+                                });
+                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        mp.reset();
+                                    }
+                                });
+                                mp.prepare();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                         }
                     });
-                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            mp.reset();
-                        }
-                    });
-                    mp.prepare();
                 } else {
                     touchEnabled = false;
-                    sound = ResourceSelector.getPositiveAffirmationSound(getApplicationContext());
-                    myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-                    if (mp == null) {
-                        mp = new MediaPlayer();
-                    }
-                    mp.reset();
-                    mp.setDataSource(getApplicationContext(), myUri);
-                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    playSound(sound, new Runnable() {
                         @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            mp.start();
+                        public void run() {
+                            try {
+                                int affirmationSound = ResourceSelector.getPositiveAffirmationSound(getApplicationContext());
+                                Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + affirmationSound);
+                                if (mp == null) {
+                                    mp = new MediaPlayer();
+                                }
+                                mp.reset();
+                                mp.setDataSource(getApplicationContext(), myUri);
+                                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                    @Override
+                                    public void onPrepared(MediaPlayer mp) {
+                                        mp.start();
+                                    }
+                                });
+                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        mp.release();
+                                        finish();
+                                    }
+                                });
+                                mp.prepare();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                                finish();
+                            }
                         }
                     });
-                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            mp.release();
-                            finish();
-                        }
-                    });
-                    mp.prepare();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
