@@ -125,34 +125,36 @@ public class MathDrills {
         Intent intent;
 
         try {
-
-            // Need to fix this
-
             // Debug
             System.out.println("MathDrills.D3 > Debug: PREPARING");
 
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
-            ArrayList<Integer>  numerals;
+            ArrayList<Integer> numerals;
             numerals = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
 
             ArrayList<Integer>  mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
 
+            ArrayList<String> numberSounds = new ArrayList<>();
+            for (int i = 0; i < numerals.size(); i++) {
+                String number = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(i)).getSound();
+                numberSounds.add(number);
+            }
 
-            String drillData = MathDrillJsonBuilder.getDrillThreeJson(context,
-                    mathDrillFlowWord.getDrillSound1(), MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getTestNumber(), MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getNumberOfImagesSound(),
-                    mathDrillFlowWord.getDrillSound2(), mathDrillFlowWord.getDrillSound3(), MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getNumberOfImages(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageName(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(0)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(1)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(2)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(3)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(4)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(5)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(6)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(7)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(8)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numerals.get(9)).getSound()
+            String drillData = MathDrillJsonBuilder.getDrillThreeJson(
+                    context,
+                    mathDrillFlowWord.getDrillSound1(),
+                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(),
+                    mathImageList.get(0)).getTestNumber(),
+                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(),
+                    mathImageList.get(0)).getNumberOfImagesSound(),
+                    mathDrillFlowWord.getDrillSound2(),
+                    mathDrillFlowWord.getDrillSound3(),
+                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(),
+                    mathImageList.get(0)).getNumberOfImages(),
+                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(),
+                    mathImageList.get(0)).getImageName(),
+                    numberSounds
             );
             intent = new Intent(context, MathsDrillThreeActivity.class);
             intent.putExtra("data", drillData);

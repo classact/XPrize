@@ -1,12 +1,18 @@
 package classact.com.xprize.utils;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.view.Gravity;
+import android.view.View;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -106,20 +112,74 @@ public class FetchResource {
         return path;
     }
 
-    public static int imageId(Context context, String name) {
+    public static int imageId(Context context, String value) {
         int imageId = 0;
         try {
-            if (name.equals(Code.BLANK_IMAGE)) {
+            if (value.equals(Code.BLANK_IMAGE)) {
                 return 0;
             } else {
-                imageId = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
+                imageId = context.getResources().getIdentifier(value, "drawable", context.getPackageName());
                 if (imageId == 0) {
                     throw new Exception("FetchResource.imageId: invalid resource name");
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            Globals.bugBar(((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content), "image", name);
+            Globals.bugBar(((Activity) context).findViewById(android.R.id.content), "image", value);
+        }
+        return imageId;
+    }
+
+    public static int imageId(Context context, JSONObject jsonObject, String name) {
+        int imageId = 0;
+        String value = "";
+        try {
+            value = jsonObject.getString(name);
+            if (value.equals(Code.BLANK_IMAGE)) {
+                return 0;
+            } else {
+                imageId = context.getResources().getIdentifier(value, "drawable", context.getPackageName());
+                if (imageId == 0) {
+                    throw new ResourceException("FetchResource.imageId: invalid resource name");
+                }
+            }
+        } catch (JSONException jex) {
+            jex.printStackTrace();
+            Globals.bugBar(((Activity) context).findViewById(android.R.id.content),
+                    "JSON from object", name).show();
+        } catch (ResourceException rex) {
+            rex.printStackTrace();
+            Globals.bugBar(((Activity) context).findViewById(android.R.id.content),
+                    "image", value).show();
+        }
+        return imageId;
+    }
+
+    public static int imageId(Context context, JSONArray jsonArray, int index, String name) {
+        int imageId = 0;
+        String value = "";
+        try {
+            value = jsonArray.getJSONObject(index).getString(name);
+            if (value.equals(Code.BLANK_IMAGE)) {
+                return 0;
+            } else {
+                imageId = context.getResources().getIdentifier(value, "drawable", context.getPackageName());
+                if (imageId == 0) {
+                    throw new ResourceException("FetchResource.imageId: invalid resource name");
+                }
+            }
+        } catch (JSONException jex) {
+            jex.printStackTrace();
+            Globals.bugBar(((Activity) context).findViewById(android.R.id.content),
+                    "JSON from array.object(" + index + ")", name).show();
+        } catch (ArrayIndexOutOfBoundsException aex) {
+            aex.printStackTrace();
+            Globals.bugBar(((Activity) context).findViewById(android.R.id.content),
+                    "array index", name + " (" + index + ")").show();
+        } catch (ResourceException rex) {
+            rex.printStackTrace();
+            Globals.bugBar(((Activity) context).findViewById(android.R.id.content),
+                    "image", value).show();
         }
         return imageId;
     }
@@ -133,7 +193,7 @@ public class FetchResource {
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            Globals.bugBar(((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content), "image", name);
+            Globals.bugBar(((Activity) context).findViewById(android.R.id.content), "image", name).show();
         }
         return path;
     }
@@ -336,5 +396,15 @@ public class FetchResource {
         }
 
         return sd;
+    }
+
+    private static class ResourceException extends Exception {
+        public ResourceException() {
+            super();
+        }
+
+        public ResourceException(String message) {
+            super(message);
+        }
     }
 }

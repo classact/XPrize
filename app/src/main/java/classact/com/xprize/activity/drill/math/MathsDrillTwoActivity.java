@@ -1,6 +1,7 @@
 package classact.com.xprize.activity.drill.math;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
@@ -41,6 +42,7 @@ import classact.com.xprize.utils.SquarePacker;
 import classact.com.xprize.utils.UnionFind;
 
 public class MathsDrillTwoActivity extends AppCompatActivity {
+    private Context appContext;
     private JSONObject allData;
     private MediaPlayer mp;
     private ImageView numberOne;
@@ -65,6 +67,7 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_maths_drill_two);
         rootLayout = (RelativeLayout) findViewById(R.id.activity_math_drill_two);
         objectsContainer = (RelativeLayout) findViewById(R.id.objects_container);
+        appContext = getApplicationContext();
 
         numberOne = (ImageView) findViewById(R.id.cakedemo_obect);
         numberTwo = (ImageView) findViewById(R.id.numeral_2);
@@ -107,7 +110,7 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                 int n = allData.getInt("number_of_objects");
                 int w = NUMBERS_FRAME_WIDTH;
                 int h = NUMBERS_FRAME_HEIGHT;
-                int imageId = FetchResource.imageId(getApplicationContext(), allData.getString("object"));
+                int imageId = FetchResource.imageId(this, allData, "object");
 
                 SquarePacker squarePacker = new SquarePacker(w, h);
                 Square[] squares = squarePacker.get(n);
@@ -175,7 +178,7 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                     Square square = squares[si];
                     // Get drawable
                     Drawable d = getResources()
-                            .getDrawable(getImageIdFromJSONArray(numbers, i, "image"), null);
+                            .getDrawable(FetchResource.imageId(this, numbers, i, "image"), null);
                     // Create image view
                     ImageView iv = new ImageView(getApplicationContext());
                     iv.setImageDrawable(d);
@@ -256,16 +259,6 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                 action.run();
             }
         }
-    }
-
-    private int getImageIdFromJSONArray(JSONArray jsonArray, int pos, String name) {
-        int imageId = 0;
-        try {
-            imageId = FetchResource.imageId(getApplicationContext(), jsonArray.getJSONObject(pos).getString(name));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return imageId;
     }
 
     private void initialiseData(){

@@ -82,46 +82,25 @@ public class MathDrillJsonBuilder {
                                            String toTheTableSound,
                                            int totalItems,
                                            String item,
-                                           String oneSound,
-                                           String twoSound,
-                                           String threeSound,
-                                           String fourSound,
-                                           String fiveSound,
-                                           String sixSound,
-                                           String sevenSound,
-                                           String eightSound,
-                                           String nineSound,
-                                           String tenSound){
-
-        // Debug
-        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: oneSound = " + oneSound);
-        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: twoSound = " + twoSound);
-        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: threeSound = " + threeSound);
-        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: fourSound = " + fourSound);
-        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: fiveSound = " + fiveSound);
-        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: sixSound = " + sixSound);
-        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: sevenSound = " + sevenSound);
-        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: eightSound = " + eightSound);
-        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: nineSound = " + nineSound);
-        System.out.println("MathDrillJsonBuilder.getDrillThreeJson > Debug: tenSound = " + tenSound);
+                                           ArrayList<String> numberSounds){
 
         String drillData =  "{\"monkey_wants_to_eat\":\"" + monkeyWantsToEatSound + "\"," +
                 "\"number_of_items_sound\":\"" + numberOfItemsSound + "\"," +
                 "\"drag_sound\":\"" + dragSound + "\"," +
                 "\"to_the_table_sound\":\"" + toTheTableSound + "\"," +
-                "\"number_of_items\":\"" + numberOfItems + "\"," +
-                "\"total_items\":\"" + totalItems + "\"," +
+                "\"number_of_items\":" + numberOfItems + "," +
+                "\"total_items\":" + totalItems + "," +
                 "\"item\":\"" + item + "\"," +
-                "\"one_sound\":\"" + oneSound + "\"," +
-                "\"two_sound\":\"" + twoSound + "\"," +
-                "\"three_sound\":\"" + threeSound + "\"," +
-                "\"four_sound\":\"" + fourSound + "\"," +
-                "\"five_sound\":\"" + fiveSound + "\"," +
-                "\"six_sound\":\"" + sixSound + "\"," +
-                "\"seven_sound\":\"" + sevenSound + "\"," +
-                "\"eight_sound\":\"" + eightSound + "\"," +
-                "\"nine_sound\":\"" + nineSound + "\"," +
-                "\"ten_sound\":\"" + tenSound + "\"" +
+                "\"one_sound\":\"" + numberSounds.get(0) + "\"," +
+                "\"two_sound\":\"" + numberSounds.get(1) + "\"," +
+                "\"three_sound\":\"" + numberSounds.get(2) + "\"," +
+                "\"four_sound\":\"" + numberSounds.get(3) + "\"," +
+                "\"five_sound\":\"" + numberSounds.get(4) + "\"," +
+                "\"six_sound\":\"" + numberSounds.get(5) + "\"," +
+                "\"seven_sound\":\"" + numberSounds.get(6) + "\"," +
+                "\"eight_sound\":\"" + numberSounds.get(7) + "\"," +
+                "\"nine_sound\":\"" + numberSounds.get(8) + "\"," +
+                "\"ten_sound\":\"" + numberSounds.get(9) + "\"" +
                 "}";
         return drillData;
     }

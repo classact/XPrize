@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -29,11 +30,13 @@ public class MathsDrillOneActivity extends AppCompatActivity {
     private int currentPosition;
     private Runnable returnRunnable;
     private RelativeLayout container;
+    private Context mThis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_one);
+        mThis = this;
         container = (RelativeLayout)findViewById(R.id.activity_maths_unit_one);
         handler = new Handler();
         initialiseData();
@@ -72,21 +75,12 @@ public class MathsDrillOneActivity extends AppCompatActivity {
         }
     }
 
-    private int getImageIdFromJSONArray(JSONArray jsonArray, int pos, String name) {
-        int imageId = 0;
-        try {
-            imageId = FetchResource.imageId(getApplicationContext(), jsonArray.getJSONObject(pos).getString(name));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return imageId;
-    }
-
     private void initialiseData(){
         try {
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
             numbers = allData.getJSONArray("numerals");
+            System.out.println("::: NUMBER OF NUMBERS = " + numbers.length());
             positionAndShowNumbers();
             String sound = allData.getString("its_time_to_count");
             playSound(sound, new Runnable() {
@@ -112,14 +106,14 @@ public class MathsDrillOneActivity extends AppCompatActivity {
                 for (int i = 0; i < numbers.length(); i++) {
                     int pos = i + 1;
                     positions[pos] = i;
-                    showNumber(getImageIdFromJSONArray(numbers, positions[pos], "numeral"), pos);
+                    showNumber(FetchResource.imageId(this, numbers, positions[pos], "numeral"), pos);
                 }
             }
             else {
                 for (int i = 0; i < numbers.length(); i++) {
                     int pos = i;
                     positions[pos] = i;
-                    showNumber(getImageIdFromJSONArray(numbers, positions[pos], "numeral"), pos);
+                    showNumber(FetchResource.imageId(this, numbers, positions[pos], "numeral"), pos);
                 }
             }
         }
@@ -140,7 +134,7 @@ public class MathsDrillOneActivity extends AppCompatActivity {
             for(int i = 0; i < 21 ; i++)
                 if ((currentNumber-1) == positions[i])
                     currentPosition = i;
-            showNumber(getImageIdFromJSONArray(numbers, positions[currentPosition], "numeral_sparkling"), currentPosition);
+            showNumber(FetchResource.imageId(mThis, numbers, positions[currentPosition], "numeral_sparkling"), currentPosition);
             handler.postDelayed(resetNumberRunnable,200);
         }
         catch (Exception ex){
@@ -153,7 +147,7 @@ public class MathsDrillOneActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                showNumber(getImageIdFromJSONArray(numbers, positions[currentPosition], "numeral"), currentPosition);
+                showNumber(FetchResource.imageId(mThis, numbers, positions[currentPosition], "numeral"), currentPosition);
                 currentNumber++;
                 handler.postDelayed(returnRunnable,500);
             }
