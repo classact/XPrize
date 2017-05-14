@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DrawableUtils;
@@ -23,6 +24,7 @@ import android.widget.RelativeLayout;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +35,8 @@ import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
+import classact.com.xprize.utils.Square;
+import classact.com.xprize.utils.SquarePacker;
 import classact.com.xprize.utils.UnionFind;
 
 public class MathsDrillTwoActivity extends AppCompatActivity {
@@ -54,15 +58,13 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_two);
         rootLayout = (RelativeLayout) findViewById(R.id.activity_math_drill_two);
-        objectsContainer = (RelativeLayout)findViewById(R.id.objects_container);
+        objectsContainer = (RelativeLayout) findViewById(R.id.objects_container);
 
         // Relative layout for 'images'
         RelativeLayout rli = new RelativeLayout(getApplicationContext());
         rli.setBackgroundColor(Color.argb(150, 0, 255, 255));
-        RelativeLayout.LayoutParams rliParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT
-        );
+        rootLayout.addView(rli);
+        RelativeLayout.LayoutParams rliParams = (RelativeLayout.LayoutParams) rli.getLayoutParams();
         rliParams.topMargin = 370; // 310 min
         rliParams.leftMargin = 287; // 230 min
         rliParams.width = 675; // 795 max
@@ -71,23 +73,18 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
 
         // Relative layout for 'numbers'
         RelativeLayout rln = new RelativeLayout(getApplicationContext());
-        rln.setBackgroundColor(Color.argb(150, 255, 0, 0));
-        RelativeLayout.LayoutParams rlnParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT
-        );
-        rlnParams.topMargin = 370; // 310 min
-        rlnParams.leftMargin = 1500; // 1440 min
-        rlnParams.width = 675; // 795 max
-        rlnParams.height = 875; // 995 max
+        // rln.setBackgroundColor(Color.argb(150, 255, 0, 0));
+        rootLayout.addView(rln);
+        RelativeLayout.LayoutParams rlnParams = (RelativeLayout.LayoutParams) rln.getLayoutParams();
+        rlnParams.topMargin = 330; // 310 min, 370 max
+        rlnParams.leftMargin = 1465; // 1440 min, 1500 max
+        rlnParams.width = 745; // 795 max, 675 min
+        rlnParams.height = 955; // 995 max, 875 min
         rln.setLayoutParams(rlnParams);
 
-        rootLayout.addView(rli);
-        rootLayout.addView(rln);
-
-        numberOne = (ImageView)findViewById(R.id.cakedemo_obect);
-        numberTwo = (ImageView)findViewById(R.id.numeral_2);
-        numberThree = (ImageView)findViewById(R.id.numeral_3);
+        numberOne = (ImageView) findViewById(R.id.cakedemo_obect);
+        numberTwo = (ImageView) findViewById(R.id.numeral_2);
+        numberThree = (ImageView) findViewById(R.id.numeral_3);
 
         numberOne.setImageResource(0);
         numberTwo.setImageResource(0);
@@ -102,50 +99,91 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
         // Packaging logic
         try {
             if (numbers != null) {
-                List<float[]> imageDims = new ArrayList<>();
-                int numberCount = numbers.length();
-                int area = 675 * 875;
-                double maxArea = area/numberCount;
-                CirclePacker circlePacker = new CirclePacker(675, 875);
+                int n = numbers.length();
+                int w = 745;
+                int h = 955;
 
-                float screenDensity = getResources().getDisplayMetrics().density;
+                SquarePacker squarePacker = new SquarePacker(w, h);
+                Square[] squares = squarePacker.get(n);
 
+                for (int i = 0; i < squares.length; i++) {
+                    // Get square
+                    Square square = squares[i];
+                    // Get drawable
+                    Drawable d = getResources()
+                            .getDrawable(getImageIdFromJSONArray(numbers, i, "image"), null);
+                    // Create image view
+                    ImageView iv = new ImageView(getApplicationContext());
+                    iv.setImageDrawable(d);
+                    iv.setScaleX(0.8f);
+                    iv.setScaleY(0.8f);
+                    // iv.setBackgroundColor(Color.argb(150, 0, 0, 255));
+                    // Add image view to numbers layout
+                    rln.addView(iv);
+                    // Edit image view layout params
+                    RelativeLayout.LayoutParams ivParams = new RelativeLayout.LayoutParams(
+                            RelativeLayout.LayoutParams.WRAP_CONTENT,
+                            RelativeLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    ivParams.leftMargin = 0;
+                    ivParams.topMargin = 0;
+                    ivParams.width = square.w;
+                    ivParams.height = square.w;
+                    iv.setLayoutParams(ivParams);
+                    // Set coordinates
+                    iv.setX((float) square.x);
+                    iv.setY((float) square.y);
+                }
+
+                /*
+                double maxArea = area / numberCount;
+
+                int radius = 0;
                 for (int i = 0; i < numberCount; i++) {
                     Drawable d = getResources()
                             .getDrawable(getImageIdFromJSONArray(numbers, i, "image"), null);
-                    int radius = Math.max(d.getIntrinsicWidth(), d.getIntrinsicHeight())/2;
-                    float scaledRadius = (float) radius/screenDensity;
-                    double circleArea = Math.PI * scaledRadius * scaledRadius;
-                    float scale = (float) (maxArea/circleArea);
-                    if (scale > 0.5f) {
-                        scale = 0.5f;
+                    int dRadius = Math.max(d.getIntrinsicWidth(), d.getIntrinsicHeight()) / 2;
+                    if (dRadius > radius) {
+                        radius = dRadius;
                     }
-                    ImageView iv = new ImageView(getApplicationContext());
-                    iv.setImageDrawable(d);
-                    iv.setBackgroundColor(Color.argb(100, 0, 0, 255));
-                    iv.setScaleX(scale);
-                    iv.setScaleY(scale);
-                    float[] dims = new float[2];
-                    dims[0] = d.getIntrinsicWidth()/screenDensity * scale;
-                    dims[1] = d.getIntrinsicHeight()/screenDensity * scale;
-                    imageDims.add(dims);
-                    rln.addView(iv);
-
-                    circlePacker.add(new Circle((double) scaledRadius * scale));
+                    drawables.add(d);
                 }
+
+                float screenDensity = getResources().getDisplayMetrics().density;
+                float reducedRadius = (float) radius / screenDensity;
+
+                CirclePacker circlePacker = new CirclePacker(675, 875);
+                for (int i = 0; i < numberCount; i++) {
+                    double circleArea = circlePacker.calcMultiplier(numberCount) * reducedRadius * reducedRadius; // 15 = 1.6, 9 = 2.1, 3 = 4.1
+                    float scale = (float) (maxArea / circleArea);
+                    float scaledRadius = reducedRadius * scale;
+                    circlePacker.add(new Circle((double) scaledRadius));
+                }
+
                 List<Circle> circles = circlePacker.getCircles();
-                for (int i = 0; i < rln.getChildCount(); i++) {
+                for (int i = 0; i < circles.size(); i++) {
                     if (i < circles.size()) {
-                        ImageView iv = (ImageView) rln.getChildAt(i);
                         Circle c = circles.get(i);
                         Coord cCoords = c.getPosition();
-                        float[] dims = imageDims.get(i);
-                        int dWidth = (int) dims[0];
-                        int dHeight = (int) dims[1];
-                        iv.setX((float) cCoords.x - dWidth/2);
-                        iv.setY((float) cCoords.y - dHeight/2);
+                        int cRadius = (int) c.getRadius();
+                        ImageView iv = new ImageView(getApplicationContext());
+                        iv.setImageDrawable(drawables.get(i));
+                        iv.setBackgroundColor(Color.argb(150, 0, 0, 255));
+                        rln.addView(iv);
+                        RelativeLayout.LayoutParams ivParams = new RelativeLayout.LayoutParams(
+                                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                RelativeLayout.LayoutParams.WRAP_CONTENT
+                        );
+                        ivParams.leftMargin = 0;
+                        ivParams.topMargin = 0;
+                        ivParams.width = cRadius * 2;
+                        ivParams.height = cRadius * 2;
+                        iv.setLayoutParams(ivParams);
+                        iv.setX(((float) cCoords.x) - cRadius);
+                        iv.setY(((float) cCoords.y) - cRadius);
                     }
                 }
+                */
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -170,6 +208,16 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                 numberClicked(3);
             }
         });*/
+    }
+
+    private void factorial(int n) {
+        System.out.println("FACTORIAL!!!!!");
+        int log2n = (int) Math.floor((Math.log10(n))/(Math.log10(2)));
+        System.out.println("log2n: " + log2n);
+        for (int i = log2n; i > 0; i--) {
+            int h = n >> i;
+            System.out.println(n + " >> " + i + " = " + h);
+        }
     }
 
     private void playSound(String sound, final Runnable action) {
@@ -496,27 +544,21 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                 circle.setPosition(new Coord(radiusOfNewCircle, radiusOfNewCircle));
                 maxRadius = circle.getRadius();
             } else {
-                System.out.println(circles.size());
                 Circle lastCircle = circles.get(circles.size() - 2);
                 double radiusOfNewCircle = circle.getRadius();
-                System.out.println(lastCircle.getPosition());
                 double x = lastCircle.getPosition().x + lastCircle.getRadius() + radiusOfNewCircle;
                 double y = lastCircle.getPosition().y;
 
                 if (validX(radiusOfNewCircle, x)) {
-                    circle.setPosition(new Coord(x, lastCircle.getPosition().y));
+                    circle.setPosition(new Coord(x, y));
                     if (radiusOfNewCircle > maxRadius) {
                         maxRadius = radiusOfNewCircle;
                     }
                 } else {
                     x = radiusOfNewCircle;
                     y += maxRadius + radiusOfNewCircle;
-                    if (validY(radiusOfNewCircle, y)) {
-                        circle.setPosition(new Coord(x, y));
-                        maxRadius = radiusOfNewCircle;
-                    } else {
-                        System.out.println("FML....");
-                    }
+                    circle.setPosition(new Coord(x, y));
+                    maxRadius = radiusOfNewCircle;
                 }
             }
         }
@@ -548,6 +590,10 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
 
             System.out.println("nConn: " + nConn + ", cConn: " + cConn);
             return new Coord(newX, newY);
+        }
+
+        public float calcMultiplier(int n) {
+            return (float) (5.1 * Math.pow((Math.E), -(n/(Math.pow(Math.E, Math.E)))));
         }
 
         public void repositionAll(Coord offset, List<Circle> circles) {
