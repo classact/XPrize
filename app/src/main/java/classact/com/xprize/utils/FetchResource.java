@@ -152,7 +152,7 @@ public class FetchResource {
             } else {
                 imageId = context.getResources().getIdentifier(value, "drawable", context.getPackageName());
                 if (imageId == 0) {
-                    throw new ResourceException("FetchResource.imageId: invalid resource name");
+                    throw new ResourceException("FetchResource.imageId: invalid resource name (\"" + name + "\" -> \"" + value + "\")");
                 }
             }
         } catch (JSONException jex) {
@@ -162,7 +162,7 @@ public class FetchResource {
         } catch (ResourceException rex) {
             rex.printStackTrace();
             Globals.bugBar(((Activity) context).findViewById(android.R.id.content),
-                    "image", value).show();
+                    "image(\"" + name + "\")", value).show();
         }
         return imageId;
     }

@@ -6,7 +6,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.view.DragEvent;
 import android.view.KeyEvent;
@@ -21,7 +20,6 @@ import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
-import classact.com.xprize.utils.ResourceSelector;
 
 public class MathsDrillThreeActivity extends AppCompatActivity {
     private JSONObject allData;
@@ -63,7 +61,6 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
-                            finish();
                         }
                     } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle) {
                         try {
@@ -75,7 +72,6 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
-                            finish();
                         }
                     }
                 }
@@ -212,6 +208,7 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
                     }
                 }, 300);
             } else if (endDrill) {
+                handler.removeCallbacks(placementRunnable);
                 if (mp != null) {
                     mp.release();
                 }
@@ -328,8 +325,8 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        handler.removeCallbacks(placementRunnable);
         if (mp != null) {
-            mp.stop();
             mp.release();
         }
         setResult(Code.NAV_MENU);

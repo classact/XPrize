@@ -41,6 +41,9 @@ public class MathDrills {
             System.out.println("MathDrills.D1 > Debug: PREPARING");
 
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
+
+            limit = 5 * (int) Math.ceil((double) unitId / 5);
+
             ArrayList<Integer> numeralsFromDB = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
             ArrayList<Numeral> numerals = new ArrayList<>();
 
@@ -175,28 +178,32 @@ public class MathDrills {
             System.out.println("MathDrills.D4 > Debug: PREPARING");
 
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId,languageId);
-            ArrayList<Integer>  numeralIds = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
+
+            ArrayList<Integer> mathImageIds = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
+            ArrayList<MathImages> mathImages = new ArrayList<>();
+
+            int numeralLimit = 0;
+            for (int i = 0; i < mathImageIds.size(); i++) {
+                int mathImageId = mathImageIds.get(i);
+                MathImages mathImage = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageId);
+                mathImages.add(mathImage);
+                numeralLimit = Math.max(numeralLimit, mathImage.getNumberOfImages());
+            }
+
+            ArrayList<Integer> numeralIds = NumeralHelper.getNumeralsBelowLimitFromZero(dbHelper.getReadableDatabase(), languageId, numeralLimit, boyGirl);
             ArrayList<Numerals> numerals = new ArrayList<>();
             for (int i = 0; i < numeralIds.size(); i++) {
                 numerals.add(NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralIds.get(i)));
             }
 
-            ArrayList<Integer> mathImageList;
-            mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
-
             String drillData = MathDrillJsonBuilder.getDrillFourJson(
                     context,
                     "yes",
                     mathDrillFlowWord.getDrillSound1(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getNumberOfImagesSound(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(1)).getNumberOfImagesSound(),
                     mathDrillFlowWord.getDrillSound2(),
                     mathDrillFlowWord.getDrillSound3(),
                     mathDrillFlowWord.getDrillSound4(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getNumberOfImages(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageName(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(1)).getNumberOfImages(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(1)).getImageName(),
+                    mathImages,
                     numerals
             );
             intent = new Intent(context, MathsDrillFourActivity.class);

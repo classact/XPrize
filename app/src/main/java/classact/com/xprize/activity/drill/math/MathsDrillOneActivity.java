@@ -1,6 +1,7 @@
 package classact.com.xprize.activity.drill.math;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 
 public class MathsDrillOneActivity extends AppCompatActivity {
@@ -29,15 +31,27 @@ public class MathsDrillOneActivity extends AppCompatActivity {
     private int[] positions;
     private int currentPosition;
     private Runnable returnRunnable;
-    private RelativeLayout container;
+    private RelativeLayout rootLayout;
+    private RelativeLayout rln; // numbers layout
     private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_one);
-        container = (RelativeLayout)findViewById(R.id.activity_maths_unit_one);
+        rootLayout = (RelativeLayout) findViewById(R.id.activity_maths_unit_one);
         handler = new Handler();
+
+        rln = new RelativeLayout(getApplicationContext());
+        rootLayout.addView(rln);
+        // rln.setBackgroundColor(Color.argb(150, 255, 0, 0));
+        RelativeLayout.LayoutParams rlnParams = (RelativeLayout.LayoutParams) rln.getLayoutParams();
+        rlnParams.topMargin = 0; // 310 min, 370 max
+        rlnParams.leftMargin = 700; // 1440 min, 1500 max
+        rlnParams.width = 1860; // 795 max, 675 min
+        rlnParams.height = 1470; // 995 max, 875 min
+        rln.setLayoutParams(rlnParams);
+
         initialiseData();
     }
 
@@ -68,6 +82,7 @@ public class MathsDrillOneActivity extends AppCompatActivity {
         } catch (Exception ex) {
             ex.printStackTrace();
             mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
             if (action != null) {
                 action.run();
             }
@@ -121,8 +136,8 @@ public class MathsDrillOneActivity extends AppCompatActivity {
         }
     }
 
-    private void showNumber(int resId,int position){
-        ImageView number = (ImageView)container.getChildAt(position);
+    private void showNumber(int resId, int position){
+        ImageView number = (ImageView) rootLayout.getChildAt(position);
         number.setVisibility(View.VISIBLE);
         number.setImageResource(resId);
     }
@@ -138,7 +153,6 @@ public class MathsDrillOneActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
         }
     }
 
@@ -152,7 +166,6 @@ public class MathsDrillOneActivity extends AppCompatActivity {
             }
             catch (Exception ex){
                 ex.printStackTrace();
-                finish();
             }
         }
     };
@@ -210,6 +223,11 @@ public class MathsDrillOneActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run(){
+                        handler.removeCallbacks(returnRunnable);
+                        handler.removeCallbacks(showNumbersRunnable);
+                        if (mp != null) {
+                            mp.release();
+                        }
                         finish();
                     }
                 },200);
@@ -251,8 +269,9 @@ public class MathsDrillOneActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        handler.removeCallbacks(returnRunnable);
+        handler.removeCallbacks(showNumbersRunnable);
         if (mp != null) {
-            mp.stop();
             mp.release();
         }
         setResult(Code.NAV_MENU);

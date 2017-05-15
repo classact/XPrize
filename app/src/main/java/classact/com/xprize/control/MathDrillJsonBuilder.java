@@ -5,7 +5,9 @@ import android.content.Context;
 import java.util.ArrayList;
 
 import classact.com.xprize.common.Code;
+import classact.com.xprize.database.model.MathImages;
 import classact.com.xprize.database.model.Numerals;
+import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceDecoder;
 
 /**
@@ -16,7 +18,7 @@ public class MathDrillJsonBuilder {
     public static String getDrillOneJson(Context context,
                                          String itsTimeToCount,
                                          String sayNumbersWithMe,
-                                         ArrayList<Numeral> numerals){
+                                         ArrayList<Numeral> numerals) {
         String drillData = "{\"its_time_to_count\":\"" + itsTimeToCount + "\"," +
                 "\"say_numbers_with_me\":\"" + sayNumbersWithMe + "\"," +
                 "\"numerals\":[";
@@ -42,8 +44,7 @@ public class MathDrillJsonBuilder {
                                          String objectImage,
                                          String touchSound,
                                          String numeralSound,
-                                         ArrayList<ObjectAndSound<String>> numbers
-                                         ){
+                                         ArrayList<ObjectAndSound<String>> numbers) {
 
         // Debug
         System.out.println("MathDrillJsonBuilder.getDrillTwoJson > Debug: monkeyHasSound = " + monkeyHasSound);
@@ -82,7 +83,7 @@ public class MathDrillJsonBuilder {
                                            String toTheTableSound,
                                            int totalItems,
                                            String item,
-                                           ArrayList<String> numberSounds){
+                                           ArrayList<String> numberSounds) {
 
         String drillData =  "{\"monkey_wants_to_eat\":\"" + monkeyWantsToEatSound + "\"," +
                 "\"number_of_items_sound\":\"" + numberOfItemsSound + "\"," +
@@ -108,58 +109,64 @@ public class MathDrillJsonBuilder {
     public static String getDrillFourJson(Context context,
                                           String checkBigger,
                                           String monkeyHasSound,
-                                          String numberOfLeftItemsSound,
-                                          String numberOfRightItemsSound,
                                           String andSound,
                                           String moreOfQuestion,
                                           String touchTheBiggerSound,
-                                          int numberOfLeftItems,
-                                          String leftItemItem,
-                                          int numberOfRightItems,
-                                          String rightItemItem,
-                                          ArrayList<Numerals> numerals){
+                                          ArrayList<MathImages> mathImages,
+                                          ArrayList<Numerals> numerals) {
 
-        String leftNumberImage = null;
-        String rightNumberImage = null;
+        int n = mathImages.size();
 
-        for (int i = 0; i < numerals.size(); i++) {
+        // Validate number of math images
+        if (n < 2) {
+            return null; // Need at least two
+        }
 
-            // Get numeral
-            Numerals numeral = numerals.get(i);
+        // Get scrambled indexes
+        int[] s = FisherYates.shuffle(n);
 
-            // Check if either left or right number images are null
-            if (leftNumberImage == null || rightNumberImage == null) {
+        // Get left and right image
+        MathImages leftObject = mathImages.get(s[0]);
+        MathImages rightObject = mathImages.get(s[1]);
 
-                // Set left number image if found
-                if (numeral.getNumber() == numberOfLeftItems) {
-                    leftNumberImage = numeral.getBlackImage();
-                }
+        // Get sizes
+        int leftSize = leftObject.getNumberOfImages();
+        int rightSize = rightObject.getNumberOfImages();
+        int maxSize = Math.max(leftSize, rightSize);
 
-                // Set right number image if found
-                if (numeral.getNumber() == numberOfRightItems) {
-                    rightNumberImage = numeral.getBlackImage();
-                }
-
-            } else {
-                // Break out of loop
-                break;
+        // Get left and right's respective numeral
+        Numerals leftNumber = null;
+        Numerals rightNumber = null;
+        // Assume that all numerals are ordered
+        // Also assume that last (highest index) numeral is the largest possible number
+        // Hence, use maxSize as 'N'
+        for (int i = 0; i <= maxSize; i++) {
+            Numerals number = numerals.get(i);
+            int numberValue = number.getNumber();
+            // Check if left
+            if (numberValue == leftSize) {
+                leftNumber = number;
+            }
+            // Check if right
+            // (Check both, not mutually exclusive)
+            if (numberValue == rightSize) {
+                rightNumber = number;
             }
         }
 
         String drillData = "{\"monkey_has\":\"" + monkeyHasSound + "\"," +
                 "\"check_bigger\":\"" + checkBigger + "\"," +
-                "\"number_of_left_items_sound\":\"" + numberOfLeftItemsSound + "\"," +
-                "\"number_of_right_items_sound\":\"" + numberOfRightItemsSound + "\"," +
+                "\"number_of_left_items_sound\":\"" + leftObject.getNumberOfImagesSound() + "\"," +
+                "\"number_of_right_items_sound\":\"" + rightObject.getNumberOfImagesSound() + "\"," +
                 "\"and_sound\":\"" + andSound + "\"," +
                 "\"more_of_question\":\"" + moreOfQuestion + "\"," +
-                "\"number_of_left_items_sound\":\"" + numberOfLeftItemsSound + "\"," +
                 "\"touch_the_number\":\"" + touchTheBiggerSound + "\"," +
-                "\"number_of_left_items\":\"" + numberOfLeftItems + "\"," +
-                "\"left_items_item\":\"" + leftItemItem + "\"," +
-                "\"left_number_image\":\"" + leftNumberImage + "\"," +
-                "\"number_of_right_items\":\"" + numberOfRightItems + "\"," +
-                "\"right_items_item\":\"" + rightItemItem + "\"," +
-                "\"right_number_image\":\"" + rightNumberImage + "\"" +
+                "\"number_of_left_items\":" + leftSize + "," +
+                "\"left_items_item\":\"" + leftObject.getImageName() + "\"," +
+                "\"left_number_image\":\"" + leftNumber.getBlackImage() + "\"," +
+                "\"number_of_right_items\":" + rightSize + "," +
+                "\"right_items_item\":\"" + rightObject.getImageName() + "\"," +
+                "\"right_number_image\":\"" + rightNumber.getBlackImage() + "\"" +
                 "}";
         return drillData;
     }
