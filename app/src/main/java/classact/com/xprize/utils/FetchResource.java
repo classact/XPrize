@@ -17,9 +17,12 @@ import org.json.JSONObject;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Random;
 
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
+import classact.com.xprize.database.model.Language;
+import classact.com.xprize.locale.Languages;
 
 /**
  * Created by hyunchanjeong on 2017/01/25.
@@ -99,7 +102,6 @@ public class FetchResource {
         String path;
 
         try {
-            // Get MP3/wav path
             String packageName = context.getPackageName();
             int resourceId = context.getResources().getIdentifier(name, "raw", packageName);
             path = "android.resource://" + packageName + "/" + resourceId;
@@ -110,6 +112,16 @@ public class FetchResource {
         }
 
         return path;
+    }
+
+    public static Uri soundURI(Context context, String name) {
+        Uri uri = null;
+
+        String packageName = context.getPackageName();
+        int resourceId = context.getResources().getIdentifier(name, "raw", packageName);
+        String soundPath = "android.resource://" + packageName + "/" + resourceId;
+        uri = Uri.parse(soundPath);
+        return uri;
     }
 
     public static int imageId(Context context, String value) {
@@ -396,6 +408,35 @@ public class FetchResource {
         }
 
         return sd;
+    }
+
+    public static String positiveAffirmation(Context context) {
+        String affirmation = "";
+        Random rnd = new Random();
+        if (Globals.SELECTED_LANGUAGE == Languages.ENGLISH) {
+            String[] affirmations = {"amazing", "awesome", "good_job", "i_like_it",
+                    "nice", "number_1", "number_1_2", "shine", "whoohoo", "yeah", "yippeee"};
+            affirmation = affirmations[rnd.nextInt(affirmations.length)];
+        } else if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
+            String[] affirmations = {"s_amazing", "s_congrats1", "s_congrats2",
+                    "s_cool", "s_goodjob"};
+            affirmation = affirmations[rnd.nextInt(affirmations.length)];
+        }
+        return affirmation;
+    }
+
+    public static String negativeAffirmation(Context context) {
+        String affirmation = "";
+        Random rnd = new Random();
+        if (Globals.SELECTED_LANGUAGE == Languages.ENGLISH) {
+            String[] affirmations = {"sorry", "try_again", "try_again_2", "uh_oh"};
+            affirmation = affirmations[rnd.nextInt(affirmations.length)];
+        } else if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
+            String[] affirmations = {"s_sorry", "s_tryagain", "s_keepgoing",
+                    "s_goodtry2", "s_goodtry1"};
+            affirmation = affirmations[rnd.nextInt(affirmations.length)];
+        }
+        return affirmation;
     }
 
     private static class ResourceException extends Exception {

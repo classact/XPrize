@@ -30,13 +30,12 @@ public class MathsDrillOneActivity extends AppCompatActivity {
     private int currentPosition;
     private Runnable returnRunnable;
     private RelativeLayout container;
-    private Context mThis;
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_one);
-        mThis = this;
         container = (RelativeLayout)findViewById(R.id.activity_maths_unit_one);
         handler = new Handler();
         initialiseData();
@@ -134,7 +133,7 @@ public class MathsDrillOneActivity extends AppCompatActivity {
             for(int i = 0; i < 21 ; i++)
                 if ((currentNumber-1) == positions[i])
                     currentPosition = i;
-            showNumber(FetchResource.imageId(mThis, numbers, positions[currentPosition], "numeral_sparkling"), currentPosition);
+            showNumber(FetchResource.imageId(THIS, numbers, positions[currentPosition], "numeral_sparkling"), currentPosition);
             handler.postDelayed(resetNumberRunnable,200);
         }
         catch (Exception ex){
@@ -147,7 +146,7 @@ public class MathsDrillOneActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                showNumber(FetchResource.imageId(mThis, numbers, positions[currentPosition], "numeral"), currentPosition);
+                showNumber(FetchResource.imageId(THIS, numbers, positions[currentPosition], "numeral"), currentPosition);
                 currentNumber++;
                 handler.postDelayed(returnRunnable,500);
             }
