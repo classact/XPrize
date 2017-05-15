@@ -1,6 +1,7 @@
 package classact.com.xprize.activity.drill.math;
 
 import android.content.ClipData;
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -22,6 +23,8 @@ import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class MathsDrillFiveActivity extends AppCompatActivity {
@@ -43,6 +46,8 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
     boolean dragEnabled;
     boolean drillComplete;
     boolean endDrill;
+
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +115,7 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
                             System.out.println("000DA");
                             if (dragEnabled && !drillComplete) {
                                 System.out.println("000DAA");
-                                playSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
+                                playSound(FetchResource.negativeAffirmation(THIS), placementRunnable);
                             }
                         } else {
                             System.out.println("000DB");
@@ -135,6 +140,40 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
         initialise();
     }
 
+    private void playSound(String sound, final Runnable action) {
+        try {
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    if (action != null) {
+                        action.run();
+                    }
+                }
+            });
+            mp.prepare();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            if (action != null) {
+                action.run();
+            }
+        }
+    }
+
     private void initialise(){
         try {
             String drillData = getIntent().getExtras().getString("data");
@@ -142,28 +181,25 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
             setupObjects();
             numbers = allData.getJSONArray("numerals");
             setupNumbers();
-            int sound = allData.getInt("help_monkey_pack");
-            mp = MediaPlayer.create(this, sound);
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    dragItems();
-                }
-            });
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mp.start();
+                    try {
+                        String sound = allData.getString("help_monkey_pack");
+                        playSound(sound, new Runnable() {
+                            @Override
+                            public void run() {
+                                dragItems();
+                            }
+                        });
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }, 500);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -172,7 +208,7 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
             ImageView destination = (ImageView) itemsReceptacle.getChildAt(draggedItems - 1);
             destination.setImageResource(itemResId);
             destination.setVisibility(View.VISIBLE);
-            playSound(getNumberSound());
+            playSound(getNumberSound(), placementRunnable);
             if (draggedItems == targetItems) {
                 dragEnabled = false;
                 drillComplete = true;
@@ -192,48 +228,44 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
         }
     }
 
-    private int getNumberSound(){
-        int sound = 0;
+    private String getNumberSound(){
+        String sound = "";
         try{
             switch (draggedItems){
                 case 1:
-                    sound = allData.getInt("one_sound");
+                    sound = allData.getString("one_sound");
                     break;
                 case 2:
-                    sound = allData.getInt("two_sound");
+                    sound = allData.getString("two_sound");
                     break;
                 case 3:
-                    sound = allData.getInt("three_sound");
+                    sound = allData.getString("three_sound");
                     break;
                 case 4:
-                    sound = allData.getInt("four_sound");
+                    sound = allData.getString("four_sound");
                     break;
                 case 5:
-                    sound = allData.getInt("five_sound");
+                    sound = allData.getString("five_sound");
                     break;
                 case 6:
-                    sound = allData.getInt("six_sound");
+                    sound = allData.getString("six_sound");
                     break;
                 case 7:
-                    sound = allData.getInt("seven_sound");
+                    sound = allData.getString("seven_sound");
                     break;
                 case 8:
-                    sound = allData.getInt("eight_sound");
+                    sound = allData.getString("eight_sound");
                     break;
                 case 9:
-                    sound = allData.getInt("nine_sound");
+                    sound = allData.getString("nine_sound");
                     break;
                 case 10:
-                    sound = allData.getInt("ten_sound");
+                    sound = allData.getString("ten_sound");
                     break;
             }
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
         return sound;
     }
@@ -262,7 +294,7 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
                 JSONObject item = items.getJSONObject(i);
                 int count = item.getInt("number");
                 targetItems += count;
-                final int resId = item.getInt("image");
+                final int resId = FetchResource.imageId(this, item, "image");
                 for (int j =0; j < count; j++){
                     ImageView image = (ImageView)objectsContainer.getChildAt(position);
                     image.setImageResource(resId);
@@ -280,58 +312,28 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
         }
         catch(Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
-    private void playSound(int soundId){
-        try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (drillComplete && !endDrill) {
-                        endDrill = true;
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                playSound(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
-                            }
-                        }, 500);
-                    } else if (endDrill) {
-                        mp.release();
-                        if (mp != null) {
-                            mp.release();
-                        }
-                        finish();
+    private Runnable placementRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (drillComplete && !endDrill) {
+                endDrill = true;
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        playSound(FetchResource.positiveAffirmation(THIS), placementRunnable);
                     }
+                }, 500);
+            } else if (endDrill) {
+                if (mp != null) {
+                    mp.release();
                 }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
+                finish();
             }
-            finish();
         }
-    }
+    };
 
     private void setupNumbers(){
         try {
@@ -354,67 +356,42 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
                 }
                 switch (pos) {
                     case 0:
-                        numberOne.setImageResource(numbers.getJSONObject(i).getInt("image"));
+                        numberOne.setImageResource(FetchResource.imageId(this, numbers, i, "image"));
                         break;
                     case 1:
-                        numberTwo.setImageResource(numbers.getJSONObject(i).getInt("image"));
+                        numberTwo.setImageResource(FetchResource.imageId(this, numbers, i, "image"));
                         break;
                     case 2:
-                        numberThree.setImageResource(numbers.getJSONObject(i).getInt("image"));
+                        numberThree.setImageResource(FetchResource.imageId(this, numbers, i, "image"));
                         break;
                 }
             }
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
     public void numberClicked(int position){
         try {
             int correct = numbers.getJSONObject(positions[position - 1]).getInt("right");
-            int sound = ResourceSelector.getPositiveAffirmationSound(getApplicationContext());
-            mp.reset();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.release();
-                    finish();
-                }
-            });
-            if (correct == 0) {
-                sound = ResourceSelector.getNegativeAffirmationSound(getApplicationContext());
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            if (correct != 0) {
+                // Completion
+                playSound(FetchResource.positiveAffirmation(this), new Runnable() {
                     @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp.reset();
+                    public void run() {
+                        if (mp != null) {
+                            mp.release();
+                        }
+                        finish();
                     }
                 });
+            } else {
+                playSound(FetchResource.negativeAffirmation(this), null);
             }
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -422,66 +399,26 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
         try{
             numbersContainer.setVisibility(View.VISIBLE);
             objectsContainer.setVisibility(View.INVISIBLE);
-            int sound = allData.getInt("can_you_find_and_touch");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                }
-            });
-            mp.prepare();
+            String sound = allData.getString("can_you_find_and_touch");
+            playSound(sound, null);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
     private void dragItems(){
         try{
-            int sound = allData.getInt("drag_items_onto_shelf");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            String sound = allData.getString("drag_items_onto_shelf");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     dragEnabled = true;
                 }
             });
-            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -498,7 +435,6 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (mp != null) {
-            mp.stop();
             mp.release();
         }
         setResult(Code.NAV_MENU);

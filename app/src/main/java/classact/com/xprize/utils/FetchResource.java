@@ -132,7 +132,7 @@ public class FetchResource {
             } else {
                 imageId = context.getResources().getIdentifier(value, "drawable", context.getPackageName());
                 if (imageId == 0) {
-                    throw new Exception("FetchResource.imageId: invalid resource name");
+                    throw new Exception("FetchResource.imageId: invalid resource name (" + value + ")");
                 }
             }
         } catch (Exception ex) {
@@ -177,7 +177,8 @@ public class FetchResource {
             } else {
                 imageId = context.getResources().getIdentifier(value, "drawable", context.getPackageName());
                 if (imageId == 0) {
-                    throw new ResourceException("FetchResource.imageId: invalid resource name");
+                    throw new ResourceException("FetchResource.imageId: invalid resource name (array[" +
+                            index + "]." + name + " -> " + value + ")");
                 }
             }
         } catch (JSONException jex) {

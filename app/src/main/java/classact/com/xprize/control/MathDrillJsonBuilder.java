@@ -208,7 +208,7 @@ public class MathDrillJsonBuilder {
             }
             drillData += "{\"sound\":\"" +  item.getObjectSound() + "\"," +
                     "\"image\":\"" +  item.getObjectImage() + "\"," +
-                    "\"number\":\"" + item.getCustomData() + "\"" +
+                    "\"number\":" + item.getCustomData() +
                     "}";
         }
         drillData += "],\"numerals\":[";
@@ -218,7 +218,7 @@ public class MathDrillJsonBuilder {
                 drillData += ",";
             }
             drillData += "{\"image\":\"" +  item.getcontent() + "\"," +
-                    "\"right\":\"" + item.isRight() + "\"" +
+                    "\"right\":" + item.isRight() +
                     "}";
         }
         drillData += "]," +
