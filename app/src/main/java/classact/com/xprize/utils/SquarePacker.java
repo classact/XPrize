@@ -1,5 +1,11 @@
 package classact.com.xprize.utils;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+
 import classact.com.xprize.activity.drill.math.MathsDrillTwoActivity;
 
 /**
@@ -157,5 +163,42 @@ public class SquarePacker {
             }
         }
         return squares;
+    }
+
+    public static ImageView[] generate(Context context, RelativeLayout container, int n, int w, int h, int imageId) {
+        SquarePacker squarePacker = new SquarePacker(w, h);
+        Square[] squares = squarePacker.get(n);
+        ImageView[] imageViews = new ImageView[n];
+
+        for (int i = 0; i < squares.length; i++) {
+            // Get square
+            Square square = squares[i];
+            // Get drawable
+            Drawable d = context.getResources().getDrawable(imageId, null);
+            // Create image view
+            ImageView iv = new ImageView(context);
+            iv.setImageDrawable(d);
+            iv.setScaleX(0.8f);
+            iv.setScaleY(0.8f);
+            // iv.setBackgroundColor(Color.argb(150, 0, 0, 255));
+            // Add image view to numbers layout
+            container.addView(iv);
+            // Edit image view layout params
+            RelativeLayout.LayoutParams ivParams = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT
+            );
+            ivParams.leftMargin = 0;
+            ivParams.topMargin = 0;
+            ivParams.width = square.w;
+            ivParams.height = square.w;
+            iv.setLayoutParams(ivParams);
+            // Set coordinates
+            iv.setX((float) square.x);
+            iv.setY((float) square.y);
+            // Add to array
+            imageViews[i] = iv;
+        }
+        return imageViews;
     }
 }

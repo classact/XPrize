@@ -171,9 +171,11 @@ public class MathDrillJsonBuilder {
                 "\"touch_the_number\":\"" + touchTheBiggerSound + "\"," +
                 "\"number_of_left_items\":" + leftSize + "," +
                 "\"left_items_item\":\"" + leftObject.getImageName() + "\"," +
+                "\"left_items_sound\":\"" + leftObject.getImageSound() + "\"," +
                 "\"left_number_image\":\"" + leftNumber.getBlackImage() + "\"," +
                 "\"number_of_right_items\":" + rightSize + "," +
                 "\"right_items_item\":\"" + rightObject.getImageName() + "\"," +
+                "\"right_items_sound\":\"" + rightObject.getImageSound() + "\"," +
                 "\"right_number_image\":\"" + rightNumber.getBlackImage() + "\"" +
                 "}";
         return drillData;
