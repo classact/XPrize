@@ -116,14 +116,14 @@ public class MathsDrillFourActivity extends AppCompatActivity {
                 int rightItems = allData.getInt("number_of_right_items");
                 boolean isRight = false;
                 if (checkBigger.equalsIgnoreCase("yes")) {
-                    if (left && leftItems > rightItems)
+                    if (left && leftItems >= rightItems)
                         isRight = true;
-                    else if (!left && rightItems > leftItems)
+                    else if (!left && rightItems >= leftItems)
                         isRight = true;
                 } else {
-                    if (left && leftItems < rightItems)
+                    if (left && leftItems <= rightItems)
                         isRight = true;
-                    else if (!left && rightItems < leftItems)
+                    else if (!left && rightItems <= leftItems)
                         isRight = true;
                 }
                 if (isRight) {

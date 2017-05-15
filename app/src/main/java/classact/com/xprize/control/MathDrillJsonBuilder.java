@@ -137,20 +137,28 @@ public class MathDrillJsonBuilder {
         // Get left and right's respective numeral
         Numerals leftNumber = null;
         Numerals rightNumber = null;
-        // Assume that all numerals are ordered
-        // Also assume that last (highest index) numeral is the largest possible number
-        // Hence, use maxSize as 'N'
-        for (int i = 0; i <= maxSize; i++) {
+        // Assignment numerals
+        for (int i = 0; i < numerals.size(); i++) {
             Numerals number = numerals.get(i);
             int numberValue = number.getNumber();
             // Check if left
             if (numberValue == leftSize) {
                 leftNumber = number;
+                // Check if right is not null
+                // If it isn't all happy - can break!
+                if (rightNumber != null) {
+                    break;
+                }
             }
             // Check if right
             // (Check both, not mutually exclusive)
             if (numberValue == rightSize) {
                 rightNumber = number;
+                // Check if left is not null
+                // If it isn't all happy - can break!
+                if (leftNumber != null) {
+                    break;
+                }
             }
         }
 
