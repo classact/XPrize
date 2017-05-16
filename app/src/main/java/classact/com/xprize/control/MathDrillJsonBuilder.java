@@ -1,8 +1,10 @@
 package classact.com.xprize.control;
 
 import android.content.Context;
+import android.util.SparseArray;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import classact.com.xprize.common.Code;
 import classact.com.xprize.database.model.MathImages;
@@ -240,82 +242,47 @@ public class MathDrillJsonBuilder {
     public static String getDrillFiveAndOneJson(Context context,
                                                 String helpDamaWithMathsSound,
                                                 String dragItemsOntoTableSound,
-                                                String equationSound,
                                                 String touchTheNumber,
-                                                ArrayList<ObjectAndSound<String>> items,
-                                                ArrayList<DraggableImage<String>> numerals,
-                                                String answerImage,
-                                                String oneSound,
-                                                String twoSound,
-                                                String threeSound,
-                                                String fourSound,
-                                                String fiveSound,
-                                                String sixSound,
-                                                String sevenSound,
-                                                String eightSound,
-                                                String nineSound,
-                                                String tenSound,
-                                                String elevenSound,
-                                                String twelveSound,
-                                                String thirteenSound,
-                                                String fourteenSound,
-                                                String fifteenSound,
-                                                String sixteenSound,
-                                                String seventeenSound,
-                                                String eighteenSound,
-                                                String nineteenSound,
-                                                String twentySound){
+                                                String equationSound,
+                                                String[] mathOperators,
+                                                List<MathImages> mathImages,
+                                                Numerals sumTotalNumber,
+                                                SparseArray<Numerals> numbers) {
+
         String drillData = "{\"help_dama_with_maths\":\"" + helpDamaWithMathsSound + "\"," +
                 "\"drag_items_onto_table\":\"" + dragItemsOntoTableSound + "\"," +
                 "\"can_you_find_and_touch\":\"" + touchTheNumber + "\"," +
                 "\"equation_sound\":\"" + equationSound + "\"," +
-                "\"answer_image\":\"" + answerImage + "\"," +
+                "\"plus_sign\":\"" + mathOperators[0] + "\"," +
+                "\"equals_sign\":\"" + mathOperators[1] + "\"," +
+                "\"answer_image\":\"" + sumTotalNumber.getBlackImage() + "\"," +
+                "\"answer_sound\":\"" + sumTotalNumber.getSound() + "\"," +
                 "\"items\":[";
-        for (int i = 0; i < items.size(); i++) {
-            ObjectAndSound<String> item = items.get(i);
+
+        for (int i = 0; i < mathImages.size(); i++) {
+            MathImages mathImage = mathImages.get(i);
             if (i > 0) {
                 drillData += ",";
             }
-            drillData += "{\"sound\":\"" +  item.getObjectSound() + "\"," +
-                    "\"image\":\"" +  item.getObjectImage() + "\"," +
-                    "\"numeral\":\"" +  item.getObjectPhonicSound() + "\"," +
-                    "\"number\":\"" + item.getCustomData() + "\"" +
+            int numberOfImages = mathImage.getNumberOfImages();
+            drillData += "{\"sound\":\"" + mathImage.getImageSound() + "\"," +
+                    "\"image\":\"" + mathImage.getImageName() + "\"," +
+                    "\"number_image\":\"" + numbers.get(numberOfImages).getBlackImage() + "\"," +
+                    "\"number_sound\":\"" + numbers.get(numberOfImages).getSound() + "\"," +
+                    "\"count\":" + numberOfImages + "" +
                     "}";
-
         }
-        drillData += "],\"numerals\":[";
-        for (int i = 0; i < numerals.size(); i++) {
-            DraggableImage<String> item = numerals.get(i);
+        drillData += "],\"numbers\":[";
+        for (int i = 0; i < numbers.size(); i++) {
+            Numerals number = numbers.get(i);
             if (i > 0) {
                 drillData += ",";
             }
-            drillData += "{\"image\":\"" +  item.getcontent() + "\"," +
-                    "\"right\":\"" + item.isRight() + "\"" +
+            drillData += "{\"image\":\"" + number.getBlackImage() + "\"," +
+                    "\"sound\":\"" + number.getSound() + "\"" +
+                    "\"value\":" + number.getNumber() +
                     "}";
         }
-        drillData += "]," +
-                "\"one_sound\":\"" + oneSound + "\"," +
-                "\"two_sound\":\"" + twoSound + "\"," +
-                "\"three_sound\":\"" + threeSound + "\"," +
-                "\"four_sound\":\"" + fourSound + "\"," +
-                "\"five_sound\":\"" + fiveSound      + "\"," +
-                "\"six_sound\":\"" + sixSound + "\"," +
-                "\"seven_sound\":\"" + sevenSound + "\"," +
-                "\"eight_sound\":\"" + eightSound + "\"," +
-                "\"nine_sound\":\"" + nineSound + "\"," +
-                "\"ten_sound\":\"" + tenSound + "\"," +
-                "\"eleven_sound\":\"" + elevenSound + "\"," +
-                "\"twelve_sound\":\"" + twelveSound + "\"," +
-                "\"thirteen_sound\":\"" + thirteenSound + "\"," +
-                "\"fourteen_sound\":\"" + fourteenSound + "\"," +
-                "\"fifteen_sound\":\"" + fifteenSound + "\"," +
-                "\"sixteen_sound\":\"" + sixteenSound + "\"," +
-                "\"seventeen_sound\":\"" + seventeenSound + "\"," +
-                "\"eighteen_sound\":\"" + eighteenSound + "\"," +
-                "\"nineteen_sound\":\"" + nineteenSound + "\"," +
-                "\"twenty_sound\":\"" + twentySound + "\"" +
-                "}";
-
         return drillData;
     }
 

@@ -4,10 +4,15 @@ package classact.com.xprize.controller.catalogue;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
+import android.util.SparseArray;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 import classact.com.xprize.activity.drill.math.MathsDrillFiveActivity;
+import classact.com.xprize.activity.drill.math.MathsDrillFiveAndOneActivity;
 import classact.com.xprize.activity.drill.math.MathsDrillFourActivity;
 import classact.com.xprize.activity.drill.math.MathsDrillOneActivity;
 import classact.com.xprize.activity.drill.math.MathsDrillSevenActivity;
@@ -19,6 +24,7 @@ import classact.com.xprize.activity.drill.math.MathsDrillSixAndThreeActivity;
 import classact.com.xprize.activity.drill.math.MathsDrillSixAndTwoActivity;
 import classact.com.xprize.activity.drill.math.MathsDrillThreeActivity;
 import classact.com.xprize.activity.drill.math.MathsDrillTwoActivity;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.control.DraggableImage;
 import classact.com.xprize.control.MathDrillJsonBuilder;
 import classact.com.xprize.control.Numeral;
@@ -30,6 +36,7 @@ import classact.com.xprize.database.helper.NumeralHelper;
 import classact.com.xprize.database.model.MathDrillFlowWords;
 import classact.com.xprize.database.model.MathImages;
 import classact.com.xprize.database.model.Numerals;
+import classact.com.xprize.locale.Languages;
 
 public class MathDrills {
 
@@ -253,8 +260,13 @@ public class MathDrills {
 
             ArrayList<Integer> numeralsFromDB;
             numeralsFromDB = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
-            String drillData = MathDrillJsonBuilder.getDrillFiveJson(context, mathDrillFlowWord.getDrillSound1(), mathDrillFlowWord.getDrillSound2(),
-                    mathDrillFlowWord.getDrillSound3(), items, numerals,
+            String drillData = MathDrillJsonBuilder.getDrillFiveJson(
+                    context,
+                    mathDrillFlowWord.getDrillSound1(),
+                    mathDrillFlowWord.getDrillSound2(),
+                    mathDrillFlowWord.getDrillSound3(),
+                    items,
+                    numerals,
                     NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(0)).getSound(),
                     NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(1)).getSound(),
                     NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(2)).getSound(),
@@ -285,61 +297,94 @@ public class MathDrills {
             System.out.println("MathDrills.D5B > Debug: PREPARING");
 
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
-            ArrayList<Integer> mathImageList;
-            mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
+            ArrayList<Integer> mathImageIds = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
 
-            ArrayList<ObjectAndSound<String>> items = new ArrayList<>();
-            int correctTestNumber=0;
-            String answerSound="";
-            for (int i=0; i < mathImageList.size(); i++ ) {
-                MathImages mathImages = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(i));
-                correctTestNumber = mathImages.getTestNumber();
-                if (mathImages.getImageName().contains("plus")) {
-                    answerSound=mathImages.getNumberOfImagesSound();
+            List<MathImages> mathImages = new ArrayList<>();
+
+            /* HACK LOGIC: DB is not reflecting this correctly 2017-05-16 10:42AM */
+            // PENCIL
+            MathImages mathImageA = new MathImages();
+            mathImageA.setImageName("pencil15pic");
+            if (Globals.SELECTED_LANGUAGE == Languages.ENGLISH) {
+                mathImageA.setImageSound("pencil_sound");
+            } else if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
+                mathImageA.setImageSound("pencil_ssound");
+            }
+            // Add pencil to math images
+            mathImages.add(mathImageA);
+            // PEN
+            MathImages mathImageB = new MathImages();
+            mathImageA.setImageName("penpic");
+            if (Globals.SELECTED_LANGUAGE == Languages.ENGLISH) {
+                mathImageA.setImageSound("pen_sound");
+            } else if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
+                mathImageA.setImageSound("pen_ssound");
+            }
+            // Add pen to math images
+            mathImages.add(mathImageB);
+
+            int sumTotal = 0;
+            int mathImagesEdited = 0;
+            int maxMathImages = mathImages.size();
+
+            if (unitId < 18) {
+                for (int i = 0; i < mathImageIds.size(); i++) {
+                    MathImages mathDBImage = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageIds.get(i));
+                    if (!mathDBImage.getImageName().contains("plus")) {
+                        if (mathImagesEdited < maxMathImages) {
+                            int value = mathDBImage.getNumberOfImages();
+                            mathImages.get(mathImagesEdited++).setNumberOfImages(value);
+                            sumTotal += value;
+                        }
+                    }
                 }
-                Numerals thisNumber = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, mathImages.getNumberOfImages());
-                ObjectAndSound<String> item = new ObjectAndSound<>(mathImages.getImageName(), mathImages.getImageSound(), "");
-                item.setCustomData(String.valueOf(mathImages.getNumberOfImages()));
-                items.add(item);
+            } else {
+
+                if (unitId == 18) {
+                    // 10 pencils + 8 pens (books) = 18
+                    mathImageA.setNumberOfImages(10);
+                    mathImageB.setNumberOfImages(8);
+                    sumTotal = 18;
+                } else if (unitId == 19) {
+                    // 12 pencils + 7 pens (books) = 19
+                    mathImageA.setNumberOfImages(12);
+                    mathImageB.setNumberOfImages(7);
+                    sumTotal = 19;
+                } else if (unitId == 20) {
+                    // 14 pencils + 6 pens (books) = 20
+                    mathImageA.setNumberOfImages(14);
+                    mathImageB.setNumberOfImages(6);
+                    sumTotal = 20;
+                }
             }
 
-            ArrayList<DraggableImage<String>> numerals = new ArrayList<>();
+            // Get numerals
+            Numerals sumTotalNumber = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, sumTotal);
+            SparseArray<Numerals> numbers = new SparseArray<>();
 
-            ArrayList<Integer> numeralsFromDB_2_Only;
-            numeralsFromDB_2_Only = NumeralHelper.getNumeralsBelowLimitRandom(dbHelper.getReadableDatabase(), languageId, 20, 2, correctTestNumber, boyGirl);
-            for (int i=0; i < numeralsFromDB_2_Only.size(); i++ ) {
-                Numerals numeralFromDB = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB_2_Only.get(i));
-                numerals.add(new DraggableImage<>(0, 0, numeralFromDB.getBlackImage()));
+            for (int i = 0; i < sumTotal; i++) {
+                Numerals number = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, i);
+                numbers.put(i, number);
             }
-            Numerals numeralCorrectAnswer = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, correctTestNumber);
-            numerals.add(new DraggableImage<>(0, 1, numeralCorrectAnswer.getBlackImage()));
 
-            ArrayList<Integer> numeralsFromDB;
-            numeralsFromDB = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
-            String drillData = MathDrillJsonBuilder.getDrillFiveAndOneJson(context, mathDrillFlowWord.getDrillSound1(), mathDrillFlowWord.getDrillSound2(),
-                    answerSound, mathDrillFlowWord.getDrillSound3(), items, numerals,
-                    numeralCorrectAnswer.getBlackImage(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(0)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(1)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(2)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(3)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(4)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(5)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(6)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(7)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(8)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(9)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(10)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(11)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(12)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(13)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(14)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(15)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(16)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(17)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(18)).getSound(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(19)).getSound());
-            intent = new Intent(context, MathsDrillFiveActivity.class);
+            // Get operators
+            String[] mathOperators = {"w_plus", "w_equals"};
+            String equationSound = String.format(Locale.ENGLISH, "maths_%dplus%d",
+                    mathImages.get(0).getNumberOfImages(),
+                    mathImages.get(1).getNumberOfImages());
+
+            // Setup drill data
+            String drillData = MathDrillJsonBuilder.getDrillFiveAndOneJson(
+                    context,
+                    mathDrillFlowWord.getDrillSound1(),
+                    mathDrillFlowWord.getDrillSound2(),
+                    mathDrillFlowWord.getDrillSound3(),
+                    equationSound,
+                    mathOperators,
+                    mathImages,
+                    sumTotalNumber,
+                    numbers);
+            intent = new Intent(context, MathsDrillFiveAndOneActivity.class);
             intent.putExtra("data", drillData);
 
         } catch (SQLiteException sqlex) {
