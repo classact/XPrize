@@ -304,21 +304,21 @@ public class MathDrills {
             /* HACK LOGIC: DB is not reflecting this correctly 2017-05-16 10:42AM */
             // PENCIL
             MathImages mathImageA = new MathImages();
-            mathImageA.setImageName("pencil15pic");
+            mathImageA.setImageName("banana");
             if (Globals.SELECTED_LANGUAGE == Languages.ENGLISH) {
-                mathImageA.setImageSound("pencil_sound");
+                mathImageA.setImageSound("banana_sound");
             } else if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
-                mathImageA.setImageSound("pencil_ssound");
+                mathImageA.setImageSound("ndizi_sound");
             }
             // Add pencil to math images
             mathImages.add(mathImageA);
             // PEN
             MathImages mathImageB = new MathImages();
-            mathImageA.setImageName("penpic");
+            mathImageB.setImageName("orange");
             if (Globals.SELECTED_LANGUAGE == Languages.ENGLISH) {
-                mathImageA.setImageSound("pen_sound");
+                mathImageB.setImageSound("orange_sound");
             } else if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
-                mathImageA.setImageSound("pen_ssound");
+                mathImageB.setImageSound("orange_sound");
             }
             // Add pen to math images
             mathImages.add(mathImageB);
@@ -362,9 +362,9 @@ public class MathDrills {
             Numerals sumTotalNumber = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, sumTotal);
             SparseArray<Numerals> numbers = new SparseArray<>();
 
-            for (int i = 0; i < sumTotal; i++) {
+            for (int i = 0; i <= sumTotal; i++) {
                 Numerals number = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, i);
-                numbers.put(i, number);
+                numbers.put(number.getNumber(), number);
             }
 
             // Get operators
@@ -388,8 +388,10 @@ public class MathDrills {
             intent.putExtra("data", drillData);
 
         } catch (SQLiteException sqlex) {
+            sqlex.printStackTrace();
             throw new SQLiteException("D5B: " + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new Exception("D5B: " + ex.getMessage());
         }
         return intent;

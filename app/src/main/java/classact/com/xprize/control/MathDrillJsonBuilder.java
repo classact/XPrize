@@ -257,7 +257,7 @@ public class MathDrillJsonBuilder {
                 "\"equals_sign\":\"" + mathOperators[1] + "\"," +
                 "\"answer_image\":\"" + sumTotalNumber.getBlackImage() + "\"," +
                 "\"answer_sound\":\"" + sumTotalNumber.getSound() + "\"," +
-                "\"items\":[";
+                "\"things\":[";
 
         for (int i = 0; i < mathImages.size(); i++) {
             MathImages mathImage = mathImages.get(i);
@@ -279,10 +279,11 @@ public class MathDrillJsonBuilder {
                 drillData += ",";
             }
             drillData += "{\"image\":\"" + number.getBlackImage() + "\"," +
-                    "\"sound\":\"" + number.getSound() + "\"" +
+                    "\"sound\":\"" + number.getSound() + "\"," +
                     "\"value\":" + number.getNumber() +
                     "}";
         }
+        drillData += "]}";
         return drillData;
     }
 
