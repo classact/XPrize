@@ -304,21 +304,21 @@ public class MathDrills {
             /* HACK LOGIC: DB is not reflecting this correctly 2017-05-16 10:42AM */
             // PENCIL
             MathImages mathImageA = new MathImages();
-            mathImageA.setImageName("banana");
+            mathImageA.setImageName("orange");
             if (Globals.SELECTED_LANGUAGE == Languages.ENGLISH) {
-                mathImageA.setImageSound("banana_sound");
+                mathImageA.setImageSound("orange_sound");
             } else if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
-                mathImageA.setImageSound("ndizi_sound");
+                mathImageA.setImageSound("orange_sound");
             }
             // Add pencil to math images
             mathImages.add(mathImageA);
             // PEN
             MathImages mathImageB = new MathImages();
-            mathImageB.setImageName("orange");
+            mathImageB.setImageName("banana");
             if (Globals.SELECTED_LANGUAGE == Languages.ENGLISH) {
-                mathImageB.setImageSound("orange_sound");
+                mathImageB.setImageSound("banana_sound");
             } else if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
-                mathImageB.setImageSound("orange_sound");
+                mathImageB.setImageSound("ndizi_sound");
             }
             // Add pen to math images
             mathImages.add(mathImageB);
@@ -362,7 +362,7 @@ public class MathDrills {
             Numerals sumTotalNumber = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, sumTotal);
             SparseArray<Numerals> numbers = new SparseArray<>();
 
-            for (int i = 0; i <= sumTotal; i++) {
+            for (int i = 0; i <= 20; i++) {
                 Numerals number = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, i);
                 numbers.put(number.getNumber(), number);
             }

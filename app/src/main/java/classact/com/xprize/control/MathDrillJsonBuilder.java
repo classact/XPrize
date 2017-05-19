@@ -255,8 +255,11 @@ public class MathDrillJsonBuilder {
                 "\"equation_sound\":\"" + equationSound + "\"," +
                 "\"plus_sign\":\"" + mathOperators[0] + "\"," +
                 "\"equals_sign\":\"" + mathOperators[1] + "\"," +
-                "\"answer_image\":\"" + sumTotalNumber.getBlackImage() + "\"," +
-                "\"answer_sound\":\"" + sumTotalNumber.getSound() + "\"," +
+                "\"answer\":{" +
+                    "\"image\":\"" + sumTotalNumber.getBlackImage() + "\"," +
+                    "\"sound\":\"" + sumTotalNumber.getSound() + "\"," +
+                    "\"value\":" + sumTotalNumber.getNumber() +
+                "}," +
                 "\"things\":[";
 
         for (int i = 0; i < mathImages.size(); i++) {
