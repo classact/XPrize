@@ -74,6 +74,8 @@ public class MathsDrillFiveAndOneActivity extends AppCompatActivity implements V
     private ImageView equationSign;
     private ImageView equationEqualsSign;
 
+    private boolean dragEnabled;
+
     private int currentDragIndex;
 
     private final Context THIS = this;
@@ -306,6 +308,9 @@ public class MathsDrillFiveAndOneActivity extends AppCompatActivity implements V
             // Set current drag index to -1
             currentDragIndex = -1;
 
+            // Disable drag
+            dragEnabled = false;
+
             handler.post(helpDamaWithMathsPrompt);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -329,6 +334,12 @@ public class MathsDrillFiveAndOneActivity extends AppCompatActivity implements V
         public void run() {
             try {
                 String sound = allData.getString("drag_items_onto_table");
+                playSound(sound, new Runnable() {
+                    @Override
+                    public void run() {
+                        dragEnabled = true;
+                    }
+                });
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -374,27 +385,31 @@ public class MathsDrillFiveAndOneActivity extends AppCompatActivity implements V
             case DragEvent.ACTION_DRAG_EXITED:
                 return true;
             case DragEvent.ACTION_DROP:
-                currentDragIndex = -1;
+                if (dragEnabled) {
+                    currentDragIndex = -1;
 
-                RelativeLayout container = (RelativeLayout) v;
-                ImageView iv = (ImageView) container.getChildAt(receptacleObjects.size());
+                    RelativeLayout container = (RelativeLayout) v;
+                    ImageView iv = (ImageView) container.getChildAt(receptacleObjects.size());
 
-                String tag = (String) event.getClipDescription().getLabel();
-                int index = Integer.parseInt(tag);
-                CustomObject co = objectContainerObjects.get(index);
+                    String tag = (String) event.getClipDescription().getLabel();
+                    int index = Integer.parseInt(tag);
+                    CustomObject co = objectContainerObjects.get(index);
 
-                String image = co.getImage();
-                int imageId = FetchResource.imageId(this, image);
-                iv.setImageResource(imageId);
+                    String image = co.getImage();
+                    int imageId = FetchResource.imageId(this, image);
+                    iv.setImageResource(imageId);
 
-                int nextIndex = receptacleObjects.size();
+                    int nextIndex = receptacleObjects.size();
 
-                receptacleObjects.put(nextIndex, co);
-                objectContainerObjects.remove(index);
+                    receptacleObjects.put(nextIndex, co);
+                    objectContainerObjects.remove(index);
 
-                v.invalidate();
+                    v.invalidate();
 
-                return true;
+                    return true;
+                } else {
+                    return false;
+                }
             case DragEvent.ACTION_DRAG_ENDED:
                 if (event.getResult()) {
                     // Get index of latest added object
@@ -427,7 +442,7 @@ public class MathsDrillFiveAndOneActivity extends AppCompatActivity implements V
                     });
                 } else {
                     if (currentDragIndex != -1) {
-                        iv = objectContainerImageViews.get(currentDragIndex);
+                        ImageView iv = objectContainerImageViews.get(currentDragIndex);
                         iv.setVisibility(View.VISIBLE);
                     }
                 }
