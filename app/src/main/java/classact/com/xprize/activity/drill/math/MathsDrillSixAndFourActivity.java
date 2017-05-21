@@ -22,6 +22,8 @@ import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class MathsDrillSixAndFourActivity extends AppCompatActivity {
@@ -122,6 +124,40 @@ public class MathsDrillSixAndFourActivity extends AppCompatActivity {
             }
         });
         initialiseData();
+    }
+
+    private void playSound(String sound, final Runnable action) {
+        try {
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    if (action != null) {
+                        action.run();
+                    }
+                }
+            });
+            mp.prepare();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            if (action != null) {
+                action.run();
+            }
+        }
     }
 
     private void placeOnTable(View view){

@@ -299,15 +299,6 @@ public class MathDrillJsonBuilder {
                                          String demoObject,
                                          String objectToTouch){
 
-        // Debug
-        System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: letsLookAtShapesSound = " + letsLookAtShapesSound);
-        System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: thisIsASound = " + thisIsASound);
-        System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: objectSound = " + objectSound);
-        System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: repeatAfterMeSound = " + repeatAfterMeSound);
-        System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: touchSound = " + touchSound);
-        System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: demoObject = " + demoObject);
-        System.out.println("MathDrillJsonBuilder.getDrillSixJson > Debug: objectToTouch = " + objectToTouch);
-
         String drillData = "{\"lets_look_at_shapes\":\"" + letsLookAtShapesSound + "\"," +
                 "\"this_is_sound\":\"" + thisIsASound + "\"," +
                 "\"object_sound\":\"" + objectSound + "\"," +
@@ -322,20 +313,20 @@ public class MathDrillJsonBuilder {
     public static String getDrillSixAndOneJson(Context context,
                                                 String letsLookAtShapesSound,
                                                 String theseAreSound,
-                                                String objectSound,
                                                 String repeatAfterMeSound,
                                                 String touchSound,
-                                                String objectToTouchSound,
-                                                String demoObject,
-                                                String objectToTouch){
+                                                String shapeImageName,
+                                                String shapeSingularSound,
+                                                String shapePluralSound,
+                                                String shapeComparativeSound){
         String drillData = "{\"lets_look_at_shapes\":\"" + letsLookAtShapesSound + "\"," +
                 "\"these_are_sound\":\"" + theseAreSound + "\"," +
-                "\"objects_sound\":\"" + objectSound + "\"," +
                 "\"repeat_afterme_sound\":\"" + repeatAfterMeSound + "\"," +
                 "\"touch_sound\":\"" + touchSound + "\"," +
-                "\"object_to_touch_sound\":\"" + objectToTouchSound + "\"," +
-                "\"demo_object\":\"" + demoObject + "\","+
-                "\"object_to_touch\":\"" + objectToTouch + "\"}";
+                "\"object_name\":\"" + shapeImageName + "\"," +
+                "\"object_singular_sound\":\"" + shapeSingularSound + "\"," +
+                "\"object_plural_sound\":\"" + shapePluralSound + "\","+
+                "\"object_comparative_sound\":\"" + shapeComparativeSound + "\"}";
         return drillData;
     }
 

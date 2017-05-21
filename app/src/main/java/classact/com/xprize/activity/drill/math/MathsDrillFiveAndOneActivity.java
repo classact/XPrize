@@ -75,6 +75,7 @@ public class MathsDrillFiveAndOneActivity extends AppCompatActivity implements V
     private ImageView equationEqualsSign;
 
     private boolean dragEnabled;
+    private boolean touchNumbersEnabled;
 
     private int currentDragIndex;
 
@@ -311,6 +312,9 @@ public class MathsDrillFiveAndOneActivity extends AppCompatActivity implements V
             // Disable drag
             dragEnabled = false;
 
+            // Disable touch
+            touchNumbersEnabled = false; // stage 2
+
             handler.post(helpDamaWithMathsPrompt);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -356,7 +360,7 @@ public class MathsDrillFiveAndOneActivity extends AppCompatActivity implements V
                 String tag = (String) v.getTag();
                 currentDragIndex = Integer.parseInt(tag);
                 ClipData.Item item = new ClipData.Item(tag);
-                ClipData dragData = new ClipData(tag, new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
+                ClipData dragData = new ClipData(tag, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
                 View.DragShadowBuilder dragShadow = new View.DragShadowBuilder(v);
                 v.startDragAndDrop(dragData, dragShadow, v, 0);
                 v.setVisibility(View.INVISIBLE);
@@ -476,6 +480,30 @@ public class MathsDrillFiveAndOneActivity extends AppCompatActivity implements V
         }
     };
 
+    private void endingSequence() {
+        try {
+            String equationSound = allData.getString("equation_sound");
+            int answerValue = allData.getJSONObject("answer").getInt("value");
+            final String answerSound = numberObjects.get(answerValue).getSound();
+            playSound(equationSound, new Runnable() {
+                @Override
+                public void run() {
+                    playSound(answerSound, new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mp != null) {
+                                mp.release();
+                            }
+                            finish();
+                        }
+                    });
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     private void nextStage() {
         try {
             final int answerValue = allData.getJSONObject("answer").getInt("value");
@@ -496,21 +524,46 @@ public class MathsDrillFiveAndOneActivity extends AppCompatActivity implements V
                 iv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (chosenValue == answerValue) {
-                            playSound(numberSound, new Runnable() {
-                                @Override
-                                public void run() {
-                                    playSound(FetchResource.positiveAffirmation(THIS), null);
-                                }
-                            });
+                        if (touchNumbersEnabled) {
+                            if (chosenValue == answerValue) {
+                                touchNumbersEnabled = false;
 
-                        } else {
-                            playSound(numberSound, new Runnable() {
-                                @Override
-                                public void run() {
-                                    playSound(FetchResource.negativeAffirmation(THIS), null);
-                                }
-                            });
+                                LinearLayout.LayoutParams equationAnswerLP = (LinearLayout.LayoutParams) equationAnswer.getLayoutParams();
+                                float sd = getResources().getDisplayMetrics().density;
+                                equationAnswerLP.width = (int) (sd * 100);
+                                equationAnswerLP.height = (int) (sd * 100);
+                                equationAnswerLP.leftMargin = equationAnswerLP.leftMargin + 25;
+                                equationAnswer.setLayoutParams(equationAnswerLP);
+
+                                String answerImage = numberObjects.get(answerValue).getImage();
+                                int answerImageId = FetchResource.imageId(THIS, answerImage);
+                                equationAnswer.setImageResource(answerImageId);
+
+                                playSound(numberSound, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                handler.postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        endingSequence();
+                                                    }
+                                                }, 250);
+                                            }
+                                        });
+                                    }
+                                });
+
+                            } else {
+                                playSound(numberSound, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        playSound(FetchResource.negativeAffirmation(THIS), null);
+                                    }
+                                });
+                            }
                         }
                     }
                 });
@@ -518,7 +571,12 @@ public class MathsDrillFiveAndOneActivity extends AppCompatActivity implements V
             }
 
             String promptSound = allData.getString("can_you_find_and_touch");
-            playSound(promptSound, null);
+            playSound(promptSound, new Runnable() {
+                @Override
+                public void run() {
+                    touchNumbersEnabled = true;
+                }
+            });
 
         } catch (Exception ex) {
             ex.printStackTrace();
