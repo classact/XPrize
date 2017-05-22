@@ -484,7 +484,7 @@ public class DrillFetcher {
                         subId = 0;
                         // Fetch D6A
                         intent = MathDrills.D6A(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
-                    } else if ((unitId >= 6) && (unitId < 10)) {
+                    } else if (unitId < 10) {
                         subId = 1;
                         // Fetch D6B
                         intent = MathDrills.D6B(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
@@ -492,12 +492,12 @@ public class DrillFetcher {
                         subId = 2;
                         // Fetch D6C
                         intent = MathDrills.D6C(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
-                    } else if ((unitId > 10) && (unitId < 16)) {
+                    } else if (unitId < 16) {
                         limit = 3;
                         subId = 3;
                         // Fetch D6D
                         intent = MathDrills.D6D(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
-                    } else if (unitId > 15) {
+                    } else if (unitId >= 16) {
                         limit = 5;
                         subId = 4;
                         // Fetch D6E

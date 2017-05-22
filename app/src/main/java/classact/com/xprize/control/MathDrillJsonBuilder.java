@@ -334,26 +334,32 @@ public class MathDrillJsonBuilder {
     public static String getDrillSixAndTwoJson(Context context,
                                                String letsLookAtShapesSound,
                                                String theseAreSound,
-                                               String objectsOneSound,
-                                               String objectsTwoSound,
                                                String andSound,
                                                String repeatAfterMeSound,
                                                String touchSound,
-                                               String objectToTouchSound,
-                                               String objectOne,
-                                               String objectTwo,
-                                               String objectToTouch){
+                                               String shapeOneImage,
+                                               String shapeOneSingularSound,
+                                               String shapeOnePluralSound,
+                                               String shapeTwoImage,
+                                               String shapeTwoSingularSound,
+                                               String shapeTwoPluralSound,
+                                               String shapeOneAndTwoPluralSound,
+                                               String shapeComparativeSound){
         String drillData = "{\"lets_look_at_shapes\":\"" + letsLookAtShapesSound + "\"," +
                 "\"these_are_sound\":\"" + theseAreSound + "\"," +
-                "\"objects_one_sound\":\"" + objectsOneSound + "\"," +
-                "\"objects_two_sound\":\"" + objectsTwoSound + "\"," +
                 "\"and_sound\":\"" + andSound + "\"," +
                 "\"repeat_afterme_sound\":\"" + repeatAfterMeSound + "\"," +
                 "\"touch_sound\":\"" + touchSound + "\"," +
-                "\"object_to_touch_sound\":\"" + objectToTouchSound + "\"," +
-                "\"object_one\":\"" + objectOne + "\","+
-                "\"object_two\":\"" + objectTwo + "\","+
-                "\"object_to_touch\":\"" + objectToTouch + "\"}";
+                "\"object_one\":{" +
+                    "\"image_name\":\"" + shapeOneImage + "\","+
+                    "\"singular_sound\":\"" + shapeOneSingularSound + "\","+
+                    "\"plural_sound\":\"" + shapeOnePluralSound + "\"},"+
+                "\"object_two\":{" +
+                    "\"image_name\":\"" + shapeTwoImage + "\"," +
+                    "\"singular_sound\":\"" + shapeTwoSingularSound + "\"," +
+                    "\"plural_sound\":\"" + shapeTwoPluralSound + "\"}," +
+                "\"objects_plural_sound\":\"" + shapeOneAndTwoPluralSound + "\"," +
+                "\"object_comparative_sound\":\"" + shapeComparativeSound + "\"}";
         return drillData;
     }
 

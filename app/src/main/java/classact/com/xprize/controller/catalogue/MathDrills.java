@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
 import android.util.SparseArray;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -476,19 +478,21 @@ public class MathDrills {
 
                 // Get shape singular sound
                 String imageSound = mathImage.getImageSound();
-                if (imageSound.equalsIgnoreCase(CIRCLE) ||
-                        imageSound.equalsIgnoreCase(RECTANGLE) ||
-                        imageSound.equalsIgnoreCase(SQUARE) ||
-                        imageSound.equalsIgnoreCase(TRIANGLE)) {
+                String strippedImageSound = imageSound.replace("s_", ""); // language measure
+                if (strippedImageSound.equalsIgnoreCase(CIRCLE) ||
+                        strippedImageSound.equalsIgnoreCase(RECTANGLE) ||
+                        strippedImageSound.equalsIgnoreCase(SQUARE) ||
+                        strippedImageSound.equalsIgnoreCase(TRIANGLE)) {
                     shapeSingularSound = imageSound;
                 }
 
                 // Get shapes plural sound
                 String numberOfImagesSound = mathImage.getNumberOfImagesSound();
-                if (numberOfImagesSound.equalsIgnoreCase(CIRCLES) ||
-                        numberOfImagesSound.equalsIgnoreCase(RECTANGLES) ||
-                        numberOfImagesSound.equalsIgnoreCase(SQUARES) ||
-                        numberOfImagesSound.equalsIgnoreCase(TRIANGLES)) {
+                String strippedNumberOfImagesSound = numberOfImagesSound.replace("s_", ""); // language measure
+                if (strippedNumberOfImagesSound.equalsIgnoreCase(CIRCLES) ||
+                        strippedNumberOfImagesSound.equalsIgnoreCase(RECTANGLES) ||
+                        strippedNumberOfImagesSound.equalsIgnoreCase(SQUARES) ||
+                        strippedNumberOfImagesSound.equalsIgnoreCase(TRIANGLES)) {
                     shapesPluralSound = numberOfImagesSound;
                 } else {
                     shapesComparativeSound = numberOfImagesSound;
@@ -525,20 +529,106 @@ public class MathDrills {
 
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId,languageId);
 
-            ArrayList<Integer> mathImageList;
-            mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
+            ArrayList<Integer> mathImageIds = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
+
+            String shapeOneImage;
+            String shapeOneSingularSound;
+            String shapeOnePluralSound;
+            String shapeTwoImage;
+            String shapeTwoSingularSound;
+            String shapeTwoPluralSound;
+            String shapeOneAndTwoPluralSound = "";
+            String shapeComparativeSound = "";
+
+            List<String> shapeImageNames = new ArrayList<>();
+
+            final String NONE = "none";
+
+            final String CIRCLE = "circle";
+            final String RECTANGLE = "rectangle";
+            final String SQUARE = "square";
+            final String TRIANGLE = "triangle";
+
+            final String CIRCLES = "circles";
+            final String RECTANGLES = "rectangles";
+            final String SQUARES = "squares";
+            final String TRIANGLES = "triangles";
+
+            LinkedHashMap<String, String> shapeSingularSounds = new LinkedHashMap<>();
+            shapeSingularSounds.put(CIRCLE, CIRCLE);
+            shapeSingularSounds.put(RECTANGLE, RECTANGLE);
+            shapeSingularSounds.put(SQUARE, SQUARE);
+            shapeSingularSounds.put(TRIANGLE, TRIANGLE);
+
+            LinkedHashMap<String, String> shapePluralSounds = new LinkedHashMap<>();
+            shapePluralSounds.put(CIRCLE, CIRCLES);
+            shapePluralSounds.put(RECTANGLE, RECTANGLES);
+            shapePluralSounds.put(SQUARE, SQUARES);
+            shapePluralSounds.put(TRIANGLE, TRIANGLES);
+
+            for (int i = 0; i < mathImageIds.size(); i++) {
+                // Get math image
+                MathImages mathImage = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageIds.get(i));
+
+                // Get shape image
+                String imageName = mathImage.getImageName().replace("big", "").replace("small", "");
+                if (imageName.equalsIgnoreCase(CIRCLE) ||
+                        imageName.equalsIgnoreCase(RECTANGLE) ||
+                        imageName.equalsIgnoreCase(SQUARE) ||
+                        imageName.equalsIgnoreCase(TRIANGLE)) {
+                    if (!shapeImageNames.contains(imageName) && shapeImageNames.size() < 2) {
+                        shapeImageNames.add(imageName);
+                    }
+                }
+
+                // Get shapes one and two plural sound
+                String imageSound = mathImage.getImageSound();
+                if (imageSound.equalsIgnoreCase(NONE)) {
+                    shapeOneAndTwoPluralSound = mathImage.getNumberOfImagesSound();
+                }
+
+                // Get shapes comparative sound
+                String numberOfImagesSound = mathImage.getNumberOfImagesSound();
+                String strippedNumberOfImagesSound = numberOfImagesSound.replace("s_", ""); // internationalized validation
+                String strippedName = numberOfImagesSound.replace("small","").replace("big","");
+                if (shapeImageNames.contains(strippedName) &&
+                        (strippedNumberOfImagesSound.contains("small") ||
+                                strippedNumberOfImagesSound.contains("big"))) {
+                    shapeComparativeSound = numberOfImagesSound;
+                }
+            }
+
+            int numOfShapeImageNames = shapeImageNames.size();
+            if (numOfShapeImageNames < 2) {
+                String errorMessage = "Insufficient Math 6C data (only " + numOfShapeImageNames + " shapes)";
+                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
+                throw new Exception(errorMessage);
+            } else {
+                // Shape one
+                shapeOneImage = shapeImageNames.get(0);
+                shapeOneSingularSound = shapeSingularSounds.get(shapeOneImage);
+                shapeOnePluralSound = shapePluralSounds.get(shapeOneImage);
+
+                // Shape two
+                shapeTwoImage = shapeImageNames.get(1);
+                shapeTwoSingularSound = shapeSingularSounds.get(shapeTwoImage);
+                shapeTwoPluralSound = shapePluralSounds.get(shapeTwoImage);
+            }
 
             String drillData = MathDrillJsonBuilder.getDrillSixAndTwoJson(context,
                     mathDrillFlowWord.getDrillSound1(),
                     mathDrillFlowWord.getDrillSound2(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(2)).getNumberOfImagesSound(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(4)).getNumberOfImagesSound(),
+                    "and",
                     mathDrillFlowWord.getDrillSound3(),
-                    mathDrillFlowWord.getDrillSound4(),"and",
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(3)).getImageSound(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(2)).getImageName(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageName(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(1)).getImageName());
+                    mathDrillFlowWord.getDrillSound4(),
+                    shapeOneImage,
+                    shapeOneSingularSound,
+                    shapeOnePluralSound,
+                    shapeTwoImage,
+                    shapeTwoSingularSound,
+                    shapeTwoPluralSound,
+                    shapeOneAndTwoPluralSound,
+                    shapeComparativeSound);
 
             intent = new Intent(context, MathsDrillSixAndTwoActivity.class);
             intent.putExtra("data", drillData);
