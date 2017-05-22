@@ -26,6 +26,8 @@ public class MathsDrillSixAndOneActivity extends AppCompatActivity {
     private MediaPlayer mp;
     private JSONObject allData;
 
+    private boolean touchEnabled;
+
     private final Context THIS = this;
 
     @Override
@@ -69,8 +71,11 @@ public class MathsDrillSixAndOneActivity extends AppCompatActivity {
             largeShape.setImageResource(objectImageId);
             smallShape.setImageResource(objectImageId);
 
-            boolean morphBigger = false;
-            String objectComparativeSound = allData.getString("object_comparative_sound");
+            boolean morphBigger;
+
+            final String objectSingularSound = allData.getString("object_singular_sound");
+            final String objectComparativeSound = allData.getString("object_comparative_sound");
+
             if (objectComparativeSound.contains("big")) {
                 morphBigger = true;
             } else if (objectComparativeSound.contains("small")){
@@ -94,12 +99,29 @@ public class MathsDrillSixAndOneActivity extends AppCompatActivity {
 
                     smallShape.setScaleX(mss);
                     smallShape.setScaleY(mss);
+
+                    RelativeLayout.LayoutParams largeShapeLP = (RelativeLayout.LayoutParams) largeShape.getLayoutParams();
+                    largeShapeLP.leftMargin += 40;
+                    largeShape.setLayoutParams(largeShapeLP);
+
+                    RelativeLayout.LayoutParams smallShapeLP = (RelativeLayout.LayoutParams) smallShape.getLayoutParams();
+                    smallShapeLP.leftMargin += 60;
+                    smallShape.setLayoutParams(smallShapeLP);
+
                 } else {
                     largeShape.setScaleX(ss);
                     largeShape.setScaleY(ss);
 
                     smallShape.setScaleX(mbs);
                     smallShape.setScaleY(mbs);
+
+                    RelativeLayout.LayoutParams largeShapeLP = (RelativeLayout.LayoutParams) largeShape.getLayoutParams();
+                    largeShapeLP.leftMargin -= 75;
+                    largeShape.setLayoutParams(largeShapeLP);
+
+                    RelativeLayout.LayoutParams smallShapeLP = (RelativeLayout.LayoutParams) smallShape.getLayoutParams();
+                    smallShapeLP.leftMargin -= 25;
+                    smallShape.setLayoutParams(smallShapeLP);
                 }
             } else {
                 if (morphBigger) {
@@ -108,14 +130,61 @@ public class MathsDrillSixAndOneActivity extends AppCompatActivity {
 
                     largeShape.setScaleX(mss);
                     largeShape.setScaleY(mss);
+
+                    RelativeLayout.LayoutParams largeShapeLP = (RelativeLayout.LayoutParams) largeShape.getLayoutParams();
+                    largeShapeLP.leftMargin -= 130;
+                    largeShape.setLayoutParams(largeShapeLP);
+
+                    RelativeLayout.LayoutParams smallShapeLP = (RelativeLayout.LayoutParams) smallShape.getLayoutParams();
+                    smallShapeLP.leftMargin += 60;
+                    smallShape.setLayoutParams(smallShapeLP);
                 } else {
                     smallShape.setScaleX(ss);
                     smallShape.setScaleY(ss);
 
                     largeShape.setScaleX(mbs);
                     largeShape.setScaleY(mbs);
+
+                    RelativeLayout.LayoutParams largeShapeLP = (RelativeLayout.LayoutParams) largeShape.getLayoutParams();
+                    largeShapeLP.leftMargin += 110;
+                    largeShape.setLayoutParams(largeShapeLP);
+
+                    RelativeLayout.LayoutParams smallShapeLP = (RelativeLayout.LayoutParams) smallShape.getLayoutParams();
+                    smallShapeLP.leftMargin -= 25;
+                    smallShape.setLayoutParams(smallShapeLP);
                 }
             }
+
+            if (morphLeft) {
+                largeShape.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        objectClicked(objectComparativeSound);
+                    }
+                });
+                smallShape.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        objectClicked(objectSingularSound);
+                    }
+                });
+            } else {
+                largeShape.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        objectClicked(objectSingularSound);
+                    }
+                });
+                smallShape.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        objectClicked(objectComparativeSound);
+                    }
+                });
+            }
+
+            // Disable touch
+            touchEnabled = false;
 
             String sound = allData.getString("lets_look_at_shapes");
             playSound(sound, new Runnable() {
@@ -132,21 +201,23 @@ public class MathsDrillSixAndOneActivity extends AppCompatActivity {
 
     private void objectClicked(String touchedObject){
         try{
-            String objectToTouch = allData.getString("object_to_touch");
-            if (objectToTouch.equalsIgnoreCase(touchedObject)){
-                playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
-                    @Override
-                    public void run() {
-                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable(){
-                            public void run(){
-                                finish();
-                            }
-                        },500);
-                    }
-                });
-            }
-            else{
-                playSound(FetchResource.negativeAffirmation(THIS), null);
+            if (touchEnabled) {
+                String objectToTouch = allData.getString("object_comparative_sound");
+                if (objectToTouch.equalsIgnoreCase(touchedObject)) {
+                    touchEnabled = false;
+                    playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                        @Override
+                        public void run() {
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                public void run() {
+                                    finish();
+                                }
+                            }, 0);
+                        }
+                    });
+                } else {
+                    playSound(FetchResource.negativeAffirmation(THIS), null);
+                }
             }
         }
         catch (Exception ex){
@@ -232,7 +303,12 @@ public class MathsDrillSixAndOneActivity extends AppCompatActivity {
     private void sayObjectToTouch(){
         try {
             String sound = allData.getString("object_comparative_sound");
-            playSound(sound, null);
+            playSound(sound, new Runnable() {
+                @Override
+                public void run() {
+                    touchEnabled = true;
+                }
+            });
         }
         catch (Exception ex){
             ex.printStackTrace();
