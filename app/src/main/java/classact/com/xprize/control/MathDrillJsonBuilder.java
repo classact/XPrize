@@ -374,7 +374,8 @@ public class MathDrillJsonBuilder {
                                                  String objectsImage,
                                                  String numberOfObjects,
                                                  String numberOfEatenObjects,
-                                                 ArrayList<DraggableImage<String>> numerals){
+                                                 List<Numerals> numerals,
+                                                 List<Numerals> countNumbers){
         String drillData = "{\"monkey_is_hungry\":\"" + monkeyIsHungryAndEatsSound + "\"," +
                 "\"he_eats_sound\":\"" + heEatsSound + "\"," +
                 "\"objects_eaten\":\"" + objectsEatenSound + "\"," +
@@ -383,16 +384,28 @@ public class MathDrillJsonBuilder {
                 "\"to_the_monkey_sound\":\"" + toTheMonkeysMouthSound + "\"," +
                 "\"touch_sound\":\"" + touchSound + "\"," +
                 "\"objects_image\":\"" + objectsImage + "\","+
-                "\"number_of_eaten_objects\":\"" + numberOfEatenObjects + "\"," +
-                "\"number_of_objects\":\"" + numberOfObjects + "\",";
-        drillData += "\"numerals\":[";
+                "\"number_of_eaten_objects\":" + numberOfEatenObjects + "," +
+                "\"number_of_objects\":" + numberOfObjects + ",";
+        drillData += "\"drill_specific_numbers\":[";
         for (int i = 0; i < numerals.size(); i++) {
-            DraggableImage<String> item = numerals.get(i);
+            Numerals number = numerals.get(i);
             if (i > 0) {
                 drillData += ",";
             }
-            drillData += "{\"image\":\"" +  item.getcontent() + "\"," +
-                    "\"right\":\"" + item.isRight() + "\"" +
+            drillData += "{\"image\":\"" +  number.getBlackImage() + "\"," +
+                    "\"value\":" + number.getNumber() +
+                    "}";
+        }
+        drillData += "],";
+        drillData += "\"count_numbers\":[";
+        for (int i = 0; i < countNumbers.size(); i++) {
+            Numerals countNumber = countNumbers.get(i);
+            if (i > 0) {
+                drillData += ",";
+            }
+            drillData += "{\"image\":\"" +  countNumber.getBlackImage() + "\"," +
+                    "\"sound\":\"" +  countNumber.getSound() + "\"," +
+                    "\"value\":" + countNumber.getNumber() +
                     "}";
         }
         drillData += "]}";

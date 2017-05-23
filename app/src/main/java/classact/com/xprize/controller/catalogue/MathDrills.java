@@ -653,38 +653,47 @@ public class MathDrills {
             ArrayList<Integer> mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
 
-            MathImages mathImages = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0));
-            int correctTestNumber = mathImages.getTestNumber();
+            MathImages mathImage = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0));
+            int correctTestNumber = mathImage.getTestNumber();
 
-            ArrayList<DraggableImage<String>> numerals = new ArrayList<>();
+            List<Numerals> numerals = new ArrayList<>();
+            List<Integer> numeralsFromDB_2_Only = NumeralHelper.getNumeralsBelowLimitRandom(dbHelper.getReadableDatabase(), languageId,20, 2, correctTestNumber, boyGirl);
 
-            ArrayList<Integer> numeralsFromDB_2_Only;
-            numeralsFromDB_2_Only = NumeralHelper.getNumeralsBelowLimitRandom(dbHelper.getReadableDatabase(), languageId,20, 2, correctTestNumber, boyGirl);
             for (int i=0; i < numeralsFromDB_2_Only.size(); i++ ) {
                 Numerals numeralFromDB = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB_2_Only.get(i));
-                numerals.add(new DraggableImage<>(0, 0, numeralFromDB.getBlackImage()));
+                numerals.add(numeralFromDB);
             }
             Numerals numeralCorrectAnswer = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, correctTestNumber);
-            numerals.add(new DraggableImage<>(0, 1, numeralCorrectAnswer.getBlackImage()));
+            numerals.add(numeralCorrectAnswer);
+
+            List<Numerals> countNumbers = new ArrayList<>();
+            List<Integer> countNumberIds = NumeralHelper.getNumeralsBelowLimitFromZero(dbHelper.getReadableDatabase(), languageId, 20, boyGirl);
+            for (int i = 0; i < countNumberIds.size(); i++) {
+                Numerals countNumber = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), countNumberIds.get(i));
+                countNumbers.add(countNumber);
+            }
 
             String drillData = MathDrillJsonBuilder.getDrillSixAndThreeJson(context,
                     mathDrillFlowWord.getDrillSound1(),
                     mathDrillFlowWord.getDrillSound2(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getNumberOfImagesSound(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageSound(),
+                    mathImage.getNumberOfImagesSound(), // sound of 'plural' objects to be eaten
+                    mathImage.getImageSound(), // sound of 'singular' object to be eaten
                     mathDrillFlowWord.getDrillSound3(),
                     mathDrillFlowWord.getDrillSound4(),
                     mathDrillFlowWord.getDrillSound5(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(2)).getImageName(),
-                    String.valueOf(MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getNumberOfImages()),
-                    String.valueOf(MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(1)).getNumberOfImages()),
-                    numerals);
+                    mathImage.getImageName(), // image of object (ie. banana / mango)
+                    String.valueOf(mathImage.getNumberOfImages()), // number of objects
+                    String.valueOf(mathImage.getTestNumber()), // number of objects to be eaten
+                    numerals,
+                    countNumbers);
             intent = new Intent(context, MathsDrillSixAndThreeActivity.class);
             intent.putExtra("data", drillData);
 
         } catch (SQLiteException sqlex) {
+            sqlex.printStackTrace();
             throw new SQLiteException("D6D: " + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new Exception("D6D: " + ex.getMessage());
         }
         return intent;
