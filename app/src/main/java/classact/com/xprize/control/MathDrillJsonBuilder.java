@@ -456,7 +456,6 @@ public class MathDrillJsonBuilder {
                     "\"value\":" + number.getNumber() +
                     "}";
         }
-        System.out.println("::!!!!!" + numerals.size());
         drillData += "],";
         drillData += "\"count_numbers\":[";
         for (int i = 0; i < countNumbers.size(); i++) {
@@ -475,27 +474,19 @@ public class MathDrillJsonBuilder {
 
     public static String getDrillSevenJson(Context context,
                                            String patternIntrodution,
+                                           String dragSound,
+                                           String intoTheSpaceSound,
                                            String demoPattern,
                                            String patternSound,
-                                           ArrayList<DraggableImage<String>> completionPieces,
-                                           String dragSound,
                                            String objectToDragSound,
-                                           String intoTheSpaceSound){
-
-        // Debug
-        System.out.println("MathDrillJsonBuilder.getDrillSevenJson > Debug: patternIntrodution = " + patternIntrodution);
-        System.out.println("MathDrillJsonBuilder.getDrillSevenJson > Debug: demoPattern = " + demoPattern);
-        System.out.println("MathDrillJsonBuilder.getDrillSevenJson > Debug: patternSound = " + patternSound);
-        System.out.println("MathDrillJsonBuilder.getDrillSevenJson > Debug: dragSound = " + dragSound);
-        System.out.println("MathDrillJsonBuilder.getDrillSevenJson > Debug: objectToDragSound = " + objectToDragSound);
-        System.out.println("MathDrillJsonBuilder.getDrillSevenJson > Debug: intoTheSpaceSound = " + intoTheSpaceSound);
+                                           ArrayList<DraggableImage<String>> completionPieces) {
 
         String drillData = "{\"pattern_introduction_sound\":\"" + patternIntrodution + "\"," +
                 "\"drag_sound\":\"" + dragSound + "\"," +
-                "\"pattern_sound\":\"" + patternSound + "\"," +
-                "\"object_sound\":\"" + objectToDragSound + "\"," +
                 "\"into_the_space_sound\":\"" + intoTheSpaceSound + "\"," +
-                "\"demo_pattern\":\"" +  demoPattern + "\",";
+                "\"demo_pattern\":\"" +  demoPattern + "\"," +
+                "\"pattern_sound\":\"" + patternSound + "\"," +
+                "\"object_sound\":\"" + objectToDragSound + "\",";
         drillData += "\"completion_pieces\":[";
         for (int i = 0; i < completionPieces.size(); i++) {
             DraggableImage<String> item = completionPieces.get(i);
@@ -503,7 +494,7 @@ public class MathDrillJsonBuilder {
                 drillData += ",";
             }
             drillData += "{\"image\":\"" +  item.getcontent() + "\"," +
-                    "\"isRight\":\"" + item.isRight() + "\"" +
+                    "\"isRight\":" + item.isRight() +
                     "}";
         }
         drillData += "]}";
@@ -514,34 +505,34 @@ public class MathDrillJsonBuilder {
                                                  String monkeyIsMissingSound,
                                                  String canYouHelpMonkey,
                                                  String dragMissingSound,
-                                                 ArrayList<String>patternToComplete,
-                                                 ArrayList<DraggableImage<String>> completionPieces){
+                                                 List<DraggableImage<String>> completionPieces,
+                                                 List<Numerals> countNumbers){
         String drillData = "{\"pattern_introduction_sound\":\"" + monkeyIsMissingSound + "\"," +
                 "\"help_monkey_sound\":\"" + canYouHelpMonkey + "\"," +
                 "\"drag_sound\":\"" + dragMissingSound + "\",";
-        drillData += "\"pattern_to_complete\":[";
-        for (int i = 0; i < patternToComplete.size(); i++) {
-            String item = patternToComplete.get(i);
-            if (i > 0) {
-                drillData += ",";
-            }
-            if (item.equalsIgnoreCase("blank")) {
-                drillData = "\"" + Code.BLANK_IMAGE + "\"";
-            } else {
-                drillData += "\"" + item + "\"";
-            }
-
-        }
-        drillData += "],\"completion_pieces\":[";
-        for (int i = 0; i < patternToComplete.size(); i++) {
+        drillData += "\"completion_pieces\":[";
+        for (int i = 0; i < completionPieces.size(); i++) {
             DraggableImage<String> item = completionPieces.get(i);
             if (i > 0) {
                 drillData += ",";
             }
             drillData += "{\"image\":\"" +  item.getcontent() + "\"," +
-                    "\"isRight\":\"" + item.isRight() + "\"" +
+                    "\"value\":" + Integer.parseInt(item.getExtraData()) + "," +
+                    "\"isRight\":" + item.isRight() +
                     "}";
 
+        }
+        drillData += "],";
+        drillData += "\"count_numbers\":[";
+        for (int i = 0; i < countNumbers.size(); i++) {
+            Numerals countNumber = countNumbers.get(i);
+            if (i > 0) {
+                drillData += ",";
+            }
+            drillData += "{\"image\":\"" +  countNumber.getBlackImage() + "\"," +
+                    "\"sound\":\"" +  countNumber.getSound() + "\"," +
+                    "\"value\":" + countNumber.getNumber() +
+                    "}";
         }
         drillData += "]}";
         return drillData;

@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import classact.com.xprize.activity.drill.math.MathsDrillFiveActivity;
 import classact.com.xprize.activity.drill.math.MathsDrillFiveAndOneActivity;
@@ -772,22 +775,37 @@ public class MathDrills {
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
             ArrayList<Integer> mathImageList;
             mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
-            int patternIndexNumber=0;
+
+            MathImages masterPattern = new MathImages();
+            MathImages targetObject = new MathImages();
+
             ArrayList<DraggableImage<String>> itemsToCompletePattern = new ArrayList<>();
-            for (int i=0; i < mathImageList.size(); i++ ) {
-                MathImages mathImages = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(i));
-                DraggableImage<String> item = new DraggableImage<>(0, mathImages.getTestNumber(), mathImages.getImageName());
-                if (mathImages.getNumberOfImages() == 0)
-                    patternIndexNumber = i;
+            for (int i=0; i < mathImageList.size(); i++) {
+                MathImages mathImage = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(i));
+                DraggableImage<String> item = new DraggableImage<>(0, mathImage.getTestNumber(), mathImage.getImageName());
+
+                // Get master pattern
+                if (mathImage.getNumberOfImages() == 0) {
+                    masterPattern = mathImage;
+                }
+
+                // Get target object
+                if (mathImage.getTestNumber() == 1) {
+                    targetObject = mathImage;
+                }
+
                 itemsToCompletePattern.add(item);
             }
-            String drillData = MathDrillJsonBuilder.getDrillSevenJson(context, mathDrillFlowWord.getDrillSound1(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(patternIndexNumber)).getImageName(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(patternIndexNumber)).getNumberOfImagesSound(),
-                    itemsToCompletePattern,
+
+            String drillData = MathDrillJsonBuilder.getDrillSevenJson(
+                    context,
+                    mathDrillFlowWord.getDrillSound1(),
                     mathDrillFlowWord.getDrillSound2(),
-                    MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getImageSound(),
-                    mathDrillFlowWord.getDrillSound3());
+                    mathDrillFlowWord.getDrillSound3(),
+                    masterPattern.getImageName(),
+                    masterPattern.getNumberOfImagesSound(),
+                    targetObject.getImageSound(),
+                    itemsToCompletePattern);
             intent = new Intent(context, MathsDrillSevenActivity.class);
             intent.putExtra("data", drillData);
 
@@ -807,33 +825,51 @@ public class MathDrills {
             System.out.println("MathDrills.D7B > Debug: PREPARING");
 
             MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
-            ArrayList<String> patternToComplete = new ArrayList<String>();
-            ArrayList<Integer> mathImageList;
-            mathImageList = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
-            int patternIndexNumber=0;
-            ArrayList<DraggableImage<String>> itemsToCompletePattern = new ArrayList<>();
 
-            for (int i=0; i < mathImageList.size(); i++ ) {
-                MathImages mathImages = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(i));
-                DraggableImage<String> item = new DraggableImage<>(0, mathImages.getTestNumber(), mathImages.getImageName());
-                if ((mathImages.getNumberOfImages() == 1) && (mathImages.getTestNumber() == 0)) {
-                    itemsToCompletePattern.add(item);
-                }
-                if (mathImages.getNumberOfImages() == 0) {
-                    patternToComplete.add(mathImages.getImageName());
-                }
-                if ((mathImages.getNumberOfImages() == 1) && (mathImages.getTestNumber() == 1)) {
-                    patternToComplete.add("blank");
-                    itemsToCompletePattern.add(item);
-                }
+            List<Integer> mathImageIds = MathImageHelper.getMathImageList(dbHelper.getReadableDatabase(), unitId, mathDrillId, languageId);
+            List<MathImages> mathImages = new ArrayList<>();
+
+            SortedMap<Integer, MathImages> sortedMathImages = new TreeMap<>();
+
+            for (int i=0; i < mathImageIds.size(); i++ ) {
+                MathImages mathImage = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageIds.get(i));
+                mathImages.add(mathImage);
+
+                int numberValue = Integer.parseInt(mathImage.getImageName().replace("numeral_", ""));
+                sortedMathImages.put(numberValue, mathImage);
             }
-            String drillData = MathDrillJsonBuilder.getDrillSevenAndOneJson(context, mathDrillFlowWord.getDrillSound1(), mathDrillFlowWord.getDrillSound2(), mathDrillFlowWord.getDrillSound3(), patternToComplete, itemsToCompletePattern);
+
+            List<DraggableImage<String>> itemsToCompletePattern = new ArrayList<>();
+
+            for (Map.Entry entry : sortedMathImages.entrySet()) {
+                MathImages mathImage = (MathImages) entry.getValue();
+                DraggableImage<String> item = new DraggableImage<>(0, mathImage.getTestNumber(), mathImage.getImageName());
+                item.setExtraData(mathImage.getImageName().replace("numeral_", ""));
+                itemsToCompletePattern.add(item);
+            }
+
+            List<Numerals> countNumbers = new ArrayList<>();
+            List<Integer> countNumberIds = NumeralHelper.getNumeralsBelowLimitFromZero(dbHelper.getReadableDatabase(), languageId, 20, boyGirl);
+            for (int i = 0; i < countNumberIds.size(); i++) {
+                Numerals countNumber = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), countNumberIds.get(i));
+                countNumbers.add(countNumber);
+            }
+
+            String drillData = MathDrillJsonBuilder.getDrillSevenAndOneJson(
+                    context,
+                    mathDrillFlowWord.getDrillSound1(),
+                    mathDrillFlowWord.getDrillSound2(),
+                    mathDrillFlowWord.getDrillSound3(),
+                    itemsToCompletePattern,
+                    countNumbers);
             intent = new Intent(context, MathsDrillSevenAndOneActivity.class);
             intent.putExtra("data", drillData);
 
         } catch (SQLiteException sqlex) {
+            sqlex.printStackTrace();
             throw new SQLiteException("D7B: " + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new Exception("D7B: " + ex.getMessage());
         }
         return intent;

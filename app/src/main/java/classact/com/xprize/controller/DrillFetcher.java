@@ -508,7 +508,7 @@ public class DrillFetcher {
                     break;
                 }
                 case 7: {
-                    if (unitId < 10) {
+                    if (unitId <= 10) {
                         subId = 0;
                         // Fetch D7A
                         intent = MathDrills.D7A(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);

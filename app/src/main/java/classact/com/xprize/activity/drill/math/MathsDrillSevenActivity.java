@@ -1,6 +1,8 @@
 package classact.com.xprize.activity.drill.math;
 
 import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -12,17 +14,21 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.LinkedHashMap;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
-import classact.com.xprize.utils.ResourceSelector;
+import classact.com.xprize.utils.FisherYates;
 
-public class MathsDrillSevenActivity extends AppCompatActivity {
+public class MathsDrillSevenActivity extends AppCompatActivity implements View.OnTouchListener, View.OnDragListener {
     private LinearLayout itemsContainer;
     private ImageView filler1;
     private ImageView filler2;
@@ -37,97 +43,34 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
     private int currentItem = 0;
     private ImageView pattern;
     private Handler handler;
-    private boolean dragEnabled;
     private boolean endDrill;
+
+    private LinkedHashMap<ImageView, Integer> draggableViewIndexes;
+
+    private boolean dragEnabled;
+
+    private final int DRAG_TAG = 0;
+
+    private RelativeLayout parentView;
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_seven);
+        parentView = (RelativeLayout) findViewById(R.id.activity_maths_drill_seven);
+
         itemsContainer = (LinearLayout)findViewById(R.id.itemsContainer);
-        itemsContainer.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                if (dragEnabled) {
-                    int action = event.getAction();
-                    if (action == DragEvent.ACTION_DRAG_ENTERED)
-                        isInReceptacle = true;
-                    else if (action == DragEvent.ACTION_DRAG_EXITED)
-                        isInReceptacle = false;
-                    else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle) {
-                        try {
-                            if (isCorrectItem()) {
-                                placeItem();
-                            }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                            finish();
-                        }
-                    } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle) {
-                        try {
-                            if (!isCorrectItem()) {
-                                playSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
-                            } else {
-                                ImageView view = (ImageView) event.getLocalState();
-                                view.setVisibility(View.INVISIBLE);
-                                dragEnabled = false;
-                                playSoundAndFinish(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
-                            }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                            if (mp != null) {
-                                mp.release();
-                            }
-                            finish();
-                        }
-                    }
-                    return true;
-                }
-                return false;
-            }
-        });
+        itemsContainer.setOnDragListener(this);
         itemToFill = (ImageView)findViewById(R.id.missing);
         pattern = (ImageView)findViewById(R.id.pattern);
+
         filler1 = (ImageView)findViewById(R.id.filler1);
-        filler1.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                draggedItemIndex = 0;
-                return dragItem(v,event);
-            }
-        });
         filler2 = (ImageView)findViewById(R.id.filler2);
-        filler2.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                draggedItemIndex = 1;
-                return dragItem(v,event);
-            }
-        });
         filler3 = (ImageView)findViewById(R.id.filler3);
-        filler3.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                draggedItemIndex = 2;
-                return dragItem(v,event);
-            }
-        });
         filler4 = (ImageView)findViewById(R.id.filler4);
-        filler4.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                draggedItemIndex = 3;
-                return dragItem(v,event);
-            }
-        });
         filler5 = (ImageView)findViewById(R.id.filler5);
-        filler5.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                draggedItemIndex = 4;
-                return dragItem(v,event);
-            }
-        });
+
         handler = new Handler();
         dragEnabled = false;
         endDrill = false;
@@ -139,30 +82,241 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         try {
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
-            pattern.setImageResource(allData.getInt("demo_pattern"));
-            int sound = allData.getInt("pattern_introduction_sound");
-            mp = MediaPlayer.create(this, sound);
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String patternImage = allData.getString("demo_pattern");
+            int patternImageId = FetchResource.imageId(THIS, patternImage);
+            pattern.setImageResource(patternImageId);
+
+            dragEnabled = false;
+
+            String sound = allData.getString("pattern_introduction_sound");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     sayPattern();
                 }
             });
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mp.start();
-                }
-            }, 500);
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
+    }
+
+    private void sayPattern(){
+        try {
+            String sound = allData.getString("pattern_sound");
+            playSound(sound, new Runnable() {
+                @Override
+                public void run() {
+                    sayDrag();
+                }
+            });
+        }
+        catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
+
+    private void sayDrag(){
+        try{
+            setUpExercise();
+            String sound = allData.getString("drag_sound");
+            playSound(sound, new Runnable() {
+                @Override
+                public void run() {
+                    sayObjectToDrag();
+                }
+            });
+        }
+        catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
+
+    private void sayObjectToDrag(){
+        try{
+            String sound = allData.getString("object_sound");
+            playSound(sound, new Runnable() {
+                @Override
+                public void run() {
+                    sayIntoTheSpace();
+                }
+            });
+        }
+        catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
+
+    private void sayIntoTheSpace(){
+        try{
+            String sound = allData.getString("into_the_space_sound");
+            playSound(sound, new Runnable() {
+                @Override
+                public void run() {
+                    dragEnabled = true;
+                }
+            });
+        }
+        catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
+
+    private void placeItem(){
+        try{
+            JSONObject item = allData.getJSONArray("completion_pieces").getJSONObject(draggedItemIndex);
+            String image = item.getString("image");
+            int imageId = FetchResource.imageId(THIS, image);
+            itemToFill.setImageResource(imageId);
+        }
+        catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
+
+    private boolean isCorrectItem(){
+        boolean isCorrectItem = false;
+        try{
+            JSONObject item = allData.getJSONArray("completion_pieces").getJSONObject(draggedItemIndex);
+            if (item.getInt("isRight") == 1)
+                isCorrectItem = true;
+        }
+        catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+        return isCorrectItem;
+    }
+
+    private void resetFillers(){
+        filler1.setVisibility(View.INVISIBLE);
+        filler2.setVisibility(View.INVISIBLE);
+        filler3.setVisibility(View.INVISIBLE);
+        filler4.setVisibility(View.INVISIBLE);
+        filler5.setVisibility(View.INVISIBLE);
+    }
+
+    private void setUpExercise(){
+        try {
+            itemToFill.setVisibility(View.VISIBLE);
+
+            JSONArray fillers = allData.getJSONArray("completion_pieces");
+
+            ImageView[] fillerViews = {
+                    filler1,
+                    filler2,
+                    filler3,
+                    filler4,
+                    filler5
+            };
+
+            int numberOfItems = fillers.length();
+            int[] s = FisherYates.shuffle(numberOfItems);
+            draggableViewIndexes = new LinkedHashMap<>();
+
+            for (int i = 0; i < numberOfItems; i++) {
+                JSONObject obj = fillers.getJSONObject(i);
+                String objImage = obj.getString("image");
+                int objImageId = FetchResource.imageId(THIS, objImage);
+
+                int si = s[i];
+                ImageView fillerView = fillerViews[si];
+                fillerView.setImageResource(objImageId);
+                draggableViewIndexes.put(fillerView, i);
+                fillerView.setOnTouchListener(this);
+                fillerView.setVisibility(View.VISIBLE);
+            }
+        }
+        catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        final int action = event.getAction();
+        try {
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    draggedItemIndex = draggableViewIndexes.get(v);
+                    String tag = (String) v.getTag();
+                    ClipData.Item item = new ClipData.Item(tag);
+                    ClipData dragData = new ClipData(tag, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
+                    View.DragShadowBuilder dragShadow = new View.DragShadowBuilder(v);
+                    v.startDragAndDrop(dragData, dragShadow, v, 0);
+                    v.setVisibility(View.INVISIBLE);
+                    return true;
+                default:
+                    break;
+            }
+        } catch (Exception ex) {
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onDrag(View v, DragEvent event) {
+        final int action = event.getAction();
+        try {
+            switch (action) {
+                case DragEvent.ACTION_DRAG_STARTED:
+                    if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                        return true;
+                    }
+                    return false;
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    return true;
+                case DragEvent.ACTION_DRAG_LOCATION:
+                    return true;
+                case DragEvent.ACTION_DRAG_EXITED:
+                    return true;
+                case DragEvent.ACTION_DROP:
+                    if (dragEnabled) {
+                        if (!isCorrectItem()) {
+                            playSound(FetchResource.negativeAffirmation(THIS), null);
+                            return false;
+                        }
+                        return true;
+                    } else {
+                        return false;
+                    }
+                case DragEvent.ACTION_DRAG_ENDED:
+                    if (event.getResult()) {
+                        placeItem();
+                        ImageView view = (ImageView) event.getLocalState();
+                        view.setVisibility(View.INVISIBLE);
+                        dragEnabled = false;
+                        playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                            @Override
+                            public void run() {
+                                if (mp != null) {
+                                    mp.release();
+                                }
+                                finish();
+                            }
+                        });
+                    } else {
+                        ImageView view = (ImageView) event.getLocalState();
+                        view.setVisibility(View.VISIBLE);
+                    }
+                    return true;
+                default:
+                    break;
+            }
+        } catch (Exception ex) {
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+        return false;
     }
 
     private void playSound(String sound, final Runnable action) {
@@ -199,288 +353,6 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
         }
     }
 
-    private void sayPattern(){
-        try {
-            int soundId = allData.getInt("pattern_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    sayDrag();
-                }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    private void sayDrag(){
-        try{
-            setUpExercise();
-            int sound = allData.getInt("drag_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    sayObjectToDrag();
-                }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    private void sayObjectToDrag(){
-        try{
-            int sound = allData.getInt("object_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    sayIntoTheSpace();
-                }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    private void sayIntoTheSpace(){
-        try{
-            int sound = allData.getInt("into_the_space_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            dragEnabled = true;
-                        }
-                    }, 500);
-                }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-
-
-    private void placeItem(){
-        try{
-            JSONObject item = allData.getJSONArray("completion_pieces").getJSONObject(draggedItemIndex);
-            itemToFill.setImageResource(item.getInt("image"));
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    private boolean isCorrectItem(){
-        boolean isCorrectItem = false;
-        try{
-            JSONObject item = allData.getJSONArray("completion_pieces").getJSONObject(draggedItemIndex);
-            if (item.getInt("isRight") == 1)
-                isCorrectItem = true;
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
-        return isCorrectItem;
-    }
-
-    private void playSound(int soundId){
-        try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
-            mp.reset();
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                }
-            });
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    private void playSoundAndFinish(int soundId){
-        try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
-            mp.reset();
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.release();
-                    finish();
-                }
-            });
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    public boolean dragItem(View view, MotionEvent motionEvent){
-        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-            ClipData data = ClipData.newPlainText("", "");
-            View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
-                    view);
-            view.startDragAndDrop(data, shadowBuilder, view, 0);
-            if (dragEnabled) {
-                isInReceptacle = false;
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
-    private void resetFillers(){
-        filler1.setVisibility(View.INVISIBLE);
-        filler2.setVisibility(View.INVISIBLE);
-        filler3.setVisibility(View.INVISIBLE);
-        filler4.setVisibility(View.INVISIBLE);
-        filler5.setVisibility(View.INVISIBLE);
-    }
-
-
-    private void setUpExercise(){
-        try {
-            itemToFill.setVisibility(View.VISIBLE);
-            JSONArray fillers = allData.getJSONArray("completion_pieces");
-            for (int j = 0; j < fillers.length();j++){
-                JSONObject obj = fillers.getJSONObject(j);
-                switch (j){
-                    case 0:
-                        filler1.setVisibility(View.VISIBLE);
-                        filler1.setImageResource(obj.getInt("image"));
-                        break;
-                    case 1:
-                        filler2.setVisibility(View.VISIBLE);
-                        filler2.setImageResource(obj.getInt("image"));
-                        break;
-                    case 2:
-                        filler3.setVisibility(View.VISIBLE);
-                        filler3.setImageResource(obj.getInt("image"));
-                        break;
-                    case 3:
-                        filler4.setVisibility(View.VISIBLE);
-                        filler4.setImageResource(obj.getInt("image"));
-                        break;
-                    case 4:
-                        filler5.setVisibility(View.VISIBLE);
-                        filler5.setImageResource(obj.getInt("image"));
-                        break;
-                }
-            }
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
-    }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)  {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -494,7 +366,6 @@ public class MathsDrillSevenActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (mp != null) {
-            mp.stop();
             mp.release();
         }
         setResult(Code.NAV_MENU);
