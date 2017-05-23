@@ -715,16 +715,23 @@ public class MathDrills {
             MathImages mathImages = MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0));
             int correctTestNumber = mathImages.getTestNumber();
 
-            ArrayList<DraggableImage<String>> numerals = new ArrayList<>();
+            ArrayList<Numerals> numerals = new ArrayList<>();
 
             ArrayList<Integer> numeralsFromDB_2_Only;
             numeralsFromDB_2_Only = NumeralHelper.getNumeralsBelowLimitRandom(dbHelper.getReadableDatabase(), languageId, 20, 2, correctTestNumber, boyGirl);
             for (int i=0; i < numeralsFromDB_2_Only.size(); i++ ) {
-                Numerals numeralFromDB = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB_2_Only.get(i));
-                numerals.add(new DraggableImage<>(0, 0, numeralFromDB.getBlackImage()));
+                Numerals number = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB_2_Only.get(i));
+                numerals.add(number);
             }
             Numerals numeralCorrectAnswer = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, correctTestNumber);
-            numerals.add(new DraggableImage<>(0, 1, numeralCorrectAnswer.getBlackImage()));
+            numerals.add(numeralCorrectAnswer);
+
+            List<Numerals> countNumbers = new ArrayList<>();
+            List<Integer> countNumberIds = NumeralHelper.getNumeralsBelowLimitFromZero(dbHelper.getReadableDatabase(), languageId, 20, boyGirl);
+            for (int i = 0; i < countNumberIds.size(); i++) {
+                Numerals countNumber = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), countNumberIds.get(i));
+                countNumbers.add(countNumber);
+            }
 
             String drillData = MathDrillJsonBuilder.getDrillSixAndFourJson(context,
                     mathDrillFlowWord.getDrillSound1(),
@@ -741,8 +748,9 @@ public class MathDrills {
                     NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(0)).getNumberOfImages()).getBlackImage(),
                     String.valueOf(MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(1)).getNumberOfImages()),
                     NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(1)).getNumberOfImages()).getBlackImage(),
-                    NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, MathImageHelper.getMathImage(dbHelper.getReadableDatabase(), mathImageList.get(2)).getNumberOfImages()).getBlackImage(),
-                    numerals);
+                    numeralCorrectAnswer.getBlackImage(),
+                    numerals,
+                    countNumbers);
             intent = new Intent(context, MathsDrillSixAndFourActivity.class);
             intent.putExtra("data", drillData);
 

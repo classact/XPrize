@@ -3,6 +3,7 @@ package classact.com.xprize.activity.drill.math;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
     private int draggedItems = 0;
     private RelativeLayout monkeyMouth;
     private int targetItems = 0;
+
     private SparseArray<NumberObject> numberObjects;
 
     private boolean dragEnabled;
@@ -91,6 +93,10 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
             setupNumbers();
             setupNumberObjects();
             targetItems = allData.getInt("number_of_eaten_objects");
+
+            touchEnabled = false;
+            dragEnabled = false;
+
             String sound = allData.getString("monkey_is_hungry");
             playSound(sound, new Runnable() {
                 @Override
@@ -126,10 +132,6 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
     }
 
     private void setupNumbers(){
-
-        // Disable touch
-        touchEnabled = false;
-
         try {
             positions = new int[3];
             Arrays.fill(positions, -1);
@@ -363,18 +365,22 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         final int action = event.getAction();
-
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                String tag = (String) v.getTag();
-                ClipData.Item item = new ClipData.Item(tag);
-                ClipData dragData = new ClipData(tag, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
-                View.DragShadowBuilder dragShadow = new View.DragShadowBuilder(v);
-                v.startDragAndDrop(dragData, dragShadow, v, 0);
-                v.setVisibility(View.INVISIBLE);
-                return true;
-            default:
-                break;
+        try {
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    String tag = (String) v.getTag();
+                    ClipData.Item item = new ClipData.Item(tag);
+                    ClipData dragData = new ClipData(tag, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
+                    View.DragShadowBuilder dragShadow = new View.DragShadowBuilder(v);
+                    v.startDragAndDrop(dragData, dragShadow, v, 0);
+                    v.setVisibility(View.INVISIBLE);
+                    return true;
+                default:
+                    break;
+            }
+        } catch (Exception ex) {
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
         }
         return false;
     }
