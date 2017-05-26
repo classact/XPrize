@@ -311,6 +311,9 @@ public class SoundDrillJsonBuilder {
                                                  String letterSound,
                                                  String bigLetterPath,
                                                  String bigLetterDotsImage){
+        System.out.println("small letter path: " + smallLetterPath);
+        System.out.println("big letter path: " + bigLetterPath);
+        System.out.println();
         String drillData = "{\"small_letter_path\":" + ResourceDecoder.getIdentifier(context,smallLetterPath,"raw") + "," +
                 "\"lets_learn_how_to_write_upper\":\"" + letsLearnToWriteUpperSound + "\"," +
                 "\"lets_learn_how_to_write_lower\":\"" + letsLearnToWriteLowerSound + "\"," +

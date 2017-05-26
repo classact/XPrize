@@ -1,6 +1,7 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.control.SimpleStorySentence;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
@@ -114,6 +117,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
     private final int STATE_2 = 2;
     private final int STATE_3 = 3;
     private int currentState;
+
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -297,16 +302,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             // Play da beatz ♫♪
             mp.start();
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.PromptListener(class).onPrepared()." + mPrompt +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
 
@@ -460,16 +457,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     }
                 }
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.PromptListener(class).onCompletion()." + mPrompt +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
     }
@@ -492,15 +481,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
-            System.err.println("============================================================");
-            System.out.println(":: SimpleStoryActivity.playPrompt(\"" + prompt + "\") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -582,15 +564,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 }
 
             } catch (Exception ex){
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.onCompletion() > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
 
@@ -716,15 +691,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     playActiveWord(mMute, mSetIndex, mRowIndex, mWordIndex + 1);
                 }
             } catch (Exception ex){
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.handleOnCompletion() > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
     }
@@ -768,17 +736,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             }
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.playActiveWord(" + setIndex + ", " + rowIndex + ", " +
-                    wordIndex + ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            (new ActiveWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex)).onCompletion(null);
         }
     }
 
@@ -809,16 +768,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             imageViewGridSets.get(setIndex).get(rowIndex).get(wordIndex).setImageResource(image);
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.flipActiveWord(" + side + ", " + setIndex + ", " +
-                    rowIndex + ", " + wordIndex + ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -909,17 +860,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 }
 
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.err.println("SimpleStoryActivity.playSelectedWord(" + setIndex + ", " + rowIndex + ", " +
-                        wordIndex + ") > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                mp = null;
-                (new SelectedWordListener(thisActivity, setIndex, rowIndex, wordIndex)).onCompletion(null);
             }
 
         } else {
@@ -957,16 +899,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             imageViewGridSets.get(setIndex).get(rowIndex).get(wordIndex).setImageResource(image);
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.flipSelectedWord(" + side + ", " + setIndex + ", " +
-                    rowIndex + ", " + wordIndex + ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -1159,16 +1093,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 mp.start();
 
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.ComprehensionQuestionListener(class).onPrepared()." + mQuestionIndex +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
 
@@ -1219,16 +1145,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 }
 
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.ComprehensionQuestionListener(class).onCompletion()." + mQuestionIndex +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
     }
@@ -1251,16 +1169,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.playComprehensionQuestion(" + questionIndex +
-                    ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -1287,16 +1197,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 // Play da beatz ♫♪
                 mp.start();
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.ComprehensionAnswerListener(class).onPrepared()." + mAnswerIndex +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
 
@@ -1377,16 +1279,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 }
 
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.ComprehensionAnswerListener(class).onCompletion()." + mAnswerIndex +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
     }
@@ -1409,16 +1303,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.playComprehensionAnswer(" + answerIndex +
-                    ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -1449,16 +1335,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 }
 
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onClick." + mQuestionIndex +
-                        ") > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
 
@@ -1468,16 +1346,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 mp.start();
 
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onPrepared." + mQuestionIndex +
-                        ") > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
 
@@ -1502,16 +1372,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 }
 
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onCompletion." + mQuestionIndex +
-                        ") > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
 
         }
@@ -1555,16 +1417,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.playComprehensionTouchResult(" + questionIndex +
-                    ", " + optionIndex + ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -1604,15 +1458,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.playEndDrillAffirmation > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -1659,16 +1506,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             col.addView(row);
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.addSentenceToStorySet(" + setIndex +
-                    ", " + rowIndex + ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -1715,16 +1554,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         "Ensure that all views have been cleared first");
             }
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.showFullStorySet(" + setIndex +
-                    ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -1815,16 +1646,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             col.addView(row);
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.showViewsForComprehension(" + questionIndex +
-                    ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2000,11 +1823,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             currentSentence = 0;
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2305,16 +2125,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 throw new Exception("Sentences are null");
             }
         } catch (Exception ex) {
-            // Finish the activity - it's bugged
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.initStory > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2465,16 +2277,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 throw new Exception("Comprehension questions are null");
             }
         } catch (Exception ex) {
-            // Finish the activity - it's bugged
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.initComprehension > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2486,33 +2290,16 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         try{
             String sound = allData.getString("read_each_sentence_after_mother_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            playSound(sound, new Runnable() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     saySentenceWord();
                 }
             });
-            mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2528,11 +2315,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             sayListenFirst();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2553,11 +2337,11 @@ public class SimpleStoryActivity extends AppCompatActivity {
             for (int i = 0; i < sentence.length();i++) {
                 JSONObject word = sentence.getJSONObject(i);
                 item = new ImageView(this);
-                item.setTag(word.getString("sound"));
+                final String sound = word.getString("sound");
                 item.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        playSound(view);
+                        playSound(sound, null);
                     }
                 });
                 if (i > 0)
@@ -2572,17 +2356,14 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 }
                 line.addView(item);
                 sentenceViews.add(item);
-                sounds.add(new String(word.getString("sound")));
+                sounds.add(word.getString("sound"));
             }
             container.addView(line);
             currentSound = 0;
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2593,33 +2374,16 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         try{
             String sound = allData.getString("listen_first_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            playSound(sound, new Runnable() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     saySentenceWord();
                 }
             });
-            mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2632,39 +2396,22 @@ public class SimpleStoryActivity extends AppCompatActivity {
             if (currentSound < sounds.size()) {
                 turnWord("red_word");
                 String sound = sounds.get(currentSound);
-                String soundPath = FetchResource.sound(getApplicationContext(), sound);
-                if (mp == null) {
-                    mp = new MediaPlayer();
-                }
-                mp.reset();
-                mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                playSound(sound, new Runnable() {
                     @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        mp.start();
-                    }
-                });
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp.reset();
+                    public void run() {
                         turnWord("black_word");
                         currentSound++;
                         saySentenceWord();
                     }
                 });
-                mp.prepare();
             }
             else{
                 sayItsYourTurn();
             }
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2675,35 +2422,18 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         try{
             String sound = allData.getString("now_read_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            playSound(sound, new Runnable() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     currentSound = -1;
                     //currentSentence = 1;
                     handler.postDelayed(showSentenceWithoutSound,100);
                 }
             });
-            mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2724,11 +2454,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             }
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2747,10 +2474,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             }
             catch(Exception ex){
                 ex.printStackTrace();
-                if (mp != null){
-                    mp.release();
-                }
-                finish();
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                ex.printStackTrace();
             }
         }
     };
@@ -2802,11 +2527,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2842,11 +2564,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2881,11 +2600,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2920,11 +2636,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2984,11 +2697,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2999,33 +2709,16 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         try {
             String sound = allData.getString("now_answer_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            playSound(sound, new Runnable() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     doComprehension();
                 }
             });
-            mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -3041,11 +2734,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             nextQuestion();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -3060,51 +2750,47 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 JSONObject question = questions.getJSONObject(currentQuestion);
                 if (question.getInt("is_touch") == 1){ //Three objects
                     singleImage.setVisibility(View.INVISIBLE);
-                    tripleImageThree.setVisibility(View.VISIBLE);
                     trippleImageOne.setVisibility(View.VISIBLE);
                     trippleImageTwo.setVisibility(View.VISIBLE);
-                    trippleImageOne.setImageResource(question.getJSONArray("images").getJSONObject(0).getInt("image"));
-                    trippleImageOne.setImageResource(question.getJSONArray("images").getJSONObject(1).getInt("image"));
-                    trippleImageOne.setImageResource(question.getJSONArray("images").getJSONObject(2).getInt("image"));
+                    tripleImageThree.setVisibility(View.VISIBLE);
+
+                    String imageOne = question.getJSONArray("images").getJSONObject(0).getString("image");
+                    String imageTwo = question.getJSONArray("images").getJSONObject(1).getString("image");
+                    String imageThree = question.getJSONArray("images").getJSONObject(2).getString("image");
+
+                    int imageOneId = FetchResource.imageId(THIS, imageOne);
+                    int imageTwoId = FetchResource.imageId(THIS, imageTwo);
+                    int imageThreeId = FetchResource.imageId(THIS, imageThree);
+
+                    trippleImageOne.setImageResource(imageOneId);
+                    trippleImageTwo.setImageResource(imageTwoId);
+                    tripleImageThree.setImageResource(imageThreeId);
                 }
                 else{
                     singleImage.setVisibility(View.VISIBLE);
-                    tripleImageThree.setVisibility(View.INVISIBLE);
                     trippleImageOne.setVisibility(View.INVISIBLE);
                     trippleImageTwo.setVisibility(View.INVISIBLE);
-                    singleImage.setImageResource(question.getJSONArray("images").getJSONObject(0).getInt("image"));
+                    tripleImageThree.setVisibility(View.INVISIBLE);
+                    String image = question.getJSONArray("images").getJSONObject(0).getString("image");
+                    int imageId = FetchResource.imageId(THIS, image);
+                    singleImage.setImageResource(imageId);
 
                 }
                 String sound = question.getString("question_sound");
-                String soundPath = FetchResource.sound(getApplicationContext(), sound);
-                if (mp == null) {
-                    mp = new MediaPlayer();
-                }
-                mp.reset();
-                mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                playSound(sound, new Runnable() {
                     @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        mp.start();
-                    }
-                });
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
+                    public void run() {
                         try {
-                            mp.reset();
                             JSONObject question = questions.getJSONObject(currentQuestion);
                             if (question.getInt("is_touch") == 0) { //Three objects
                                 handler.postDelayed(plaSingleImageAnswerRunnable, 3000);
                             }
-                        }
-                        catch (Exception ex){
+                        } catch (Exception ex) {
+                            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                             ex.printStackTrace();
-                            finish();
                         }
                     }
                 });
-                mp.prepare();
             }
             else{
                 if (mp != null){
@@ -3114,11 +2800,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             }
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -3139,36 +2822,21 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         try{
             JSONObject question = questions.getJSONObject(currentQuestion);
-            singleImage.setImageResource(question.getJSONArray("images").getJSONObject(0).getInt("image"));
+            String image = question.getJSONArray("images").getJSONObject(0).getString("image");
+            int imageId = FetchResource.imageId(THIS, image);
+            singleImage.setImageResource(imageId);
             String sound = question.getString("answer_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            playSound(sound, new Runnable() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     currentQuestion++;
                     nextQuestion();
                 }
             });
-            mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -3181,42 +2849,6 @@ public class SimpleStoryActivity extends AppCompatActivity {
         line.setOrientation(LinearLayout.HORIZONTAL);
         line.setLayoutParams(new LinearLayout.LayoutParams(-1,-2));
         return line;
-    }
-
-    public void playSound(View v){
-
-        // Debug
-        System.out.println(":: SimpleStoryActivity.playSound > Debug: METHOD CALLED");
-
-        try{
-            String sound = (String) v.getTag();
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
     }
 
     private void turnWord(String turnString){
@@ -3233,66 +2865,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 image.setImageResource(picture);
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    //
-    public void populateFullStory(){
-
-        // Debug
-        System.out.println(":: SimpleStoryActivity.populateFullStory > Debug: METHOD CALLED");
-
-        try {
-            int lines = 0;
-            boolean done = false;
-            container.removeAllViews();
-            container.setVisibility(View.VISIBLE);
-            while (!done) {
-                JSONArray sentence = sentences.getJSONArray(currentSentence);
-                LinearLayout line = getLine();
-                ImageView item;
-                int width = 0;
-                for (int i = 0; i < sentence.length(); i++) {
-                    JSONObject word = sentence.getJSONObject(i);
-                    item = new ImageView(this);
-                    item.setTag(word.getString("sound"));
-                    item.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            playSound(view);
-                        }
-                    });
-                    if (i > 0)
-                        item.setPadding(50, 10, 0, 0);
-                    item.setMaxHeight(143);
-                    item.setImageResource(word.getInt("black_word"));
-                    width += ImageHelper.getLength(word.getInt("black_word"), this);
-                    if (width > 1150) {
-                        lines ++;
-                        container.addView(line);
-                        line = getLine();
-                        width = 0;
-                    }
-                    line.addView(item);
-                }
-                lines++;
-                currentSentence++;
-                if ((lines > 5) || (currentSentence > sentences.length()))
-                    done = true;
-                container.addView(line);
-            }
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -3304,35 +2878,28 @@ public class SimpleStoryActivity extends AppCompatActivity {
         try {
             JSONObject question = questions.getJSONObject(currentQuestion);
             if (question.getJSONArray("images").getJSONObject(image).getInt("is_right") == 1){
-                playSound(ResourceSelector.getPositiveAffirmationSound(this));
+                playSound(FetchResource.positiveAffirmation(THIS), null);
                 currentQuestion++;
                 nextQuestion();
             }
-            else{
-                playSound(ResourceSelector.getNegativeAffirmationSound(this));
+            else{;
+                playSound(FetchResource.negativeAffirmation(THIS), null);
             }
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
-    public void playSound(int sound){
-
-        // Debug
-        System.out.println(":: SimpleStoryActivity.playSound > Debug: METHOD CALLED");
-
-        try{
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+    private void playSound(String sound, final Runnable action) {
+        try {
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
             }
             mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -3343,29 +2910,28 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
+                    if (action != null) {
+                        action.run();
+                    }
                 }
             });
             mp.prepare();
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            if (action != null) {
+                action.run();
             }
-            finish();
         }
     }
 
     @Override
     public void onPause(){
         super.onPause();
-
-        // Debug
-        System.out.println(":: SimpleStoryActivity.onPause > Debug: METHOD CALLED");
-
-        /*if (mp != null){
+        if (mp != null){
             mp.release();
-        }*/
+        }
     }
 
     @Override
@@ -3381,7 +2947,6 @@ public class SimpleStoryActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (mp != null) {
-            mp.stop();
             mp.release();
         }
         setResult(Code.NAV_MENU);
