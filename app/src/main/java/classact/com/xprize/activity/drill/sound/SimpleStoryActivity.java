@@ -464,12 +464,13 @@ public class SimpleStoryActivity extends AppCompatActivity {
     }
 
     private void playPrompt(String prompt) {
-
         // Debug
         System.out.println(":: SimpleStoryActivity.playPrompt(\"" + prompt + "\") > Debug: METHOD CALLED");
 
+        String sound = "";
+
         try{
-            String sound = allData.getString(prompt);
+            sound = allData.getString(prompt);
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -481,8 +482,9 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
         }
     }
 
@@ -736,6 +738,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             }
 
         } catch (Exception ex) {
+            mp = null;
+            new ActiveWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex).handleOnCompletion();
             Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
@@ -1941,20 +1945,22 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         }
 
                         // Get the black word (resource id) of the sentence word
-                        int blackWord = sentenceWord.getInt("black_word");
+                        String blackWord = sentenceWord.getString("black_word");
+                        int blackWordImageId = FetchResource.imageId(THIS, blackWord);
 
                         // Get the red word (resource id) of the sentence word
-                        int redWord = sentenceWord.getInt("red_word");
+                        String redWord = sentenceWord.getString("red_word");
+                        int redWordImageId = FetchResource.imageId(THIS, redWord);
 
                         // Add black word to black words list
-                        blackWords.add(blackWord);
+                        blackWords.add(blackWordImageId);
 
                         // Add red word to red words list
-                        redWords.add(redWord);
+                        redWords.add(redWordImageId);
 
                         // Get the image resource id of the sentence word
                         // This is coincidentally the 'black word'
-                        int imageResourceId = blackWord;
+                        int imageResourceId = blackWordImageId;
 
                         // Create Image View to hold the sentence word
                         ImageView imageView = new ImageView(getApplicationContext());
@@ -2186,7 +2192,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                          * * * * * * * * * * * */
 
                         // Get the image (resource id) of the comprehension question image
-                        int imageResourceId = questionImage.getInt("image");
+                        String image = questionImage.getString("image");
+                        int imageResourceId = FetchResource.imageId(THIS, image);
 
                         if (!imageResourceIds.contains(imageResourceId)) {
 
@@ -2347,8 +2354,10 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 if (i > 0)
                     item.setPadding(50,10,0,0);
                 item.setMaxHeight(143);
-                item.setImageResource(word.getInt("black_word"));
-                width += ImageHelper.getLength(word.getInt("black_word"),this);
+                String blackWordImage = word.getString("black_word");
+                int blackWordImageId = FetchResource.imageId(THIS, blackWordImage);
+                item.setImageResource(blackWordImageId);
+                width += ImageHelper.getLength(blackWordImageId,this);
                 if (width > 1150){
                     container.addView(line);
                     line = getLine();
@@ -2860,9 +2869,10 @@ public class SimpleStoryActivity extends AppCompatActivity {
             JSONArray sentence = sentences.getJSONArray(currentSentence);
             JSONObject word = sentence.getJSONObject(currentSound);
             ImageView image = sentenceViews.get(currentSound);
-            int picture = word.getInt(turnString);
-            if (picture > 0)
-                image.setImageResource(picture);
+            String picture = word.getString(turnString);
+            int pictureImageId = FetchResource.imageId(THIS, picture);
+            if (pictureImageId > 0)
+                image.setImageResource(pictureImageId);
         }
         catch (Exception ex){
             Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
@@ -2948,6 +2958,9 @@ public class SimpleStoryActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (mp != null) {
             mp.release();
+        }
+        if (handler != null) {
+            handler = null;
         }
         setResult(Code.NAV_MENU);
         finish();
