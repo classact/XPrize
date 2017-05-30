@@ -60,6 +60,7 @@ public class MathsDrillSevenAndOneActivity extends AppCompatActivity implements 
     private SparseArray<NumberObject> numberObjects;
 
     private boolean dragEnabled;
+    private boolean isDragging;
 
     private RelativeLayout parentView;
     private final Context THIS = this;
@@ -83,6 +84,7 @@ public class MathsDrillSevenAndOneActivity extends AppCompatActivity implements 
             initialiseObjects();
 
             dragEnabled = false;
+            isDragging = false;
 
             String sound = allData.getString("pattern_introduction_sound");
             playSound(sound, new Runnable() {
@@ -349,9 +351,16 @@ public class MathsDrillSevenAndOneActivity extends AppCompatActivity implements 
                     View.DragShadowBuilder dragShadow = new View.DragShadowBuilder(v);
                     v.startDragAndDrop(dragData, dragShadow, v, 0);
                     v.setVisibility(View.INVISIBLE);
+                    System.out.println("Turn invisible");
                     if (dragEnabled) {
                         String numberSound = numberObjects.get(currentValue).getSound();
                         playSound(numberSound, null);
+                    }
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    if (!isDragging) {
+                        v.setVisibility(View.VISIBLE);
+                        System.out.println("Turning back visible (Touch-based)");
                     }
                     return true;
                 default:
@@ -371,6 +380,7 @@ public class MathsDrillSevenAndOneActivity extends AppCompatActivity implements 
             switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                        isDragging = true;
                         return true;
                     }
                     return false;
@@ -403,6 +413,7 @@ public class MathsDrillSevenAndOneActivity extends AppCompatActivity implements 
                         return false;
                     }
                 case DragEvent.ACTION_DRAG_ENDED:
+                    isDragging = false;
                     if (event.getResult()) {
                         dragEnabled = false;
                         placeItem();
@@ -424,6 +435,7 @@ public class MathsDrillSevenAndOneActivity extends AppCompatActivity implements 
                     } else {
                         ImageView view = (ImageView) event.getLocalState();
                         view.setVisibility(View.VISIBLE);
+                        System.out.println("Turning back visible");
                         return false;
                     }
                     return true;
