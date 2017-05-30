@@ -68,21 +68,21 @@ public class WordRect {
                     wordCursorY += multipliedHeight;
                 }
 
+                // Add a space after if not last word
+                if (wordCursorX > 0) {
+                    String wordRectName = wordRect.getName();
+                    if (!(wordRectName == null || (
+                            wordRectName.matches("^question.*")))) {
+                        wordCursorX += multipliedSpace;
+                        // System.out.println(nextWordRectName.matches("^question.*") + " " + nextWordRectName);
+                    } /* else {
+                        // System.out.println("Don't add space!!!!!! (" + nextWordRectName + ")");
+                    } */
+                }
+
                 wordRect.x = wordCursorX;
                 wordRect.y = wordCursorY;
 
-                // Add a space after if not last word
-                if (j < numOfWords - 1) {
-                    WordRect nextWordRect = phraseRects.get(j+1);
-                    String nextWordRectName = nextWordRect.getName();
-                    if (!(nextWordRectName == null || (
-                            nextWordRectName.matches("^question.*")))) {
-                        wordWidth += multipliedSpace;
-                        System.out.println(nextWordRectName.matches("^question.*") + " " + nextWordRectName);
-                    } else {
-                        System.out.println("Don't add space!!!!!! (" + nextWordRectName + ")");
-                    }
-                }
                 wordCursorX += wordWidth;
                 if (j == numOfWords - 1) {
                     phraseWidths.put(wordCursorY, wordCursorX);
@@ -107,9 +107,10 @@ public class WordRect {
 
         int resizeCount = 0;
         while(phraseCursorY > h && resizeCount < 5) {
-            double diffRatio = (double) h / (double) phraseCursorY;
-            diffRatio /= phraseWidths.size();
-            int newWordHeight = (int) Math.floor((double) wordHeight * diffRatio);
+            int diff = phraseCursorY - h;
+            double dividedDiff = (double) diff / (double) phraseWidths.size();
+            System.out.println("divided diff is: " + dividedDiff);
+            int newWordHeight = (int) Math.floor((double) wordHeight - dividedDiff);
             System.out.println("!!!! New height: " + newWordHeight);
             pageWordRects = pack(pageWordRects, density, w, h, newWordHeight, wordSpaceToHeightRatio);
             resizeCount++;
@@ -130,6 +131,7 @@ public class WordRect {
                         int currY = wordRect.y;
                         int phraseWidth = phraseWidths.get(currY);
                         int offsetX = (w-phraseWidth)/2;
+                        System.out.println("y: " + currY + ", w: " + phraseWidth + ", o: " + offsetX);
                         wordRect.x += offsetX;
                     }
                     if (centerY) {

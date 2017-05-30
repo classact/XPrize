@@ -201,9 +201,24 @@ public class SimpleStoryActivity extends AppCompatActivity {
         initComprehension();
         initComprehensionViews();
 
+
+        /*
+        float densithy = getResources().getDisplayMetrics().density;
+        ImageView iv = new ImageView(THIS);
+        iv.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        clStory.addView(iv);
+        iv.setX(0.0f);
+        iv.setY(870.0f);
+        ConstraintLayout.LayoutParams ivLP = (ConstraintLayout.LayoutParams) iv.getLayoutParams();
+        ivLP.width = (int) (densithy * 300);
+        ivLP.height = 290;
+        iv.setLayoutParams(ivLP);
+        */
+
         currentState = STATE_0;
 
         playPrompt("read_each_sentence_after_mother_sound");
+        // playPrompt("now_read_whole_story_sound");
         // playPrompt("now_answer_sound");
     }
 
@@ -2041,14 +2056,15 @@ public class SimpleStoryActivity extends AppCompatActivity {
         clStory.setLayoutParams(clLP);
         rootView.addView(clStory);
 
-        int w = 1075;
-        int h = 600;
         int offsetH = 75;
+        int w = 1075;
+        int h = 560-(offsetH/2);
 
-        size(clStory, dens, w, h-(offsetH/2));
+
+        size(clStory, dens, w, h);
         position(clStory, dens, 100, 50+(offsetH/2));
 
-        clStory.setBackgroundColor(Color.argb(100, 0, 0, 255));
+        // clStory.setBackgroundColor(Color.argb(100, 0, 0, 255));
 
         List<List<List<ImageView>>> a = imageViewGridSets;
         List<List<List<WordRect>>> aRects = new ArrayList<>();
@@ -2090,6 +2106,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     addIV(clStory, iv);
                     resize(iv, dens, wordRect.w, wordRect.h);
                     reposition(iv, dens, wordRect.x, wordRect.y);
+                    // iv.setBackgroundColor(Color.argb(100, 0, 255, 0));
                 }
             }
         }
@@ -2122,8 +2139,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
         int h = 0;
         String name = null;
         if (d != null) {
-            w = (int) (d.getIntrinsicWidth() / density);
-            h = (int) (d.getIntrinsicHeight() / density);
+            w = (int) ((float) d.getIntrinsicWidth() / density);
+            h = (int) ((float) d.getIntrinsicHeight() / density);
             name = getResources().getResourceName(ivc.getResourceId()).replace("classact.com.xprize:drawable/", "");
         }
         return new WordRect(w, h, name);
@@ -2134,29 +2151,45 @@ public class SimpleStoryActivity extends AppCompatActivity {
         int w = 0;
         int h = 0;
         if (d != null) {
-            w = (int) (d.getIntrinsicWidth() / density);
-            h = (int) (d.getIntrinsicHeight() / density);
+            w = (int) ((float) d.getIntrinsicWidth() / density);
+            h = (int) ((float) d.getIntrinsicHeight() / density);
         }
         return new WordRect(w, h, null);
     }
 
     private void resize(ImageView iv, float density, int width, int height) {
+        /* System.out.println("Resizing to " + width + ", " + height); */
         ConstraintLayout.LayoutParams ivLP = (ConstraintLayout.LayoutParams) iv.getLayoutParams();
-        ivLP.width = (int) (density * width);
-        ivLP.height = (int) (density * height);
+        ivLP.width = (int) (density * (float) width);
+        ivLP.height = (int) (density * (float) height);
+        /* System.out.println("ImageView size: w: " + ivLP.width +
+                ", h: " + ivLP.height); */
         iv.setLayoutParams(ivLP);
     }
 
     private void size(ConstraintLayout cl, float density, int width, int height) {
         RelativeLayout.LayoutParams clLP = (RelativeLayout.LayoutParams) cl.getLayoutParams();
-        clLP.width = (int) (density * width);
-        clLP.height = (int) (density * height);
+        clLP.width = (int) (density * (float) width);
+        clLP.height = (int) (density * (float) height);
+        /* System.out.println("Layout padding: t: " + cl.getPaddingTop() +
+                ", b: " + cl.getPaddingBottom() +
+                ", l: " + cl.getPaddingLeft() +
+                ", r: " + cl.getPaddingRight());
+        System.out.println("Layout margins: t: " + clLP.topMargin +
+                ", b: " + clLP.bottomMargin +
+                ", l: " + clLP.leftMargin +
+                ", r: " + clLP.rightMargin);
+        System.out.println("Layout size: w: " + clLP.width +
+                ", h: " + clLP.height); */
         cl.setLayoutParams(clLP);
     }
 
     private void reposition(ImageView iv, float density, int x, int y) {
-        iv.setX(density * x);
-        iv.setY(density * y);
+        float newX = density * x;
+        float newY = density * y;
+        /* System.out.println("x: " + newX + ", y: " + newY); */
+        iv.setX(newX);
+        iv.setY(newY);
     }
 
     private void position(ConstraintLayout cl, float density, int x, int y) {
@@ -3046,6 +3079,17 @@ public class SimpleStoryActivity extends AppCompatActivity {
         super.onPause();
         if (mp != null){
             mp.release();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mp != null) {
+            mp.release();
+        }
+        if (handler != null) {
+            handler = null;
         }
     }
 
