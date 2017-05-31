@@ -201,7 +201,6 @@ public class SimpleStoryActivity extends AppCompatActivity {
         initComprehension();
         initComprehensionViews();
 
-
         /*
         float densithy = getResources().getDisplayMetrics().density;
         ImageView iv = new ImageView(THIS);
@@ -210,15 +209,15 @@ public class SimpleStoryActivity extends AppCompatActivity {
         iv.setX(0.0f);
         iv.setY(870.0f);
         ConstraintLayout.LayoutParams ivLP = (ConstraintLayout.LayoutParams) iv.getLayoutParams();
-        ivLP.width = (int) (densithy * 300);
+        ivLP.width = (int) (density * 300);
         ivLP.height = 290;
         iv.setLayoutParams(ivLP);
         */
 
         currentState = STATE_0;
 
-        playPrompt("read_each_sentence_after_mother_sound");
-        // playPrompt("now_read_whole_story_sound");
+        // playPrompt("read_each_sentence_after_mother_sound");
+        playPrompt("now_read_whole_story_sound");
         // playPrompt("now_answer_sound");
     }
 
