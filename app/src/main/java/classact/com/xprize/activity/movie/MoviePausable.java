@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -89,8 +89,61 @@ public class MoviePausable extends AppCompatActivity {
         mSplashScreen = (RelativeLayout) findViewById(R.id.movie_pausable_splash);
         mSplashImage = (ImageView) findViewById(R.id.movie_pausable_splash_image);
         mVideo = (VideoView) findViewById(R.id.movie_pausable_video);
+
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
+
+        int baseWidth = 1920;
+        int baseHeight = 1080;
+
+        int topMargin = 0;
+
+        double baseRatio = (double) baseWidth / (double) baseHeight;
+        double screenVideoWidthRatio = (double) screenWidth / (double) baseWidth;
+
+        int newWidth = (int) ((double) baseWidth * screenVideoWidthRatio);
+        int newHeight = (int) ((double) baseHeight * screenVideoWidthRatio);
+
+        float density = displayMetrics.density;
+
+        RelativeLayout.LayoutParams videoLayout = (RelativeLayout.LayoutParams) mVideo.getLayoutParams();
+        videoLayout.width = newWidth;
+        videoLayout.height = newHeight;
+        videoLayout.topMargin = topMargin;
+        videoLayout.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        videoLayout.removeRule(RelativeLayout.CENTER_VERTICAL);
+        videoLayout.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
+        videoLayout.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        videoLayout.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        videoLayout.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        mVideo.setLayoutParams(videoLayout);
+
+        RelativeLayout.LayoutParams splashLayout = (RelativeLayout.LayoutParams) mSplashImage.getLayoutParams();
+        splashLayout.width = newWidth;
+        splashLayout.height = newHeight;
+        splashLayout.topMargin = topMargin;
+        splashLayout.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        splashLayout.removeRule(RelativeLayout.CENTER_IN_PARENT);
+        mSplashImage.setLayoutParams(splashLayout);
+
         mPauseButton = (Button) findViewById(R.id.movie_pausable_pause_button);
         mPlayButton = (Button) findViewById(R.id.movie_pausable_play_button);
+
+        int btnWidth = (int) (100 * density);
+
+        RelativeLayout.LayoutParams pauseBtnLayout = (RelativeLayout.LayoutParams) mPauseButton.getLayoutParams();
+        pauseBtnLayout.width = btnWidth;
+        pauseBtnLayout.height = btnWidth;
+        pauseBtnLayout.bottomMargin = 0;
+        mPauseButton.setLayoutParams(pauseBtnLayout);
+
+        RelativeLayout.LayoutParams playBtnLayout = (RelativeLayout.LayoutParams) mPlayButton.getLayoutParams();
+        playBtnLayout.width = btnWidth;
+        playBtnLayout.height = btnWidth;
+        playBtnLayout.bottomMargin = 0;
+        mPlayButton.setLayoutParams(playBtnLayout);
 
         // Requires data from invoker intent
         Intent intent = getIntent();

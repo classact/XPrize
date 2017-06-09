@@ -41,15 +41,6 @@ public class StoryDrills {
             // Get SimpleStories (Sentences) from tbl_SimpleStories
             ArrayList<Integer> simpleStorySentenceIds = SimpleStoriesHelper.getSentences(dbHelper.getReadableDatabase(), languageId, unitId);
 
-            /* String kOutput = "";
-            for (int k = 0; k < simpleStorySentenceIds.size(); k++) {
-                if (k > 0) {
-                    kOutput += ",";
-                }
-                kOutput += "" + simpleStorySentenceIds.get(k);
-            }
-            System.out.println(kOutput); */
-
             // Fetch story data
             for (int i = 0; i < simpleStorySentenceIds.size(); i++) {
                 // Get an individual SimpleStories (a sentence) object
@@ -232,9 +223,11 @@ public class StoryDrills {
             intent.putExtra("data", drillData);
 
         } catch (SQLiteException sqlex) {
+            System.out.println(sqlex.getMessage());
             sqlex.printStackTrace();
             throw new SQLiteException("D1 > SQLiteException: " + sqlex.getMessage());
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
             ex.printStackTrace();
             throw new Exception("D1 > Exception: " + ex.getMessage());
         }

@@ -185,8 +185,12 @@ public class DrillFetcher {
                 }
             }
         } catch (SQLiteException sqlex) {
+            System.out.println(sqlex.getMessage());
+            sqlex.printStackTrace();
             throw new SQLiteException("getPhonicsDrill > SQLiteException: " + sqlex.getMessage());
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
             throw new Exception("getPhonicsDrill > Exception: " + ex.getMessage());
         }
         return intent;
@@ -362,8 +366,11 @@ public class DrillFetcher {
                 }
             }
         } catch (SQLiteException sqlex) {
+            System.out.println(sqlex.getMessage());
+            sqlex.printStackTrace();
             throw new SQLiteException("getWordDrill: " + sqlex.getMessage());
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
             ex.printStackTrace();
             throw new Exception("getWordDrill: " + ex.getMessage());
         }
@@ -383,8 +390,12 @@ public class DrillFetcher {
                 }
             }
         } catch (SQLiteException sqlex) {
+            System.out.println(sqlex);
+            sqlex.printStackTrace();
             throw new SQLiteException("getStoryDrill." + sqlex.getMessage());
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
             throw new Exception("getStoryDrill." + ex.getMessage());
         }
         return intent;
@@ -525,8 +536,12 @@ public class DrillFetcher {
 
             }
         } catch (SQLiteException sqlex) {
+            sqlex.getMessage();
+            sqlex.printStackTrace();
             throw new SQLiteException("getMathDrill." + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.getMessage();
+            ex.printStackTrace();
             throw new Exception("getMathDrill." + ex.getMessage());
         }
         return intent;
