@@ -63,6 +63,8 @@ public class StoryDrills {
                 // For each SimpleStoryWordId
                 for (int j = 0; j < simpleStoryWordIds.size(); j++) {
 
+                    System.out.println("Simple story word id is: " + simpleStoryWordIds.get(j));
+
                     // Get the SimpleStoryWord object
                     SimpleStoryWord simpleStoryWord = SimpleStoryWordHelper.getSimpleStoryWord(dbHelper.getReadableDatabase(), simpleStoryWordIds.get(j));
 
