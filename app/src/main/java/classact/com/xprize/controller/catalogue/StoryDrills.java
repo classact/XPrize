@@ -41,6 +41,15 @@ public class StoryDrills {
             // Get SimpleStories (Sentences) from tbl_SimpleStories
             ArrayList<Integer> simpleStorySentenceIds = SimpleStoriesHelper.getSentences(dbHelper.getReadableDatabase(), languageId, unitId);
 
+            /* String kOutput = "";
+            for (int k = 0; k < simpleStorySentenceIds.size(); k++) {
+                if (k > 0) {
+                    kOutput += ",";
+                }
+                kOutput += "" + simpleStorySentenceIds.get(k);
+            }
+            System.out.println(kOutput); */
+
             // Fetch story data
             for (int i = 0; i < simpleStorySentenceIds.size(); i++) {
                 // Get an individual SimpleStories (a sentence) object
@@ -62,8 +71,6 @@ public class StoryDrills {
 
                 // For each SimpleStoryWordId
                 for (int j = 0; j < simpleStoryWordIds.size(); j++) {
-
-                    System.out.println("Simple story word id is: " + simpleStoryWordIds.get(j));
 
                     // Get the SimpleStoryWord object
                     SimpleStoryWord simpleStoryWord = SimpleStoryWordHelper.getSimpleStoryWord(dbHelper.getReadableDatabase(), simpleStoryWordIds.get(j));
