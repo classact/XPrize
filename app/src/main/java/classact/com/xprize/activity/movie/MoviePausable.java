@@ -1,6 +1,7 @@
 package classact.com.xprize.activity.movie;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ public class MoviePausable extends AppCompatActivity {
     protected final String SWAHILI_PREFIX = "s";
 
     // Views
+    protected RelativeLayout mParentActivity;
     protected RelativeLayout mSplashScreenContainer;
     protected RelativeLayout mSplashScreen;
     protected ImageView mSplashImage;
@@ -85,6 +87,7 @@ public class MoviePausable extends AppCompatActivity {
 
         int bg;
 
+        mParentActivity = (RelativeLayout) findViewById(R.id.activity_movie_pausable);
         mSplashScreenContainer = (RelativeLayout) findViewById(R.id.movie_pausable_splash_container);
         mSplashScreen = (RelativeLayout) findViewById(R.id.movie_pausable_splash);
         mSplashImage = (ImageView) findViewById(R.id.movie_pausable_splash_image);
@@ -144,6 +147,10 @@ public class MoviePausable extends AppCompatActivity {
         playBtnLayout.height = btnWidth;
         playBtnLayout.bottomMargin = 0;
         mPlayButton.setLayoutParams(playBtnLayout);
+
+        // mSplashScreen.setBackgroundResource(R.drawable.language_select_bg);
+        // mSplashScreenContainer.setBackgroundResource(R.drawable.language_select_bg);
+        // mParentActivity.setBackgroundResource(R.drawable.language_select_bg);
 
         // Requires data from invoker intent
         Intent intent = getIntent();

@@ -3,11 +3,13 @@ package classact.com.xprize.activity.drill.math;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -20,7 +22,9 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
@@ -44,6 +48,8 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
     private ImageView pattern;
     private Handler handler;
     private boolean endDrill;
+    private ImageView[] fillerViews;
+    private ImageView[] visibleFillerViews;
 
     private LinkedHashMap<ImageView, Integer> draggableViewIndexes;
 
@@ -63,6 +69,20 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         itemsContainer = (LinearLayout)findViewById(R.id.itemsContainer);
         itemsContainer.setOnDragListener(this);
         itemToFill = (ImageView)findViewById(R.id.missing);
+
+        // itemsContainer.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        // itemToFill.setBackgroundColor(Color.argb(100, 0, 0, 255));
+
+        int leftIncrement = 89;
+
+        RelativeLayout.LayoutParams itemsContainerLayout = (RelativeLayout.LayoutParams) itemsContainer.getLayoutParams();
+        itemsContainerLayout.leftMargin += leftIncrement;
+        itemsContainer.setLayoutParams(itemsContainerLayout);
+
+        LinearLayout.LayoutParams itemFillLayout = (LinearLayout.LayoutParams) itemToFill.getLayoutParams();
+        itemFillLayout.leftMargin += leftIncrement;
+        itemToFill.setLayoutParams(itemFillLayout);
+
         pattern = (ImageView)findViewById(R.id.pattern);
 
         filler1 = (ImageView)findViewById(R.id.filler1);
@@ -70,6 +90,21 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         filler3 = (ImageView)findViewById(R.id.filler3);
         filler4 = (ImageView)findViewById(R.id.filler4);
         filler5 = (ImageView)findViewById(R.id.filler5);
+
+        filler1.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        filler2.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        filler3.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        filler4.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        filler5.setBackgroundColor(Color.argb(100, 255, 0, 0));
+
+        fillerViews = new ImageView[5];
+        fillerViews[0] = filler1;
+        fillerViews[1] = filler2;
+        fillerViews[2] = filler3;
+        fillerViews[3] = filler4;
+        fillerViews[4] = filler5;
+
+        visibleFillerViews = new ImageView[fillerViews.length];
 
         handler = new Handler();
         dragEnabled = false;
@@ -208,14 +243,6 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
 
             JSONArray fillers = allData.getJSONArray("completion_pieces");
 
-            ImageView[] fillerViews = {
-                    filler1,
-                    filler2,
-                    filler3,
-                    filler4,
-                    filler5
-            };
-
             int numberOfItems = fillers.length();
             int[] s = FisherYates.shuffle(numberOfItems);
             draggableViewIndexes = new LinkedHashMap<>();
@@ -231,11 +258,53 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
                 draggableViewIndexes.put(fillerView, i);
                 fillerView.setOnTouchListener(this);
                 fillerView.setVisibility(View.VISIBLE);
+                visibleFillerViews[si] = fillerView;
             }
+            respaceFillers();
         }
         catch (Exception ex){
             Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
+        }
+    }
+
+    public void respaceFillers() {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float density = displayMetrics.density;
+        int screenWidth = displayMetrics.widthPixels - 450;
+
+        int screenPadding = 16;
+        int fillerWidth = 100;
+        int fillerGapWidth = 50;
+
+        int numOfFillers = 0;
+        for (int i = 0; i < visibleFillerViews.length; i++) {
+            if (visibleFillerViews[i] != null) {
+                numOfFillers += 1;
+            }
+        }
+
+        int fillerTotalWidth = (numOfFillers * fillerWidth) + ((numOfFillers - 1) * fillerGapWidth);
+
+        screenWidth = (int) ((float) screenWidth / density);
+        screenWidth -= 2 * screenPadding;
+
+        int newWidth = (screenWidth - fillerTotalWidth) / 2;
+        newWidth = (int) ((float) newWidth * density);
+        boolean firstFillerView = false;
+
+        for (int i = 0; i < visibleFillerViews.length; i++) {
+            ImageView fillerView = visibleFillerViews[i];
+            if (fillerView != null) {
+                RelativeLayout.LayoutParams fillerViewLayout = (RelativeLayout.LayoutParams) fillerView.getLayoutParams();
+                if (!firstFillerView) {
+                    fillerViewLayout.leftMargin = newWidth;
+                    firstFillerView = true;
+                } else {
+                    fillerViewLayout.leftMargin = ((int) (density * fillerGapWidth));
+                }
+                fillerView.setLayoutParams(fillerViewLayout);
+            }
         }
     }
 
