@@ -73,14 +73,18 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         // itemsContainer.setBackgroundColor(Color.argb(100, 255, 0, 0));
         // itemToFill.setBackgroundColor(Color.argb(100, 0, 0, 255));
 
-        int leftIncrement = 89;
-
         RelativeLayout.LayoutParams itemsContainerLayout = (RelativeLayout.LayoutParams) itemsContainer.getLayoutParams();
-        itemsContainerLayout.leftMargin += leftIncrement;
+        itemsContainerLayout.leftMargin += 70;
         itemsContainer.setLayoutParams(itemsContainerLayout);
 
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float density = displayMetrics.density;
+        int itemFillWidth = (int) ((float) 140 * density);
+
         LinearLayout.LayoutParams itemFillLayout = (LinearLayout.LayoutParams) itemToFill.getLayoutParams();
-        itemFillLayout.leftMargin += leftIncrement;
+        itemFillLayout.leftMargin += 20;
+        itemFillLayout.width = itemFillWidth;
+        itemFillLayout.height = itemFillWidth;
         itemToFill.setLayoutParams(itemFillLayout);
 
         pattern = (ImageView)findViewById(R.id.pattern);
@@ -91,11 +95,11 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         filler4 = (ImageView)findViewById(R.id.filler4);
         filler5 = (ImageView)findViewById(R.id.filler5);
 
-        filler1.setBackgroundColor(Color.argb(100, 255, 0, 0));
-        filler2.setBackgroundColor(Color.argb(100, 255, 0, 0));
-        filler3.setBackgroundColor(Color.argb(100, 255, 0, 0));
-        filler4.setBackgroundColor(Color.argb(100, 255, 0, 0));
-        filler5.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        // filler1.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        // filler2.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        // filler3.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        // filler4.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        // filler5.setBackgroundColor(Color.argb(100, 255, 0, 0));
 
         fillerViews = new ImageView[5];
         fillerViews[0] = filler1;

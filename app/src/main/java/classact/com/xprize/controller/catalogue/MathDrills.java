@@ -787,14 +787,14 @@ public class MathDrills {
                 // Get master pattern
                 if (mathImage.getNumberOfImages() == 0) {
                     masterPattern = mathImage;
+                } else {
+                    itemsToCompletePattern.add(item);
                 }
 
                 // Get target object
                 if (mathImage.getTestNumber() == 1) {
                     targetObject = mathImage;
                 }
-
-                itemsToCompletePattern.add(item);
             }
 
             String drillData = MathDrillJsonBuilder.getDrillSevenJson(
