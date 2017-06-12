@@ -1,6 +1,7 @@
 package classact.com.xprize.control;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import classact.com.xprize.database.model.SimpleStoryWord;
 
@@ -9,16 +10,16 @@ import classact.com.xprize.database.model.SimpleStoryWord;
  */
 
 public class SimpleStorySentence {
-    private ArrayList<SimpleStoryWord> words;
+    private List<SimpleStoryWord> words;
     private String fullSound;
     private int sentenceSetNo;
 
     /* * * * *
      * Words *
      * * * * */
-    public ArrayList<SimpleStoryWord> getWords() { return words; }
+    public List<SimpleStoryWord> getWords() { return words; }
 
-    public void setWords(ArrayList<SimpleStoryWord> words) { this.words = words; }
+    public void setWords(List<SimpleStoryWord> words) { this.words = words; }
 
     /* * * * * * * *
      * Full Sound *

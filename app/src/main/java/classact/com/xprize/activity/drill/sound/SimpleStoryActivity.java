@@ -1,32 +1,46 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
+import android.support.annotation.Dimension;
+import android.support.constraint.ConstraintLayout;
 import android.support.transition.Fade;
 import android.support.transition.TransitionManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.control.SimpleStorySentence;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
@@ -56,36 +70,34 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
     private RelativeLayout rootView;
 
-    private LinearLayout col;
-
     private ImageView subBackgroundView;
 
     // Image View grid sets
     // * Note that a 'set' refers to a 'sentence set'
     // and not java.util.Set *
-    private ArrayList<ArrayList<ArrayList<ImageView>>> imageViewGridSets;
+    private List<List<List<ImageView>>> imageViewGridSets;
 
     // Black word grid sets
     // * Note that a 'set' refers to a 'sentence set'
     // and not java.util.Set *
-    private ArrayList<ArrayList<ArrayList<Integer>>> blackWordGridSets;
+    private List<List<List<Integer>>> blackWordGridSets;
 
     // Black word grid sets
     // * Note that a 'set' refers to a 'sentence set'
     // and not java.util.Set *
-    private ArrayList<ArrayList<ArrayList<Integer>>> redWordGridSets;
+    private List<List<List<Integer>>> redWordGridSets;
 
     // Sound path grid sets
     // * Note that a 'set' refers to a 'sentence set'
     // and not java.util.Set *
-    private ArrayList<ArrayList<ArrayList<String>>> soundPathGridSets;
+    private List<List<List<String>>> soundPathGridSets;
 
     // Comprehension stuff
-    private ArrayList<ArrayList<ImageView>> mComprehensionQuestionImageViewSets;
-    private ArrayList<ArrayList<Boolean>> mComprehensionQuestionAnswerSets;
-    private ArrayList<String> mComprehensionQuestionSoundPaths;
-    private ArrayList<String> mComprehensionAnswerSoundPaths;
-    private ArrayList<Boolean> mComprehensionAnswerTypes;
+    private List<List<ImageView>> mComprehensionQuestionImageViewSets;
+    private List<List<Boolean>> mComprehensionQuestionAnswerSets;
+    private List<String> mComprehensionQuestionSoundPaths;
+    private List<String> mComprehensionAnswerSoundPaths;
+    private List<Boolean> mComprehensionAnswerTypes;
 
     private final int STARTING_SET = 0;
     private final int BLACK_WORD = 0;
@@ -114,6 +126,11 @@ public class SimpleStoryActivity extends AppCompatActivity {
     private final int STATE_2 = 2;
     private final int STATE_3 = 3;
     private int currentState;
+
+    private ConstraintLayout clStory;
+    private ConstraintLayout clComprehension;
+
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,18 +186,6 @@ public class SimpleStoryActivity extends AppCompatActivity {
         // Set this activity to ... well ... this activity!
         thisActivity = this;
 
-        // Create columns
-        col = new LinearLayout(getApplicationContext());
-        // col.setBackgroundColor(Color.GRAY);
-        col.setOrientation(LinearLayout.VERTICAL);
-        col.setGravity(Gravity.CENTER);
-
-        LinearLayout.LayoutParams colParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-        );
-        col.setLayoutParams(colParams);
-
         // Retrieves the sentences from drill data
         // Do this before creating rows, in case there is an override for number of
         // sentences per set
@@ -188,17 +193,31 @@ public class SimpleStoryActivity extends AppCompatActivity {
         initData();
 
         // Initialize story and corresponding objects and views
-        // Populates 'col;
         initStory();
+        initStoryViews();
+        addSentenceToStorySet(0, 0);
 
         // Initialize comprehension and corresponding objects and views
         initComprehension();
+        initComprehensionViews();
 
-        container.addView(col);
+        /*
+        float densithy = getResources().getDisplayMetrics().density;
+        ImageView iv = new ImageView(THIS);
+        iv.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        clStory.addView(iv);
+        iv.setX(0.0f);
+        iv.setY(870.0f);
+        ConstraintLayout.LayoutParams ivLP = (ConstraintLayout.LayoutParams) iv.getLayoutParams();
+        ivLP.width = (int) (density * 300);
+        ivLP.height = 290;
+        iv.setLayoutParams(ivLP);
+        */
 
         currentState = STATE_0;
 
         playPrompt("read_each_sentence_after_mother_sound");
+        // playPrompt("now_read_whole_story_sound");
         // playPrompt("now_answer_sound");
     }
 
@@ -246,10 +265,10 @@ public class SimpleStoryActivity extends AppCompatActivity {
                             mThisActivity.setActiveWordIndex(0);
 
                             // Clear all story set views
-                            mThisActivity.clearAllStorySetViews();
+                            mThisActivity.clearAllStorySetViews(true);
 
                             // Get Image Views for first row of new set
-                            mThisActivity.showFullStorySet(0);
+                            mThisActivity.showFullStorySet(0, true);
 
                         }
                     }, mp.getDuration() / 2);
@@ -275,11 +294,11 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     );
                     subBackgroundView.setLayoutParams(storyBackgroundViewParams);
 
-                    TransitionManager.beginDelayedTransition(col, fadeOut);
+                    TransitionManager.beginDelayedTransition(clStory, fadeOut);
                     TransitionManager.beginDelayedTransition(rootView, fadeIn);
 
                     rootView.addView(subBackgroundView, 0);
-                    clearAllStorySetViews();
+                    clearAllStorySetViews(true);
 
                     break;
                 }
@@ -297,16 +316,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             // Play da beatz ♫♪
             mp.start();
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.PromptListener(class).onPrepared()." + mPrompt +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
 
@@ -344,18 +355,20 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         Fade fadeOut = new Fade(Fade.OUT);
 
                         subBackgroundView = new ImageView(getApplicationContext());
-                        subBackgroundView.setBackgroundResource(allData.getInt("story_image"));
+                        String storyImage = allData.getString("story_image");
+                        int storyImageId = FetchResource.imageId(THIS, storyImage);
+                        subBackgroundView.setBackgroundResource(storyImageId);
                         LinearLayout.LayoutParams storyBackgroundViewParams = new LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.MATCH_PARENT,
                                 LinearLayout.LayoutParams.MATCH_PARENT
                         );
                         subBackgroundView.setLayoutParams(storyBackgroundViewParams);
 
-                        TransitionManager.beginDelayedTransition(col, fadeOut);
+                        TransitionManager.beginDelayedTransition(clStory, fadeOut);
                         TransitionManager.beginDelayedTransition(rootView, fadeIn);
 
                         rootView.addView(subBackgroundView, rootView.getChildCount());
-                        clearAllStorySetViews();
+                        clearAllStorySetViews(true);
 
                         // Play prompt
                         handler.postDelayed(new Runnable() {
@@ -381,10 +394,10 @@ public class SimpleStoryActivity extends AppCompatActivity {
                                 mThisActivity.setActiveWordFlipped(false);
 
                                 // Clear all story set views
-                                mThisActivity.clearAllStorySetViews();
+                                mThisActivity.clearAllStorySetViews(true);
 
                                 // Get Image Views for first row of new set
-                                mThisActivity.showFullStorySet(0);
+                                mThisActivity.showFullStorySet(0, true);
 
                                 if (subBackgroundView != null) {
                                     TransitionManager.beginDelayedTransition(rootView, fadeOut);
@@ -460,27 +473,20 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     }
                 }
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.PromptListener(class).onCompletion()." + mPrompt +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
     }
 
     private void playPrompt(String prompt) {
-
         // Debug
         System.out.println(":: SimpleStoryActivity.playPrompt(\"" + prompt + "\") > Debug: METHOD CALLED");
 
+        String sound = "";
+
         try{
-            String sound = allData.getString(prompt);
+            sound = allData.getString(prompt);
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -492,15 +498,9 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
-            System.err.println("============================================================");
-            System.out.println(":: SimpleStoryActivity.playPrompt(\"" + prompt + "\") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
         }
     }
 
@@ -582,15 +582,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 }
 
             } catch (Exception ex){
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.onCompletion() > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
 
@@ -638,19 +631,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
                         // Muted. Child has finished reading the word
                         // Narrator must now read from first word of next set
-
-                        // Clear all existing rows of child views
-                        for (int i = 0; i < col.getChildCount(); i++) {
-
-                            // Get row
-                            LinearLayout row = (LinearLayout) col.getChildAt(i);
-
-                            // Remove all views from row
-                            row.removeAllViews();
-                        }
-
-                        // Clear column of all child views
-                        col.removeAllViews();
+                        mThisActivity.clearSet(mActiveSetIndex);
 
                         // Reset active set index, active row index, and active word index
                         mActiveSetIndex = mSetIndex + 1;
@@ -716,15 +697,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     playActiveWord(mMute, mSetIndex, mRowIndex, mWordIndex + 1);
                 }
             } catch (Exception ex){
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.handleOnCompletion() > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
     }
@@ -768,17 +742,10 @@ public class SimpleStoryActivity extends AppCompatActivity {
             }
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.playActiveWord(" + setIndex + ", " + rowIndex + ", " +
-                    wordIndex + ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
-            ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
             mp = null;
-            (new ActiveWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex)).onCompletion(null);
+            new ActiveWordListener(thisActivity, mute, setIndex, rowIndex, wordIndex).handleOnCompletion();
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
         }
     }
 
@@ -809,16 +776,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             imageViewGridSets.get(setIndex).get(rowIndex).get(wordIndex).setImageResource(image);
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.flipActiveWord(" + side + ", " + setIndex + ", " +
-                    rowIndex + ", " + wordIndex + ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -909,17 +868,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 }
 
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.err.println("SimpleStoryActivity.playSelectedWord(" + setIndex + ", " + rowIndex + ", " +
-                        wordIndex + ") > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                mp = null;
-                (new SelectedWordListener(thisActivity, setIndex, rowIndex, wordIndex)).onCompletion(null);
             }
 
         } else {
@@ -957,16 +907,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             imageViewGridSets.get(setIndex).get(rowIndex).get(wordIndex).setImageResource(image);
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.flipSelectedWord(" + side + ", " + setIndex + ", " +
-                    rowIndex + ", " + wordIndex + ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -1018,26 +960,30 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         mNextArrow.setColorFilter(Color.argb(125, 0, 255, 0));
 
                         // Set layout params
-                        RelativeLayout.LayoutParams nextArrowParams = (RelativeLayout.LayoutParams) mNextArrow.getLayoutParams();
-                        nextArrowParams.topMargin = 140;
-                        nextArrowParams.rightMargin = 210;
-                        mNextArrow.setLayoutParams(nextArrowParams);
+                        // RelativeLayout.LayoutParams nextArrowParams = (RelativeLayout.LayoutParams) mNextArrow.getLayoutParams();
+                        // nextArrowParams.topMargin = 140;
+                        // nextArrowParams.rightMargin = 210;
+                        // mNextArrow.setLayoutParams(nextArrowParams);
 
                         // Add a new listener
                         mNextArrow.setOnClickListener(null);
                         mNextArrow.setOnClickListener(new ImageView.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                try {
+                                    // Disable touch words
+                                    touchWordsEnabled = false;
 
-                                // Disable touch words
-                                touchWordsEnabled = false;
+                                    // Hide arrow
+                                    mNextArrow.setVisibility(View.INVISIBLE);
+                                    mPreviousArrow.setVisibility(View.INVISIBLE);
 
-                                // Hide arrow
-                                mNextArrow.setVisibility(View.INVISIBLE);
-                                mPreviousArrow.setVisibility(View.INVISIBLE);
-
-                                // Play prompt
-                                playPrompt("well_done_you_can_read_sound");
+                                    // Play prompt
+                                    playPrompt("well_done_you_can_read_sound");
+                                } catch (Exception ex) {
+                                    Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                                    ex.printStackTrace();
+                                }
                             }
                         });
 
@@ -1131,10 +1077,10 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 mThisActivity.setActiveWordIndex(mWordIndex);
 
                 // Clear all story set views
-                mThisActivity.clearAllStorySetViews();
+                mThisActivity.clearAllStorySetViews(false);
 
                 // Get Image Views for first row of new set
-                mThisActivity.showFullStorySet(mSetIndex);
+                mThisActivity.showFullStorySet(mSetIndex, false);
             }
         }
     }
@@ -1159,16 +1105,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 mp.start();
 
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.ComprehensionQuestionListener(class).onPrepared()." + mQuestionIndex +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
 
@@ -1208,27 +1146,21 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
                     // Disable touch
                     mThisActivity.setComprehensionTouchEnabled(false);
-
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mThisActivity.playComprehensionAnswer(mThisActivity.getComprehensionQuestionIndex());
+                            try {
+                                mThisActivity.playComprehensionAnswer(mThisActivity.getComprehensionQuestionIndex());
+                            } catch (Exception ex) {
+                                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                                ex.printStackTrace();
+                            }
                         }
                     }, 2500);
-
                 }
-
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.ComprehensionQuestionListener(class).onCompletion()." + mQuestionIndex +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
     }
@@ -1251,16 +1183,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.playComprehensionQuestion(" + questionIndex +
-                    ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -1287,16 +1211,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 // Play da beatz ♫♪
                 mp.start();
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.ComprehensionAnswerListener(class).onPrepared()." + mAnswerIndex +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
 
@@ -1314,28 +1230,38 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         @Override
                         public void run() {
 
-                            // Fade in black view (mimic fade out)
-                            Fade fadeIn = new Fade(Fade.IN);
+                            try {
+                                // Fade in black view (mimic fade out)
+                                Fade fadeIn = new Fade(Fade.IN);
 
-                            subBackgroundView = new ImageView(getApplicationContext());
-                            subBackgroundView.setBackgroundResource(R.drawable.maths_link_bg);
-                            LinearLayout.LayoutParams storyBackgroundViewParams = new LinearLayout.LayoutParams(
-                                    LinearLayout.LayoutParams.MATCH_PARENT,
-                                    LinearLayout.LayoutParams.MATCH_PARENT
-                            );
-                            subBackgroundView.setLayoutParams(storyBackgroundViewParams);
+                                subBackgroundView = new ImageView(getApplicationContext());
+                                subBackgroundView.setBackgroundResource(R.drawable.maths_link_bg);
+                                LinearLayout.LayoutParams storyBackgroundViewParams = new LinearLayout.LayoutParams(
+                                        LinearLayout.LayoutParams.MATCH_PARENT,
+                                        LinearLayout.LayoutParams.MATCH_PARENT
+                                );
+                                subBackgroundView.setLayoutParams(storyBackgroundViewParams);
 
-                            TransitionManager.beginDelayedTransition(rootView, fadeIn);
+                                TransitionManager.beginDelayedTransition(rootView, fadeIn);
 
-                            rootView.addView(subBackgroundView, rootView.getChildCount());
+                                rootView.addView(subBackgroundView, rootView.getChildCount());
 
-                            // End drill after 1000 milliseconds
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    endDrill();
-                                }
-                            }, 1000);
+                                // End drill after 1000 milliseconds
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            endDrill();
+                                        } catch (Exception ex) {
+                                            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                                            ex.printStackTrace();
+                                        }
+                                    }
+                                }, 1000);
+                            } catch(Exception ex) {
+                                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                                ex.printStackTrace();
+                            }
                         }
                     }, 1500);
                     /*
@@ -1357,36 +1283,28 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     */
 
                 } else {
-
                     // On to next question
                     mThisActivity.setComprehensionQuestionIndex(nextQuestionIndex);
-
                     // Clear views for comprehension
-                    clearViewsForComprehension();
-
+                    clearViewsForComprehension(true);
                     // Play question after 500 millisecond delay
                     handler.postDelayed(new Runnable() {
-
                         @Override
                         public void run() {
-
-                            // Prepare views and ask next comprehension question
-                            prepareViewsAndAskNextComprehensionQuestion();
+                            try {
+                                // Prepare views and ask next comprehension question
+                                prepareViewsAndAskNextComprehensionQuestion();
+                            } catch (Exception ex) {
+                                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                                ex.printStackTrace();
+                            }
                         }
                     }, 700);
                 }
 
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.out.println(":: SimpleStoryActivity.ComprehensionAnswerListener(class).onCompletion()." + mAnswerIndex +
-                        " > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
     }
@@ -1409,16 +1327,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.playComprehensionAnswer(" + answerIndex +
-                    ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -1432,7 +1342,6 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mThisActivity = thisActivity;
             mQuestionIndex = questionIndex;
             mOptionIndex = optionIndex;
-
             // Update comprehension question index for the activity
             mThisActivity.setComprehensionQuestionIndex(questionIndex);
         }
@@ -1440,25 +1349,13 @@ public class SimpleStoryActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             try {
-
                 if (mThisActivity.getComprehensionTouchEnabled()) {
-
                     // Play touch result
                     playComprehensionTouchResult(mQuestionIndex, mOptionIndex);
-
                 }
-
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onClick." + mQuestionIndex +
-                        ") > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
 
@@ -1468,16 +1365,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 mp.start();
 
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onPrepared." + mQuestionIndex +
-                        ") > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
 
@@ -1496,22 +1385,19 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            playComprehensionAnswer(mQuestionIndex);
+                            try {
+                                playComprehensionAnswer(mQuestionIndex);
+                            } catch (Exception ex) {
+                                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                                ex.printStackTrace();
+                            }
                         }
                     }, 250);
                 }
 
             } catch (Exception ex) {
-                System.err.println("============================================================");
-                System.err.println("SimpleStoryActivity.ComprehensionTouchListener(Listener).onCompletion." + mQuestionIndex +
-                        ") > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------------");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("============================================================");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
 
         }
@@ -1555,16 +1441,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.playComprehensionTouchResult(" + questionIndex +
-                    ", " + optionIndex + ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -1592,249 +1470,172 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            endDrill();
-                        }
-                    }, 500);
+                    try {
+                        mp.reset();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    endDrill();
+                                } catch (Exception ex) {
+                                    Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                                    ex.printStackTrace();
+                                }
+                            }
+                        }, 500);
+                    } catch (Exception ex) {
+                        Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                        ex.printStackTrace();
+                    }
                 }
             });
             mp.prepare();
 
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.playEndDrillAffirmation > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
-    public void clearAllStorySetViews() {
-
-        // Clear all existing rows of child views
-        for (int i = 0; i < col.getChildCount(); i++) {
-
-            // Get row
-            LinearLayout row = (LinearLayout) col.getChildAt(i);
-
-            // Remove all views from row
-            row.removeAllViews();
+    public void clearSet(int setIndex) {
+        try {
+            System.out.println("Clearing set: " + setIndex);
+            List<List<ImageView>> setPhrases = imageViewGridSets.get(setIndex);
+            for (int i = 0; i < setPhrases.size(); i++) {
+                List<ImageView> phraseWords = setPhrases.get(i);
+                for (int j = 0; j < phraseWords.size(); j++) {
+                    final ImageView iv = phraseWords.get(j);
+                    iv.animate().alpha(0).setDuration(500).setInterpolator(new DecelerateInterpolator()).withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            iv.setVisibility(View.INVISIBLE);
+                        }
+                    }).start();
+                }
+            }
+        } catch (Exception ex) {
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
         }
-
-        // Clear column of all child views
-        col.removeAllViews();
     }
 
     public void addSentenceToStorySet(int setIndex, int rowIndex) {
-
         try {
-            // Get Image Views for next row (sentence)
-            ArrayList<ImageView> imageViews = thisActivity.getImageViewGridSets().get(setIndex).get(rowIndex);
-
-            // Create new linear layout horizontal row
-            LinearLayout row = new LinearLayout(getApplicationContext());
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setBaselineAligned(true);
-
-            // Create row layout params
-            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            row.setLayoutParams(rowParams);
-
-            // Add Image Views to row
-            for (int i = 0; i < imageViews.size(); i++) {
-                row.addView(imageViews.get(i));
+            List<ImageView> imageViews = imageViewGridSets.get(setIndex).get(rowIndex);
+            for (ImageView iv : imageViews) {
+                iv.setVisibility(View.VISIBLE);
+                iv.animate().alpha(1).setDuration(1000).setInterpolator(new DecelerateInterpolator()).start();
             }
-
-            // Add row to col
-            col.addView(row);
-
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.addSentenceToStorySet(" + setIndex +
-                    ", " + rowIndex + ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
-    public void showFullStorySet(int setIndex) {
-
+    public void showFullStorySet(int setIndex, boolean fadeIn) {
         try {
-            // Check if columns have rows
-            // They shouldn't
-            if (col.getChildCount() == 0) {
-
-                // No rows exist. We're good to go!
-
-                // Get Image Views for first row of new set
-                ArrayList<ArrayList<ImageView>> imageViewGrid = thisActivity.getImageViewGridSets().get(setIndex);
-
-                for (int i = 0; i < imageViewGrid.size(); i++) {
-
-                    // Get Image Views for the next row (sentence)
-                    ArrayList<ImageView> imageViews = imageViewGrid.get(i);
-
-                    // Create new linear layout horizontal row
-                    LinearLayout row = new LinearLayout(getApplicationContext());
-                    row.setOrientation(LinearLayout.HORIZONTAL);
-                    row.setBaselineAligned(true);
-
-                    // Create row layout params
-                    LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                    );
-                    row.setLayoutParams(rowParams);
-
-                    // Add Image Views to row
-                    for (int j = 0; j < imageViews.size(); j++) {
-                        row.addView(imageViews.get(j));
+            System.out.println("Clearing set: " + setIndex);
+            List<List<ImageView>> setPhrases = imageViewGridSets.get(setIndex);
+            for (int i = 0; i < setPhrases.size(); i++) {
+                List<ImageView> phraseWords = setPhrases.get(i);
+                for (int j = 0; j < phraseWords.size(); j++) {
+                    ImageView iv = phraseWords.get(j);
+                    if (fadeIn) {
+                        iv.setVisibility(View.VISIBLE);
+                        iv.animate().alpha(1).setDuration(1000).setInterpolator(new DecelerateInterpolator()).start();
+                    } else {
+                        iv.setVisibility(View.VISIBLE);
+                        iv.setAlpha(1.0f);
                     }
-
-                    // Add row to col
-                    col.addView(row);
                 }
-
-            } else {
-                throw new Exception("Column still has rows. " +
-                        "Ensure that all views have been cleared first");
             }
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.showFullStorySet(" + setIndex +
-                    ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
-    public void clearViewsForComprehension() {
-        // Clear all existing views
-        if (col.getChildCount() > 0) {
-
-            // Fade out existing 'questions' (or any text) on screen
-            Fade fadeOut = new Fade(Fade.OUT);
-
-            // Ensure that next transition on col is a fade out
-            TransitionManager.beginDelayedTransition(col, fadeOut);
-
-            // Clear all story views
-            clearAllStorySetViews();
-        }
-    }
-
-    public void showViewsForComprehension(int questionIndex) {
-
+    public void clearViewsForComprehension(boolean fadeOut) {
         try {
-            // Create new 'fade in' for next transition
-            Fade fadeIn = new Fade(Fade.IN);
+            List<List<ImageView>> comprehensionSets = mComprehensionQuestionImageViewSets;
+            for (int i = 0; i < comprehensionSets.size(); i++) {
+                List<ImageView> setImageViews = comprehensionSets.get(i);
+                for (int j = 0; j < setImageViews.size(); j++) {
+                    final ImageView iv = setImageViews.get(j);
+                    if (fadeOut) {
+                        iv.animate().alpha(0.0f).setDuration(500).setInterpolator(new DecelerateInterpolator()).withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                iv.setVisibility(View.INVISIBLE);
+                            }
+                        }).start();
+                    } else {
+                        iv.setAlpha(0.0f);
+                        iv.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
 
-            // Ensure that next transition on col is a fade in
-            TransitionManager.beginDelayedTransition(col, fadeIn);
+    public void clearAllStorySetViews(boolean fadeOut) {
+        try {
+            List<List<List<ImageView>>> storySets = imageViewGridSets;
+            for (int i = 0; i < storySets.size(); i++) {
+                List<List<ImageView>> setPhrases = storySets.get(i);
+                for (int j = 0; j < setPhrases.size(); j++) {
+                    List<ImageView> phraseWords = setPhrases.get(j);
+                    for (int k = 0; k < phraseWords.size(); k++) {
+                        final ImageView iv = phraseWords.get(k);
+                        if (fadeOut) {
+                            iv.animate().alpha(0.0f).setDuration(500).setInterpolator(new DecelerateInterpolator()).withEndAction(new Runnable() {
+                                @Override
+                                public void run() {
+                                    iv.setVisibility(View.INVISIBLE);
+                                }
+                            }).start();
+                        } else {
+                            iv.setAlpha(0.0f);
+                            iv.setVisibility(View.INVISIBLE);
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
 
-            // Get Image Views for next row (sentence)
-            ArrayList<ImageView> imageViews = thisActivity.getComprehensionQuestionImageViewSets().get(questionIndex);
-
-            // Create new linear layout horizontal row
-            LinearLayout row = new LinearLayout(getApplicationContext());
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setBaselineAligned(true);
-
-            // Create row layout params
-            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            row.setLayoutParams(rowParams);
-
-            // Get answer type
-            // 'true' = Touch type question
-            // 'false' = Speech type question
-            boolean isTouchAnswer = mComprehensionAnswerTypes.get(questionIndex);
-
-            System.out.println("!!There are " + imageViews.size() + " images!!");
-
-            // Add Image Views to row
-            for (int i = 0; i < imageViews.size(); i++) {
-
-                row.addView(imageViews.get(i));
-
-                /*
-                // Validate answer type
-                if (isTouchAnswer) {
-
-                    System.out.println(">> IS touch answer");
-
-                    // Is touch type
-                    // Show all images
-                    row.addView(imageViews.get(i));
-
+    public void showViewsForComprehension(int questionIndex, boolean fadeIn) {
+        try {
+            List<ImageView> setImageViews = mComprehensionQuestionImageViewSets.get(questionIndex);
+            for (int i = 0; i < setImageViews.size(); i++) {
+                ImageView iv = setImageViews.get(i);
+                if (fadeIn) {
+                    iv.setVisibility(View.VISIBLE);
+                    iv.animate().alpha(1).setDuration(1000).setInterpolator(new DecelerateInterpolator()).start();
                 } else {
-
-                    System.out.println("<< IS NOT touch answer");
-
-                    // Is not touch type
-                    // Only show 'correct' image
-                    boolean isCorrectAnswer = mComprehensionQuestionAnswerSets.get(setIndex).get(i);
-
-                    // Only add if it's the correct answer
-                    if (isCorrectAnswer) {
-                        // Break out
-                        // Only correct image view is required
-                        row.addView(imageViews.get(i));
-                        break;
-                    }
-
+                    iv.setVisibility(View.VISIBLE);
+                    iv.setAlpha(1.0f);
                 }
-                */
             }
-
-            System.out.println(":@#$: " + row.getChildCount());
-
-            // Add row to col
-            col.addView(row);
-
         } catch (Exception ex) {
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.showViewsForComprehension(" + questionIndex +
-                    ") > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
     public void prepareViewsAndAskNextComprehensionQuestion() {
 
         // Clear views for comprehension
-        clearViewsForComprehension();
+        clearViewsForComprehension(true);
 
         // Show views for comprehension question
-        showViewsForComprehension(mComprehensionQuestionIndex);
+        showViewsForComprehension(mComprehensionQuestionIndex, true);
 
         // Play comprehension question after 1100 milliseconds
         handler.postDelayed(new Runnable() {
@@ -1942,39 +1743,39 @@ public class SimpleStoryActivity extends AppCompatActivity {
         return mActiveWordDuration;
     }
 
-    public ArrayList<ArrayList<ArrayList<ImageView>>> getImageViewGridSets() {
+    public List<List<List<ImageView>>> getImageViewGridSets() {
         return imageViewGridSets;
     }
 
-    public ArrayList<ArrayList<ArrayList<Integer>>> getBlackWordGridSets() {
+    public List<List<List<Integer>>> getBlackWordGridSets() {
         return blackWordGridSets;
     }
 
-    public ArrayList<ArrayList<ArrayList<Integer>>> getRedWordGridSets() {
+    public List<List<List<Integer>>> getRedWordGridSets() {
         return redWordGridSets;
     }
 
-    public ArrayList<ArrayList<ArrayList<String>>> getSoundPathGridSets() {
+    public List<List<List<String>>> getSoundPathGridSets() {
         return soundPathGridSets;
     }
 
-    public ArrayList<ArrayList<ImageView>> getComprehensionQuestionImageViewSets() {
+    public List<List<ImageView>> getComprehensionQuestionImageViewSets() {
         return mComprehensionQuestionImageViewSets;
     }
 
-    public ArrayList<ArrayList<Boolean>> getComprehensionQuestionAnswerSets() {
+    public List<List<Boolean>> getComprehensionQuestionAnswerSets() {
         return mComprehensionQuestionAnswerSets;
     }
 
-    public ArrayList<String> getComprehensionQuestionSoundPaths() {
+    public List<String> getComprehensionQuestionSoundPaths() {
         return mComprehensionQuestionSoundPaths;
     }
 
-    public ArrayList<String> getComprehensionAnswerSoundPaths() {
+    public List<String> getComprehensionAnswerSoundPaths() {
         return mComprehensionAnswerSoundPaths;
     }
 
-    public ArrayList<Boolean> getComprehensionAnswerTypes() {
+    public List<Boolean> getComprehensionAnswerTypes() {
         return mComprehensionAnswerTypes;
     }
 
@@ -2000,11 +1801,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             currentSentence = 0;
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2027,78 +1825,62 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
                 // Initialize Image View grid sets
                 imageViewGridSets = new ArrayList<>();
-
                 // Initialize black word grid sets
                 blackWordGridSets = new ArrayList<>();
-
                 // Initialize red word grid sets
                 redWordGridSets = new ArrayList<>();
-
                 // Initialize sound path grid sets
                 soundPathGridSets = new ArrayList<>();
 
                 // Create a grid to store list of Image Views
-                ArrayList<ArrayList<ImageView>> imageViewGrid = null;
-
+                List<List<ImageView>> imageViewGrid = null;
                 // Create a grid to store list of black word resource ids
-                ArrayList<ArrayList<Integer>> blackWordGrid = null;
-
+                List<List<Integer>> blackWordGrid = null;
                 // Create a grid to store list of red word resource ids
-                ArrayList<ArrayList<Integer>> redWordGrid = null;
-
+                List<List<Integer>> redWordGrid = null;
                 // Create a grid to store list of sound paths
-                ArrayList<ArrayList<String>> soundPathGrid = null;
+                List<List<String>> soundPathGrid = null;
 
                 // Loopy loop ...
                 for (int i = 0; i < sentences.length(); i++) {
 
                     // Instantiate sentence object
                     JSONArray sentence = sentences.getJSONArray(i);
-
                     // Validate sentence object
                     if (sentence == null) {
                         throw new Exception("Sentence (" + i + ") is null");
                     }
-
                     // Create list of Image Views that will hold sentence words
-                    ArrayList<ImageView> imageViews = new ArrayList<>();
-
+                    List<ImageView> imageViews = new ArrayList<>();
                     // Create list of black word resource ids per sentence word
-                    ArrayList<Integer> blackWords = new ArrayList<>();
-
+                    List<Integer> blackWords = new ArrayList<>();
                     // Create list of red word resource ids per sentence word
-                    ArrayList<Integer> redWords = new ArrayList<>();
-
+                    List<Integer> redWords = new ArrayList<>();
                     // Create list of sound paths that will hold sound paths per sentence word
-                    ArrayList<String> soundPaths = new ArrayList<>();
+                    List<String> soundPaths = new ArrayList<>();
 
                     // Grab each sentence word
                     // To do so, loop through each sentence
                     for (int j = 0; j < sentence.length(); j++) {
                         // Get the sentence word
                         JSONObject sentenceWord = sentence.getJSONObject(j);
-
                         // Check if new grids should be created
                         // Note that grids exists per set
                         // Check the current set number using JSON "set_no"
                         final int sentenceSet = sentenceWord.getInt("set_no");
                         if (sentenceSet != currentSet) {
-
                             // Add previous Image View grid to Image View grid sets
                             if (imageViewGrid != null && imageViewGrid.size() > 0) {
                                 imageViewGridSets.add(imageViewGrid);
                             }
-
                             // Add previous black word grid to black word grid sets
                             if (blackWordGrid != null && blackWordGrid.size() > 0) {
                                 blackWordGridSets.add(blackWordGrid);
                             }
-
                             // Add previous red word grid to red word grid sets
                             if (redWordGrid != null && redWordGrid.size() > 0) {
                                 redWordGridSets.add(redWordGrid);
                             }
-
                             // Add previous sound path grid to sound path grid sets
                             if (soundPathGrid != null && soundPathGrid.size() > 0) {
                                 soundPathGridSets.add(soundPathGrid);
@@ -2106,13 +1888,10 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
                             // Assign new Image View grid for the new set
                             imageViewGrid = new ArrayList<>();
-
                             // Assign new black word grid for the new set
                             blackWordGrid = new ArrayList<>();
-
                             // Assign new red word grid for the new set
                             redWordGrid = new ArrayList<>();
-
                             // Assign new sound path grid for the new set
                             soundPathGrid = new ArrayList<>();
 
@@ -2121,26 +1900,20 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         }
 
                         // Get the black word (resource id) of the sentence word
-                        int blackWord = sentenceWord.getInt("black_word");
-
+                        String blackWord = sentenceWord.getString("black_word");
+                        int blackWordImageId = FetchResource.imageId(THIS, blackWord);
                         // Get the red word (resource id) of the sentence word
-                        int redWord = sentenceWord.getInt("red_word");
-
+                        String redWord = sentenceWord.getString("red_word");
+                        int redWordImageId = FetchResource.imageId(THIS, redWord);
                         // Add black word to black words list
-                        blackWords.add(blackWord);
-
+                        blackWords.add(blackWordImageId);
                         // Add red word to red words list
-                        redWords.add(redWord);
-
-                        // Get the image resource id of the sentence word
-                        // This is coincidentally the 'black word'
-                        int imageResourceId = blackWord;
+                        redWords.add(redWordImageId);
 
                         // Create Image View to hold the sentence word
                         ImageView imageView = new ImageView(getApplicationContext());
-
-                        // Set sentence word's image resource to that of the resourceId
-                        imageView.setImageResource(imageResourceId);
+                        // Set sentence word's image resource to that of the resourceId (aka 'blackword')
+                        imageView.setImageResource(blackWordImageId);
 
                         // Set layout params of Image View
                         LinearLayout.LayoutParams imageViewParams = new LinearLayout.LayoutParams(
@@ -2153,9 +1926,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
                         // Get the sound of the sentence word
                         String sound = sentenceWord.getString("sound");
-
                         // Declare sound path
-                        String soundPath = null;
+                        String soundPath;
 
                         // If sound path is valid, get it
                         // Otherwise, assign it a value of "0"
@@ -2163,7 +1935,6 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
                             // Get the sound path
                             soundPath = FetchResource.sound(getApplicationContext(), sound);
-
                             // Add listener to ImageView
                             imageView.setOnClickListener(new SelectedWordListener(thisActivity, soundPathGridSets.size(), soundPathGrid.size(), j));
 
@@ -2174,26 +1945,22 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
                         // Add sound path to list of sounds paths
                         soundPaths.add(soundPath);
-
                         // Add Image View to list of Image Views
                         imageViews.add(imageView);
-
                     }
+
                     // Add Image Views to Image View Grid
                     if (imageViewGrid != null) {
                         imageViewGrid.add(imageViews);
                     }
-
                     // Add black words to black word Grid
                     if (blackWordGrid != null) {
                         blackWordGrid.add(blackWords);
                     }
-
                     // Add red words to red word Grid
                     if (redWordGrid != null) {
                         redWordGrid.add(redWords);
                     }
-
                     // Add sound paths to sound path grid
                     if (soundPathGrid != null) {
                         soundPathGrid.add(soundPaths);
@@ -2205,54 +1972,18 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         if (imageViewGrid != null && imageViewGrid.size() > 0) {
                             imageViewGridSets.add(imageViewGrid);
                         }
-
                         // Add final black word grid to black word grid sets
                         if (blackWordGrid != null && blackWordGrid.size() > 0) {
                             blackWordGridSets.add(blackWordGrid);
                         }
-
                         // Add final red word grid to red word grid sets
                         if (redWordGrid != null && redWordGrid.size() > 0) {
                             redWordGridSets.add(redWordGrid);
                         }
-
                         // Add final sound path grid to sound path grid sets
                         if (soundPathGrid != null && soundPathGrid.size() > 0) {
                             soundPathGridSets.add(soundPathGrid);
                         }
-                    }
-
-                    // See if the current set's Image Views must be displayed
-                    // Do this by checking if the current set is the 'starting set'
-                    if (currentSet == startingSetIndex && imageViewGrid.size() == 1) {
-
-                        // Create new linear layout horizontal row
-                        LinearLayout row = new LinearLayout(getApplicationContext());
-
-                        // Custom colour the background (testing purposes)
-                        // Even number colouring variations
-                        /*if (i % 2 == 0) {
-                            row.setBackgroundColor(Color.CYAN);
-                        } else {
-                            row.setBackgroundColor(Color.MAGENTA);
-                        }*/
-                        row.setOrientation(LinearLayout.HORIZONTAL);
-                        row.setBaselineAligned(true);
-
-                        // Create row layout params
-                        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                        );
-                        row.setLayoutParams(rowParams);
-
-                        // Add Image Views to row
-                        for (int j = 0; j < imageViews.size(); j++) {
-                            row.addView(imageViews.get(j));
-                        }
-
-                        // Add row to col
-                        col.addView(row);
                     }
                 }
 
@@ -2305,16 +2036,192 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 throw new Exception("Sentences are null");
             }
         } catch (Exception ex) {
-            // Finish the activity - it's bugged
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.initStory > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
+        }
+    }
+
+    /**
+     * STORY VIEWS ...
+     */
+    private void initStoryViews() {
+        float dens = getResources().getDisplayMetrics().density;
+
+        clStory = new ConstraintLayout(THIS);
+        ConstraintLayout.LayoutParams clLP = new ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+        );
+        clStory.setLayoutParams(clLP);
+        rootView.addView(clStory);
+
+        int offsetH = 75;
+        int w = 1075;
+        int h = 560-(offsetH/2);
+
+
+        size(clStory, dens, w, h);
+        position(clStory, dens, 100, 50+(offsetH/2));
+
+        // clStory.setBackgroundColor(Color.argb(100, 0, 0, 255));
+
+        List<List<List<ImageView>>> a = imageViewGridSets;
+        List<List<List<WordRect>>> aRects = new ArrayList<>();
+
+        for (int i = 0; i < a.size(); i++) {
+
+            List<List<ImageView>> b = a.get(i);
+            List<List<WordRect>> bRects = new ArrayList();
+
+            for (int j = 0; j < b.size(); j++) {
+                List<ImageView> c = b.get(j);
+                List<WordRect> cRects = new ArrayList<>();
+
+                for (int k = 0; k < c.size(); k++) {
+                    ImageViewContainer ivc = ivc(i, j, k);
+                    cRects.add(getRect(ivc, dens));
+                }
+                bRects.add(cRects);
             }
-            finish();
+            aRects.add(bRects);
+        }
+
+        for (int i = 0; i < a.size(); i++) {
+            List<List<ImageView>> page = imageViewGridSets.get(i);
+
+            List<List<WordRect>> pageRects = WordRect.pack(aRects.get(i), dens, w, h, 145, 31, true, false);
+            int numOfPhrases = pageRects.size();
+
+            for (int j = 0; j < numOfPhrases; j++) {
+
+                List<WordRect> wordRects = pageRects.get(j);
+                int numOfWords = wordRects.size();
+
+                for (int k = 0; k < numOfWords; k++) {
+
+                    WordRect wordRect = wordRects.get(k);
+                    ImageView iv = page.get(j).get(k);
+
+                    addIV(clStory, iv);
+                    resize(iv, dens, wordRect.w, wordRect.h);
+                    reposition(iv, dens, wordRect.x, wordRect.y);
+                    // iv.setBackgroundColor(Color.argb(100, 0, 255, 0));
+                }
+            }
+        }
+    }
+
+    private class ImageViewContainer {
+
+        private ImageView iv;
+        private int resId;
+
+        public ImageViewContainer(ImageView iv, int resId) {
+            this.iv = iv;
+            this.resId = resId;
+        }
+
+        public ImageView getImageView() {
+            return iv;
+        }
+
+        public int getResourceId() {
+            return resId;
+        }
+    }
+
+
+    private WordRect getRect(ImageViewContainer ivc, float density) {
+        ImageView iv = ivc.getImageView();
+        Drawable d = iv.getDrawable();
+        int w = 0;
+        int h = 0;
+        String name = null;
+        if (d != null) {
+            w = (int) ((float) d.getIntrinsicWidth() / density);
+            h = (int) ((float) d.getIntrinsicHeight() / density);
+            name = getResources().getResourceName(ivc.getResourceId()).replace("classact.com.xprize:drawable/", "");
+        }
+        return new WordRect(w, h, name);
+    }
+
+    private WordRect getRect(ImageView iv, float density) {
+        Drawable d = iv.getDrawable();
+        int w = 0;
+        int h = 0;
+        if (d != null) {
+            w = (int) ((float) d.getIntrinsicWidth() / density);
+            h = (int) ((float) d.getIntrinsicHeight() / density);
+        }
+        return new WordRect(w, h, null);
+    }
+
+    private void resize(ImageView iv, float density, int width, int height) {
+        /* System.out.println("Resizing to " + width + ", " + height); */
+        ConstraintLayout.LayoutParams ivLP = (ConstraintLayout.LayoutParams) iv.getLayoutParams();
+        ivLP.width = (int) (density * (float) width);
+        ivLP.height = (int) (density * (float) height);
+        /* System.out.println("ImageView size: w: " + ivLP.width +
+                ", h: " + ivLP.height); */
+        iv.setLayoutParams(ivLP);
+    }
+
+    private void size(ConstraintLayout cl, float density, int width, int height) {
+        RelativeLayout.LayoutParams clLP = (RelativeLayout.LayoutParams) cl.getLayoutParams();
+        clLP.width = (int) (density * (float) width);
+        clLP.height = (int) (density * (float) height);
+        /* System.out.println("Layout padding: t: " + cl.getPaddingTop() +
+                ", b: " + cl.getPaddingBottom() +
+                ", l: " + cl.getPaddingLeft() +
+                ", r: " + cl.getPaddingRight());
+        System.out.println("Layout margins: t: " + clLP.topMargin +
+                ", b: " + clLP.bottomMargin +
+                ", l: " + clLP.leftMargin +
+                ", r: " + clLP.rightMargin);
+        System.out.println("Layout size: w: " + clLP.width +
+                ", h: " + clLP.height); */
+        cl.setLayoutParams(clLP);
+    }
+
+    private void reposition(ImageView iv, float density, int x, int y) {
+        float newX = density * x;
+        float newY = density * y;
+        /* System.out.println("x: " + newX + ", y: " + newY); */
+        iv.setX(newX);
+        iv.setY(newY);
+    }
+
+    private void position(ConstraintLayout cl, float density, int x, int y) {
+        cl.setX(density * x);
+        cl.setY(density * y);
+    }
+
+    private ImageViewContainer ivc(int a, int b, int c) {
+
+        ImageViewContainer ivc = null;
+        try {
+            int id = View.generateViewId();
+            int img = blackWordGridSets.get(a).get(b).get(c);
+
+            ImageView iv = imageViewGridSets.get(a).get(b).get(c);
+            iv.setId(id);
+            iv.setImageResource(img);
+            iv.setVisibility(View.INVISIBLE);
+            iv.setAlpha(0.0f);
+            ivc = new ImageViewContainer(iv, img);
+        } catch (Exception ex) {
+            Toast.makeText(THIS, "Image View does not exist", Toast.LENGTH_SHORT).show();
+        }
+        return ivc;
+    }
+
+    private void addIV(ConstraintLayout c, ImageView iv) {
+        if (iv != null) {
+            LinearLayout parent = (LinearLayout) iv.getParent();
+            if (parent != null) {
+                parent.removeView(iv);
+            }
+            c.addView(iv);
         }
     }
 
@@ -2330,29 +2237,25 @@ public class SimpleStoryActivity extends AppCompatActivity {
             if (questions != null) {
 
                 // Declare array to hold Image Views per comprehension question set
-                ArrayList<ImageView> comprehensionQuestionImageViews;
-
+                List<ImageView> comprehensionQuestionImageViews;
                 // Declare array to hold answer sets (is it right or wrong) per comprehension question set
-                ArrayList<Boolean> comprehensionQuestionAnswers;
+                List<Boolean> comprehensionQuestionAnswers;
 
                 for (int i = 0; i < questions.length(); i++) {
 
                     // Extract question
                     JSONObject question = questions.getJSONObject(i);
-
                     // Extract question images array
                     JSONArray questionImages = question.getJSONArray("images");
-
                     // Initialize array to hold Image Views per comprehension question set
-                    comprehensionQuestionImageViews = new ArrayList<>();
 
+                    comprehensionQuestionImageViews = new ArrayList<>();
                     // Initialize array to hold answer sets (is it right or wrong) per comprehension question set
                     comprehensionQuestionAnswers = new ArrayList<>();
 
                     // Initialize array of image resource ids
                     // Used to validate and remove any duplicate images if existing the data String
-                    ArrayList<Integer> imageResourceIds = new ArrayList<>();
-
+                    List<Integer> imageResourceIds = new ArrayList<>();
                     // Get total number of question images
                     int noOfQuestionImages = questionImages.length();
 
@@ -2374,22 +2277,19 @@ public class SimpleStoryActivity extends AppCompatActivity {
                          * * * * * * * * * * * */
 
                         // Get the image (resource id) of the comprehension question image
-                        int imageResourceId = questionImage.getInt("image");
+                        String image = questionImage.getString("image");
+                        int imageResourceId = FetchResource.imageId(THIS, image);
 
                         if (!imageResourceIds.contains(imageResourceId)) {
 
                             // Add image resource id to list of image resource ids
                             imageResourceIds.add(imageResourceId);
-
                             // Create Image View to hold the comprehension question image
                             ImageView imageView = new ImageView(getApplicationContext());
-
                             // Set comprehension question's image resource to that of the resourceId
                             imageView.setImageResource(imageResourceId);
-
                             // Set adjust view bounds to true
                             imageView.setAdjustViewBounds(true);
-
                             // Set Image View max width
                             imageView.setMaxWidth(500);
 
@@ -2465,16 +2365,64 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 throw new Exception("Comprehension questions are null");
             }
         } catch (Exception ex) {
-            // Finish the activity - it's bugged
-            System.err.println("============================================================");
-            System.err.println("SimpleStoryActivity.initComprehension > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------------");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("============================================================");
-            if (mp != null) {
-                mp.release();
+        }
+    }
+
+    private void initComprehensionViews() {
+        float dens = getResources().getDisplayMetrics().density;
+
+        clComprehension = new ConstraintLayout(THIS);
+        ConstraintLayout.LayoutParams clLP = new ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+        );
+        clComprehension.setLayoutParams(clLP);
+        rootView.addView(clComprehension);
+
+        int w = 1075;
+        int h = 675;
+        int offsetH = 75;
+
+        size(clComprehension, dens, w, h-(offsetH/2));
+        position(clComprehension, dens, 100, 50+(offsetH/2));
+
+        // clComprehension.setBackgroundColor(Color.argb(100, 0, 0, 255));
+
+        List<List<ImageView>> a = mComprehensionQuestionImageViewSets;
+        List<List<List<WordRect>>> aRects = new ArrayList<>();
+
+        for (int i = 0; i < a.size(); i++) {
+
+            List<ImageView> b = a.get(i);
+            List<List<WordRect>> bRects = new ArrayList<>();
+            List<WordRect> cRects = new ArrayList<>();
+
+            for (int j = 0; j < b.size(); j++) {
+                ImageView iv = a.get(i).get(j);
+                iv.setId(View.generateViewId());
+                iv.setAlpha(0.0f);
+                iv.setVisibility(View.INVISIBLE);
+                cRects.add(getRect(iv, dens));
             }
-            finish();
+            bRects.add(cRects);
+            aRects.add(bRects);
+        }
+
+        for (int i = 0; i < aRects.size(); i++) {
+            List<List<WordRect>> pageRects = WordRect.pack(aRects.get(i), dens, w, h, 300, 100, true, true);
+            for (int j = 0; j < pageRects.size(); j++) {
+                List<WordRect> wordRects = pageRects.get(j);
+                for (int k = 0; k < wordRects.size(); k++) {
+                    WordRect wordRect = wordRects.get(k);
+                    ImageView iv = a.get(i).get(k);
+
+                    addIV(clComprehension, iv);
+                    resize(iv, dens, wordRect.w, wordRect.h);
+                    reposition(iv, dens, wordRect.x, wordRect.y);
+                }
+            }
         }
     }
 
@@ -2486,33 +2434,16 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         try{
             String sound = allData.getString("read_each_sentence_after_mother_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            playSound(sound, new Runnable() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     saySentenceWord();
                 }
             });
-            mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2528,11 +2459,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             sayListenFirst();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2553,18 +2481,20 @@ public class SimpleStoryActivity extends AppCompatActivity {
             for (int i = 0; i < sentence.length();i++) {
                 JSONObject word = sentence.getJSONObject(i);
                 item = new ImageView(this);
-                item.setTag(word.getString("sound"));
+                final String sound = word.getString("sound");
                 item.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        playSound(view);
+                        playSound(sound, null);
                     }
                 });
                 if (i > 0)
                     item.setPadding(50,10,0,0);
                 item.setMaxHeight(143);
-                item.setImageResource(word.getInt("black_word"));
-                width += ImageHelper.getLength(word.getInt("black_word"),this);
+                String blackWordImage = word.getString("black_word");
+                int blackWordImageId = FetchResource.imageId(THIS, blackWordImage);
+                item.setImageResource(blackWordImageId);
+                width += ImageHelper.getLength(blackWordImageId,this);
                 if (width > 1150){
                     container.addView(line);
                     line = getLine();
@@ -2572,17 +2502,14 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 }
                 line.addView(item);
                 sentenceViews.add(item);
-                sounds.add(new String(word.getString("sound")));
+                sounds.add(word.getString("sound"));
             }
             container.addView(line);
             currentSound = 0;
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2593,33 +2520,16 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         try{
             String sound = allData.getString("listen_first_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            playSound(sound, new Runnable() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     saySentenceWord();
                 }
             });
-            mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2632,39 +2542,22 @@ public class SimpleStoryActivity extends AppCompatActivity {
             if (currentSound < sounds.size()) {
                 turnWord("red_word");
                 String sound = sounds.get(currentSound);
-                String soundPath = FetchResource.sound(getApplicationContext(), sound);
-                if (mp == null) {
-                    mp = new MediaPlayer();
-                }
-                mp.reset();
-                mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                playSound(sound, new Runnable() {
                     @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        mp.start();
-                    }
-                });
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp.reset();
+                    public void run() {
                         turnWord("black_word");
                         currentSound++;
                         saySentenceWord();
                     }
                 });
-                mp.prepare();
             }
             else{
                 sayItsYourTurn();
             }
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2675,35 +2568,18 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         try{
             String sound = allData.getString("now_read_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            playSound(sound, new Runnable() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     currentSound = -1;
                     //currentSentence = 1;
                     handler.postDelayed(showSentenceWithoutSound,100);
                 }
             });
-            mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2724,11 +2600,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             }
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2747,10 +2620,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             }
             catch(Exception ex){
                 ex.printStackTrace();
-                if (mp != null){
-                    mp.release();
-                }
-                finish();
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                ex.printStackTrace();
             }
         }
     };
@@ -2802,11 +2673,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2842,11 +2710,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2881,11 +2746,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2920,11 +2782,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2984,11 +2843,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -2999,33 +2855,16 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         try {
             String sound = allData.getString("now_answer_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            playSound(sound, new Runnable() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     doComprehension();
                 }
             });
-            mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -3041,11 +2880,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             nextQuestion();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -3060,51 +2896,47 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 JSONObject question = questions.getJSONObject(currentQuestion);
                 if (question.getInt("is_touch") == 1){ //Three objects
                     singleImage.setVisibility(View.INVISIBLE);
-                    tripleImageThree.setVisibility(View.VISIBLE);
                     trippleImageOne.setVisibility(View.VISIBLE);
                     trippleImageTwo.setVisibility(View.VISIBLE);
-                    trippleImageOne.setImageResource(question.getJSONArray("images").getJSONObject(0).getInt("image"));
-                    trippleImageOne.setImageResource(question.getJSONArray("images").getJSONObject(1).getInt("image"));
-                    trippleImageOne.setImageResource(question.getJSONArray("images").getJSONObject(2).getInt("image"));
+                    tripleImageThree.setVisibility(View.VISIBLE);
+
+                    String imageOne = question.getJSONArray("images").getJSONObject(0).getString("image");
+                    String imageTwo = question.getJSONArray("images").getJSONObject(1).getString("image");
+                    String imageThree = question.getJSONArray("images").getJSONObject(2).getString("image");
+
+                    int imageOneId = FetchResource.imageId(THIS, imageOne);
+                    int imageTwoId = FetchResource.imageId(THIS, imageTwo);
+                    int imageThreeId = FetchResource.imageId(THIS, imageThree);
+
+                    trippleImageOne.setImageResource(imageOneId);
+                    trippleImageTwo.setImageResource(imageTwoId);
+                    tripleImageThree.setImageResource(imageThreeId);
                 }
                 else{
                     singleImage.setVisibility(View.VISIBLE);
-                    tripleImageThree.setVisibility(View.INVISIBLE);
                     trippleImageOne.setVisibility(View.INVISIBLE);
                     trippleImageTwo.setVisibility(View.INVISIBLE);
-                    singleImage.setImageResource(question.getJSONArray("images").getJSONObject(0).getInt("image"));
+                    tripleImageThree.setVisibility(View.INVISIBLE);
+                    String image = question.getJSONArray("images").getJSONObject(0).getString("image");
+                    int imageId = FetchResource.imageId(THIS, image);
+                    singleImage.setImageResource(imageId);
 
                 }
                 String sound = question.getString("question_sound");
-                String soundPath = FetchResource.sound(getApplicationContext(), sound);
-                if (mp == null) {
-                    mp = new MediaPlayer();
-                }
-                mp.reset();
-                mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                playSound(sound, new Runnable() {
                     @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        mp.start();
-                    }
-                });
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
+                    public void run() {
                         try {
-                            mp.reset();
                             JSONObject question = questions.getJSONObject(currentQuestion);
                             if (question.getInt("is_touch") == 0) { //Three objects
                                 handler.postDelayed(plaSingleImageAnswerRunnable, 3000);
                             }
-                        }
-                        catch (Exception ex){
+                        } catch (Exception ex) {
+                            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                             ex.printStackTrace();
-                            finish();
                         }
                     }
                 });
-                mp.prepare();
             }
             else{
                 if (mp != null){
@@ -3114,11 +2946,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
             }
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -3139,36 +2968,21 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         try{
             JSONObject question = questions.getJSONObject(currentQuestion);
-            singleImage.setImageResource(question.getJSONArray("images").getJSONObject(0).getInt("image"));
+            String image = question.getJSONArray("images").getJSONObject(0).getString("image");
+            int imageId = FetchResource.imageId(THIS, image);
+            singleImage.setImageResource(imageId);
             String sound = question.getString("answer_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            playSound(sound, new Runnable() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     currentQuestion++;
                     nextQuestion();
                 }
             });
-            mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -3183,13 +2997,50 @@ public class SimpleStoryActivity extends AppCompatActivity {
         return line;
     }
 
-    public void playSound(View v){
+    private void turnWord(String turnString){
 
         // Debug
-        System.out.println(":: SimpleStoryActivity.playSound > Debug: METHOD CALLED");
+        System.out.println(":: SimpleStoryActivity.turnWord > Debug: METHOD CALLED");
 
         try{
-            String sound = (String) v.getTag();
+            JSONArray sentence = sentences.getJSONArray(currentSentence);
+            JSONObject word = sentence.getJSONObject(currentSound);
+            ImageView image = sentenceViews.get(currentSound);
+            String picture = word.getString(turnString);
+            int pictureImageId = FetchResource.imageId(THIS, picture);
+            if (pictureImageId > 0)
+                image.setImageResource(pictureImageId);
+        }
+        catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
+
+    private  void imageClicked(int image){
+
+        // Debug
+        System.out.println(":: SimpleStoryActivity.imageClicked > Debug: METHOD CALLED");
+
+        try {
+            JSONObject question = questions.getJSONObject(currentQuestion);
+            if (question.getJSONArray("images").getJSONObject(image).getInt("is_right") == 1){
+                playSound(FetchResource.positiveAffirmation(THIS), null);
+                currentQuestion++;
+                nextQuestion();
+            }
+            else{;
+                playSound(FetchResource.negativeAffirmation(THIS), null);
+            }
+        }
+        catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
+
+    private void playSound(String sound, final Runnable action) {
+        try {
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -3206,166 +3057,39 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
-                }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    private void turnWord(String turnString){
-
-        // Debug
-        System.out.println(":: SimpleStoryActivity.turnWord > Debug: METHOD CALLED");
-
-        try{
-            JSONArray sentence = sentences.getJSONArray(currentSentence);
-            JSONObject word = sentence.getJSONObject(currentSound);
-            ImageView image = sentenceViews.get(currentSound);
-            int picture = word.getInt(turnString);
-            if (picture > 0)
-                image.setImageResource(picture);
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    //
-    public void populateFullStory(){
-
-        // Debug
-        System.out.println(":: SimpleStoryActivity.populateFullStory > Debug: METHOD CALLED");
-
-        try {
-            int lines = 0;
-            boolean done = false;
-            container.removeAllViews();
-            container.setVisibility(View.VISIBLE);
-            while (!done) {
-                JSONArray sentence = sentences.getJSONArray(currentSentence);
-                LinearLayout line = getLine();
-                ImageView item;
-                int width = 0;
-                for (int i = 0; i < sentence.length(); i++) {
-                    JSONObject word = sentence.getJSONObject(i);
-                    item = new ImageView(this);
-                    item.setTag(word.getString("sound"));
-                    item.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            playSound(view);
-                        }
-                    });
-                    if (i > 0)
-                        item.setPadding(50, 10, 0, 0);
-                    item.setMaxHeight(143);
-                    item.setImageResource(word.getInt("black_word"));
-                    width += ImageHelper.getLength(word.getInt("black_word"), this);
-                    if (width > 1150) {
-                        lines ++;
-                        container.addView(line);
-                        line = getLine();
-                        width = 0;
+                    if (action != null) {
+                        action.run();
                     }
-                    line.addView(item);
-                }
-                lines++;
-                currentSentence++;
-                if ((lines > 5) || (currentSentence > sentences.length()))
-                    done = true;
-                container.addView(line);
-            }
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    private  void imageClicked(int image){
-
-        // Debug
-        System.out.println(":: SimpleStoryActivity.imageClicked > Debug: METHOD CALLED");
-
-        try {
-            JSONObject question = questions.getJSONObject(currentQuestion);
-            if (question.getJSONArray("images").getJSONObject(image).getInt("is_right") == 1){
-                playSound(ResourceSelector.getPositiveAffirmationSound(this));
-                currentQuestion++;
-                nextQuestion();
-            }
-            else{
-                playSound(ResourceSelector.getNegativeAffirmationSound(this));
-            }
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    public void playSound(int sound){
-
-        // Debug
-        System.out.println(":: SimpleStoryActivity.playSound > Debug: METHOD CALLED");
-
-        try{
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
                 }
             });
             mp.prepare();
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            if (action != null) {
+                action.run();
             }
-            finish();
         }
     }
 
     @Override
     public void onPause(){
         super.onPause();
-
-        // Debug
-        System.out.println(":: SimpleStoryActivity.onPause > Debug: METHOD CALLED");
-
-        /*if (mp != null){
+        if (mp != null){
             mp.release();
-        }*/
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mp != null) {
+            mp.release();
+        }
+        if (handler != null) {
+            handler = null;
+        }
     }
 
     @Override
@@ -3381,8 +3105,10 @@ public class SimpleStoryActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (mp != null) {
-            mp.stop();
             mp.release();
+        }
+        if (handler != null) {
+            handler = null;
         }
         setResult(Code.NAV_MENU);
         finish();

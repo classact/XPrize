@@ -1,18 +1,23 @@
 package classact.com.xprize.activity.drill.math;
 
 import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.Context;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.util.SparseArray;
 import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,9 +27,12 @@ import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
+import classact.com.xprize.control.Numeral;
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
-public class MathsDrillSixAndThreeActivity extends AppCompatActivity {
+public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements View.OnTouchListener, View.OnDragListener {
     private JSONObject allData;
     private MediaPlayer mp;
     private Handler handler;
@@ -37,7 +45,13 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity {
     private int draggedItems = 0;
     private RelativeLayout monkeyMouth;
     private int targetItems = 0;
-    private boolean isInReceptacle;
+
+    private SparseArray<NumberObject> numberObjects;
+
+    private boolean dragEnabled;
+    private boolean touchEnabled;
+
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,67 +80,54 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity {
             }
         });
         monkeyMouth = (RelativeLayout) findViewById(R.id.monkeyEnclosure);
-        monkeyMouth.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                int action = event.getAction();
-                if (action == DragEvent.ACTION_DRAG_ENTERED)
-                    isInReceptacle = true;
-                else if (action == DragEvent.ACTION_DRAG_EXITED)
-                    isInReceptacle = false;
-                else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle) {
-                    try {
-                        draggedItems ++;
-                        if (draggedItems == targetItems){
-                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable(){
-                                @Override
-                                public void run(){
-                                    sayTouch();
-                                }
-                            },500);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        finish();
-                    }
-                }
-                else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle) {
-                    try {
-                        if ( draggedItems > targetItems) {
-                            playSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
-                        }
-                        else{
-                            ImageView view = (ImageView) event.getLocalState();
-                            view.setVisibility(View.INVISIBLE);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        finish();
-                    }
-                }
-                return true;
-            }
-        });
+        monkeyMouth.setOnDragListener(this);
         initialise();
     }
 
-    private void playSound(int soundId){
+    private void initialise(){
         try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
-            mp.reset();
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String drillData = getIntent().getExtras().getString("data");
+            allData = new JSONObject(drillData);
+            setupObjects();
+            numbers = allData.getJSONArray("drill_specific_numbers");
+            setupNumbers();
+            setupNumberObjects();
+            targetItems = allData.getInt("number_of_eaten_objects");
+
+            touchEnabled = false;
+            dragEnabled = false;
+
+            String sound = allData.getString("monkey_is_hungry");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
+                    sayMonkeyEats();
                 }
             });
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            finish();
+        }
+    }
+
+    private void setupObjects(){
+        try{
+            dragEnabled = false; // disable drag
+            draggedItems = 0;
+            int count = allData.getInt("number_of_objects");
+            String res = allData.getString("objects_image");
+            int resId = FetchResource.imageId(THIS, res);
+            for(int i = 0; i < count;i++){
+                ImageView image = (ImageView) objectsContainer.getChildAt(i);
+                image.setImageResource(resId);
+                image.setVisibility(View.VISIBLE);
+                image.setOnTouchListener(this);
+            }
+        }
+        catch(Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
         }
     }
 
@@ -151,245 +152,353 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity {
                 }
                 switch (pos) {
                     case 0:
-                        numberOne.setImageResource(numbers.getJSONObject(i).getInt("image"));
+                        JSONObject number = numbers.getJSONObject(i);
+                        String imageName = number.getString("image");
+                        int value = number.getInt("value");
+                        int imageId = FetchResource.imageId(THIS, imageName);
+                        numberOne.setImageResource(imageId);
+                        numberOne.setTag(String.valueOf(value));
+                        numberOne.setAlpha(0.2f);
                         break;
                     case 1:
-                        numberTwo.setImageResource(numbers.getJSONObject(i).getInt("image"));
+                        number = numbers.getJSONObject(i);
+                        imageName = number.getString("image");
+                        value = number.getInt("value");
+                        imageId = FetchResource.imageId(THIS, imageName);
+                        numberTwo.setImageResource(imageId);
+                        numberTwo.setTag(String.valueOf(value));
+                        numberTwo.setAlpha(0.2f);
                         break;
                     case 2:
-                        numberThree.setImageResource(numbers.getJSONObject(i).getInt("image"));
+                        number = numbers.getJSONObject(i);
+                        imageName = number.getString("image");
+                        value = number.getInt("value");
+                        imageId = FetchResource.imageId(THIS, imageName);
+                        numberThree.setImageResource(imageId);
+                        numberThree.setTag(String.valueOf(value));
+                        numberThree.setAlpha(0.2f);
+                        break;
+                    default:
                         break;
                 }
             }
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            finish();
         }
     }
 
-    public boolean dragItem(View view, MotionEvent motionEvent){
-        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-            ClipData data = ClipData.newPlainText("", "");
-            View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
-                    view);
-            view.startDrag(data, shadowBuilder, view, 0);
-            isInReceptacle = false;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private void setupObjects(){
-        try{
-            draggedItems = 0;
-            int count = allData.getInt("number_of_objects");
-            int resId = allData.getInt("objects_image");
-            for(int i = 0; i < count;i++){
-                ImageView image = (ImageView)objectsContainer.getChildAt(i);
-                image.setImageResource(resId);
-                image.setVisibility(View.VISIBLE);
-                image.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        return dragItem(v,event);
-                    }
-                });
+    private void setupNumberObjects() {
+        try {
+            numberObjects = new SparseArray<>();
+            JSONArray numberObjectsArray = allData.getJSONArray("count_numbers");
+            for (int i = 0; i < numberObjectsArray.length(); i++) {
+                JSONObject number = numberObjectsArray.getJSONObject(i);
+                String image = number.getString("image");
+                String sound = number.getString("sound");
+                int value = number.getInt("value");
+                numberObjects.put(value, new NumberObject(image, sound, value));
             }
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            finish();
         }
     }
 
     public void numberClicked(int position){
-        try {
-            int correct = numbers.getJSONObject(positions[position - 1]).getInt("right");
-            int sound = ResourceSelector.getPositiveAffirmationSound(getApplicationContext());
-            mp.reset();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.release();
-                    finish();
+        if (touchEnabled) {
+            try {
+                JSONObject number = numbers.getJSONObject(positions[position - 1]);
+                int numberValue = number.getInt("value");
+                String numberSound = numberObjects.get(numberValue).getSound();
+
+                if (numberValue == targetItems) {
+                    touchEnabled = false;
+                    playSound(numberSound, new Runnable() {
+                        @Override
+                        public void run() {
+                            end();
+                        }
+                    });
+                } else {
+                    playSound(numberSound, new Runnable() {
+                        @Override
+                        public void run() {
+                            playSound(FetchResource.negativeAffirmation(THIS), null);
+                        }
+                    });
                 }
-            });
-            if (correct == 0) {
-                sound = ResourceSelector.getNegativeAffirmationSound(getApplicationContext());
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp.reset();
-                    }
-                });
+            } catch (Exception ex) {
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                ex.printStackTrace();
             }
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
-
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            finish();
-        }
-    }
-
-    private void initialise(){
-        try {
-            String drillData = getIntent().getExtras().getString("data");
-            allData = new JSONObject(drillData);
-            setupObjects();
-            numbers = allData.getJSONArray("numerals");
-            setupNumbers();
-            int sound = allData.getInt("monkey_is_hungry");
-            targetItems = allData.getInt("number_of_eaten_objects");
-            mp = MediaPlayer.create(this, sound);
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    sayMonkeyEats();
-                }
-            });
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            finish();
         }
     }
 
     private void sayMonkeyEats(){
         try{
-            int sound = allData.getInt("he_eats_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = allData.getString("he_eats_sound");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     sayItemsEaten();
                 }
             });
-            mp.start();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            finish();
         }
     }
 
     private void sayItemsEaten(){
         try{
-            int sound = allData.getInt("objects_eaten");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = allData.getString("objects_eaten");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     sayDrag();
                 }
             });
-            mp.start();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            finish();
         }
     }
 
 
     private void sayDrag(){
         try{
-            int sound = allData.getInt("drag_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = allData.getString("drag_sound");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     sayobjectsEatenAgain();
                 }
             });
-            mp.start();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            finish();
         }
     }
 
     private void sayobjectsEatenAgain(){
         try{
-            int sound = allData.getInt("objects_eaten");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = allData.getString("objects_eaten");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     sayToMonkeysMouth();
                 }
             });
-            mp.start();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            finish();
         }
     }
 
     private void sayToMonkeysMouth(){
         try{
-            int sound = allData.getInt("to_the_monkey_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = allData.getString("to_the_monkey_sound");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
+                    dragEnabled = true;
                 }
             });
-            mp.start();
         }
         catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            finish();
+        }
+    }
+
+    private void nextSequence() {
+        try {
+            playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                @Override
+                public void run() {
+                    sayTouch();
+                }
+            });
+        } catch (Exception ex) {
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
         }
     }
 
     private void sayTouch(){
         try{
-            int sound = allData.getInt("touch_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            String sound = allData.getString("touch_sound");
+            playSound(sound, new Runnable() {
+                @Override
+                public void run() {
+                    numberOne.setAlpha(1.0f);
+                    numberTwo.setAlpha(1.0f);
+                    numberThree.setAlpha(1.0f);
+                    touchEnabled = true;
+                }
+            });
+        }
+        catch (Exception ex){
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
+
+    private void end() {
+        playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+            @Override
+            public void run() {
+                if (mp != null) {
+                    mp.release();
+                }
+                finish();
+            }
+        });
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        final int action = event.getAction();
+        try {
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    String tag = (String) v.getTag();
+                    ClipData.Item item = new ClipData.Item(tag);
+                    ClipData dragData = new ClipData(tag, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
+                    View.DragShadowBuilder dragShadow = new View.DragShadowBuilder(v);
+                    v.startDragAndDrop(dragData, dragShadow, v, 0);
+                    v.setVisibility(View.INVISIBLE);
+                    return true;
+                default:
+                    break;
+            }
+        } catch (Exception ex) {
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onDrag(View v, DragEvent event) {
+        final int action = event.getAction();
+        try {
+            switch (action) {
+                case DragEvent.ACTION_DRAG_STARTED:
+                    if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                        return true;
+                    }
+                    return false;
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    return true;
+                case DragEvent.ACTION_DRAG_LOCATION:
+                    return true;
+                case DragEvent.ACTION_DRAG_EXITED:
+                    return true;
+                case DragEvent.ACTION_DROP:
+                    if (dragEnabled) {
+                        if (draggedItems < targetItems) {
+                            draggedItems++;
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                case DragEvent.ACTION_DRAG_ENDED:
+                    if (event.getResult()) {
+                        ImageView view = (ImageView) event.getLocalState();
+                        view.setVisibility(View.INVISIBLE);
+                        String numberSound = numberObjects.get(draggedItems).getSound();
+
+                        if (draggedItems >= targetItems) {
+                            dragEnabled = false;
+                            playSound(numberSound, new Runnable() {
+                                @Override
+                                public void run() {
+                                    nextSequence();
+                                }
+                            });
+                        } else {
+                            playSound(numberSound, null);
+                        }
+                    } else {
+                        ImageView view = (ImageView) event.getLocalState();
+                        view.setVisibility(View.VISIBLE);
+                    }
+                    return true;
+                default:
+                    break;
+            }
+        } catch (Exception ex) {
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    private class NumberObject {
+        private String image;
+        private String sound;
+        private int value;
+
+        private NumberObject(String image, String sound, int value) {
+            this.image = image;
+            this.sound = sound;
+            this.value = value;
+        }
+
+        public String getImage() {
+            return image;
+        }
+
+        public String getSound() {
+            return sound;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+
+    private void playSound(String sound, final Runnable action) {
+        try {
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
+                    if (action != null) {
+                        action.run();
+                    }
                 }
             });
-            mp.start();
-        }
-        catch (Exception ex){
+            mp.prepare();
+        } catch (Exception ex) {
             ex.printStackTrace();
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            if (action != null) {
+                action.run();
+            }
         }
     }
 
@@ -414,7 +523,6 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (mp != null) {
-            mp.stop();
             mp.release();
         }
         setResult(Code.NAV_MENU);

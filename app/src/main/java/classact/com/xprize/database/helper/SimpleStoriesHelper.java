@@ -57,7 +57,7 @@ public class SimpleStoriesHelper {
 
     public static ArrayList<Integer> getSentences(SQLiteDatabase db, int languageID, int unitId){
         ArrayList<Integer> sentences = new ArrayList<>();
-        Cursor cursor = db.rawQuery("select _id from tbl_SimpleStories where LanguageID = "+languageID+" and UnitID = " + unitId + ";", null);
+        Cursor cursor = db.rawQuery("select distinct SentenceID from tbl_SimpleStoryWords where LanguageID = "+languageID+" and UnitID = " + unitId + ";", null);
         //DrillWords drillWord = new DrillWords();
         int sentence=0;
         try {

@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -9,338 +10,452 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import org.json.JSONObject;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
+import classact.com.xprize.utils.FetchResource;
+import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class MathsDrillSixAndTwoActivity extends AppCompatActivity {
-    private ImageView largeShapeOne;
-    private ImageView smallShapeOne;
-    private ImageView largeShapeTwo;
-    private ImageView smallShapeTwo;
+    private ImageView shapeContainerOne;
+    private ImageView shapeContainerTwo;
+    private ImageView shapeContainerThree;
+    private ImageView shapeContainerFour;
     private MediaPlayer mp;
     private JSONObject allData;
+
+    private boolean touchEnabled;
+
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_six_and_two);
-        largeShapeOne = (ImageView)findViewById(R.id.big_shape_one);
-        largeShapeOne.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                objectClicked("large_object_one");
-            }
-        });
-        smallShapeOne = (ImageView)findViewById(R.id.small_shape_one);
-        smallShapeOne.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                objectClicked("small_object_one");
-            }
-        });
-        largeShapeTwo = (ImageView)findViewById(R.id.big_shape_two);
-        largeShapeTwo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                objectClicked("large_object_two");
-            }
-        });
-        smallShapeTwo = (ImageView)findViewById(R.id.small_shape_two);
-        smallShapeTwo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                objectClicked("small_object_two");
-            }
-        });
+
+        shapeContainerOne = (ImageView)findViewById(R.id.big_shape_one);
+        shapeContainerTwo = (ImageView)findViewById(R.id.small_shape_one);
+        shapeContainerThree = (ImageView)findViewById(R.id.big_shape_two);
+        shapeContainerFour = (ImageView)findViewById(R.id.small_shape_two);
+
+        shapeContainerOne.setImageResource(0);
+        shapeContainerTwo.setImageResource(0);
+        shapeContainerThree.setImageResource(0);
+        shapeContainerFour.setImageResource(0);
+
+        RelativeLayout.LayoutParams shapeContainerOneLP = (RelativeLayout.LayoutParams) shapeContainerOne.getLayoutParams();
+        RelativeLayout.LayoutParams shapeContainerTwoLP = (RelativeLayout.LayoutParams) shapeContainerTwo.getLayoutParams();
+        RelativeLayout.LayoutParams shapeContainerThreeLP = (RelativeLayout.LayoutParams) shapeContainerThree.getLayoutParams();
+        RelativeLayout.LayoutParams shapeContainerFourLP = (RelativeLayout.LayoutParams) shapeContainerFour.getLayoutParams();
+
+        shapeContainerOneLP.topMargin = 240;
+        shapeContainerTwoLP.topMargin = 240;
+        shapeContainerThreeLP.topMargin = 150;
+        shapeContainerFourLP.topMargin = 150;
+
+        shapeContainerOneLP.leftMargin = 350;
+        shapeContainerTwoLP.leftMargin = 150;
+        shapeContainerThreeLP.leftMargin = 350;
+        shapeContainerFourLP.leftMargin = 150;
+
+        shapeContainerOneLP.width = 475;
+        shapeContainerTwoLP.width = 475;
+        shapeContainerThreeLP.width = 475;
+        shapeContainerFourLP.width = 475;
+
+        shapeContainerOneLP.height = 475;
+        shapeContainerTwoLP.height = 475;
+        shapeContainerThreeLP.height = 475;
+        shapeContainerFourLP.height = 475;
+
+        shapeContainerOne.setLayoutParams(shapeContainerOneLP);
+        shapeContainerTwo.setLayoutParams(shapeContainerTwoLP);
+        shapeContainerThree.setLayoutParams(shapeContainerThreeLP);
+        shapeContainerFour.setLayoutParams(shapeContainerFourLP);
+
         initialise();
-    }
-
-    private void objectClicked(String touchedObject){
-        try{
-            String objectToTouch = allData.getString("object_to_touch");
-            if (objectToTouch.equalsIgnoreCase(touchedObject)){
-                playSound(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable(){
-                    public void run(){
-                        finish();
-                    }
-                },500);
-            }
-            else{
-                playSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
-            }
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            finish();
-        }
-    }
-
-    private void playSound(int soundId){
-        try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
-            mp.reset();
-            mp.setDataSource(this, myUri);
-            mp.prepare();
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                }
-            });
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            finish();
-        }
     }
 
     public void initialise(){
         try{
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
-            largeShapeOne.setImageResource(allData.getInt("object_one"));
-            smallShapeOne.setImageResource(allData.getInt("object_one"));
-            largeShapeTwo.setImageResource(allData.getInt("object_two"));
-            smallShapeTwo.setImageResource(allData.getInt("object_two"));
-            int sound = allData.getInt("lets_look_at_shapes");
-            mp = MediaPlayer.create(this, sound);
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+            JSONObject shapeOne = allData.getJSONObject("object_one");
+            JSONObject shapeTwo = allData.getJSONObject("object_two");
+
+            String shapeOneImage = shapeOne.getString("image_name");
+            String shapeTwoImage = shapeTwo.getString("image_name");
+
+            int shapeOneImageId = FetchResource.imageId(THIS, shapeOneImage);
+            int shapeTwoImageId = FetchResource.imageId(THIS, shapeTwoImage);
+
+            ImageView[] orderedSquareContainers = {
+                    shapeContainerOne,
+                    shapeContainerTwo,
+                    shapeContainerThree,
+                    shapeContainerFour
+            };
+            int numOfContainers = orderedSquareContainers.length;
+            int[] s = FisherYates.shuffle(numOfContainers);
+            ImageView[] shuffledSquareContainers = new ImageView[numOfContainers];
+
+            for (int i = 0; i < numOfContainers; i++) {
+                shuffledSquareContainers[i] = orderedSquareContainers[s[i]];
+            }
+
+            final float BIG_SCALE = 1.25f;
+            final float SMALL_SCALE = 0.75f;
+
+            boolean morphBigger = false;
+            boolean isShapeOne = false;
+
+            final String SMALL_SIZE = "small";
+            final String BIG_SIZE = "big";
+
+            final String comparativeSound = allData.getString("object_comparative_sound");
+            String strippedComparativeSound = comparativeSound.replace("s_", ""); // location friendly
+
+            if (strippedComparativeSound.contains(shapeOneImage)) {
+                isShapeOne = true;
+            } else if (strippedComparativeSound.contains(shapeTwoImage)) {
+                isShapeOne = false;
+            } else {
+                String errorMessage = "drill data - invalid comparative shape (no valid shape given)";
+                Globals.bugBar(this.findViewById(android.R.id.content), errorMessage, comparativeSound).show();
+                throw new Exception(errorMessage);
+            }
+
+            if (strippedComparativeSound.contains(BIG_SIZE)) {
+                morphBigger = true;
+            } else if (strippedComparativeSound.contains(SMALL_SIZE)) {
+                morphBigger = false;
+            } else {
+                String errorMessage = "drill data - invalid comparative shape (no valid shape size given)";
+                Globals.bugBar(this.findViewById(android.R.id.content), errorMessage, comparativeSound).show();
+                throw new Exception(errorMessage);
+            }
+
+            // Get singular sounds
+            final String shapeOneSingularSound = shapeOne.getString("singular_sound");
+            final String shapeTwoSingularSound = shapeTwo.getString("singular_sound");
+
+            // Big shape one
+            ImageView iv1 = shuffledSquareContainers[0];
+            iv1.setImageResource(shapeOneImageId);
+            iv1 = scale(iv1, BIG_SCALE);
+            iv1.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void onClick(View v) {
+                    objectClicked(shapeOneSingularSound);
+                }
+            });
+
+            // Small shape two
+            ImageView iv2 = shuffledSquareContainers[1];
+            iv2.setImageResource(shapeTwoImageId);
+            iv2 = scale(iv2, SMALL_SCALE);
+            iv2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    objectClicked(shapeTwoSingularSound);
+                }
+            });
+
+            // Big shape two
+            ImageView iv3 = shuffledSquareContainers[2];
+            iv3.setImageResource(shapeTwoImageId);
+            iv3 = scale(iv3, BIG_SCALE);
+            iv3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    objectClicked(shapeTwoSingularSound);
+                }
+            });
+
+            // Small shape one
+            ImageView iv4 = shuffledSquareContainers[3];
+            iv4.setImageResource(shapeOneImageId);
+            iv4 = scale(iv4, SMALL_SCALE);
+            iv3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    objectClicked(shapeOneSingularSound);
+                }
+            });
+
+            if (morphBigger) {
+                if (isShapeOne) {
+                    // Big and shape one
+                    iv1.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            objectClicked(comparativeSound);
+                        }
+                    });
+                } else {
+                    // Big and shape two
+                    iv3.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            objectClicked(comparativeSound);
+                        }
+                    });
+                }
+            } else {
+                if (isShapeOne) {
+                    // Small and shape one
+                    iv4.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            objectClicked(comparativeSound);
+                        }
+                    });
+                } else {
+                    // Small and shape two
+                    iv2.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            objectClicked(comparativeSound);
+                        }
+                    });
+                }
+            }
+
+            // Disable touch
+            touchEnabled = false;
+
+            String sound = allData.getString("lets_look_at_shapes");
+            playSound(sound, new Runnable() {
+                @Override
+                public void run() {
                     sayTheseArea();
                 }
             });
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
+        }
+    }
+
+    private ImageView scale(ImageView iv, float sv) {
+        iv.setScaleX(sv);
+        iv.setScaleY(sv);
+        return iv;
+    }
+
+    private void objectClicked(String touchedObject){
+        try{
+            if (touchEnabled) {
+                String objectToTouch = allData.getString("object_comparative_sound");
+                if (objectToTouch.equalsIgnoreCase(touchedObject)) {
+                    touchEnabled = false;
+                    playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mp != null) {
+                                mp.release();
+                            }
+                            finish();
+                        }
+                    });
+                } else {
+                    playSound(FetchResource.negativeAffirmation(THIS), null);
+                }
+            }
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 
     private void sayTheseArea(){
         try {
-            int sound = allData.getInt("these_are_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = allData.getString("these_are_sound");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    sayObjectsOne();
+                public void run() {
+                    sayObjectOne();
                 }
             });
-            mp.start();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
         }
     }
 
-
-    private void sayObjectsOne(){
+    private void sayObjectOne() {
         try {
-            int sound = allData.getInt("objects_one_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = allData.getJSONObject("object_one").getString("plural_sound");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     sayAnd();
                 }
             });
-            mp.start();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
-        }
-    }
-    private void sayAnd(){
-        try {
-            int sound = allData.getInt("and_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    sayObjectsTwo();
-                }
-            });
-            mp.start();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            finish();
         }
     }
 
-    private void sayObjectsTwo(){
+    private void sayAnd(){
         try {
-            int sound = allData.getInt("objects_two_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = allData.getString("and_sound");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
+                    sayObjectTwo();
+                }
+            });
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
+    private void sayObjectTwo() {
+        try {
+            String sound = allData.getJSONObject("object_two").getString("plural_sound");
+            playSound(sound, new Runnable() {
+                @Override
+                public void run() {
                     sayRepeat();
                 }
             });
-            mp.start();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
         }
     }
-
 
     private void sayRepeat(){
         try {
-            int sound = allData.getInt("repeat_afterme_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = allData.getString("repeat_afterme_sound");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    sayObjectsOneAgain();
+                public void run() {
+                    sayObjectOneAgain();
                 }
             });
-            mp.start();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
         }
     }
 
-    private void sayObjectsOneAgain(){
+    private void sayObjectOneAgain(){
         try {
-            int sound = allData.getInt("objects_one_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = allData.getJSONObject("object_one").getString("plural_sound");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     sayAndAgain();
                 }
             });
-            mp.start();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
-        }
-    }
-    private void sayAndAgain(){
-        try {
-            int sound = allData.getInt("and_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    sayObjectsTwoAgain();
-                }
-            });
-            mp.start();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            finish();
         }
     }
 
-    private void sayObjectsTwoAgain(){
+    private void sayAndAgain(){
         try {
-            int sound = allData.getInt("objects_two_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = allData.getString("and_sound");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    sayTouch();
+                public void run() {
+                    sayObjectTwoAgain();
                 }
             });
-            mp.start();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
+        }
+    }
+
+    private void sayObjectTwoAgain(){
+        try {
+            String sound = allData.getJSONObject("object_two").getString("plural_sound");
+            playSound(sound, new Runnable() {
+                @Override
+                public void run() {
+                    sayTouch();
+                }
+            });
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 
     private void sayTouch(){
         try{
-            int sound = allData.getInt("touch_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            String sound = allData.getString("touch_sound");
+            playSound(sound, new Runnable() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     sayObjectToTouch();
                 }
             });
-            mp.start();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
         }
     }
 
     private void sayObjectToTouch(){
         try {
-            int sound = allData.getInt("object_to_touch_sound");
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + sound);
+            String sound = allData.getString("object_comparative_sound");
+            playSound(sound, new Runnable() {
+                @Override
+                public void run() {
+                    touchEnabled = true;
+                }
+            });
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
+    private void playSound(String sound, final Runnable action) {
+        try {
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
             mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
+                    if (action != null) {
+                        action.run();
+                    }
                 }
             });
-            mp.start();
-        }
-        catch (Exception ex){
+            mp.prepare();
+        } catch (Exception ex) {
             ex.printStackTrace();
-            finish();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            if (action != null) {
+                action.run();
+            }
         }
     }
 
@@ -365,7 +480,6 @@ public class MathsDrillSixAndTwoActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (mp != null) {
-            mp.stop();
             mp.release();
         }
         setResult(Code.NAV_MENU);

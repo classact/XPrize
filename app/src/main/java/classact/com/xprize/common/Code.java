@@ -30,6 +30,7 @@ public class Code {
     public final static int MATHS_SPLASH = 11;
     public final static int CHAPTER_END_SPLASH = 12;
 
+    public final static String BLANK_IMAGE = "_RES_ID_0_";
     public final static int NAV_MENU = 13;
     public final static int EXIT = 999999;
 }

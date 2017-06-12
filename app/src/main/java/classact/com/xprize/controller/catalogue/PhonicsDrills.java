@@ -426,11 +426,11 @@ public class PhonicsDrills {
             ArrayList<DraggableImage<Word>> rightAndWrongWords = new ArrayList<>();
 
             // Add right words to list
-            rightAndWrongWords.add(new DraggableImage<Word>(0, 1, rightWord));
+            rightAndWrongWords.add(new DraggableImage<>(0, 1, rightWord));
 
             // Add wrong words to list
             for (int i = 0; i < wrongWords.size(); i++) {
-                rightAndWrongWords.add(new DraggableImage<Word>(0, 0, wrongWords.get(i)));
+                rightAndWrongWords.add(new DraggableImage<>(0, 0, wrongWords.get(i)));
             }
 
             // Now add the right and wrong words to a shuffled array

@@ -185,8 +185,12 @@ public class DrillFetcher {
                 }
             }
         } catch (SQLiteException sqlex) {
+            System.out.println(sqlex.getMessage());
+            sqlex.printStackTrace();
             throw new SQLiteException("getPhonicsDrill > SQLiteException: " + sqlex.getMessage());
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
             throw new Exception("getPhonicsDrill > Exception: " + ex.getMessage());
         }
         return intent;
@@ -362,8 +366,11 @@ public class DrillFetcher {
                 }
             }
         } catch (SQLiteException sqlex) {
+            System.out.println(sqlex.getMessage());
+            sqlex.printStackTrace();
             throw new SQLiteException("getWordDrill: " + sqlex.getMessage());
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
             ex.printStackTrace();
             throw new Exception("getWordDrill: " + ex.getMessage());
         }
@@ -383,8 +390,12 @@ public class DrillFetcher {
                 }
             }
         } catch (SQLiteException sqlex) {
+            System.out.println(sqlex);
+            sqlex.printStackTrace();
             throw new SQLiteException("getStoryDrill." + sqlex.getMessage());
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
             throw new Exception("getStoryDrill." + ex.getMessage());
         }
         return intent;
@@ -458,7 +469,7 @@ public class DrillFetcher {
                     break;
                 }
                 case 5: {
-                    if (unitId < 9) {
+                    if (unitId < 10) {
                         limit = 10;
                         subId = 0;
 
@@ -484,7 +495,7 @@ public class DrillFetcher {
                         subId = 0;
                         // Fetch D6A
                         intent = MathDrills.D6A(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
-                    } else if ((unitId >= 6) && (unitId < 10)) {
+                    } else if (unitId < 10) {
                         subId = 1;
                         // Fetch D6B
                         intent = MathDrills.D6B(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
@@ -492,12 +503,12 @@ public class DrillFetcher {
                         subId = 2;
                         // Fetch D6C
                         intent = MathDrills.D6C(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
-                    } else if ((unitId > 10) && (unitId < 16)) {
+                    } else if (unitId < 16) {
                         limit = 3;
                         subId = 3;
                         // Fetch D6D
                         intent = MathDrills.D6D(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
-                    } else if (unitId > 15) {
+                    } else if (unitId >= 16) {
                         limit = 5;
                         subId = 4;
                         // Fetch D6E
@@ -508,7 +519,7 @@ public class DrillFetcher {
                     break;
                 }
                 case 7: {
-                    if (unitId < 10) {
+                    if (unitId <= 10) {
                         subId = 0;
                         // Fetch D7A
                         intent = MathDrills.D7A(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
@@ -525,8 +536,12 @@ public class DrillFetcher {
 
             }
         } catch (SQLiteException sqlex) {
+            sqlex.getMessage();
+            sqlex.printStackTrace();
             throw new SQLiteException("getMathDrill." + sqlex.getMessage());
         } catch (Exception ex) {
+            ex.getMessage();
+            ex.printStackTrace();
             throw new Exception("getMathDrill." + ex.getMessage());
         }
         return intent;

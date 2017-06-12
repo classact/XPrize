@@ -58,17 +58,21 @@ public class DbHelper extends SQLiteAssetHelper {
             } else {
                 System.out.println("------------ Use existing DB");
             }
-        }else{
+        } else {
             //by doing this we will be able to copy our existing db over the blank db that is
             //created when the app first ran
             try {
                 this.getReadableDatabase();
-            } catch (SQLiteException sqle) {
+            } catch (SQLiteException sqlex) {
+				System.out.println(sqlex.getMessage());
+				sqlex.printStackTrace();
             }
 
             try {
                 copyDatabase();
-            } catch (IOException e) {
+            } catch (IOException ioe) {
+				System.out.println(ioe.getMessage());
+				ioe.printStackTrace();
                 throw new Error("Error copying database");
             }
         }
@@ -77,20 +81,24 @@ public class DbHelper extends SQLiteAssetHelper {
 
 	public void createDatabase() throws IOException {
 		boolean dbExist = checkDatabase();
-		if(dbExist){
+		if (dbExist) {
 			// do nothing here, the database exists already
 			// copyDatabase();
-		}else{
+		} else {
 			//by doing this we will be able to copy our existing db over the blank db that is
 			//created when the app first ran
 			try {
 				this.getReadableDatabase();
-			} catch (SQLiteException sqle) {
+			} catch (SQLiteException sqlex) {
+                System.out.println(sqlex.getMessage());
+                sqlex.printStackTrace();
 			}
 
 			try {
 				copyDatabase();
-			} catch (IOException e) {
+			} catch (IOException ioe) {
+                System.out.println(ioe.getMessage());
+                ioe.printStackTrace();
 				throw new Error("Error copying database");
 			}
 		}
@@ -106,10 +114,12 @@ public class DbHelper extends SQLiteAssetHelper {
 			File file = new File(dbPath);
 			if (file.exists() && !file.isDirectory())
 				checkDB = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-		} catch (SQLiteException e){
+		} catch (SQLiteException sqlex) {
 			//database does not exist yet
+            System.out.println(sqlex.getMessage());
+            sqlex.printStackTrace();
 		}
-		if(checkDB != null){
+		if (checkDB != null) {
 			checkDB.close();
 		}
 		return checkDB != null ? true : false;

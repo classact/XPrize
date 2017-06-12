@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -22,8 +21,6 @@ import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.locale.Languages;
 import classact.com.xprize.utils.FetchResource;
-import classact.com.xprize.utils.ResourceDecoder;
-import classact.com.xprize.utils.ResourceSelector;
 
 public class Movie extends AppCompatActivity {
 

@@ -223,9 +223,11 @@ public class StoryDrills {
             intent.putExtra("data", drillData);
 
         } catch (SQLiteException sqlex) {
+            System.out.println(sqlex.getMessage());
             sqlex.printStackTrace();
             throw new SQLiteException("D1 > SQLiteException: " + sqlex.getMessage());
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
             ex.printStackTrace();
             throw new Exception("D1 > Exception: " + ex.getMessage());
         }
