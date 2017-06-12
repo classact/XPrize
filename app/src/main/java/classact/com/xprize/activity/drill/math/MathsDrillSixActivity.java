@@ -1,12 +1,15 @@
 package classact.com.xprize.activity.drill.math;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -66,6 +69,32 @@ public class MathsDrillSixActivity extends AppCompatActivity {
             String objectImage = allData.getString("demo_object");
             int objectImageId = FetchResource.imageId(THIS, objectImage);
             demoShape.setImageResource(objectImageId);
+            demoShape.setBackgroundColor(Color.argb(100, 0, 0, 255));
+
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            int screenW = displayMetrics.widthPixels;
+            int screenH = displayMetrics.heightPixels;
+            float density = displayMetrics.density;
+
+            Drawable demoDrawable = demoShape.getDrawable();
+            int demoW = demoDrawable.getIntrinsicWidth();
+            int demoH = demoDrawable.getIntrinsicHeight();
+
+            System.out.println("Dr: w: " + demoW +
+                    ", h: " + demoH);
+
+            int topOffset = ((screenH - (int) ((float) 550 * density)) / 2) - 50;
+
+            RelativeLayout.LayoutParams demoLayout = (RelativeLayout.LayoutParams) demoShape.getLayoutParams();
+            // demoLayout.addRule(RelativeLayout.CENTER_VERTICAL);
+
+            System.out.println("De: w: " + demoLayout.width +
+                    ", h: " + demoLayout.height);
+
+            demoLayout.topMargin = topOffset;
+            demoShape.setLayoutParams(demoLayout);
+
+            System.out.println("w: " + demoW + ", h: " + demoH);
 
             // Get object sound
             // Will use sound as comparator when object is clicked
