@@ -69,7 +69,7 @@ public class MathsDrillSixActivity extends AppCompatActivity {
             String objectImage = allData.getString("demo_object");
             int objectImageId = FetchResource.imageId(THIS, objectImage);
             demoShape.setImageResource(objectImageId);
-            demoShape.setBackgroundColor(Color.argb(100, 0, 0, 255));
+            // demoShape.setBackgroundColor(Color.argb(100, 0, 0, 255));
 
             DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
             int screenW = displayMetrics.widthPixels;
@@ -164,6 +164,22 @@ public class MathsDrillSixActivity extends AppCompatActivity {
                     }
                 });
             }
+
+            /*shape1.setBackgroundColor(Color.argb(100, 255, 0, 0));
+            shape2.setBackgroundColor(Color.argb(100, 0, 255, 0));
+            shape3.setBackgroundColor(Color.argb(100, 0, 0, 255));*/
+
+            RelativeLayout.LayoutParams shape1Layout = (RelativeLayout.LayoutParams) shape1.getLayoutParams();
+            RelativeLayout.LayoutParams shape2Layout = (RelativeLayout.LayoutParams) shape2.getLayoutParams();
+            RelativeLayout.LayoutParams shape3Layout = (RelativeLayout.LayoutParams) shape3.getLayoutParams();
+
+            shape1Layout.topMargin = 160;
+            shape2Layout.topMargin = 60;
+            shape3Layout.topMargin = 30;
+
+            shape1.setLayoutParams(shape1Layout);
+            shape2.setLayoutParams(shape2Layout);
+            shape3.setLayoutParams(shape3Layout);
 
             String sound = allData.getString("lets_look_at_shapes");
             playSound(sound, new Runnable() {

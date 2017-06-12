@@ -216,8 +216,8 @@ public class SimpleStoryActivity extends AppCompatActivity {
 
         currentState = STATE_0;
 
-        // playPrompt("read_each_sentence_after_mother_sound");
-        playPrompt("now_read_whole_story_sound");
+        playPrompt("read_each_sentence_after_mother_sound");
+        // playPrompt("now_read_whole_story_sound");
         // playPrompt("now_answer_sound");
     }
 
