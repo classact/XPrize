@@ -87,6 +87,9 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
         System.out.println("SDFifteenActivity.OnCreate > Debug: MC");
 
         setContentView(R.layout.activity_sound_drill_thirteen);
+
+
+
         container1 = (LinearLayout) findViewById(R.id.container1);
         container2 = (LinearLayout) findViewById(R.id.container2);
         container3 = (LinearLayout) findViewById(R.id.container3);
