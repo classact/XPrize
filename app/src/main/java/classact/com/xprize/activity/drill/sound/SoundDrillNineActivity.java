@@ -44,7 +44,7 @@ public class SoundDrillNineActivity extends AppCompatActivity {
     private boolean canDraw;
     private boolean drillComplete;
 
-    private final int TIMER_MAX = 2;
+    private final int TIMER_MAX = 5;
     private final int DRAW_WAIT_TIME = 1000;
 
     @Override
@@ -226,7 +226,7 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         mp.reset();
-                        handler.postDelayed(completeDrill, 1150);
+                        handler.postDelayed(completeDrill, 3050);
                     }
                 });
                 mp.prepare();
