@@ -226,7 +226,7 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         mp.reset();
-                        handler.postDelayed(completeDrill, 3050);
+                        handler.postDelayed(completeDrill, 4550);
                     }
                 });
                 mp.prepare();

@@ -88,33 +88,33 @@ public class SoundDrillJsonBuilder {
         }
 
         String drillData = "{\"sets\":[" +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(0).getObject().getObjectImage(),"drawable") + "," +
+                "{\"image\":\"" + list.get(0).getObject().getObjectImage() + "\"," +
                 "\"sound\":\"" + list.get(0).getObject().getObjectSound() + "\"," +
                 "\"phonic_sound\":\"" + list.get(0).getObject().getObjectPhonicSound() + "\"," +
                 "\"images\":[" +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(0).getPair().getRightObject().getObjectImage(),"drawable") + ",\"correct\":1}," +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(0).getPair().getWrongObject().getObjectImage(),"drawable") + ",\"correct\":0}" +
+                "{\"image\":\"" + list.get(0).getPair().getRightObject().getObjectImage() + "\",\"correct\":1}," +
+                "{\"image\":\"" + list.get(0).getPair().getWrongObject().getObjectImage() + "\",\"correct\":0}" +
                 "]}," +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(1).getObject().getObjectImage(),"drawable") + "," +
+                "{\"image\":\"" + list.get(1).getObject().getObjectImage() + "\"," +
                 "\"sound\":\"" + list.get(1).getObject().getObjectSound() + "\"," +
                 "\"phonic_sound\":\"" + list.get(1).getObject().getObjectPhonicSound() + "\"," +
                 "\"images\":[" +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(1).getPair().getRightObject().getObjectImage(),"drawable") + ",\"correct\":1}," +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(1).getPair().getWrongObject().getObjectImage(),"drawable") + ",\"correct\":0}" +
+                "{\"image\":\"" + list.get(1).getPair().getRightObject().getObjectImage() + "\",\"correct\":1}," +
+                "{\"image\":\"" + list.get(1).getPair().getWrongObject().getObjectImage() + "\",\"correct\":0}" +
                 "]}," +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(2).getObject().getObjectImage(),"drawable") + "," +
+                "{\"image\":\"" + list.get(2).getObject().getObjectImage() + "\"," +
                 "\"sound\":\"" + list.get(2).getObject().getObjectSound() + "\"," +
                 "\"phonic_sound\":\"" + list.get(2).getObject().getObjectPhonicSound() + "\"," +
                 "\"images\":[" +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(2).getPair().getRightObject().getObjectImage(),"drawable") + ",\"correct\":1}," +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(2).getPair().getWrongObject().getObjectImage(),"drawable") + ",\"correct\":0}" +
+                "{\"image\":\"" + list.get(2).getPair().getRightObject().getObjectImage() + "\",\"correct\":1}," +
+                "{\"image\":\"" + list.get(2).getPair().getWrongObject().getObjectImage() + "\",\"correct\":0}" +
                 "]}," +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(3).getObject().getObjectImage(),"drawable") + "," +
+                "{\"image\":\"" + list.get(3).getObject().getObjectImage() + "\"," +
                 "\"sound\":\"" + list.get(3).getObject().getObjectSound() + "\"," +
                 "\"phonic_sound\":\"" + list.get(3).getObject().getObjectPhonicSound() + "\"," +
                 "\"images\": [" +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(3).getPair().getRightObject().getObjectImage(),"drawable") + ",\"correct\":1}," +
-                "{\"image\":" + ResourceDecoder.getIdentifier(context,list.get(3).getPair().getWrongObject().getObjectImage(),"drawable") + ",\"correct\":0}" +
+                "{\"image\":\"" + list.get(3).getPair().getRightObject().getObjectImage() + "\",\"correct\":1}," +
+                "{\"image\":\"" + list.get(3).getPair().getWrongObject().getObjectImage() + "\",\"correct\":0}" +
                 "]}" +
                 "]," +
                 "\"this_is_the_letter\":\"" + thisIsTheLetterSound + "\"," +
