@@ -51,35 +51,15 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
         item1 = (ImageView)findViewById(R.id.item1);
         item2 = (ImageView)findViewById(R.id.item2);
         item3 = (ImageView)findViewById(R.id.item3);
-        item1.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        clickedItem(0);
-                    }
-                }
-        );
-        item2.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        clickedItem(1);
-                    }
-                }
-        );
-        item3.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        clickedItem(2);
-                    }
-                }
-        );
 
         items = new ImageView[3];
         items[0] = item1;
         items[1] = item2;
         items[2] = item3;
+
+        for (int i = 0; i < items.length; i++) {
+            items[i].setImageResource(0);
+        }
 
         currentTripple = 0;
 
@@ -130,12 +110,23 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
 
             JSONArray pictures = data.getJSONObject(currentTripple).getJSONArray("pictures");
             int[] shuffledArrayIndexes = FisherYates.shuffle(pictures.length()); // Randomized indexes
+            int length = Math.min(pictures.length(), items.length);
             boolean foundCorrectItem = false;
-            for(int i = 0; i < items.length;i++) {
+            for(int i = 0; i < length; i++) {
                 int si = shuffledArrayIndexes[i];
                 System.out.println("SoundDrillSevenActivity.showTripple > Debug: Shuffled index is (" + si + ")");
                 JSONObject pictureObject = pictures.getJSONObject(si);
-                items[i].setImageResource(pictureObject.getInt("picture"));
+                ImageView iv = items[i];
+                iv.setImageResource(pictureObject.getInt("picture"));
+                final int index = i;
+                iv.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(final View view) {
+                                clickedItem(index);
+                            }
+                        }
+                );
                 if (pictureObject.getInt("correct") == 1) {
                     foundCorrectItem = true;
                     correctItem = i;

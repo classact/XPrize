@@ -18,6 +18,8 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -391,23 +393,7 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                 receptable9.setVisibility(View.INVISIBLE);
             }
 
-            /*for (int i = 0; i < displayContainer.getChildCount(); i++) {
-                ImageView iv = (ImageView) displayContainer.getChildAt(i);
-                iv.setVisibility(View.VISIBLE);
-                iv.setBackgroundColor(Color.argb(
-                        (int) ((float) 255 * ((float) (i+1) / (float) displayContainer.getChildCount())),
-                        255, 0, 0));
-            }*/
-
             String wordString = words.getJSONObject(currentWord - 1).getString("word");
-
-            List<String> letters = new ArrayList<>();
-            for (int i = 0; i < wordString.length(); i++) {
-                letters.add("" + wordString.charAt(i));
-            }
-
-            LinkedList<Integer> yTopList = new LinkedList<>();
-            LinkedList<Integer> yBotList = new LinkedList<>();
 
             DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
             float density = displayMetrics.density;
@@ -418,69 +404,38 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
             int letterWidthSum = 0;
             int letterMarginSum = 0;
             ImageView firstLetter = null;
+
+            List<ImageView> letterViews = new ArrayList<>();
+            List<Integer> letterResources = new ArrayList<>();
+
             int letterCount = 0;
             for (int i = 0; i < displayContainer.getChildCount(); i++) {
                 ImageView iv = (ImageView) displayContainer.getChildAt(i);
-                LinearLayout.LayoutParams ivLayout = (LinearLayout.LayoutParams) iv.getLayoutParams();
-                iv.setScaleX(letterScale);
-                iv.setScaleY(letterScale);
-                ivLayout.width = (int) letterWidth;
-                ivLayout.height = (int) letterWidth;
-                int leftMargin = (int) ((float) ivLayout.leftMargin * letterScale * density);
-                ivLayout.leftMargin = leftMargin;
+                letterViews.add(iv);
+                if (iv.getDrawable() != null) {
+                    letterResources.add(word.getInt(letterCount++));
+                }
+            }
+
+            letterViews = WordLetterLayout.level(
+                    THIS,
+                    letterViews,
+                    letterResources,
+                    wordString,
+                    displayMetrics,
+                    letterWidth,
+                    letterScale
+            );
+
+            letterCount = 0;
+            for (int i = 0; i < letterViews.size(); i++) {
+                ImageView iv = letterViews.get(i);
+                MarginLayoutParams ivLayout = (MarginLayoutParams) iv.getLayoutParams();
+                int width = ivLayout.width;
+                int leftMargin = ivLayout.leftMargin;
                 Drawable d = iv.getDrawable();
                 if (d != null) {
-                    // int colorGrad = (int) ((float) 255 * ((float) (i + 1) / (float) blanksContainer.getChildCount()));
-                    // iv.setBackgroundColor(Color.argb(colorGrad, 255, 0, 0));
-
-                    Bitmap bitmapOriginal = BitmapFactory.decodeResource(
-                            THIS.getResources(), word.getInt(letterCount)
-                    );
-                    Bitmap bitmap = bitmapOriginal.copy(Bitmap.Config.ARGB_8888, true);
-
-                    int bYTop = 0;
-                    int bYBot = 0;
-                    int bW = bitmap.getWidth();
-                    int bH = bitmap.getHeight();
-
-                    int[] bp = new int[bH * bW];
-                    bitmap.getPixels(bp, 0, bW, 0, 0, bW, bH);
-
-                    String letter = letters.get(letterCount);
-                    int alphaBase = Globals.checkAlphaBase(letter);
-
-                    for (int j = 0; j < bp.length; j++) {
-                        float r = (float) (bp[j] & 0xff);
-                        float g = (float) ((bp[j] >> 8) & 0xff);
-                        float b = (float) ((bp[j] >> 16) & 0xff);
-                        float a = (float) ((bp[j] >> 32) & 0xff);
-
-                        if (a > 0) {
-                            bYTop = (j+1) / bW;
-                            break;
-                        }
-                    }
-                    for (int j = bp.length - 1; j >= 0; j--) {
-                        float r = (float) (bp[j] & 0xff);
-                        float g = (float) ((bp[j] >> 8) & 0xff);
-                        float b = (float) ((bp[j] >> 16) & 0xff);
-                        float a = (float) ((bp[j] >> 32) & 0xff);
-
-                        if (a > 0) {
-                            bYBot = (j+1) / bW;
-                            break;
-                        }
-                    }
-                    float bRatio = letterWidth / bH;
-                    int yTop = (int) ((float) bYTop * letterScale * bRatio);
-                    int yBot = (int) ((float) bYBot * letterScale * bRatio);
-
-                    yTopList.add(yTop);
-                    yBotList.add(yBot);
-
-                    System.out.println(letter + ": " + yTop + "," + yBot);
-
-                    letterWidthSum += (int) letterWidth;
+                    letterWidthSum += width;
                     if (letterCount > 0) {
                         letterMarginSum += leftMargin;
                     } else {
@@ -488,65 +443,6 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                     }
                     letterCount++;
                 }
-                iv.setLayoutParams(ivLayout);
-                iv.setVisibility(View.VISIBLE);
-            }
-
-            int baseDiff = 0;
-            int letterHeight = 0;
-            int botBase = 0;
-            for (int i = 0; i < yBotList.size(); i++) {
-                String letter = letters.get(i);
-                if (Globals.checkAlphaBase(letter) == Globals.ALPHA_BASE_BOT) {
-                    if (botBase == 0) {
-                        botBase = yBotList.get(i);
-                    } else {
-                        botBase = Math.max(botBase, yBotList.get(i));
-                    }
-                    int bDiff = yBotList.get(i) - yTopList.get(i);
-                    if (baseDiff == 0) {
-                        baseDiff = bDiff;
-                    } else {
-                        baseDiff = Math.min(baseDiff, bDiff);
-                    }
-                }
-            }
-
-            System.out.println("Base diff is: " + baseDiff);
-            System.out.println("Bot base is: " + botBase);
-            /*ImageView ivF = new ImageView(THIS);
-            mRootView.addView(ivF);
-            RelativeLayout.LayoutParams ivFLayout = (RelativeLayout.LayoutParams) ivF.getLayoutParams();
-            ivF.setScaleX(letterScale);
-            ivF.setScaleY(letterScale);
-            ivFLayout.topMargin = 0;
-            ivFLayout.width = 100;
-            ivFLayout.height = (int) ((float) 250);
-            ivF.setLayoutParams(ivFLayout);
-            ivF.setBackgroundColor(Color.argb(100, 0, 0, 255));*/
-
-            letterCount = 0;
-            for (int i = 0; i < displayContainer.getChildCount(); i++) {
-                ImageView iv = (ImageView) displayContainer.getChildAt(i);
-                LinearLayout.LayoutParams ivLayout = (LinearLayout.LayoutParams) iv.getLayoutParams();
-                Drawable d = iv.getDrawable();
-                iv.setVisibility(View.VISIBLE);
-                if (d != null) {
-                    String letter = letters.get(letterCount);
-
-                    if (Globals.checkAlphaBase(letter) == Globals.ALPHA_BASE_BOT) {
-                        int letterBotBase = yBotList.get(letterCount);
-                        int botBaseDiff = botBase - letterBotBase;
-                        ivLayout.topMargin += botBaseDiff;
-                    } else {
-                        int letterTopBase = yTopList.get(letterCount);
-                        int topBase = botBase - baseDiff;
-                        int topBaseDiff = topBase - letterTopBase;
-                        ivLayout.topMargin += topBaseDiff;
-                    }
-                    letterCount++;
-                }
-                iv.setLayoutParams(ivLayout);
             }
 
             int lettersWidth = letterWidthSum + letterMarginSum;
