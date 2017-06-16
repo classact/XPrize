@@ -333,6 +333,7 @@ public class PhonicsDrills {
                     letterSounds.add(thisLetter.getPhonicSoundURI());
                 }
                 word.setSpelling(sb.toString());
+                word.setCustomData(wordName);
                 spelledWord.setWord(word);
                 spelledWord.setettersSound(letterSounds);
 

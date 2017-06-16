@@ -248,7 +248,6 @@ public class SoundDrillJsonBuilder {
             }
             drillData += "{\"word_image\":" + ResourceDecoder.getIdentifier(context,word.getWord().getObjectImage(),"drawable") + ",";
             drillData += "\"word_sound\":\"" + word.getWord().getObjectSound() + "\",";
-
             drillData += "\"segmeted_word_spelling\":[";
 
             String[] images = word.getWord().getSpelling().split(",");
@@ -261,7 +260,8 @@ public class SoundDrillJsonBuilder {
                     drillData += ",";
                 }
                 drillData += "{\"black\":" + ResourceDecoder.getIdentifier(context,BlackAndRed[0],"drawable");
-                drillData += ",\"red\":" + ResourceDecoder.getIdentifier(context,BlackAndRed[1],"drawable") + "}";
+                drillData += ",\"red\":" + ResourceDecoder.getIdentifier(context,BlackAndRed[1],"drawable");
+                drillData += ",\"letter\":" + "\"" + ("" + word.getWord().getCustomData().charAt(x)) + "\"" + "}";
             }
 
             drillData += "],\"segmeted_word_sound\":\"" + word.getWord().getObjectSound() + "\"," +
@@ -292,7 +292,6 @@ public class SoundDrillJsonBuilder {
                 }
                 drillData += "{\"picture\":" + ResourceDecoder.getIdentifier(context,draggableImage.getcontent(),"drawable") +
                         ",\"correct\":" +  draggableImage.isRight() + "}";
-
             }
             drillData += "]}";
         }

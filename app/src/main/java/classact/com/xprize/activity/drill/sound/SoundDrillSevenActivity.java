@@ -1,13 +1,17 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -15,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
@@ -22,6 +27,7 @@ import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
+import classact.com.xprize.utils.WordLetterLayout;
 
 public class SoundDrillSevenActivity extends AppCompatActivity {
     //private SegmetedWritingView segmentWritingView;
@@ -41,6 +47,8 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
     private ArrayList<JSONObject> currentWord;
     boolean itemsEnabled;
     boolean roundEnd;
+
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,6 +168,52 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 correctItem = shuffledArrayIndexes[0];
                 items[correctItem].setImageResource(correctObject.getInt("picture"));
             }
+
+            // Setup word
+            // Display metrics
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            float density = displayMetrics.density;
+
+            // Clear word
+            int writingContainerChildCount = writingContainer.getChildCount();
+            for (int i = 0; i < writingContainerChildCount; i++) {
+                ImageView iv = (ImageView) writingContainer.getChildAt(i);
+                iv.setImageResource(0);
+                iv.setVisibility(View.INVISIBLE);
+                MarginLayoutParams ivLayout = (MarginLayoutParams) iv.getLayoutParams();
+                ivLayout.topMargin = (int) (-18 * density);
+                iv.setLayoutParams(ivLayout);
+            }
+
+            // Populate word
+            List<ImageView> letterViews = new ArrayList<>();
+            List<Integer> letterResources = new ArrayList<>();
+            String letterWord = "";
+            int wordLength = Math.min(writingContainerChildCount, currentWord.size());
+            for (int i = 0; i < wordLength; i++) {
+                String letter = currentWord.get(i).getString("letter");
+                int imageId = currentWord.get(i).getInt("black");
+                ImageView iv = (ImageView) writingContainer.getChildAt(i);
+                iv.setImageResource(imageId);
+                letterViews.add(iv);
+                letterResources.add(imageId);
+                letterWord += letter;
+            }
+
+            // Order letters
+            int letterCount = 0;
+            float letterWidth = density * 150;
+            float letterScale = 1.f;
+
+            letterViews = WordLetterLayout.level(
+                    THIS,
+                    letterViews,
+                    letterResources,
+                    letterWord,
+                    displayMetrics,
+                    letterWidth,
+                    letterScale
+            );
             playListenToWordAndTouch();
         }
         catch (Exception ex){
