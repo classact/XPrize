@@ -2,7 +2,6 @@ package classact.com.xprize.activity.drill.math;
 
 import android.content.ClipData;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -14,15 +13,11 @@ import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;

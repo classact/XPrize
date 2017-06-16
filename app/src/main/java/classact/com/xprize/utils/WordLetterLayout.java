@@ -1,4 +1,4 @@
-package classact.com.xprize.activity.drill.sound;
+package classact.com.xprize.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;

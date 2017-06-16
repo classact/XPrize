@@ -3,14 +3,11 @@ package classact.com.xprize.activity.drill.math;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import org.json.JSONObject;
@@ -20,7 +17,6 @@ import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
-import classact.com.xprize.utils.ResourceSelector;
 
 public class MathsDrillSixAndTwoActivity extends AppCompatActivity {
     private ImageView shapeContainerOne;

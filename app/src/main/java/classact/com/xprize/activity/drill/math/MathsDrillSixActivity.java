@@ -1,12 +1,10 @@
 package classact.com.xprize.activity.drill.math;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -17,7 +15,6 @@ import android.widget.RelativeLayout;
 
 import org.json.JSONObject;
 
-import java.util.Locale;
 import java.util.Random;
 
 import classact.com.xprize.R;
@@ -26,7 +23,6 @@ import classact.com.xprize.common.Globals;
 import classact.com.xprize.locale.Languages;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
-import classact.com.xprize.utils.ResourceSelector;
 
 public class MathsDrillSixActivity extends AppCompatActivity {
     private RelativeLayout objectsContainer;

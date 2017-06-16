@@ -18,7 +18,6 @@ import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
-import classact.com.xprize.utils.ResourceSelector;
 
 public class MathsDrillSixAndOneActivity extends AppCompatActivity {
     private ImageView largeShape;
