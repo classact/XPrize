@@ -316,14 +316,6 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
                 imageMap.put(key, value);
             }
 
-            // Objects
-            List<ImageView> objects = new ArrayList<>();
-            for (int i = 0; i < objectsContainer.getChildCount(); i++) {
-                ImageView iv = (ImageView) objectsContainer.getChildAt(i);
-                objects.add(iv);
-            }
-            objectsContainer.removeAllViews();
-
             // Display metrics
             DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
             float density = displayMetrics.density;
