@@ -333,14 +333,15 @@ public class PhonicsDrills {
                     letterSounds.add(thisLetter.getPhonicSoundURI());
                 }
                 word.setSpelling(sb.toString());
+                word.setCustomData(wordName);
                 spelledWord.setWord(word);
                 spelledWord.setettersSound(letterSounds);
 
                 ArrayList<DraggableImage<String>> letterImages = new ArrayList<>();
-                letterImages.add(new DraggableImage<>(0, 1, rightWord.getWordPictureURI()));
+                letterImages.add(new DraggableImage<>(0, 1, rightWord.getImagePictureURI()));
 
                 for (int k = wrongWordsCounter; k < wrongWordsMax; k++) {
-                    letterImages.add(new DraggableImage<>(0, 0, wrongDrillWords.get(k).getWordPictureURI()));
+                    letterImages.add(new DraggableImage<>(0, 0, wrongDrillWords.get(k).getImagePictureURI()));
                 }
 
                 wrongWordsCounter += wrongWordsPerDrillItem;

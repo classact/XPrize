@@ -2,15 +2,18 @@ package classact.com.xprize.activity.drill.math;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -20,6 +23,8 @@ import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
+import classact.com.xprize.utils.Square;
+import classact.com.xprize.utils.SquarePacker;
 
 public class MathsDrillThreeActivity extends AppCompatActivity {
     private JSONObject allData;
@@ -48,27 +53,29 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
             public boolean onDrag(View v, DragEvent event) {
                 if (dragEnabled && !drillComplete) {
                     int action = event.getAction();
-                    if (action == DragEvent.ACTION_DRAG_ENTERED)
+                    if (action == DragEvent.ACTION_DRAG_ENTERED) {
                         isInReceptacle = true;
-                    else if (action == DragEvent.ACTION_DRAG_EXITED)
+                        return true;
+                    } else if (action == DragEvent.ACTION_DRAG_EXITED) {
                         isInReceptacle = false;
-                    else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle) {
+                        return true;
+                    } else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle) {
                         try {
                             draggedItems++;
-                            System.out.println("DRAGGED ITEMS:::::: " + draggedItems);
                             if (draggedItems <= targetItems) {
-                                placeOnTable();
+                                return true;
                             }
+                            return false;
                         } catch (Exception ex) {
                             ex.printStackTrace();
+                            return false;
                         }
                     } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle) {
                         try {
-                            if (draggedItems > targetItems) {
-                                playSound(FetchResource.negativeAffirmation(THIS), placementRunnable);
-                            } else {
+                            if (event.getResult()) {
                                 ImageView view = (ImageView) event.getLocalState();
                                 view.setVisibility(View.INVISIBLE);
+                                placeOnTable();
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -234,8 +241,67 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
     }
 
     private void placeObjects(){
-        try{
+        try {
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            float density = displayMetrics.density;
+
+            // itemsContainer.setBackgroundColor(Color.argb(100, 255, 0, 0));
+            MarginLayoutParams itemsLayout = (MarginLayoutParams) itemsContainer.getLayoutParams();
+            itemsLayout.width = (int) (395 * density);
+            itemsLayout.height = (int) (790 * density);
+            itemsContainer.setLayoutParams(itemsLayout);
+
+            itemsContainer.removeAllViews();
+
             int totalItems = allData.getInt("total_items");
+
+            int n = allData.getInt("total_items");
+            int w = itemsLayout.width;
+            int h = itemsLayout.height;
+            int imageId = FetchResource.imageId(this, allData, "item");
+            itemResId = imageId;
+
+            SquarePacker squarePacker = new SquarePacker(w, h);
+            Square[] squares = squarePacker.get(n);
+
+            for (int i = 0; i < squares.length; i++) {
+                // Get square
+                Square square = squares[i];
+                // Get drawable
+                Drawable d = getResources().getDrawable(imageId, null);
+                // Create image view
+                ImageView iv = new ImageView(getApplicationContext());
+                iv.setImageDrawable(d);
+                iv.setScaleX(0.8f);
+                iv.setScaleY(0.8f);
+                // iv.setBackgroundColor(Color.argb(150, 0, 0, 255));
+                // Add image view to numbers layout
+                itemsContainer.addView(iv);
+                // Edit image view layout params
+                RelativeLayout.LayoutParams ivParams = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT
+                );
+                ivParams.leftMargin = 0;
+                ivParams.topMargin = 0;
+                ivParams.width = square.w;
+                ivParams.height = square.w;
+                iv.setLayoutParams(ivParams);
+                // Set coordinates
+                iv.setX((float) square.x);
+                iv.setY((float) square.y);
+
+                iv.setImageResource(itemResId);
+                iv.setVisibility(View.VISIBLE);
+                iv.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return dragItem(v,event);
+                    }
+                });
+            }
+
+            /*
             itemResId = FetchResource.imageId(this, allData, "item");
             ImageView item;
             for(int i=0; i < totalItems;i++){
@@ -249,6 +315,7 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
                     }
                 });
             }
+            */
         }
         catch (Exception ex){
             ex.printStackTrace();

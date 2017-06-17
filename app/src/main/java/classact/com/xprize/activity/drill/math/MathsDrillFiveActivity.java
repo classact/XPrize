@@ -2,30 +2,38 @@ package classact.com.xprize.activity.drill.math;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
-import classact.com.xprize.utils.ResourceSelector;
+import classact.com.xprize.utils.FisherYates;
+import classact.com.xprize.utils.Square;
+import classact.com.xprize.utils.SquarePacker;
 
 public class MathsDrillFiveActivity extends AppCompatActivity {
     private JSONObject allData;
@@ -83,18 +91,14 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
                 int action = event.getAction();
                 if (action == DragEvent.ACTION_DRAG_ENTERED) {
                     if (dragEnabled && !drillComplete) {
-                        System.out.println("000A");
                         isInReceptacle = true;
                     }
                 } else if (action == DragEvent.ACTION_DRAG_EXITED) {
                     if (dragEnabled && !drillComplete) {
-                        System.out.println("000B");
                         isInReceptacle = false;
                     }
                 } else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle) {
-                    System.out.println("000C");
                     if (dragEnabled && !drillComplete) {
-                        System.out.println("000CA");
                         try {
                             draggedItems++;
                             if (draggedItems <= targetItems) {
@@ -109,16 +113,12 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
                         }
                     }
                 } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle) {
-                    System.out.println("000D");
                     try {
                         if (draggedItems > targetItems) {
-                            System.out.println("000DA");
                             if (dragEnabled && !drillComplete) {
-                                System.out.println("000DAA");
                                 playSound(FetchResource.negativeAffirmation(THIS), placementRunnable);
                             }
                         } else {
-                            System.out.println("000DB");
                             ImageView view = (ImageView) event.getLocalState();
                             view.setVisibility(View.INVISIBLE);
                         }
@@ -137,6 +137,7 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
         dragEnabled = false;
         drillComplete = false;
         endDrill = false;
+
         initialise();
     }
 
@@ -289,26 +290,88 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
         try{
             draggedItems = 0;
             JSONArray items = allData.getJSONArray("items");
-            int position = 0;
+
+            List<Integer> keys = new ArrayList<>();
+            List<Integer> values = new ArrayList<>();
+            LinkedHashMap<Integer, Integer> imageMap = new LinkedHashMap<>();
+
             for(int i = 0; i < items.length();i++){
                 JSONObject item = items.getJSONObject(i);
-                int count = item.getInt("number");
-                targetItems += count;
-                final int resId = FetchResource.imageId(this, item, "image");
-                for (int j =0; j < count; j++){
-                    ImageView image = (ImageView)objectsContainer.getChildAt(position);
-                    image.setImageResource(resId);
-                    image.setVisibility(View.VISIBLE);
-                    image.setOnTouchListener(new View.OnTouchListener() {
+                int key = FetchResource.imageId(this, item, "image");
+                int value = item.getInt("number");
+                keys.add(key);
+                values.add(value);
+                targetItems += value;
+            }
+
+            int[] s = FisherYates.shuffle(keys.size());
+            for (int i = 0; i < keys.size(); i++) {
+                int si = s[i];
+                int key = keys.get(si);
+                int value = values.get(si);
+                imageMap.put(key, value);
+            }
+
+            // Display metrics
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            float density = displayMetrics.density;
+
+            // Layout
+            MarginLayoutParams objectsLayout = (MarginLayoutParams) objectsContainer.getLayoutParams();
+            objectsLayout.width = (int) (density * 305);
+            objectsLayout.height = (int) (density * 600);
+            objectsContainer.setLayoutParams(objectsLayout);
+
+            // Setup squares
+            int n = targetItems;
+            int w = objectsLayout.width;
+            int h = objectsLayout.height;
+
+            SquarePacker squarePacker = new SquarePacker(w, h);
+            Square[] squares = squarePacker.get(n);
+
+            int count = 0;
+            for (Map.Entry<Integer, Integer> entry : imageMap.entrySet()) {
+                final int imageId = entry.getKey();
+                int length = entry.getValue();
+                for (int i = 0; i < length; i++) {
+                    // Get square
+                    Square square = squares[count++];
+                    // Get drawable
+                    Drawable d = getResources().getDrawable(imageId, null);
+                    // Create image view
+                    ImageView iv = new ImageView(getApplicationContext());
+                    iv.setImageDrawable(d);
+                    iv.setScaleX(0.8f);
+                    iv.setScaleY(0.8f);
+                    // iv.setBackgroundColor(Color.argb(150, 0, 0, 255));
+                    // Add image view to numbers layout
+                    objectsContainer.addView(iv);
+                    // Edit image view layout params
+                    RelativeLayout.LayoutParams ivParams = new RelativeLayout.LayoutParams(
+                            RelativeLayout.LayoutParams.WRAP_CONTENT,
+                            RelativeLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    ivParams.leftMargin = 0;
+                    ivParams.topMargin = 0;
+                    ivParams.width = square.w;
+                    ivParams.height = square.w;
+                    iv.setLayoutParams(ivParams);
+                    // Set coordinates
+                    iv.setX((float) square.x);
+                    iv.setY((float) square.y);
+                    // Set image
+                    iv.setVisibility(View.VISIBLE);
+                    iv.setOnTouchListener(new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View v, MotionEvent event) {
-                            itemResId = resId;
+                            itemResId = imageId;
                             return dragItem(v,event);
                         }
                     });
-                    position++;
                 }
             }
+            // objectsContainer.setBackgroundColor(Color.argb(100, 255, 0, 0));
         }
         catch(Exception ex){
             ex.printStackTrace();

@@ -1,8 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
@@ -18,8 +16,6 @@ import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
-import classact.com.xprize.utils.ResourceSelector;
-import classact.com.xprize.utils.Square;
 import classact.com.xprize.utils.SquarePacker;
 
 public class MathsDrillFourActivity extends AppCompatActivity {

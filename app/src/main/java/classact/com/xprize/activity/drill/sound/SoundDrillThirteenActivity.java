@@ -165,22 +165,6 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
         mThisActivity = this;
 
-        /* Container BG test **
-        int maxLength = MAX_LETTERS;
-
-        for (int i = 0; i < maxLength; i++) {
-            mContainers[i].setBackgroundColor(Color.argb((255 * (i + 1) / maxLength), 255, 0, 0));
-        }
-        */
-
-        /* Receptacle BG test **
-        int maxLength = MAX_LETTERS;
-
-        for (int i = 0; i < maxLength; i++) {
-            mReceptacles[i].setBackgroundColor(Color.RED);
-        }
-        */
-
         String drillData = getIntent().getExtras().getString("data");
         initializeData(drillData);
         prepareDrill();

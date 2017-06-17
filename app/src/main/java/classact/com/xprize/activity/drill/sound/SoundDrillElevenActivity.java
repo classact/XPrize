@@ -1,10 +1,15 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -421,6 +426,40 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
                 int image = words.getJSONObject(assignments[card - 1]).getInt("image");
                 button.setBackgroundResource(R.drawable.cardsinglesmlback);
                 button.setImageResource(image);
+
+                DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+                float density = displayMetrics.density;
+
+                float cardWidth = (180 * density);
+                Drawable id = button.getDrawable();
+                float wordWidth = id.getIntrinsicWidth();
+                float cardToWordRatio = cardWidth/wordWidth;
+
+                if (cardToWordRatio < 1.f) {
+                    Rect rect = id.getBounds();
+                    Bitmap bitmap = ((BitmapDrawable) id).getBitmap();
+                    Drawable nd = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap,
+                            (int) (cardToWordRatio * rect.right * 0.9f),
+                            (int) (cardToWordRatio * rect.bottom * 0.9f),
+                            true));
+                    button.setImageResource(0);
+                    button.setImageDrawable(nd);
+                } else {
+                    float widthPercentageSize = wordWidth / cardWidth;
+                    if (widthPercentageSize > 0.9f) {
+                        Rect rect = id.getBounds();
+                        Bitmap bitmap = ((BitmapDrawable) id).getBitmap();
+                        float widthPercentageDiff = widthPercentageSize - 0.9f;
+                        float widthToSubtract = cardWidth * widthPercentageDiff;
+                        float multiplyRatio = (rect.right - widthToSubtract) / rect.right;
+                        Drawable nd = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap,
+                                (int) (multiplyRatio * rect.right),
+                                (int) (multiplyRatio * rect.bottom),
+                                true));
+                        button.setImageResource(0);
+                        button.setImageDrawable(nd);
+                    }
+                }
 
                 playThisSound(sound);
             }

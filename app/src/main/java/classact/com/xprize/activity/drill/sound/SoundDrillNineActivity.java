@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -44,8 +45,10 @@ public class SoundDrillNineActivity extends AppCompatActivity {
     private boolean canDraw;
     private boolean drillComplete;
 
-    private final int TIMER_MAX = 2;
+    private final int TIMER_MAX = 5;
     private final int DRAW_WAIT_TIME = 1000;
+
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,15 +88,13 @@ public class SoundDrillNineActivity extends AppCompatActivity {
         playLetsDraw();
     }
 
-    private void playLetsDraw() {
+    private void playSound(String sound, final Runnable action) {
         try {
-            params = new JSONObject(data);
-            //Todo: Sound
-            String sound = params.getString("lets_draw");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
             }
+            mp.reset();
             mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -105,17 +106,37 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
-                    handler.postDelayed(playDrawSomethingThatStartsWithRunnable, 500);
+                    if (action != null) {
+                        action.run();
+                    }
                 }
             });
             mp.prepare();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            if (action != null) {
+                action.run();
+            }
+        }
+    }
+
+    private void playLetsDraw() {
+        try {
+            params = new JSONObject(data);
+            //Todo: Sound
+            String sound = params.getString("lets_draw");
+            playSound(sound, new Runnable() {
+                @Override
+                public void run() {
+                    handler.postDelayed(playDrawSomethingThatStartsWithRunnable, 500);
+                }
+            });
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -129,32 +150,16 @@ public class SoundDrillNineActivity extends AppCompatActivity {
     private void playDrawSomethingThatStartsWith(){
         try {
             String sound = params.getString("draw_something_that_starts_with");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            playSound(sound, new Runnable() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     playLetterSound();
                 }
             });
-            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -162,33 +167,16 @@ public class SoundDrillNineActivity extends AppCompatActivity {
         String sound = "";
         try{
             sound = params.getString("sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            playSound(sound, new Runnable() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+                public void run() {
                     handler.postDelayed(enableDrawing,500);
                 }
             });
-            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -211,32 +199,16 @@ public class SoundDrillNineActivity extends AppCompatActivity {
         public void run() {
             try{
                 String sound = params.getString("what_did_you_draw");
-                String soundPath = FetchResource.sound(getApplicationContext(), sound);
-                if (mp == null) {
-                    mp = new MediaPlayer();
-                }
-                mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                playSound(sound, new Runnable() {
                     @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        mp.start();
+                    public void run() {
+                        handler.postDelayed(completeDrill, 4550);
                     }
                 });
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp.reset();
-                        handler.postDelayed(completeDrill, 1150);
-                    }
-                });
-                mp.prepare();
             }
             catch (Exception ex){
                 ex.printStackTrace();
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     };

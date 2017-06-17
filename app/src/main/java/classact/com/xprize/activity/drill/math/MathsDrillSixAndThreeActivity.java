@@ -3,12 +3,10 @@ package classact.com.xprize.activity.drill.math;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
 import android.view.DragEvent;
@@ -28,9 +26,7 @@ import java.util.Random;
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
-import classact.com.xprize.control.Numeral;
 import classact.com.xprize.utils.FetchResource;
-import classact.com.xprize.utils.ResourceSelector;
 
 public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements View.OnTouchListener, View.OnDragListener {
     private JSONObject allData;

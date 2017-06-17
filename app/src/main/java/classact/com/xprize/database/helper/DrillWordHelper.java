@@ -72,13 +72,16 @@ public class DrillWordHelper {
         }
     }
 
-    public static ArrayList<Integer> getWrongDrillWordsByLetter(SQLiteDatabase db, int languageID, int wordType, String letter, int limit){
+    public static ArrayList<Integer> getWrongDrillWordsByLetter(SQLiteDatabase db, int languageID, /*int unitId, int subId, int drillId,*/ int wordType, String letter, int limit){
         ArrayList <Integer>drillWords = new ArrayList<>();
         Cursor cursor = db.rawQuery("" +
                 "SELECT dw.WordID FROM tbl_DrillWords dw " +
                 "INNER JOIN tbl_Word w ON dw.WordID = w._id " +
                 "WHERE dw.LanguageID = " + languageID + " " +
                 "AND dw.WordType = " + wordType + " " +
+                /*"AND dw.unitId <> " + unitId + " " +
+                "AND dw.subId = " + subId + " " +
+                "AND dw.drillId = " + drillId + " " +*/
                 "AND substr(w.WordName, 0, 2) <> '" + letter + "' " +
                 "ORDER BY RANDOM() LIMIT " + limit + ";", null);
         int drillWord=0;

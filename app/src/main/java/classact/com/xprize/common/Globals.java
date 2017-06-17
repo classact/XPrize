@@ -29,6 +29,25 @@ public class Globals {
     public static final int STORY_MAX_SUB_ID = 0;
     public static final int MATHS_MAX_SUB_ID = 0;
 
+    public static final int ALPHA_BASE_BOT = 0;
+    public static final int ALPHA_BASE_MID_BOT = 1;
+    public static final int ALPHA_BASE_MID_TOP = 1;
+    public static final int ALPHA_BASE_TOP = 2;
+
+    public static int checkAlphaBase(String letter) {
+        int alphaBase = 0;
+        if (letter.matches("[abcdefhiklmnorstuvwxz]")) {
+            alphaBase = ALPHA_BASE_BOT;
+        } else if (letter.matches("[i]")) {
+            alphaBase = ALPHA_BASE_MID_BOT;
+        } else if (letter.matches("[j]")) {
+            alphaBase = ALPHA_BASE_MID_TOP;
+        } else if (letter.matches("[gpqy]")) {
+            alphaBase = ALPHA_BASE_TOP;
+        }
+        return alphaBase;
+    }
+
     public static final String[] EN_ALPHABET = {"A","B","C","D","E","F","G","H","I",
         "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
 

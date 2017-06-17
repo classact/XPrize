@@ -3,7 +3,6 @@ package classact.com.xprize.activity.drill.math;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
@@ -23,7 +22,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
@@ -31,7 +29,6 @@ import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.RandomExcluding;
-import classact.com.xprize.utils.ResourceSelector;
 
 import android.os.Handler;
 

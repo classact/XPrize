@@ -1,13 +1,17 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -15,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
@@ -22,6 +27,7 @@ import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
+import classact.com.xprize.utils.WordLetterLayout;
 
 public class SoundDrillSevenActivity extends AppCompatActivity {
     //private SegmetedWritingView segmentWritingView;
@@ -42,6 +48,8 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
     boolean itemsEnabled;
     boolean roundEnd;
 
+    private final Context THIS = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,35 +59,15 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
         item1 = (ImageView)findViewById(R.id.item1);
         item2 = (ImageView)findViewById(R.id.item2);
         item3 = (ImageView)findViewById(R.id.item3);
-        item1.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        clickedItem(0);
-                    }
-                }
-        );
-        item2.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        clickedItem(1);
-                    }
-                }
-        );
-        item3.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        clickedItem(2);
-                    }
-                }
-        );
 
         items = new ImageView[3];
         items[0] = item1;
         items[1] = item2;
         items[2] = item3;
+
+        for (int i = 0; i < items.length; i++) {
+            items[i].setImageResource(0);
+        }
 
         currentTripple = 0;
 
@@ -106,6 +94,11 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
 
     public void showTripple(){
         try {
+            // Setup word
+            // Display metrics
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            float density = displayMetrics.density;
+
             roundEnd = false;
             //segmentWritingView = new SegmetedWritingView(this,R.drawable.backgroundwhite);
             //writingContainer.removeAllViews();
@@ -128,20 +121,50 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 letterSounds[i] = array.getJSONObject(i).getString("sound");
             }
 
+            // Pictures
+            int width = (int) (300 * density);
+            int marginLeft = (int) (50 * density);
+            int totalWidth = 0;
+            int screenWidth = displayMetrics.widthPixels;
+
             JSONArray pictures = data.getJSONObject(currentTripple).getJSONArray("pictures");
             int[] shuffledArrayIndexes = FisherYates.shuffle(pictures.length()); // Randomized indexes
+            int length = Math.min(pictures.length(), items.length);
             boolean foundCorrectItem = false;
-            for(int i = 0; i < items.length;i++) {
+            for(int i = 0; i < length; i++) {
                 int si = shuffledArrayIndexes[i];
                 System.out.println("SoundDrillSevenActivity.showTripple > Debug: Shuffled index is (" + si + ")");
                 JSONObject pictureObject = pictures.getJSONObject(si);
-                items[i].setImageResource(pictureObject.getInt("picture"));
+                ImageView iv = items[i];
+
+                totalWidth += width;
+                if (i > 0) {
+                    totalWidth += marginLeft;
+                }
+
+                iv.setImageResource(pictureObject.getInt("picture"));
+                final int index = i;
+                iv.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(final View view) {
+                                clickedItem(index);
+                            }
+                        }
+                );
                 if (pictureObject.getInt("correct") == 1) {
                     foundCorrectItem = true;
                     correctItem = i;
                     System.out.println("SoundDrillSevenActivity.showTripple > Debug: correctItem is (" + correctItem + ")");
                 }
             }
+
+            // Image view
+            ImageView iv1 = items[0];
+            MarginLayoutParams iv1Layout = (MarginLayoutParams) iv1.getLayoutParams();
+            iv1Layout.leftMargin = (screenWidth - totalWidth)/2;
+            iv1.setLayoutParams(iv1Layout);
+
             // Double check that an image with correct picture exists
             if (!foundCorrectItem) {
 
@@ -169,6 +192,47 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 correctItem = shuffledArrayIndexes[0];
                 items[correctItem].setImageResource(correctObject.getInt("picture"));
             }
+
+            // Clear word
+            int writingContainerChildCount = writingContainer.getChildCount();
+            for (int i = 0; i < writingContainerChildCount; i++) {
+                ImageView iv = (ImageView) writingContainer.getChildAt(i);
+                iv.setImageResource(0);
+                iv.setVisibility(View.INVISIBLE);
+                MarginLayoutParams ivLayout = (MarginLayoutParams) iv.getLayoutParams();
+                ivLayout.topMargin = (int) (0 * density);
+                iv.setLayoutParams(ivLayout);
+            }
+
+            // Populate word
+            List<ImageView> letterViews = new ArrayList<>();
+            List<Integer> letterResources = new ArrayList<>();
+            String letterWord = "";
+            int wordLength = Math.min(writingContainerChildCount, currentWord.size());
+            for (int i = 0; i < wordLength; i++) {
+                String letter = currentWord.get(i).getString("letter");
+                int imageId = currentWord.get(i).getInt("black");
+                ImageView iv = (ImageView) writingContainer.getChildAt(i);
+                iv.setImageResource(imageId);
+                letterViews.add(iv);
+                letterResources.add(imageId);
+                letterWord += letter;
+            }
+
+            // Order letters
+            int letterCount = 0;
+            float letterWidth = density * 150;
+            float letterScale = 1.f;
+
+            letterViews = WordLetterLayout.level(
+                    THIS,
+                    letterViews,
+                    letterResources,
+                    letterWord,
+                    displayMetrics,
+                    letterWidth,
+                    letterScale
+            );
             playListenToWordAndTouch();
         }
         catch (Exception ex){

@@ -22,9 +22,7 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
@@ -70,9 +68,6 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         itemsContainer.setOnDragListener(this);
         itemToFill = (ImageView)findViewById(R.id.missing);
 
-        // itemsContainer.setBackgroundColor(Color.argb(100, 255, 0, 0));
-        // itemToFill.setBackgroundColor(Color.argb(100, 0, 0, 255));
-
         RelativeLayout.LayoutParams itemsContainerLayout = (RelativeLayout.LayoutParams) itemsContainer.getLayoutParams();
         itemsContainerLayout.leftMargin += 70;
         itemsContainer.setLayoutParams(itemsContainerLayout);
@@ -95,12 +90,6 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         filler4 = (ImageView)findViewById(R.id.filler4);
         filler5 = (ImageView)findViewById(R.id.filler5);
 
-        // filler1.setBackgroundColor(Color.argb(100, 255, 0, 0));
-        // filler2.setBackgroundColor(Color.argb(100, 255, 0, 0));
-        // filler3.setBackgroundColor(Color.argb(100, 255, 0, 0));
-        // filler4.setBackgroundColor(Color.argb(100, 255, 0, 0));
-        // filler5.setBackgroundColor(Color.argb(100, 255, 0, 0));
-
         fillerViews = new ImageView[5];
         fillerViews[0] = filler1;
         fillerViews[1] = filler2;
@@ -117,7 +106,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         initialiseData();
     }
 
-    private void initialiseData(){
+    private void initialiseData() {
         try {
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
@@ -141,7 +130,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         }
     }
 
-    private void sayPattern(){
+    private void sayPattern() {
         try {
             String sound = allData.getString("pattern_sound");
             playSound(sound, new Runnable() {
@@ -157,7 +146,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         }
     }
 
-    private void sayDrag(){
+    private void sayDrag() {
         try{
             setUpExercise();
             String sound = allData.getString("drag_sound");
@@ -174,7 +163,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         }
     }
 
-    private void sayObjectToDrag(){
+    private void sayObjectToDrag() {
         try{
             String sound = allData.getString("object_sound");
             playSound(sound, new Runnable() {
@@ -190,7 +179,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         }
     }
 
-    private void sayIntoTheSpace(){
+    private void sayIntoTheSpace() {
         try{
             String sound = allData.getString("into_the_space_sound");
             playSound(sound, new Runnable() {
@@ -206,7 +195,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         }
     }
 
-    private void placeItem(){
+    private void placeItem() {
         try{
             JSONObject item = allData.getJSONArray("completion_pieces").getJSONObject(draggedItemIndex);
             String image = item.getString("image");
@@ -219,7 +208,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         }
     }
 
-    private boolean isCorrectItem(){
+    private boolean isCorrectItem() {
         boolean isCorrectItem = false;
         try{
             JSONObject item = allData.getJSONArray("completion_pieces").getJSONObject(draggedItemIndex);
@@ -233,7 +222,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         return isCorrectItem;
     }
 
-    private void resetFillers(){
+    private void resetFillers() {
         filler1.setVisibility(View.INVISIBLE);
         filler2.setVisibility(View.INVISIBLE);
         filler3.setVisibility(View.INVISIBLE);
@@ -241,7 +230,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         filler5.setVisibility(View.INVISIBLE);
     }
 
-    private void setUpExercise(){
+    private void setUpExercise() {
         try {
             itemToFill.setVisibility(View.VISIBLE);
 
