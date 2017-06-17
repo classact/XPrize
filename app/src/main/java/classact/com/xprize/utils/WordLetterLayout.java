@@ -38,6 +38,8 @@ public class WordLetterLayout {
 
         // Setup list of top and bot y coords
         LinkedList<Integer> yTopList = new LinkedList<>();
+        LinkedList<Integer> yMidTopList = new LinkedList<>();
+        LinkedList<Integer> yMidBotList = new LinkedList<>();
         LinkedList<Integer> yBotList = new LinkedList<>();
 
         // Get screen density and screen width
@@ -61,10 +63,12 @@ public class WordLetterLayout {
             if (d != null) {
                 // Get bitmap
                 Bitmap bitmapOriginal = BitmapFactory.decodeResource(
-                        context.getResources(), letterResources.get(letterCount++)
+                        context.getResources(), letterResources.get(letterCount)
                 );
                 // Convert bitmap to ARGB_8888
                 Bitmap bitmap = bitmapOriginal.copy(Bitmap.Config.ARGB_8888, true);
+                // Letter
+                String letter = letters.get(letterCount++);
                 // Init bitmap coordinates
                 int bYTop = 0;
                 int bYBot = 0;
@@ -100,21 +104,122 @@ public class WordLetterLayout {
                 int yBot = (int) ((float) bYBot * letterScale * bRatio);
                 yTopList.add(yTop);
                 yBotList.add(yBot);
+
+                int bYMidBot = 0;
+                if (Globals.checkAlphaBase(letter) == Globals.ALPHA_BASE_MID_BOT) {
+                    // Detect mid y
+                    boolean blackFoundOnce = false;
+                    boolean whiteAgain = false;
+
+                    int first = -1;
+                    int next = -1;
+
+                    for (int j = 0; j < bp.length; j++) {
+                        float r = (float) (bp[j] & 0xff);
+                        float g = (float) ((bp[j] >> 8) & 0xff);
+                        float b = (float) ((bp[j] >> 16) & 0xff);
+                        float a = (float) ((bp[j] >> 32) & 0xff);
+
+                        if (a > 0 && !blackFoundOnce) {
+                            blackFoundOnce = true;
+                        }
+
+                        if (a <= 0 && blackFoundOnce && !whiteAgain) {
+                            whiteAgain = true;
+                        }
+
+                        if (a > 0 && whiteAgain) {
+                            if (first == -1) {
+                                first = (j+1) / bW;
+                                blackFoundOnce = false;
+                                whiteAgain = false;
+                            } else {
+                                next = (j+1) / bW;
+                                if ((next - first) > 1) {
+                                    bYMidBot = (j+1) / bW;
+                                    break;
+                                } else {
+                                    first = next;
+                                    blackFoundOnce = false;
+                                    whiteAgain = false;
+                                }
+                            }
+                        }
+                    }
+                    int yMidBot = (int) ((float) bYMidBot * letterScale * bRatio);
+                    yMidBotList.add(yMidBot);
+                } else {
+                    yMidBotList.add(0);
+                }
+
+                int bYMidTop = 0;
+                if (Globals.checkAlphaBase(letter) == Globals.ALPHA_BASE_MID_TOP) {
+                    // Detect mid y
+                    boolean blackFoundOnce = false;
+                    boolean whiteAgain = false;
+
+                    int first = -1;
+                    int next = -1;
+
+                    for (int j = 0; j < bp.length; j++) {
+                        float r = (float) (bp[j] & 0xff);
+                        float g = (float) ((bp[j] >> 8) & 0xff);
+                        float b = (float) ((bp[j] >> 16) & 0xff);
+                        float a = (float) ((bp[j] >> 32) & 0xff);
+
+                        if (a > 0 && !blackFoundOnce) {
+                            blackFoundOnce = true;
+                        }
+
+                        if (a <= 0 && blackFoundOnce && !whiteAgain) {
+                            whiteAgain = true;
+                        }
+
+                        if (a > 0 && whiteAgain) {
+                            if (first == -1) {
+                                first = (j+1) / bW;
+                                blackFoundOnce = false;
+                                whiteAgain = false;
+                            } else {
+                                next = (j+1) / bW;
+                                if ((next - first) > 1) {
+                                    bYMidTop = (j+1) / bW;
+                                    break;
+                                } else {
+                                    first = next;
+                                    blackFoundOnce = false;
+                                    whiteAgain = false;
+                                }
+                            }
+                        }
+                    }
+                    int yMidTop = (int) ((float) bYMidTop * letterScale * bRatio);
+                    yMidTopList.add(yMidTop);
+                } else {
+                    yMidTopList.add(0);
+                }
             }
             iv.setLayoutParams(ivLayout);
         }
 
+        letterCount = 0;
         int baseDiff = 0;
         int botBase = 0;
         for (int i = 0; i < yBotList.size(); i++) {
             String letter = letters.get(i);
-            if (Globals.checkAlphaBase(letter) == Globals.ALPHA_BASE_BOT) {
+            int alphaBase = Globals.checkAlphaBase(letter);
+            if (alphaBase == Globals.ALPHA_BASE_BOT ||
+                alphaBase == Globals.ALPHA_BASE_MID_BOT) {
                 if (botBase == 0) {
                     botBase = yBotList.get(i);
                 } else {
                     botBase = Math.max(botBase, yBotList.get(i));
                 }
-                int bDiff = yBotList.get(i) - yTopList.get(i);
+                int bDiffOffset = 0;
+                if (alphaBase == Globals.ALPHA_BASE_MID_BOT) {
+                    bDiffOffset = yMidBotList.get(i);
+                }
+                int bDiff = (yBotList.get(i) - yTopList.get(i)) - bDiffOffset;
                 if (baseDiff == 0) {
                     baseDiff = bDiff;
                 } else {
@@ -130,12 +235,22 @@ public class WordLetterLayout {
             Drawable d = iv.getDrawable();
             if (d != null) {
                 String letter = letters.get(letterCount);
+                int alphaBase = Globals.checkAlphaBase(letter);
 
-                if (Globals.checkAlphaBase(letter) == Globals.ALPHA_BASE_BOT) {
+                if (alphaBase == Globals.ALPHA_BASE_BOT ||
+                    alphaBase == Globals.ALPHA_BASE_MID_BOT) {
                     int letterBotBase = yBotList.get(letterCount);
                     int botBaseDiff = botBase - letterBotBase;
                     ivLayout.topMargin += botBaseDiff;
-                } else {
+                } else if (alphaBase == Globals.ALPHA_BASE_MID_TOP) {
+                    int letterTopBase = yTopList.get(letterCount);
+                    int letterMidBase = yMidTopList.get(letterCount);
+                    System.out.println(letterTopBase + "," + letterMidBase);
+                    int midBaseDiff = letterMidBase - letterTopBase;
+                    int topBase = botBase - (baseDiff + midBaseDiff);
+                    int topBaseDiff = topBase - letterTopBase;
+                    ivLayout.topMargin += topBaseDiff;
+                } else if (alphaBase == Globals.ALPHA_BASE_TOP) {
                     int letterTopBase = yTopList.get(letterCount);
                     int topBase = botBase - baseDiff;
                     int topBaseDiff = topBase - letterTopBase;

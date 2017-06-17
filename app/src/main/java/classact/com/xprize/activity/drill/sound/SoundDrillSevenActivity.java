@@ -94,6 +94,11 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
 
     public void showTripple(){
         try {
+            // Setup word
+            // Display metrics
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            float density = displayMetrics.density;
+
             roundEnd = false;
             //segmentWritingView = new SegmetedWritingView(this,R.drawable.backgroundwhite);
             //writingContainer.removeAllViews();
@@ -116,6 +121,12 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 letterSounds[i] = array.getJSONObject(i).getString("sound");
             }
 
+            // Pictures
+            int width = (int) (300 * density);
+            int marginLeft = (int) (50 * density);
+            int totalWidth = 0;
+            int screenWidth = displayMetrics.widthPixels;
+
             JSONArray pictures = data.getJSONObject(currentTripple).getJSONArray("pictures");
             int[] shuffledArrayIndexes = FisherYates.shuffle(pictures.length()); // Randomized indexes
             int length = Math.min(pictures.length(), items.length);
@@ -125,6 +136,12 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 System.out.println("SoundDrillSevenActivity.showTripple > Debug: Shuffled index is (" + si + ")");
                 JSONObject pictureObject = pictures.getJSONObject(si);
                 ImageView iv = items[i];
+
+                totalWidth += width;
+                if (i > 0) {
+                    totalWidth += marginLeft;
+                }
+
                 iv.setImageResource(pictureObject.getInt("picture"));
                 final int index = i;
                 iv.setOnClickListener(
@@ -141,6 +158,13 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                     System.out.println("SoundDrillSevenActivity.showTripple > Debug: correctItem is (" + correctItem + ")");
                 }
             }
+
+            // Image view
+            ImageView iv1 = items[0];
+            MarginLayoutParams iv1Layout = (MarginLayoutParams) iv1.getLayoutParams();
+            iv1Layout.leftMargin = (screenWidth - totalWidth)/2;
+            iv1.setLayoutParams(iv1Layout);
+
             // Double check that an image with correct picture exists
             if (!foundCorrectItem) {
 
@@ -169,11 +193,6 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 items[correctItem].setImageResource(correctObject.getInt("picture"));
             }
 
-            // Setup word
-            // Display metrics
-            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-            float density = displayMetrics.density;
-
             // Clear word
             int writingContainerChildCount = writingContainer.getChildCount();
             for (int i = 0; i < writingContainerChildCount; i++) {
@@ -181,7 +200,7 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 iv.setImageResource(0);
                 iv.setVisibility(View.INVISIBLE);
                 MarginLayoutParams ivLayout = (MarginLayoutParams) iv.getLayoutParams();
-                ivLayout.topMargin = (int) (-18 * density);
+                ivLayout.topMargin = (int) (0 * density);
                 iv.setLayoutParams(ivLayout);
             }
 
