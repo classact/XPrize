@@ -9,6 +9,9 @@ public class DraggableImage<T> {
     private int _isRight;
     private T  _content;
     private String extraData;
+    private String sound;
+    private String letter;
+    private String word;
 
     public DraggableImage(int position, int isRight, T content){
         _position = position;
@@ -46,5 +49,29 @@ public class DraggableImage<T> {
 
     public void setExtraData(String extraData) {
         this.extraData = extraData;
+    }
+
+    public String getSound() {
+        return sound;
+    }
+
+    public void setSound(String sound) {
+        this.sound = sound;
+    }
+
+    public String getLetter() {
+        return letter;
+    }
+
+    public void setLetter(String letter) {
+        this.letter = letter;
+    }
+
+    public String getWord() {
+        return word;
+    }
+
+    public void setWord(String word) {
+        this.word = word;
     }
 }

@@ -1,23 +1,30 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.content.ClipData;
+import android.content.Context;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import classact.com.xprize.R;
@@ -26,6 +33,9 @@ import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
+import classact.com.xprize.utils.Square;
+import classact.com.xprize.utils.SquarePacker;
+import classact.com.xprize.utils.WordLetterLayout;
 
 public class SoundDrillThirteenActivity extends AppCompatActivity {
 
@@ -53,6 +63,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
     private MediaPlayer mp;
     private int correctItems;
     private JSONObject allData;
+    private JSONArray letters;
 
     private LinearLayout[] mContainers;
     private LinearLayout mReceptaclesParent;
@@ -76,6 +87,10 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
     private final String SOUND = "sound";
     private final String YAY = "YAY_001";
     private final String NAY = "NAY_001";
+
+    private RelativeLayout mRootView;
+    private RelativeLayout mReceptaclesView;
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +116,8 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         receptacle6 = (ImageView)findViewById(R.id.loc6);
         receptacle7 = (ImageView)findViewById(R.id.loc7);
         receptacle8 = (ImageView)findViewById(R.id.loc8);
+
+        mRootView = (RelativeLayout) container1.getParent();
 
         RelativeLayout.LayoutParams container1Params = (RelativeLayout.LayoutParams) container1.getLayoutParams();
         container1Params.leftMargin = 225;
@@ -193,6 +210,40 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         }
     }
 
+    private void playSound(String sound, final Runnable action) {
+        try {
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    if (action != null) {
+                        action.run();
+                    }
+                }
+            });
+            mp.prepare();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            if (action != null) {
+                action.run();
+            }
+        }
+    }
+
     public void prepareDrill(){
 
         // Debug
@@ -205,7 +256,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
             mCurrentWordSound = drill.getString("sound");
 
-            JSONArray letters = drill.getJSONArray("letters");
+            letters = drill.getJSONArray("letters");
 
             resetListeners();
 
@@ -282,6 +333,93 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                 }
             }
 
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            float density = displayMetrics.density;
+            float screenWidth = displayMetrics.widthPixels;
+            int ivWidth = (int) (density * 100);
+            int ivHeight = (int) (density * 100);
+            int ivMargin = (int) (density * 10);
+
+            if (mReceptaclesView == null) {
+                mReceptaclesView = new RelativeLayout(THIS);
+                RelativeLayout.LayoutParams receptaclesLayout = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.MATCH_PARENT
+                );
+                mReceptaclesView.setLayoutParams(receptaclesLayout);
+                mRootView.addView(mReceptaclesView);
+            }
+            mReceptaclesView.removeAllViews();
+
+            int n = letters.length();
+            int w = (n * ivWidth) + ((n-1) * ivMargin);
+            int h = ivHeight;
+            // int imageId = FetchResource.imageId(this, allData, "object");
+
+            RelativeLayout.LayoutParams receptaclesLayout = (RelativeLayout.LayoutParams) mReceptaclesView.getLayoutParams();
+            receptaclesLayout = (RelativeLayout.LayoutParams) mReceptaclesView.getLayoutParams();
+            receptaclesLayout.width = w;
+            receptaclesLayout.height = h * 2;
+            receptaclesLayout.leftMargin = (int) ((screenWidth - w)/2);
+            receptaclesLayout.topMargin = 875 - (h/2);
+            mReceptaclesView.setLayoutParams(receptaclesLayout);
+            // mReceptaclesView.setBackgroundColor(Color.argb(100, 255, 0, 0));
+
+            List<ImageView> lVs = new ArrayList<>();
+            List<Integer> lRVs = new ArrayList<>();
+
+            for (int i = 0; i < n; i++) {
+                lRVs.add(letters.getJSONObject(i).getInt("letter"));
+            }
+
+            for (int i = 0; i < n; i++) {
+                ImageView iv = new ImageView(THIS);
+                iv.setImageResource(lRVs.get(i));
+                // iv.setBackgroundColor(Color.argb(100, 0, 0, 255));
+                mReceptaclesView.addView(iv);
+                RelativeLayout.LayoutParams ivParams = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT
+                );
+                if (i == 0) {
+                    iv.setX(0);
+                } else {
+                    iv.setX(i * (ivMargin + ivWidth));
+                }
+                ivParams.topMargin = h/2;
+                ivParams.width = ivWidth;
+                ivParams.height = ivHeight;
+                iv.setLayoutParams(ivParams);
+            }
+
+            for (int i = 0; i < n; i++) {
+                lVs.add((ImageView) mReceptaclesView.getChildAt(i));
+            }
+
+            String word = "";
+            for (int i = 0; i < n; i++) {
+                String letterString = letters.getJSONObject(i).getString("letter_string");
+                word += letterString;
+            }
+
+            float letterWidth = ivWidth;
+            float letterScale = 1.f;
+
+            lVs = WordLetterLayout.level(
+                    THIS,
+                    lVs,
+                    lRVs,
+                    word,
+                    displayMetrics,
+                    letterWidth,
+                    letterScale
+            );
+
+            for (int i = 0; i < lVs.size(); i++) {
+                ImageView iv = lVs.get(i);
+                iv.setImageResource(0);
+            }
+
             playSound(DRAG_THE_LETTERS_TO_WRITE, mDragTheLettersToWriteSound);
         }
         catch (Exception ex){
@@ -308,11 +446,24 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
 
-            // Debug
-            System.out.println("SDThirteenActivity.TouchAndDragListener(class).onTouch > Debug: MC");
+            try {
+                // Debug
+                System.out.println("SDThirteenActivity.TouchAndDragListener(class).onTouch > Debug: MC");
 
-            mThisActivity.setCurrentItem(mActualIndex);
-            System.out.println("Moving letter: actual(" + mActualIndex + "), shuffled(" + mShuffledIndex + ")");
+                mThisActivity.setCurrentItem(mActualIndex);
+                System.out.println("Moving letter: actual(" + mActualIndex + "), shuffled(" + mShuffledIndex + ")");
+
+                boolean gameOn = mThisActivity.getGameOn();
+                if (gameOn) {
+                    String sound = letters.getJSONObject(mActualIndex).getString("sound");
+                    Runnable r = null;
+                    playSound(sound, r);
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            }
             return dragItem(v, event);
         }
 
@@ -378,9 +529,10 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                             // Bingo!
                             // Get receptacles
                             ImageView[] receptacles = mThisActivity.getReceptacles();
+                            receptacles[mActualIndex].setImageResource(0);
 
                             // Get the image view of receptacle
-                            ImageView receptacle = receptacles[mActualIndex];
+                            ImageView receptacle = (ImageView) mReceptaclesView.getChildAt(mActualIndex);
 
                             // Get the letter image resource id
                             int letterImageResourceId = mThisActivity.getLetterImageResourceIds()[mActualIndex];
@@ -445,7 +597,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                                 mThisActivity.setGameOn(true);
 
                                 // Play affirmation sound
-                                playSound(YAY, YAY);
+                                // playSound(YAY, YAY);
                             }
                         } else {
                             // Re-enable game interactions

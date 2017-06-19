@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.controller.catalogue.MathDrills;
@@ -308,9 +309,14 @@ public class DrillFetcher {
 
                     //This will get 5 random words based on the specific unit ID
 
-                    ArrayList<Integer>  rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
+                    List<Integer>  rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
                     DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
                     Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+
+                    List<Word> words = new ArrayList<>();
+                    for (int i = 0; i < rightDrillWordIDs.size(); i++) {
+                        words.add(WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i)));
+                    }
 
                     System.out.println("DrillFetcher.getWordDrill.case 13 > Debug: languageId " +
                             languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
@@ -319,9 +325,7 @@ public class DrillFetcher {
                     // Fetch D4
                     intent = WordDrills.D4(context, dbHelper, unitId, drillId, languageId,
                             letter,
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(0)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(1)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(2)),
+                            words,
                             drillFlowWord.getDrillSound1(),
                             drillFlowWord.getDrillSound2()
                     );
