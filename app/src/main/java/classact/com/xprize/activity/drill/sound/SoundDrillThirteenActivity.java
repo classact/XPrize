@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
@@ -33,8 +34,6 @@ import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
-import classact.com.xprize.utils.Square;
-import classact.com.xprize.utils.SquarePacker;
 import classact.com.xprize.utils.WordLetterLayout;
 
 public class SoundDrillThirteenActivity extends AppCompatActivity {
@@ -87,6 +86,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
     private final String SOUND = "sound";
     private final String YAY = "YAY_001";
     private final String NAY = "NAY_001";
+    private Handler handler;
 
     private RelativeLayout mRootView;
     private RelativeLayout mReceptaclesView;
@@ -181,6 +181,8 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         mReceptacleEntries[7] = false;
 
         mThisActivity = this;
+
+        handler = new Handler();
 
         String drillData = getIntent().getExtras().getString("data");
         initializeData(drillData);
@@ -570,14 +572,16 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                                 // Get current drill no and increment by 1
                                 int currentDrill = mThisActivity.getCurrentDrill() + 1;
 
+                                boolean affirm = false;
+
                                 // Check if max drills reached
                                 if (currentDrill == drills.length()) {
 
                                     // Set end drill to true
                                     mEndDrill = true;
 
-                                    // Play affirmation sound
-                                    mThisActivity.playSound(YAY, YAY);
+                                    // Set affirmation truth
+                                    affirm = true;
 
                                 } else {
                                     // Otherwise update drill no
@@ -586,9 +590,30 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                                     // Set drill complete to true
                                     mThisActivity.setDrillComplete(true);
 
-                                    // Play affirmation sound
-                                    mThisActivity.playSound(YAY, YAY);
+                                    // Set affirmation truth
+                                    affirm = true;
                                 }
+                                if (affirm) {
+                                    // Play full sound
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            playSound(mCurrentWordSound, new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    handler.postDelayed(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            // Play affirmation sound
+                                                            mThisActivity.playSound(YAY, YAY);
+                                                        }
+                                                    }, 250);
+                                                }
+                                            });
+                                        }
+                                    }, 250);
+                                }
+
                             } else {
                                 // Update correct items
                                 mThisActivity.setCorrectItems(correctItems);
@@ -998,8 +1023,8 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        handler = null;
         if (mp != null) {
-            mp.stop();
             mp.release();
         }
         setResult(Code.NAV_MENU);

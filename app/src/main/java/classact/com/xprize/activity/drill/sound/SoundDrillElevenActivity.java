@@ -26,6 +26,7 @@ import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
+import classact.com.xprize.utils.TextShrinker;
 
 public class SoundDrillElevenActivity extends AppCompatActivity {
     private ImageButton ImageButtonWord1;
@@ -427,39 +428,10 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
                 button.setBackgroundResource(R.drawable.cardsinglesmlback);
                 button.setImageResource(image);
 
+                int cardWidth = 180;
+                float percentage = 0.9f;
                 DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-                float density = displayMetrics.density;
-
-                float cardWidth = (180 * density);
-                Drawable id = button.getDrawable();
-                float wordWidth = id.getIntrinsicWidth();
-                float cardToWordRatio = cardWidth/wordWidth;
-
-                if (cardToWordRatio < 1.f) {
-                    Rect rect = id.getBounds();
-                    Bitmap bitmap = ((BitmapDrawable) id).getBitmap();
-                    Drawable nd = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap,
-                            (int) (cardToWordRatio * rect.right * 0.9f),
-                            (int) (cardToWordRatio * rect.bottom * 0.9f),
-                            true));
-                    button.setImageResource(0);
-                    button.setImageDrawable(nd);
-                } else {
-                    float widthPercentageSize = wordWidth / cardWidth;
-                    if (widthPercentageSize > 0.9f) {
-                        Rect rect = id.getBounds();
-                        Bitmap bitmap = ((BitmapDrawable) id).getBitmap();
-                        float widthPercentageDiff = widthPercentageSize - 0.9f;
-                        float widthToSubtract = cardWidth * widthPercentageDiff;
-                        float multiplyRatio = (rect.right - widthToSubtract) / rect.right;
-                        Drawable nd = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap,
-                                (int) (multiplyRatio * rect.right),
-                                (int) (multiplyRatio * rect.bottom),
-                                true));
-                        button.setImageResource(0);
-                        button.setImageDrawable(nd);
-                    }
-                }
+                button = TextShrinker.shrink(button, cardWidth, percentage, getResources());
 
                 playThisSound(sound);
             }

@@ -1,15 +1,19 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageButton;
-import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -20,12 +24,13 @@ import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
+import classact.com.xprize.utils.TextShrinker;
 
 public class SoundDrillTwelveActivity extends AppCompatActivity {
 
     private final String DRILL_DATA_KEY = "DRILL_DATA";
 
-    private final int COUNTDOWN_TOP_MARGIN = 18;
+    private final int COUNTDOWN_TOP_MARGIN = 45;
     private final int COUNTDOWN_LEFT_MARGIN = 564;
     private final int TWO_DIGIT_OFFSET = 117;
     private final int ONE_DIGIT_OFFSET = 40;
@@ -56,14 +61,62 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
     private int mLastButtonWordClicked;
     private boolean emergencyRed;
 
+    private RelativeLayout mRootView;
+    private RelativeLayout mButtonView;
+
+    private final Context THIS = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_twelve);
-        timeView = (TextView) findViewById( R.id.textViewtimer );
+        mRootView = (RelativeLayout) findViewById(R.id.activity_sound_drill_twelve);
+        timeView = (TextView) findViewById( R.id.textViewtimer);
         buttonWord1 = (ImageButton)findViewById(R.id.button_word1);
         buttonWord2 = (ImageButton)findViewById(R.id.button_word_2);
         buttonWord3 = (ImageButton)findViewById(R.id.button_word3);
+
+        RelativeLayout bwLayout = (RelativeLayout) buttonWord1.getParent();
+        bwLayout.removeAllViews();
+
+        mButtonView = new RelativeLayout(THIS);
+        RelativeLayout.LayoutParams mButtonViewLayout = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT
+        );
+        mButtonView.setLayoutParams(mButtonViewLayout);
+        mRootView.addView(mButtonView);
+
+        mButtonView.addView(buttonWord1);
+        mButtonView.addView(buttonWord2);
+        mButtonView.addView(buttonWord3);
+
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float density = displayMetrics.density;
+        float screenWidth = displayMetrics.widthPixels;
+
+        int buttonWidth = (int) (density * 390);
+
+        MarginLayoutParams bw1Layout = (MarginLayoutParams) buttonWord1.getLayoutParams();
+        bw1Layout.topMargin = (int) (density * 240);
+        bw1Layout.leftMargin = (int) (density * 24);
+        bw1Layout.width = buttonWidth;
+        buttonWord1.setLayoutParams(bw1Layout);
+        // buttonWord1.setBackgroundColor(Color.argb(100, 255, 0, 0));
+
+        MarginLayoutParams bw2Layout = (MarginLayoutParams) buttonWord2.getLayoutParams();
+        bw2Layout.topMargin = (int) (density * 231);
+        bw2Layout.leftMargin = (int) (density * 430);
+        bw2Layout.width = buttonWidth;
+        buttonWord2.setLayoutParams(bw2Layout);
+        // buttonWord2.setBackgroundColor(Color.argb(100, 255, 0, 0));
+
+        MarginLayoutParams bw3Layout = (MarginLayoutParams) buttonWord3.getLayoutParams();
+        bw3Layout.topMargin = (int) (density * 222);
+        bw3Layout.leftMargin = (int) (density * 840);
+        bw3Layout.width = buttonWidth;
+        buttonWord3.setLayoutParams(bw3Layout);
+        // buttonWord3.setBackgroundColor(Color.argb(100, 255, 0, 0));
 
         initializeGUI();
         mDrillData = getIntent().getExtras().getString("data");
@@ -93,7 +146,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
 
         // Create new timeView layout based on new width
         LayoutParams timeViewLP = (LayoutParams) timeView.getLayoutParams();
-        timeViewLP.topMargin = -COUNTDOWN_TOP_MARGIN;
+        timeViewLP.topMargin = COUNTDOWN_TOP_MARGIN;
         timeViewLP.leftMargin = COUNTDOWN_LEFT_MARGIN - timeViewCenterOffset;
 
         // Update timeView layout
@@ -108,19 +161,6 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         buttonWord1.setImageResource(0);
         buttonWord2.setImageResource(0);
         buttonWord3.setImageResource(0);
-
-        // Adjust button positions
-        LayoutParams button1LP = (LayoutParams) buttonWord1.getLayoutParams();
-        LayoutParams button2LP = (LayoutParams) buttonWord2.getLayoutParams();
-        LayoutParams button3LP = (LayoutParams) buttonWord3.getLayoutParams();
-
-        button1LP.leftMargin = 127;
-        button2LP.leftMargin = 228;
-        button3LP.leftMargin = 221;
-
-        buttonWord1.setLayoutParams(button1LP);
-        buttonWord2.setLayoutParams(button2LP);
-        buttonWord3.setLayoutParams(button3LP);
 
         // Disable buttons
         setButtonsEnabled(false);
@@ -202,6 +242,40 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                 mp.release();
             }
             finish();
+        }
+    }
+
+    private void playSound(String sound, final Runnable action) {
+        try {
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    if (action != null) {
+                        action.run();
+                    }
+                }
+            });
+            mp.prepare();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            if (action != null) {
+                action.run();
+            }
         }
     }
 
@@ -353,6 +427,11 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             buttonWord3.setImageResource(words.getJSONObject(2).getInt("image"));
             if (words.getJSONObject(2).getInt("correct") == 1)
                 correctWord = 2;
+
+            buttonWord1 = TextShrinker.shrink(buttonWord1, 390, 0.9f, getResources());
+            buttonWord2 = TextShrinker.shrink(buttonWord2, 390, 0.9f, getResources());
+            buttonWord3 = TextShrinker.shrink(buttonWord3, 390, 0.9f, getResources());
+
             setHandler.postDelayed(saySound,500);
         }
         catch (Exception ex){
@@ -493,7 +572,28 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
                             }
                         }
                     };
-                    playSoundWithActionAfterCompletion(ResourceSelector.getNegativeAffirmationSound(this));
+                    if (!gameOver) {
+                        playSound(FetchResource.negativeAffirmation(THIS), new Runnable() {
+                            @Override
+                            public void run() {
+                                if (gameOver) {
+                                    setHandler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            // Update colour of text
+                                            timeView.setTextColor(Color.parseColor(LOSE_RED));
+
+                                            startConcluding();
+                                        }
+                                    }, 350);
+                                } else {
+                                    if (mNextAction != null) {
+                                        mNextAction.run();
+                                    }
+                                }
+                            }
+                        });
+                    }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -528,7 +628,7 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
 
                 // Create new timeView layout based on new width
                 LayoutParams timeViewLP = (LayoutParams) timeView.getLayoutParams();
-                timeViewLP.topMargin = -COUNTDOWN_TOP_MARGIN;
+                timeViewLP.topMargin = COUNTDOWN_TOP_MARGIN;
                 timeViewLP.leftMargin = COUNTDOWN_LEFT_MARGIN - timeViewCenterOffset;
 
                 // Update timeView with new time
@@ -546,20 +646,18 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
             }
         }
         else {
-            if (!gameOver) {
-                gameOver = true;
+            gameOver = true;
 
-                if (mp != null && !mp.isPlaying()) {
-                    setHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Update colour of text
-                            timeView.setTextColor(Color.parseColor(LOSE_RED));
+            if (mp != null && !mp.isPlaying()) {
+                setHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Update colour of text
+                        timeView.setTextColor(Color.parseColor(LOSE_RED));
 
-                            startConcluding();
-                        }
-                    }, 1000);
-                }
+                        startConcluding();
+                    }
+                }, 1000);
             }
         }
     }
@@ -742,8 +840,10 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         public void run() {
             try {
                 if (!gameOver) {
-                    if (time == 0) {
+                    if (time <= 0) {
+                        time = 0;
                         if (timeView != null) {
+                            timeView.setText("" + 0);
                             timeView.setTextColor(Color.RED);
                         }
                         emergencyRed = false;

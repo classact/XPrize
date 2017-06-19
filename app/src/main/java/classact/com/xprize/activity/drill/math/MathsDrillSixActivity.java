@@ -359,7 +359,6 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         }
     }
 
-
     private void playSound(String sound, final Runnable action) {
         try {
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
