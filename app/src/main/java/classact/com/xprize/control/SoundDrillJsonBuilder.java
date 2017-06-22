@@ -368,7 +368,7 @@ public class SoundDrillJsonBuilder {
                                                   String monkeyWantsTwoSound,
                                                   String canYouMatchSound,
                                                   String countOneSound,
-                                                  ArrayList<classact.com.xprize.database.model.Word> words) {
+                                                  List<classact.com.xprize.database.model.Word> words) {
         String drillData = "{\"monkey_wants_two\":\"" + monkeyWantsTwoSound + "\"," +
                 "\"can_you_match\":\"" + canYouMatchSound + "\"," +
                 "\"count_1\":\"" + countOneSound + "\"," +

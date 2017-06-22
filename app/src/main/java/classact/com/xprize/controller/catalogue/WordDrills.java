@@ -73,7 +73,7 @@ public class WordDrills {
     }
 
     public static Intent D2(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
-                            Word word1, Word word2, Word word3, Word word4, Word word5,
+                            List<Word> wordList,
                             String drillSound1, String drillSound2)
             throws SQLiteException, Exception {
 
@@ -83,19 +83,12 @@ public class WordDrills {
         Intent intent;
 
         try {
-            ArrayList<Word> words = new ArrayList<>();
-            words.add(word1);
-            words.add(word2);
-            words.add(word3);
-            words.add(word4);
-            words.add(word5);
-
             String drillData = SoundDrillJsonBuilder.getSoundDrillElevenJson(
                     context,
                     drillSound1,
                     drillSound2,
                     NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), languageId, 1).getSound(),
-                    words
+                    wordList
             );
             intent = new Intent(context, SoundDrillElevenActivity.class);
             intent.putExtra("data", drillData);

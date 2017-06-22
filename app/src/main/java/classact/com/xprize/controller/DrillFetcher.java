@@ -234,16 +234,17 @@ public class DrillFetcher {
                     int rightLimit = 5; // limit the words to 4 for this drill
                     //This will get 3 random words based on the specific unit ID
 
-                    ArrayList<Integer> drillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, rightLimit);
+                    List<Integer> drillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, rightLimit);
                     DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
+                    List<Word> wordList = new ArrayList<>();
+                    for (int i = 0; i < drillWordIDs.size(); i++) {
+                        Word word = WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(i));
+                        wordList.add(word);
+                    }
 
                     // Fetch D2
                     intent = WordDrills.D2(context, dbHelper, unitId, drillId, languageId,
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(0)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(1)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(2)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(3)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(4)),
+                            wordList,
                             drillFlowWord.getDrillSound1(),
                             drillFlowWord.getDrillSound2()
                     );
