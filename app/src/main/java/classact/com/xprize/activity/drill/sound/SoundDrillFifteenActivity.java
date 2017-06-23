@@ -1,24 +1,23 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.content.ClipData;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.DragEvent;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageButton;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
@@ -29,14 +28,14 @@ import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillFifteenActivity extends AppCompatActivity {
 
-    private LinearLayout container1;
-    private LinearLayout container2;
-    private LinearLayout container3;
-    private LinearLayout container4;
-    private LinearLayout container5;
-    private LinearLayout container6;
-    private LinearLayout container7;
-    private LinearLayout container8;
+    private ImageView container1;
+    private ImageView container2;
+    private ImageView container3;
+    private ImageView container4;
+    private ImageView container5;
+    private ImageView container6;
+    private ImageView container7;
+    private ImageView container8;
 
     private ImageView receptacle1;
     private ImageView receptacle2;
@@ -54,8 +53,8 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
     private int correctItems;
     private JSONObject allData;
 
-    private LinearLayout[] mContainers;
-    private LinearLayout mReceptaclesParent;
+    private ImageView[] mContainers;
+    private RelativeLayout mReceptaclesParent;
     private ImageView[] mReceptacles;
     private ImageView[] mWordImageViews;
     private boolean mGameOn;
@@ -79,6 +78,8 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
     private final String YAY = "YAY_001";
     private final String NAY = "NAY_001";
 
+    private RelativeLayout mRootView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,26 +87,27 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
         // Debug
         System.out.println("SDFifteenActivity.OnCreate > Debug: MC");
 
-        setContentView(R.layout.activity_sound_drill_thirteen);
+        setContentView(R.layout.activity_sound_drill_fifteen);
 
+        mRootView = (RelativeLayout) findViewById(R.id.activity_sound_drill_fifteen);
+        mRootView.setBackgroundResource(R.drawable.backgroundwriteletters);
 
-
-        container1 = (LinearLayout) findViewById(R.id.container1);
-        container2 = (LinearLayout) findViewById(R.id.container2);
-        container3 = (LinearLayout) findViewById(R.id.container3);
-        container4 = (LinearLayout) findViewById(R.id.container4);
-        container5 = (LinearLayout) findViewById(R.id.container5);
-        container6 = (LinearLayout) findViewById(R.id.container6);
-        container7 = (LinearLayout) findViewById(R.id.container7);
-        container8 = (LinearLayout) findViewById(R.id.container8);
-        receptacle1 = (ImageView)findViewById(R.id.loc1);
-        receptacle2 = (ImageView)findViewById(R.id.loc2);
-        receptacle3 = (ImageView)findViewById(R.id.loc3);
-        receptacle4 = (ImageView)findViewById(R.id.loc4);
-        receptacle5 = (ImageView)findViewById(R.id.loc5);
-        receptacle6 = (ImageView)findViewById(R.id.loc6);
-        receptacle7 = (ImageView)findViewById(R.id.loc7);
-        receptacle8 = (ImageView)findViewById(R.id.loc8);
+        container1 = (ImageView) findViewById(R.id.container1);
+        container2 = (ImageView) findViewById(R.id.container2);
+        container3 = (ImageView) findViewById(R.id.container3);
+        container4 = (ImageView) findViewById(R.id.container4);
+        container5 = (ImageView) findViewById(R.id.container5);
+        container6 = (ImageView) findViewById(R.id.container6);
+        container7 = (ImageView) findViewById(R.id.container7);
+        container8 = (ImageView) findViewById(R.id.container8);
+        receptacle1 = (ImageView)findViewById(R.id.rloc1);
+        receptacle2 = (ImageView)findViewById(R.id.rloc2);
+        receptacle3 = (ImageView)findViewById(R.id.rloc3);
+        receptacle4 = (ImageView)findViewById(R.id.rloc4);
+        receptacle5 = (ImageView)findViewById(R.id.rloc5);
+        receptacle6 = (ImageView)findViewById(R.id.rloc6);
+        receptacle7 = (ImageView)findViewById(R.id.rloc7);
+        receptacle8 = (ImageView)findViewById(R.id.rloc8);
 
         RelativeLayout.LayoutParams container1Params = (RelativeLayout.LayoutParams) container1.getLayoutParams();
         container1Params.leftMargin = 225;
@@ -127,7 +129,7 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
         container7Params.topMargin = 60;
         container7.setLayoutParams(container7Params);
 
-        mContainers = new LinearLayout[MAX_LETTERS];
+        mContainers = new ImageView[MAX_LETTERS];
         mContainers[0] = container4;
         mContainers[1] = container6;
         mContainers[2] = container5;
@@ -137,14 +139,14 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
         mContainers[6] = container7;
         mContainers[7] = container1;
 
-        mReceptaclesParent = (LinearLayout) receptacle1.getParent();
-        mReceptaclesParent.setGravity(Gravity.CENTER);
+        mReceptaclesParent = (RelativeLayout) receptacle1.getParent();
 
         RelativeLayout.LayoutParams receptaclesParentParams = (RelativeLayout.LayoutParams) mReceptaclesParent.getLayoutParams();
-        receptaclesParentParams.topMargin = 535;
+        receptaclesParentParams.topMargin = 0;
+        receptaclesParentParams.leftMargin = 0;
         mReceptaclesParent.setLayoutParams(receptaclesParentParams);
 
-        LinearLayout.LayoutParams receptacle1Params = (LinearLayout.LayoutParams) receptacle1.getLayoutParams();
+        RelativeLayout.LayoutParams receptacle1Params = (RelativeLayout.LayoutParams) receptacle1.getLayoutParams();
         receptacle1Params.leftMargin = 0;
         receptacle1.setLayoutParams(receptacle1Params);
 
@@ -215,97 +217,118 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
     }
 
     public void prepareDrill(){
-
         // Debug
         System.out.println("SDFifteenActivity.prepareDrill > Debug: MC");
-
         try{
             mDrillComplete = false;
-
             JSONObject drill = drills.getJSONObject(currentDrill);
-
             mCurrentSentenceSound = drill.getString(SENTENCE_SOUND);
-
             JSONArray words = drill.getJSONArray("words");
-
             resetListeners();
-
             resetContainers();
-
             resetReceptacles();
-
             resetReceptacleEntries();
 
             // Reset correct items
             correctItems = 0;
-
             int numberOfWords = words.length();
             if (numberOfWords > MAX_LETTERS) {
                 numberOfWords = MAX_LETTERS;
             }
             mWordImageViews = new ImageView[numberOfWords];
-
             mWordImageResourceIds = new int[numberOfWords];
-
             mWordSounds = new String[numberOfWords];
-
             mWordOrder = FisherYates.shuffle(numberOfWords);
 
             for (int i = 0; i < mContainers.length; i++) {
                 if (i >= numberOfWords) {
                     // Make rogue containers invisible
                     mContainers[i].setVisibility(View.INVISIBLE);
-
                     // Remove all rogue receptacles
                     mReceptaclesParent.removeView(mReceptacles[i]);
-
                 } else {
-
                     // Get the word index (a shuffled index)
                     int containerIndex = mWordOrder[i];
-
                     System.out.println(":: BINDING Letter " + i + " to container " + containerIndex);
-
                     // Extract the word from data
                     JSONObject word = words.getJSONObject(i);
-
                     // Get word image resource id
                     int wordImageResourceId = word.getInt("word");
-
                     // Create new image view
-                    ImageView wordImageView = new ImageView(getApplicationContext());
-                    wordImageView.setImageResource(wordImageResourceId);
-
+                    ImageView container = mContainers[containerIndex];
+                    container.setImageResource(wordImageResourceId);
                     // Add touch listener to image view
-                    wordImageView.setOnTouchListener(new SoundDrillFifteenActivity.TouchAndDragListener(mThisActivity, containerIndex, i));
-
-                    // Get container
-                    LinearLayout container = mContainers[containerIndex];
-
-                    // Add image view to container
-                    container.addView(wordImageView);
-
+                    container.setOnTouchListener(new SoundDrillFifteenActivity.TouchAndDragListener(mThisActivity, containerIndex, i));
                     // Add image view to list of word image views
-                    mWordImageViews[i] = wordImageView;
-
+                    mWordImageViews[i] = container;
                     // Add word image resource id to list of word image resource ids
                     mWordImageResourceIds[i] = wordImageResourceId;
-
                     // Get and add the word sound
                     mWordSounds[i] = word.getString(WORD_SOUND);
-
                     // Get receptacle
                     ImageView receptacle = mReceptacles[i];
-
                     // Add on drag listener to receptacle
                     receptacle.setOnDragListener(new SoundDrillFifteenActivity.TouchAndDragListener(mThisActivity, i, i));
-
                     // Show container
                     container.setVisibility(View.VISIBLE);
-
                     // Show receptacle
                     receptacle.setVisibility(View.VISIBLE);
                 }
+            }
+
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            float density = displayMetrics.density;
+            float screenWidth = displayMetrics.widthPixels;
+
+            int hBase = (int) (density * 150);
+            for (int i = 0; i < mWordImageViews.length; i++) {
+                ImageView iv = mWordImageViews[i];
+                Drawable d = iv.getDrawable();
+                float hRatio = 0f;
+                if (d != null) {
+                    int dWidth = d.getIntrinsicWidth();
+                    int dHeight = d.getIntrinsicHeight();
+                    hRatio = ((float) dWidth / (float) dHeight);
+                    System.out.println("[" + i + "]: " + dWidth + ", " + dHeight);
+                }
+                MarginLayoutParams ivParams = (MarginLayoutParams) iv.getLayoutParams();
+                ivParams.height = hBase;
+                ivParams.width = (int) (density * 300);//(int) ((float) hBase * hRatio);
+                iv.setLayoutParams(ivParams);
+                iv.setBackgroundColor(Color.argb(100, 255, 0, 0));
+            }
+
+            // RECEPTACLES
+            int ivWidth = (int) (density * 100);
+            int ivHeight = (int) (density * 100);
+            int ivMargin = (int) (density * 10);
+
+            int n = mReceptaclesParent.getChildCount();
+            int w = (n * ivWidth) + ((n-1) * ivMargin);
+            int h = ivHeight;
+            // int imageId = FetchResource.imageId(this, allData, "object");
+
+            MarginLayoutParams receptaclesLayout = (MarginLayoutParams) mReceptaclesParent.getLayoutParams();
+            receptaclesLayout.width = w;
+            receptaclesLayout.height = h * 2;
+            receptaclesLayout.leftMargin = (int) ((screenWidth - w)/2) - 75;
+            receptaclesLayout.topMargin = 900 - (h/2);
+            mReceptaclesParent.setLayoutParams(receptaclesLayout);
+            // mReceptaclesParent.setBackgroundColor(Color.argb(100, 255, 0, 0));
+
+            for (int i = 0; i < n; i++) {
+                ImageView iv = mReceptacles[i];
+                MarginLayoutParams ivParams = (MarginLayoutParams) iv.getLayoutParams();
+                if (i == 0) {
+                    iv.setX(0);
+                } else {
+                    iv.setX(i * (ivMargin + ivWidth));
+                }
+                ivParams.leftMargin = 0;
+                ivParams.topMargin = h/2;
+                ivParams.width = ivWidth;
+                ivParams.height = ivHeight;
+                iv.setLayoutParams(ivParams);
             }
 
             playSound(DRAG_WORD_TO_WRITE, mDragWordToWrite);
@@ -428,7 +451,7 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
                             receptacle.setImageResource(wordImageResourceId);
 
                             // Get containers
-                            LinearLayout[] containers = mThisActivity.getContainers();
+                            ImageView[] containers = mThisActivity.getContainers();
 
                             // Get word order
                             int[] wordOrder = mThisActivity.getWordOrder();
@@ -436,7 +459,7 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
                             System.out.println(":: Letter Order: " + wordOrder[mActualIndex]);
 
                             // Get container for dragged image view
-                            LinearLayout container = containers[wordOrder[mActualIndex]];
+                            ImageView container = containers[wordOrder[mActualIndex]];
 
                             // Hide container
                             container.setVisibility(View.INVISIBLE);
@@ -724,10 +747,7 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
         try {
             if (mContainers != null) {
 
-                for (LinearLayout container: mContainers) {
-
-                    // Remove all views for container
-                    container.removeAllViews();
+                for (ImageView container: mContainers) {
 
                     // Make container invisible
                     container.setVisibility(View.INVISIBLE);
@@ -856,7 +876,7 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
         return mDrillComplete;
     }
 
-    public LinearLayout[] getContainers() {
+    public ImageView[] getContainers() {
         return mContainers;
     }
 
