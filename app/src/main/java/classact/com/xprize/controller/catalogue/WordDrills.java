@@ -362,16 +362,16 @@ public class WordDrills {
         Intent intent;
 
         try {
-            ArrayList<Sentence> sentences = new ArrayList<>();
+            List<Sentence> sentences = new ArrayList<>();
 
-            ArrayList<Integer>  sentenceIDs = new ArrayList();
+            List<Integer>  sentenceIDs = new ArrayList();
             sentenceIDs = SentenceHelper.getSentences(dbHelper.getReadableDatabase(), languageId, unitId);
 
             for (int i=0; i < sentenceIDs.size(); i++){
                 SentenceDB sentenceFromDB = SentenceHelper.getSentence(dbHelper.getReadableDatabase(), sentenceIDs.get(i));
                 Sentence sentence = new Sentence(sentenceFromDB.getWordCount(), sentenceFromDB.getSentenceSoundFile());
-                ArrayList<DraggableImage<String>> words = new ArrayList<>();
-                ArrayList<Integer>  sentenceWordIDs = new ArrayList();
+                List<DraggableImage<String>> words = new ArrayList<>();
+                List<Integer>  sentenceWordIDs = new ArrayList();
                 sentenceWordIDs = SentenceWordsHelper.getSentenceWords(dbHelper.getReadableDatabase(), sentenceIDs.get(i));
                 for (int j=0; j< sentenceWordIDs.size(); j++){
                     SentenceDBWords sentenceWord = SentenceWordsHelper.getSentenceWord(dbHelper.getReadableDatabase(), sentenceWordIDs.get(j));
@@ -402,7 +402,7 @@ public class WordDrills {
         return intent;
     }
 
-    private static RightWrongWordSet getRightWrongWordSet(Word rightWord, ArrayList<Word> wrongWords) throws Exception {
+    private static RightWrongWordSet getRightWrongWordSet(Word rightWord, List<Word> wrongWords) throws Exception {
 
         try {
             // Get shuffled indexes

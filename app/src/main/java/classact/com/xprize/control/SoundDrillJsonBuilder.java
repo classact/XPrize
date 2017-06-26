@@ -545,7 +545,7 @@ public class SoundDrillJsonBuilder {
     public static String getSoundDrillFifteenJson(Context context,
                                            String dragWordToWriteSound,
                                            String thisIsSound,
-                                           ArrayList<Sentence> sentences) {
+                                           List<Sentence> sentences) {
 
         String drillData = "{\"drag_word_to_write\":\"" + dragWordToWriteSound + "\"," +
                 "\"this_is\":\"" + thisIsSound + "\"," +
@@ -562,7 +562,7 @@ public class SoundDrillJsonBuilder {
                     "\"sentence_sound\":\"" + sentence.getSentenceText() + "\"," +
                     "\"words\":[";
 
-            ArrayList<DraggableImage<String>> words = sentence.getWords();
+            List<DraggableImage<String>> words = sentence.getWords();
 
             for (int j = 0; j < words.size(); j++) {
                 DraggableImage<String> word = words.get(j);

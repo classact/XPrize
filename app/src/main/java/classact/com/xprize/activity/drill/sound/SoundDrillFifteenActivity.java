@@ -1,10 +1,12 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.content.ClipData;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -15,9 +17,13 @@ import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
@@ -78,15 +84,18 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
     private final String YAY = "YAY_001";
     private final String NAY = "NAY_001";
 
+    private RelativeLayout mPlaceHoldersParent;
+    private List<ImageView> mPlaceholders;
     private RelativeLayout mRootView;
+    private final Context THIS = this;
+
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // Debug
-        System.out.println("SDFifteenActivity.OnCreate > Debug: MC");
-
+        // System.out.println("SDFifteenActivity.OnCreate > Debug: MC");
         setContentView(R.layout.activity_sound_drill_fifteen);
 
         mRootView = (RelativeLayout) findViewById(R.id.activity_sound_drill_fifteen);
@@ -109,35 +118,15 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
         receptacle7 = (ImageView)findViewById(R.id.rloc7);
         receptacle8 = (ImageView)findViewById(R.id.rloc8);
 
-        RelativeLayout.LayoutParams container1Params = (RelativeLayout.LayoutParams) container1.getLayoutParams();
-        container1Params.leftMargin = 225;
-        container1.setLayoutParams(container1Params);
-
-        RelativeLayout.LayoutParams container2Params = (RelativeLayout.LayoutParams) container2.getLayoutParams();
-        container2Params.leftMargin = 375;
-        container2.setLayoutParams(container2Params);
-
-        RelativeLayout.LayoutParams container3Params = (RelativeLayout.LayoutParams) container3.getLayoutParams();
-        container3Params.topMargin = 60;
-        container3.setLayoutParams(container3Params);
-
-        RelativeLayout.LayoutParams container5Params = (RelativeLayout.LayoutParams) container5.getLayoutParams();
-        container5Params.topMargin = 60;
-        container5.setLayoutParams(container5Params);
-
-        RelativeLayout.LayoutParams container7Params = (RelativeLayout.LayoutParams) container7.getLayoutParams();
-        container7Params.topMargin = 60;
-        container7.setLayoutParams(container7Params);
-
         mContainers = new ImageView[MAX_LETTERS];
-        mContainers[0] = container4;
-        mContainers[1] = container6;
-        mContainers[2] = container5;
-        mContainers[3] = container3;
-        mContainers[4] = container2;
-        mContainers[5] = container8;
+        mContainers[0] = container1;
+        mContainers[1] = container2;
+        mContainers[2] = container3;
+        mContainers[3] = container4;
+        mContainers[4] = container5;
+        mContainers[5] = container6;
         mContainers[6] = container7;
-        mContainers[7] = container1;
+        mContainers[7] = container8;
 
         mReceptaclesParent = (RelativeLayout) receptacle1.getParent();
 
@@ -172,6 +161,18 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
 
         mThisActivity = this;
 
+        mPlaceholders = new ArrayList<>();
+
+        mPlaceHoldersParent = new RelativeLayout(THIS);
+        RelativeLayout.LayoutParams mPlaceHoldersParentLayout = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT
+        );
+        mPlaceHoldersParent.setLayoutParams(mPlaceHoldersParentLayout);
+        mRootView.addView(mPlaceHoldersParent);
+
+        handler = new Handler();
+
         /* Container BG test **
         int maxLength = MAX_LETTERS;
 
@@ -194,10 +195,8 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
     }
 
     private void initializeData(String drillData){
-
         // Debug
-        System.out.println("SDFifteenActivity.initializeData > Debug: MC");
-
+        // System.out.println("SDFifteenActivity.initializeData > Debug: MC");
         try{
             allData = new JSONObject(drillData);
             mDragWordToWrite = allData.getString(DRAG_WORD_TO_WRITE);
@@ -208,17 +207,14 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
             mEndDrill = false;
         }
         catch (Exception ex){
-            System.err.println("==============================");
-            System.err.println("SDFifteenActivity.initializeData");
-            System.err.println("------------------------------");
             ex.printStackTrace();
-            System.err.println("==============================");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     public void prepareDrill(){
         // Debug
-        System.out.println("SDFifteenActivity.prepareDrill > Debug: MC");
+        // System.out.println("SDFifteenActivity.prepareDrill > Debug: MC");
         try{
             mDrillComplete = false;
             JSONObject drill = drills.getJSONObject(currentDrill);
@@ -235,43 +231,75 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
             if (numberOfWords > MAX_LETTERS) {
                 numberOfWords = MAX_LETTERS;
             }
+            // System.out.println("# of words: " + numberOfWords);
             mWordImageViews = new ImageView[numberOfWords];
             mWordImageResourceIds = new int[numberOfWords];
             mWordSounds = new String[numberOfWords];
             mWordOrder = FisherYates.shuffle(numberOfWords);
 
+            mReceptaclesParent.removeAllViews();
+            for (int i = 0; i < mReceptacles.length; i++) {
+                ImageView iv = mReceptacles[i];
+                mReceptaclesParent.addView(iv);
+                RelativeLayout.LayoutParams ivParams = (RelativeLayout.LayoutParams) iv.getLayoutParams();
+                ivParams.topMargin = 0;
+                ivParams.leftMargin = 0;
+                ivParams.width = 0;
+                ivParams.height = 0;
+                iv.setX(0f);
+                iv.setY(0f);
+                iv.setScaleX(1f);
+                iv.setScaleY(1f);
+                iv.setLayoutParams(ivParams);
+            }
+
+            int containersLength = mContainers.length;
+            for (int i = 0; i < containersLength; i++) {
+                ImageView iv = mContainers[i];
+                RelativeLayout.LayoutParams ivParams = (RelativeLayout.LayoutParams) iv.getLayoutParams();
+                ivParams.topMargin = 0;
+                ivParams.leftMargin = 0;
+                ivParams.width = 0;
+                ivParams.height = 0;
+                iv.setX(0f);
+                iv.setY(0f);
+                iv.setScaleX(1f);
+                iv.setScaleY(1f);
+                iv.setLayoutParams(ivParams);
+                // int ivFraction = (int) (((float) (i+1)/containersLength) * 255);
+                // iv.setBackgroundColor(Color.argb(ivFraction, 255, 0, 0));
+            }
+
+            mPlaceHoldersParent.removeAllViews();
+            mPlaceholders.clear();
+
             for (int i = 0; i < mContainers.length; i++) {
                 if (i >= numberOfWords) {
-                    // Make rogue containers invisible
-                    mContainers[i].setVisibility(View.INVISIBLE);
-                    // Remove all rogue receptacles
+                    ImageView c = mContainers[i];
+                    c.setVisibility(View.INVISIBLE);
+                    c.setOnTouchListener(null);
                     mReceptaclesParent.removeView(mReceptacles[i]);
                 } else {
                     // Get the word index (a shuffled index)
-                    int containerIndex = mWordOrder[i];
-                    System.out.println(":: BINDING Letter " + i + " to container " + containerIndex);
+                    int wi = mWordOrder[i];
+                    // System.out.println(":: BINDING Letter " + i + " to container " + containerIndex);
                     // Extract the word from data
-                    JSONObject word = words.getJSONObject(i);
-                    // Get word image resource id
+                    JSONObject word = words.getJSONObject(wi);
                     int wordImageResourceId = word.getInt("word");
+                    // System.out.println("WR_ID: " + wordImageResourceId);
                     // Create new image view
-                    ImageView container = mContainers[containerIndex];
+                    ImageView container = mContainers[i];
                     container.setImageResource(wordImageResourceId);
-                    // Add touch listener to image view
-                    container.setOnTouchListener(new SoundDrillFifteenActivity.TouchAndDragListener(mThisActivity, containerIndex, i));
+                    container.setOnTouchListener(new SoundDrillFifteenActivity.TouchAndDragListener(mThisActivity, wi, wi));
                     // Add image view to list of word image views
-                    mWordImageViews[i] = container;
-                    // Add word image resource id to list of word image resource ids
-                    mWordImageResourceIds[i] = wordImageResourceId;
-                    // Get and add the word sound
-                    mWordSounds[i] = word.getString(WORD_SOUND);
+                    mWordImageViews[wi] = container;
+                    mWordImageResourceIds[wi] = wordImageResourceId;
+                    mWordSounds[wi] = word.getString(WORD_SOUND);
                     // Get receptacle
-                    ImageView receptacle = mReceptacles[i];
-                    // Add on drag listener to receptacle
-                    receptacle.setOnDragListener(new SoundDrillFifteenActivity.TouchAndDragListener(mThisActivity, i, i));
+                    ImageView receptacle = mReceptacles[wi];
+                    receptacle.setOnDragListener(new SoundDrillFifteenActivity.TouchAndDragListener(mThisActivity, wi, i));
                     // Show container
                     container.setVisibility(View.VISIBLE);
-                    // Show receptacle
                     receptacle.setVisibility(View.VISIBLE);
                 }
             }
@@ -280,8 +308,22 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
             float density = displayMetrics.density;
             float screenWidth = displayMetrics.widthPixels;
 
+            // RECEPTACLES
+            int ivWidth = (int) (density * 100);
+            int ivHeight = (int) (density * 100);
+            int ivMargin = (int) (density * 20);
+
+            int n = mWordImageViews.length;
+            int w = 0;
+            int h = ivHeight;
+            float[] wordRatios = new float[n];
+            int[] wordWidths = new int[n];
+
+            // RESIZE WORDS
+            int letterCount = 0;
             int hBase = (int) (density * 150);
-            for (int i = 0; i < mWordImageViews.length; i++) {
+
+            for (int i = 0; i < n; i++) {
                 ImageView iv = mWordImageViews[i];
                 Drawable d = iv.getDrawable();
                 float hRatio = 0f;
@@ -289,56 +331,149 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
                     int dWidth = d.getIntrinsicWidth();
                     int dHeight = d.getIntrinsicHeight();
                     hRatio = ((float) dWidth / (float) dHeight);
-                    System.out.println("[" + i + "]: " + dWidth + ", " + dHeight);
+                    wordRatios[letterCount] = hRatio;
+                    int wordWidth = (int) (hRatio * h);
+                    wordWidths[letterCount] = wordWidth;
+                    w += wordWidth;
+                    if (letterCount > 0) {
+                        w += ivMargin;
+                    }
+                    letterCount++;
                 }
-                MarginLayoutParams ivParams = (MarginLayoutParams) iv.getLayoutParams();
+                RelativeLayout.LayoutParams ivParams = (RelativeLayout.LayoutParams) iv.getLayoutParams();
                 ivParams.height = hBase;
-                ivParams.width = (int) (density * 300);//(int) ((float) hBase * hRatio);
+                ivParams.width = (int) ((float) hBase * hRatio);
                 iv.setLayoutParams(ivParams);
-                iv.setBackgroundColor(Color.argb(100, 255, 0, 0));
             }
 
-            // RECEPTACLES
-            int ivWidth = (int) (density * 100);
-            int ivHeight = (int) (density * 100);
-            int ivMargin = (int) (density * 10);
+            RelativeLayout.LayoutParams rpParams = (RelativeLayout.LayoutParams) mReceptaclesParent.getLayoutParams();
+            rpParams.topMargin = 875;
+            rpParams.leftMargin = (int) (screenWidth - w)/2 - 65;
+            rpParams.width = w;
+            rpParams.height = ivHeight + 20;
+            mReceptaclesParent.setLayoutParams(rpParams);
 
-            int n = mReceptaclesParent.getChildCount();
-            int w = (n * ivWidth) + ((n-1) * ivMargin);
-            int h = ivHeight;
-            // int imageId = FetchResource.imageId(this, allData, "object");
+            RelativeLayout.LayoutParams ppParams = (RelativeLayout.LayoutParams) mPlaceHoldersParent.getLayoutParams();
+            ppParams.topMargin = 885;
+            ppParams.leftMargin = (int) (screenWidth - w)/2 - 65;
+            ppParams.width = w;
+            ppParams.height = ivHeight;
+            mPlaceHoldersParent.setLayoutParams(ppParams);
 
-            MarginLayoutParams receptaclesLayout = (MarginLayoutParams) mReceptaclesParent.getLayoutParams();
-            receptaclesLayout.width = w;
-            receptaclesLayout.height = h * 2;
-            receptaclesLayout.leftMargin = (int) ((screenWidth - w)/2) - 75;
-            receptaclesLayout.topMargin = 900 - (h/2);
-            mReceptaclesParent.setLayoutParams(receptaclesLayout);
-            // mReceptaclesParent.setBackgroundColor(Color.argb(100, 255, 0, 0));
-
+            float cx = 0f;
+            float rx = 0f;
+            float px = 0f;
             for (int i = 0; i < n; i++) {
-                ImageView iv = mReceptacles[i];
-                MarginLayoutParams ivParams = (MarginLayoutParams) iv.getLayoutParams();
-                if (i == 0) {
-                    iv.setX(0);
-                } else {
-                    iv.setX(i * (ivMargin + ivWidth));
+                ImageView p = new ImageView(THIS);
+                mPlaceHoldersParent.addView(p);
+                mPlaceholders.add(p);
+                int ci = mWordOrder[i];
+                ImageView c = mContainers[i];
+                ImageView r = mReceptacles[i];
+
+                RelativeLayout.LayoutParams cParams = (RelativeLayout.LayoutParams) c.getLayoutParams();
+                RelativeLayout.LayoutParams rParams = (RelativeLayout.LayoutParams) r.getLayoutParams();
+                RelativeLayout.LayoutParams pParams = (RelativeLayout.LayoutParams) p.getLayoutParams();
+
+                int containerWidth = wordWidths[ci];
+                int width = wordWidths[i];
+                int height = ivHeight;
+
+                if (i > 0) {
+                    rx += wordWidths[i-1] + ivMargin;
+                    px += wordWidths[i-1] + ivMargin;
                 }
-                ivParams.leftMargin = 0;
-                ivParams.topMargin = h/2;
-                ivParams.width = ivWidth;
-                ivParams.height = ivHeight;
-                iv.setLayoutParams(ivParams);
+
+                cParams.topMargin = 0;
+                cParams.leftMargin = 0;
+                cParams.width = containerWidth;
+                cParams.height = height;
+                c.setLayoutParams(cParams);
+
+                // Receptacles
+                float rXDiff = (width - h)/2;
+
+                rParams.topMargin = 0;
+                rParams.leftMargin = 0;
+                rParams.width = h;
+                rParams.height = height + 20;
+                r.setScaleX(wordRatios[i]);
+                r.setX(rx + rXDiff);
+                r.setLayoutParams(rParams);
+
+                // Placeholders
+                pParams.topMargin = 0;
+                pParams.leftMargin = 0;
+                pParams.width = width;
+                pParams.height = height;
+                p.setX(px);
+                p.setLayoutParams(pParams);
+            }
+
+            if (n > 2) {
+                int[] levels = new int[2];
+                levels[0] = n / 2;
+                levels[1] = n - levels[0];
+
+                int levelOne = levels[0];
+                int divisorOne = levelOne + 1;
+                int sectionOne = (int) (screenWidth / divisorOne);
+
+                int count = 0;
+
+                int l1TM = (int) (density * 90);
+                for (int i = 1; i <= levelOne; i++) {
+                    ImageView iv = mContainers[count];
+                    RelativeLayout.LayoutParams ivParams = (RelativeLayout.LayoutParams) iv.getLayoutParams();
+                    iv.setX((i * sectionOne) - (ivParams.width / 2));
+                    iv.setY(l1TM);
+                    count++;
+                }
+
+                int levelTwo = levels[1];
+                int divisorTwo = levelTwo + 1;
+                int sectionTwo = (int) (screenWidth / divisorTwo);
+
+                int l2TM = (int) (density * 220);
+                for (int i = 1; i <= levelTwo; i++) {
+                    ImageView iv = mContainers[count];
+                    RelativeLayout.LayoutParams ivParams = (RelativeLayout.LayoutParams) iv.getLayoutParams();
+                    iv.setX((i * sectionTwo) - (ivParams.width / 2));
+                    iv.setY(l2TM);
+                    count++;
+                }
+
+                for (int i = 0; i < count; i++) {
+                    ImageView iv = mContainers[i];
+                    RelativeLayout.LayoutParams ivParams = (RelativeLayout.LayoutParams) iv.getLayoutParams();
+                    System.out.println("M[" + i + "," + iv.getX() + "]: " + ivParams.topMargin);
+                }
+
+            } else {
+                int[] levels = new int[1];
+                levels[0] = n;
+
+                int levelOne = levels[0];
+                int divisorOne = levelOne + 1;
+                int sectionOne = (int) (screenWidth / divisorOne);
+
+                int count = 0;
+
+                for (int i = 1; i <= levelOne; i++) {
+                    ImageView iv = mContainers[count];
+                    RelativeLayout.LayoutParams ivParams = (RelativeLayout.LayoutParams) iv.getLayoutParams();
+                    ivParams.topMargin = (int) (density * 90);
+                    iv.setLayoutParams(ivParams);
+                    iv.setX((i * sectionOne) - (ivParams.width / 2));
+                    count++;
+                }
             }
 
             playSound(DRAG_WORD_TO_WRITE, mDragWordToWrite);
         }
         catch (Exception ex){
-            System.err.println("==============================");
-            System.err.println("SDFifteenActivity.prepareDrill");
-            System.err.println("------------------------------");
             ex.printStackTrace();
-            System.err.println("==============================");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -356,166 +491,138 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-
             // Debug
-            System.out.println("SDFifteenActivity.TouchAndDragListener(class).onTouch > Debug: MC");
-
+            // System.out.println("SDFifteenActivity.TouchAndDragListener(class).onTouch > Debug: MC");
             try {
                 boolean gameOn = mThisActivity.getGameOn();
-
                 if (gameOn) {
                     mThisActivity.setCurrentItem(mActualIndex);
                     mThisActivity.playSound(WORD_SOUND, mThisActivity.getWordSounds()[mActualIndex]);
-                    System.out.println("Moving word: actual(" + mActualIndex + "), shuffled(" + mShuffledIndex + ")");
+                    // System.out.println("Moving word: actual(" + mActualIndex + "), shuffled(" + mShuffledIndex + ")");
                 }
             } catch (Exception ex) {
-                System.err.println("==============================");
-                System.err.println("SDFifteenActivity.TouchAndDragListener(class).onTouch");
-                System.err.println("------------------------------");
                 ex.printStackTrace();
-                System.err.println("==============================");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
             return dragItem(v, event);
         }
 
         @Override
         public boolean onDrag(View v, DragEvent event) {
-
             // Debug
             // System.out.println("SDFifteenActivity.TouchAndDragListener(class).onDrag > Debug: MC");
-
             try {
                 // Get game on
                 boolean gameOn = mThisActivity.getGameOn();
-
                 if (gameOn) {
                     // Get the action
                     int action = event.getAction();
-
-                    // Get list of receptacle entries
                     boolean[] receptacleEntries = mThisActivity.getReceptacleEntries();
-
-                    // Isolate the current receptacle entry
-                    boolean receptacleEntered = receptacleEntries[mActualIndex];
-
+                    boolean receptacleEntered = receptacleEntries[mShuffledIndex];
                     /**
                      * DRAG ENTERED
                      */
                     if (action == DragEvent.ACTION_DRAG_ENTERED) {
                         if (!receptacleEntered) {
-                            receptacleEntries[mActualIndex] = true;
+                            receptacleEntries[mShuffledIndex] = true;
                         }
-
                         /**
                          * DRAG EXITED
                          */
                     } else if (action == DragEvent.ACTION_DRAG_EXITED) {
                         if (receptacleEntered) {
-                            receptacleEntries[mActualIndex] = false;
+                            receptacleEntries[mShuffledIndex] = false;
                         }
-
                         /**
                          * ACTION DROP
                          */
                     } else if (event.getAction() == DragEvent.ACTION_DROP && receptacleEntered) {
-
                         // Disable game interactions
                         mThisActivity.setGameOn(false);
-
                         // Disable receptacle entry
-                        receptacleEntries[mActualIndex] = false;
-
+                        receptacleEntries[mShuffledIndex] = false;
                         // Get current item
                         int currentItem = mThisActivity.getCurrentItem();
 
-                        System.out.println("Current item DROP is: " + currentItem);
-                        System.out.println("Current actual index DROP is: " + mActualIndex);
-                        System.out.println("Current validation DROP is: " + (currentItem == mActualIndex));
+                        // System.out.println("Current item DROP is: " + currentItem);
+                        // System.out.println("Current actual index DROP is: " + mActualIndex);
+                        // System.out.println("Current validation DROP is: " + (currentItem == mActualIndex));
 
                         // Check if current item relates to the receptacle's index
-                        if (currentItem == mActualIndex) {
-
-                            System.out.println("BINGO DROP!!!");
-
-                            // Bingo!
+                        if (currentItem == mShuffledIndex) {
+                            // System.out.println("BINGO DROP!!!");
                             // Get receptacles
                             ImageView[] receptacles = mThisActivity.getReceptacles();
-
                             // Get the image view of receptacle
-                            ImageView receptacle = receptacles[mActualIndex];
-
+                            ImageView receptacle = receptacles[mShuffledIndex];
+                            ImageView placeHolder = mPlaceholders.get(mShuffledIndex);
                             // Get the word image resource id
-                            int wordImageResourceId = mThisActivity.getWordImageResourceIds()[mActualIndex];
-
+                            int wordImageResourceId = mThisActivity.getWordImageResourceIds()[mShuffledIndex];
                             // Update image resource id of receptacle
-                            receptacle.setImageResource(wordImageResourceId);
-
+                            placeHolder.setImageResource(wordImageResourceId);
+                            receptacle.setImageResource(0);
                             // Get containers
                             ImageView[] containers = mThisActivity.getContainers();
-
-                            // Get word order
-                            int[] wordOrder = mThisActivity.getWordOrder();
-
-                            System.out.println(":: Letter Order: " + wordOrder[mActualIndex]);
-
                             // Get container for dragged image view
-                            ImageView container = containers[wordOrder[mActualIndex]];
-
+                            ImageView container = containers[mActualIndex];
                             // Hide container
                             container.setVisibility(View.INVISIBLE);
-
                             // Get number of correct items and increment by 1
                             int correctItems = mThisActivity.getCorrectItems() + 1;
-
                             // Get max items possible
                             int maxItems = mThisActivity.getWordOrder().length;
-
                             // Check if max items reached
                             if (correctItems == maxItems) {
-
                                 // Move on to next drill
                                 // Get drills
                                 JSONArray drills = mThisActivity.getDrills();
-
                                 // Get current drill no and increment by 1
                                 int currentDrill = mThisActivity.getCurrentDrill() + 1;
-
                                 // Check if max drills reached
                                 if (currentDrill == drills.length()) {
-
                                     // Set end drill to true
                                     mEndDrill = true;
-
                                     // Play affirmation sound
-                                    mThisActivity.playSound(YAY, YAY);
-
+                                    int mpDurLeft = 0;
+                                    if (mp != null && mp.isPlaying()) {
+                                        mpDurLeft = mp.getDuration() - mp.getCurrentPosition();
+                                    }
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mThisActivity.playSound(YAY, YAY);
+                                        }
+                                    }, 600 + mpDurLeft);
                                 } else {
                                     // Otherwise update drill no
                                     mThisActivity.setCurrentDrill(currentDrill);
-
                                     // Set drill complete to true
                                     mThisActivity.setDrillComplete(true);
-
                                     // Play affirmation sound
-                                    mThisActivity.playSound(YAY, YAY);
+                                    int mpDurLeft = 0;
+                                    if (mp != null && mp.isPlaying()) {
+                                        mpDurLeft = mp.getDuration() - mp.getCurrentPosition();
+                                    }
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mThisActivity.playSound(YAY, YAY);
+                                        }
+                                    }, 600 + mpDurLeft);
                                 }
                             } else {
                                 // Update correct items
                                 mThisActivity.setCorrectItems(correctItems);
-
                                 // Re-enable game interactions
                                 mThisActivity.setGameOn(true);
-
                                 // Play affirmation sound
-                                playSound(YAY, YAY);
+                                // playSound(YAY, YAY);
                             }
                         } else {
                             // Re-enable game interactions
                             mThisActivity.setGameOn(true);
-
                             playSound(NAY, NAY);
                         }
-
                         /**
                          * ACTION DRAG END
                          */
@@ -525,24 +632,18 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
                 return false;
             }
             catch (Exception ex){
-                System.err.println("==============================");
-                System.err.println("SDFifteenActivity.TouchAndDragListener(class).onDrag");
-                System.err.println("------------------------------");
                 ex.printStackTrace();
-                System.err.println("==============================");
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
             return false;
         }
     }
 
     public boolean dragItem(View view, MotionEvent motionEvent){
-
         // Debug
-        System.out.println("SDFifteenActivity.dragItem > Debug: MC");
-
+        // System.out.println("SDFifteenActivity.dragItem > Debug: MC");
         // Get game on
         boolean gameOn = mThisActivity.getGameOn();
-
         if (gameOn) {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 try {
@@ -552,11 +653,8 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
                     view.startDragAndDrop(data, shadowBuilder, view, 0);
                     return true;
                 } catch (Exception ex) {
-                    System.err.println("==============================");
-                    System.err.println("SDFifteenActivity.dragItem");
-                    System.err.println("------------------------------");
                     ex.printStackTrace();
-                    System.err.println("==============================");
+                    Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -564,14 +662,11 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
     }
 
     public void playSound(String tag, String sound) {
-
         // Debug
-        System.out.println("SDFifteenActivity.playSound(\"" + tag + "\", \"" + sound + "\") > Debug: MC");
-
+        // System.out.println("SDFifteenActivity.playSound(\"" + tag + "\", \"" + sound + "\") > Debug: MC");
         try {
             // Declare sound path
             String soundPath;
-
             // Determine sound path
             if (sound.equalsIgnoreCase(YAY)) {
                 soundPath = "android.resource://" + getApplicationContext().getPackageName() + "/" +
@@ -582,30 +677,22 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
             } else {
                 soundPath = FetchResource.sound(getApplicationContext(), sound);
             }
-
             // Init media player if required
             if (mp == null) {
                 mp = new MediaPlayer();
             }
-
             // Reset media player
             mp.reset();
-
             // Set data source of media player
             mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-
             // Set listeners
             mp.setOnPreparedListener(new SoundDrillFifteenActivity.SoundListener(mThisActivity, tag, sound, soundPath));
             mp.setOnCompletionListener(new SoundDrillFifteenActivity.SoundListener(mThisActivity, tag, sound, soundPath));
-
             // Prepare media player to Rock and Rumble ~ ♩ ♪ ♫ ♬
             mp.prepare();
         } catch (Exception ex) {
-            System.err.println("==============================");
-            System.err.println("SDFifteenActivity.playSound)");
-            System.err.println("------------------------------");
             ex.printStackTrace();
-            System.err.println("==============================");
+            // System.err.println("==============================");
             if (mp != null) {
                 mp.release();
             }
@@ -631,10 +718,8 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
 
         @Override
         public void onPrepared(MediaPlayer mp) {
-
             // Debug
-            System.out.println("SDFifteenActivity.SoundListener(class).onPrepared > Debug: MC");
-
+            // System.out.println("SDFifteenActivity.SoundListener(class).onPrepared > Debug: MC");
             switch (mTag) {
                 case DRAG_WORD_TO_WRITE: {
                     mp.start();
@@ -668,10 +753,8 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
 
         @Override
         public void onCompletion(MediaPlayer mp) {
-
             // Debug
-            System.out.println("SDFifteenActivity.SoundListener(class).onCompletion > Debug: MC");
-
+            // System.out.println("SDFifteenActivity.SoundListener(class).onCompletion > Debug: MC");
             switch (mTag) {
                 case DRAG_WORD_TO_WRITE: {
                     mThisActivity.playSound(SENTENCE_SOUND, mThisActivity.getCurrentSentenceSound());
@@ -692,15 +775,13 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
                 }
                 case YAY: {
                     if (mThisActivity.getEndDrill()) {
-
                         // Release media player
                         mp.release();
-
+                        // Release handle
+                        handler = null;
                         // Finish activity
                         mThisActivity.finish();
-
                     } else if (mThisActivity.getDrillComplete()) {
-
                         // Prepare next drill
                         mThisActivity.prepareDrill();
                     }
@@ -714,74 +795,51 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
     }
 
     private void resetListeners() {
-
         // Debug
-        System.out.println("SDFifteenActivity.resetListeners > Debug: MC");
-
+        //mSystem.out.println("SDFifteenActivity.resetListeners > Debug: MC");
         try {
             if (mWordImageViews != null) {
-
                 for (ImageView wordImageView: mWordImageViews) {
-
                     // Remove drag listener
                     wordImageView.setOnDragListener(null);
-
                     // Remove touch listener
                     wordImageView.setOnTouchListener(null);
                 }
             }
         } catch (Exception ex) {
-            System.err.println("==============================");
-            System.err.println("SDFifteenActivity.resetContainers)");
-            System.err.println("------------------------------");
             ex.printStackTrace();
-            System.err.println("==============================");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     private void resetContainers() {
-
         // Debug
-        System.out.println("SDFifteenActivity.resetContainers > Debug: MC");
-
+        // System.out.println("SDFifteenActivity.resetContainers > Debug: MC");
         try {
             if (mContainers != null) {
-
                 for (ImageView container: mContainers) {
-
                     // Make container invisible
                     container.setVisibility(View.INVISIBLE);
                 }
             }
         } catch (Exception ex) {
-            System.err.println("==============================");
-            System.err.println("SDFifteenActivity.resetContainers)");
-            System.err.println("------------------------------");
             ex.printStackTrace();
-            System.err.println("==============================");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     private void resetReceptacles() {
-
         // Debug
-        System.out.println("SDFifteenActivity.resetReceptacles > Debug: MC");
-
+        // System.out.println("SDFifteenActivity.resetReceptacles > Debug: MC");
         try {
             if (mReceptaclesParent != null) {
-
                 mReceptaclesParent.removeAllViews();
-
                 if (mReceptacles != null) {
-
                     for (ImageView receptacle: mReceptacles) {
-
                         // Reset image resource
                         receptacle.setImageResource(R.drawable.line);
-
                         // Reset visibility of receptacle
                         receptacle.setVisibility(View.INVISIBLE);
-
                         // Re-add receptacle to receptacles parent
                         mReceptaclesParent.addView(receptacle);
                     }
@@ -790,29 +848,21 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
                 throw new Exception("Receptacles parent is null!");
             }
         } catch (Exception ex) {
-            System.err.println("==============================");
-            System.err.println("SDFifteenActivity.resetReceptacles)");
-            System.err.println("------------------------------");
             ex.printStackTrace();
-            System.err.println("==============================");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     private void resetReceptacleEntries() {
-
         // Debug
-        System.out.println("SDFifteenActivity.resetReceptacleEntries > Debug: MC");
-
+        // System.out.println("SDFifteenActivity.resetReceptacleEntries > Debug: MC");
         try {
             for (int i = 0; i < mReceptacleEntries.length; i++) {
                 mReceptacleEntries[i] = false;
             }
         } catch (Exception ex) {
-            System.err.println("==============================");
-            System.err.println("SDFifteenActivity.resetReceptacleEntries)");
-            System.err.println("------------------------------");
             ex.printStackTrace();
-            System.err.println("==============================");
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -916,8 +966,8 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        handler = null;
         if (mp != null) {
-            mp.stop();
             mp.release();
         }
         setResult(Code.NAV_MENU);
