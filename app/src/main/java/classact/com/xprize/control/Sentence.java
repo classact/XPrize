@@ -1,6 +1,6 @@
 package classact.com.xprize.control;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Tseliso on 12/12/2016.
@@ -10,7 +10,7 @@ public class Sentence {
     private int _wordCount;
     private String _sentenceText;
     private String _readSentenceSound;
-    private ArrayList<DraggableImage<String>> _words;
+    private List<DraggableImage<String>> _words;
 
     public Sentence(int count,String text){
         _sentenceText = text;
@@ -41,11 +41,11 @@ public class Sentence {
         this._readSentenceSound = _readSentenceSound;
     }
 
-    public ArrayList<DraggableImage<String>> getWords() {
+    public List<DraggableImage<String>> getWords() {
         return _words;
     }
 
-    public void setWords(ArrayList<DraggableImage<String>> _words) {
+    public void setWords(List<DraggableImage<String>> _words) {
         this._words = _words;
     }
 }

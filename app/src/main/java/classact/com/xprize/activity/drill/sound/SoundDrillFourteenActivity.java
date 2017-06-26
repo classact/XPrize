@@ -80,7 +80,7 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
 
     private final Context THIS = this;
 
-    private final int TIMER_MAX = 2;
+    private final int TIMER_MAX = 3;
     private final int DRAW_WAIT_TIME = 1000;
 
     @Override

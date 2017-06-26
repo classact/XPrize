@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.controller.catalogue.MathDrills;
@@ -233,16 +234,17 @@ public class DrillFetcher {
                     int rightLimit = 5; // limit the words to 4 for this drill
                     //This will get 3 random words based on the specific unit ID
 
-                    ArrayList<Integer> drillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, rightLimit);
+                    List<Integer> drillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, rightLimit);
                     DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
+                    List<Word> wordList = new ArrayList<>();
+                    for (int i = 0; i < drillWordIDs.size(); i++) {
+                        Word word = WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(i));
+                        wordList.add(word);
+                    }
 
                     // Fetch D2
                     intent = WordDrills.D2(context, dbHelper, unitId, drillId, languageId,
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(0)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(1)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(2)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(3)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(4)),
+                            wordList,
                             drillFlowWord.getDrillSound1(),
                             drillFlowWord.getDrillSound2()
                     );
@@ -308,9 +310,14 @@ public class DrillFetcher {
 
                     //This will get 5 random words based on the specific unit ID
 
-                    ArrayList<Integer>  rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
+                    List<Integer>  rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
                     DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
                     Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+
+                    List<Word> words = new ArrayList<>();
+                    for (int i = 0; i < rightDrillWordIDs.size(); i++) {
+                        words.add(WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i)));
+                    }
 
                     System.out.println("DrillFetcher.getWordDrill.case 13 > Debug: languageId " +
                             languageId + ", unitId " + unitId + ", subId " + subId + ", drillId " +
@@ -319,9 +326,7 @@ public class DrillFetcher {
                     // Fetch D4
                     intent = WordDrills.D4(context, dbHelper, unitId, drillId, languageId,
                             letter,
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(0)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(1)),
-                            WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(2)),
+                            words,
                             drillFlowWord.getDrillSound1(),
                             drillFlowWord.getDrillSound2()
                     );

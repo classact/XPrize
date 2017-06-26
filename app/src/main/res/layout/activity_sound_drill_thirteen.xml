@@ -74,11 +74,10 @@
         android:id="@+id/container8"
         android:orientation="vertical"
         android:layout_height="150dp" />
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_below="@+id/container1"
+        android:id="@+id/lineContainer"
         android:layout_marginTop="300dp"
-        android:orientation="horizontal"
         android:layout_height="wrap_content">
         <ImageView
             android:layout_marginLeft="260dip"
@@ -136,5 +135,5 @@
             android:src="@drawable/line"
             android:contentDescription="@string/app_name"
             android:layout_height="100dp" />
-    </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>

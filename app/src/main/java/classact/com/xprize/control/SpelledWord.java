@@ -1,6 +1,7 @@
 package classact.com.xprize.control;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Tseliso on 12/10/2016.
@@ -8,8 +9,8 @@ import java.util.ArrayList;
 
 public class SpelledWord {
     private ObjectAndSound<String> _word;
-    private ArrayList<String> _lettersSound;
-    private ArrayList<DraggableImage<String>> _lettersImages;
+    private List<String> _lettersSound;
+    private List<DraggableImage<String>> _lettersImages;
 
     public ObjectAndSound<String> getWord() {
         return _word;
@@ -19,19 +20,19 @@ public class SpelledWord {
         this._word = _word;
     }
 
-    public ArrayList<String> getLettersSound() {
+    public List<String> getLettersSound() {
         return _lettersSound;
     }
 
-    public void setettersSound(ArrayList<String> _lettersSound) {
+    public void setettersSound(List<String> _lettersSound) {
         this._lettersSound = _lettersSound;
     }
 
-    public ArrayList<DraggableImage<String>> getLettersImages() {
+    public List<DraggableImage<String>> getLettersImages() {
         return _lettersImages;
     }
 
-    public void setLettersImages(ArrayList<DraggableImage<String>> _lettersImages) {
+    public void setLettersImages(List<DraggableImage<String>> _lettersImages) {
         this._lettersImages = _lettersImages;
     }
 }

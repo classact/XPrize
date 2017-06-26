@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -14,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -26,6 +28,7 @@ import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
+import classact.com.xprize.utils.TextShrinker;
 
 public class SoundDrillElevenActivity extends AppCompatActivity {
     private ImageButton ImageButtonWord1;
@@ -50,6 +53,8 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
     private JSONObject allData;
 
     private boolean gameStarted;
+
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,10 +183,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -207,10 +209,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -355,10 +354,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -408,10 +404,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
+                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -427,49 +420,17 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
                 button.setBackgroundResource(R.drawable.cardsinglesmlback);
                 button.setImageResource(image);
 
+                int cardWidth = 180;
+                float percentage = 0.9f;
                 DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-                float density = displayMetrics.density;
-
-                float cardWidth = (180 * density);
-                Drawable id = button.getDrawable();
-                float wordWidth = id.getIntrinsicWidth();
-                float cardToWordRatio = cardWidth/wordWidth;
-
-                if (cardToWordRatio < 1.f) {
-                    Rect rect = id.getBounds();
-                    Bitmap bitmap = ((BitmapDrawable) id).getBitmap();
-                    Drawable nd = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap,
-                            (int) (cardToWordRatio * rect.right * 0.9f),
-                            (int) (cardToWordRatio * rect.bottom * 0.9f),
-                            true));
-                    button.setImageResource(0);
-                    button.setImageDrawable(nd);
-                } else {
-                    float widthPercentageSize = wordWidth / cardWidth;
-                    if (widthPercentageSize > 0.9f) {
-                        Rect rect = id.getBounds();
-                        Bitmap bitmap = ((BitmapDrawable) id).getBitmap();
-                        float widthPercentageDiff = widthPercentageSize - 0.9f;
-                        float widthToSubtract = cardWidth * widthPercentageDiff;
-                        float multiplyRatio = (rect.right - widthToSubtract) / rect.right;
-                        Drawable nd = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap,
-                                (int) (multiplyRatio * rect.right),
-                                (int) (multiplyRatio * rect.bottom),
-                                true));
-                        button.setImageResource(0);
-                        button.setImageDrawable(nd);
-                    }
-                }
+                button = TextShrinker.shrink(button, cardWidth, percentage, getResources());
 
                 playThisSound(sound);
             }
         }
         catch(Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -558,10 +519,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -590,10 +548,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
+            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
     private void resetCard(ImageButton card){
