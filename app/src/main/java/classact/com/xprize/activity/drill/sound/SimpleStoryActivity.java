@@ -235,6 +235,7 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     break;
                 }
                 case "listen_to_the_whole_story": {
+                    clearAllStorySetViews(true);
                     break;
                 }
                 case "full_story_sound": {
@@ -270,14 +271,15 @@ public class SimpleStoryActivity extends AppCompatActivity {
                 }
                 case "now_answer_sound": {
 
+                    clearAllStorySetViews(true);
                     Fade fadeIn = new Fade(Fade.IN);
                     Fade fadeOut = new Fade(Fade.OUT);
 
                     subBackgroundView = new ImageView(getApplicationContext());
                     subBackgroundView.setBackgroundResource(R.drawable.backgound_comprehension);
-                    LinearLayout.LayoutParams storyBackgroundViewParams = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.MATCH_PARENT
+                    RelativeLayout.LayoutParams storyBackgroundViewParams = new RelativeLayout.LayoutParams(
+                            RelativeLayout.LayoutParams.MATCH_PARENT,
+                            RelativeLayout.LayoutParams.MATCH_PARENT
                     );
                     subBackgroundView.setLayoutParams(storyBackgroundViewParams);
 
@@ -285,8 +287,6 @@ public class SimpleStoryActivity extends AppCompatActivity {
                     TransitionManager.beginDelayedTransition(rootView, fadeIn);
 
                     rootView.addView(subBackgroundView, 0);
-                    clearAllStorySetViews(true);
-
                     break;
                 }
                 case "comprehension_question_sound": {
@@ -338,23 +338,26 @@ public class SimpleStoryActivity extends AppCompatActivity {
                         break;
                     }
                     case "listen_to_the_whole_story": {
+                        System.out.println("XXXXXXXXXXXXXXXX");
                         Fade fadeIn = new Fade(Fade.IN);
                         Fade fadeOut = new Fade(Fade.OUT);
 
-                        subBackgroundView = new ImageView(getApplicationContext());
-                        String storyImage = allData.getString("story_image");
-                        int storyImageId = FetchResource.imageId(THIS, storyImage);
-                        subBackgroundView.setBackgroundResource(storyImageId);
-                        LinearLayout.LayoutParams storyBackgroundViewParams = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                LinearLayout.LayoutParams.MATCH_PARENT
+                        subBackgroundView = new ImageView(THIS);
+                        RelativeLayout.LayoutParams storyBackgroundViewParams = new RelativeLayout.LayoutParams(
+                                RelativeLayout.LayoutParams.MATCH_PARENT,
+                                RelativeLayout.LayoutParams.MATCH_PARENT
                         );
                         subBackgroundView.setLayoutParams(storyBackgroundViewParams);
-
-                        TransitionManager.beginDelayedTransition(clStory, fadeOut);
-                        TransitionManager.beginDelayedTransition(rootView, fadeIn);
-
+                        String storyImage = allData.getString("story_image");
+                        System.out.println("Story Image: " + storyImage);
+                        int storyImageId = FetchResource.imageId(THIS, storyImage);
+                        subBackgroundView.setImageResource(storyImageId);
+                        subBackgroundView.setBackgroundColor(Color.BLACK);
                         rootView.addView(subBackgroundView, rootView.getChildCount());
+
+                        TransitionManager.beginDelayedTransition(rootView, fadeIn);
+                        TransitionManager.beginDelayedTransition(clStory, fadeOut);
+
                         clearAllStorySetViews(true);
 
                         // Play prompt

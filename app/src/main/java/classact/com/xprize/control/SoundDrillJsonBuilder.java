@@ -560,6 +560,7 @@ public class SoundDrillJsonBuilder {
 
             drillData += "{\"sentence\":" + sentence.getWCount() + "," +
                     "\"sentence_sound\":\"" + sentence.getSentenceText() + "\"," +
+                    "\"punctuation\":\"" + sentence.getPunctuation() + "\"," +
                     "\"words\":[";
 
             List<DraggableImage<String>> words = sentence.getWords();
@@ -571,7 +572,6 @@ public class SoundDrillJsonBuilder {
                 if (j != 0) {
                     drillData += ",";
                 }
-
                 drillData += "{\"word\":" + ResourceDecoder.getIdentifier(context,imageAndSound[0],"drawable") +
                         ",\"positions\":[" + word.getExtraData() +
                         "],\"sound\":\"" + imageAndSound[1] + "\"}";

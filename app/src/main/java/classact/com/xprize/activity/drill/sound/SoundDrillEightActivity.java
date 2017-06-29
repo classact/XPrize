@@ -159,14 +159,13 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
             animationView.setAlpha(0.6f);
             animationView.setPaths(getPathArray());
 
-            /*
+            /* ROCK N ROLL */
             playSound(sound, new Runnable() {
                 @Override
                 public void run() {
                     playLetterSound();
                 }
             });
-            */
         }
         catch(Exception ex){
             ex.printStackTrace();
@@ -388,6 +387,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
                     PathCoordinate coordinate = new PathCoordinate((float)array.getJSONObject(k).getDouble("x"),(float)array.getJSONObject(k).getDouble("y") + OFFSET_Y);
                     path.add(coordinate);
 
+                    /*
                     ImageView iv = new ImageView(THIS);
                     mDetectionView.addView(iv);
                     RelativeLayout.LayoutParams ivLayout = (RelativeLayout.LayoutParams) iv.getLayoutParams();
@@ -399,6 +399,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
                     iv.setX(coordinate.getX() - (ivWidth/2));
                     iv.setY(coordinate.getY() - (ivHeight/2));
                     iv.setBackgroundColor(Color.argb(100, 0, 0, 255));
+                    */
                 }
                 pathsArray.add(path);
             }

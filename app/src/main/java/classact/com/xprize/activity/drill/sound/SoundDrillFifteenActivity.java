@@ -224,6 +224,7 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
             resetContainers();
             resetReceptacles();
             resetReceptacleEntries();
+            String punctuation = drill.getString("punctuation");
 
             // Reset correct items
             correctItems = 0;
@@ -459,12 +460,13 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
 
                 int count = 0;
 
+                int l1TM = (int) (density * 155);
                 for (int i = 1; i <= levelOne; i++) {
                     ImageView iv = mContainers[count];
                     RelativeLayout.LayoutParams ivParams = (RelativeLayout.LayoutParams) iv.getLayoutParams();
-                    ivParams.topMargin = (int) (density * 90);
                     iv.setLayoutParams(ivParams);
                     iv.setX((i * sectionOne) - (ivParams.width / 2));
+                    iv.setY(l1TM);
                     count++;
                 }
             }

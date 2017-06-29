@@ -385,6 +385,9 @@ public class WordDrills {
                     words.add(word);
                 }
                 sentence.setWords(words);
+                String sentenceString = sentenceFromDB.getSentence();
+                String punctuation = "" + sentenceString.charAt(sentenceString.length()-1);
+                sentence.setPunctuation(punctuation);
                 sentences.add(sentence);
             }
             //

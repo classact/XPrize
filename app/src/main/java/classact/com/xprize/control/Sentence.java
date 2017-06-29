@@ -11,6 +11,7 @@ public class Sentence {
     private String _sentenceText;
     private String _readSentenceSound;
     private List<DraggableImage<String>> _words;
+    private String punctuation;
 
     public Sentence(int count,String text){
         _sentenceText = text;
@@ -47,5 +48,13 @@ public class Sentence {
 
     public void setWords(List<DraggableImage<String>> _words) {
         this._words = _words;
+    }
+
+    public void setPunctuation(String punctuation) {
+        this.punctuation = punctuation;
+    }
+
+    public String getPunctuation() {
+        return punctuation;
     }
 }
