@@ -1,14 +1,20 @@
 package classact.com.xprize;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
-import android.os.Build;
+import android.media.AudioManager;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.ImageButton;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 
 import classact.com.xprize.activity.drill.tutorial.Tutorial;
@@ -17,7 +23,9 @@ import classact.com.xprize.activity.link.MathsLink;
 import classact.com.xprize.activity.link.PhonicsLink;
 import classact.com.xprize.activity.link.StoryLink;
 import classact.com.xprize.activity.link.WordsLink;
-import classact.com.xprize.activity.menu.LanguageSelect;
+import classact.com.xprize.activity.menu.MusicMenu;
+import classact.com.xprize.activity.menu.StarsMenu;
+import classact.com.xprize.activity.menu.controller.DatabaseController;
 import classact.com.xprize.activity.movie.Movie;
 import classact.com.xprize.activity.movie.MoviePausable;
 import classact.com.xprize.common.Code;
@@ -25,7 +33,13 @@ import classact.com.xprize.common.Globals;
 import classact.com.xprize.controller.DrillFetcher;
 import classact.com.xprize.database.DbHelper;
 import classact.com.xprize.database.helper.UnitHelper;
+import classact.com.xprize.database.model.Drill;
+import classact.com.xprize.database.model.DrillType;
+import classact.com.xprize.database.model.Section;
 import classact.com.xprize.database.model.Unit;
+import classact.com.xprize.database.model.UnitSection;
+import classact.com.xprize.database.model.UnitSectionDrill;
+import classact.com.xprize.locale.Languages;
 import classact.com.xprize.utils.ResourceDecoder;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,14 +57,65 @@ public class MainActivity extends AppCompatActivity {
     private boolean mInitialized;
     private DbHelper mDbHelper;
 
+    private ConstraintLayout mRootView;
+
+    private ImageButton mReadButton;
+    private ImageButton mMusicButton;
+    private ImageButton mStarsButton;
+    private AudioManager mAudioManager;
+    private DatabaseController mDb;
+    private boolean mNewActivity;
+    private final Context THIS = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        System.out.println("!!!!!!!!!!!!!!!!!!!! " + Build.VERSION.SECURITY_PATCH + ", " + Build.VERSION.RELEASE);
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        mNewActivity = false;
 
-        mInitialized = false;
+        mRootView = (ConstraintLayout) findViewById(R.id.activity_main);
+
+        // Read Button
+        mReadButton = (ImageButton) findViewById(R.id.read_button);
+        mReadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playNextDrill();
+            }
+        });
+
+        // Stars Button
+        mStarsButton = (ImageButton) findViewById(R.id.stars_button);
+        mStarsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mNewActivity = true;
+                Intent intent = new Intent(THIS, StarsMenu.class);
+                startActivityForResult(intent, 0);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            }
+        });
+
+        // Music Button
+        mMusicButton = (ImageButton) findViewById(R.id.music_button);
+        mMusicButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mNewActivity = true;
+                Intent intent = new Intent(THIS, MusicMenu.class);
+                startActivityForResult(intent, 0);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            }
+        });
+
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        Globals.PLAY_BACKGROUND_MUSIC(this);
+
+        // System.out.println("!!!!!!!!!!!!!!!!!!!! " + Build.VERSION.SECURITY_PATCH + ", " + Build.VERSION.RELEASE);
+
+        /* mInitialized = false;
 
         Intent intent = new Intent(this, LanguageSelect.class);
 
@@ -67,7 +132,104 @@ public class MainActivity extends AppCompatActivity {
         }
 
         startActivityForResult(intent, Code.LANG);
-        overridePendingTransition(0, android.R.anim.fade_out);
+        overridePendingTransition(0, android.R.anim.fade_out); */
+    }
+
+    public void playNextDrill() {
+
+        // Setup Database Controller
+        mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
+
+        // Get unit section drill data
+        UnitSectionDrill unitSectionDrill = mDb.getUnitSectionDrillInProgress();
+
+        try {
+            if (dbEstablsh(false)) {
+                Object[] objectArray = DrillFetcher.fetch(THIS, mDbHelper, Languages.ENGLISH, unitSectionDrill);
+                Intent intent = (Intent) objectArray[0];
+                int resultCode = (int) objectArray[1];
+
+                Globals.STOP_BACKGROUND_MUSIC(THIS);
+
+                startActivityForResult(intent, resultCode);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            }
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            dbClose();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        System.out.println("MainActivity: " + requestCode + "," + resultCode);
+
+        if (resultCode != Globals.TO_MAIN) {
+            switch (requestCode) {
+                case Code.INTRO:
+                case Code.TUTORIAL:
+                case Code.MOVIE:
+                case Code.RUN_DRILL:
+                case Code.CHAPTER_END:
+                case Code.FINALE:
+                    processActivityResult(requestCode);
+                    break;
+                default:
+                    break;
+            }
+            switch (resultCode) {
+                case Code.INTRO:
+                case Code.TUTORIAL:
+                case Code.MOVIE:
+                case Code.RUN_DRILL:
+                case Code.CHAPTER_END:
+                case Code.FINALE:
+                    processActivityResult(resultCode);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    protected void processActivityResult(int code) {
+        switch (code) {
+            case Code.INTRO:
+            case Code.TUTORIAL:
+            case Code.MOVIE:
+            case Code.RUN_DRILL:
+            case Code.CHAPTER_END:
+            case Code.FINALE:
+
+                // Setup Database Controller
+                mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
+
+                // Get unit section drill data
+                UnitSectionDrill nextUnitSectionDrill = mDb.moveToNextUnitSectionDrill();
+
+                try {
+                    if (dbEstablsh(false)) {
+                        Object[] objectArray = DrillFetcher.fetch(THIS, mDbHelper, Languages.ENGLISH, nextUnitSectionDrill);
+                        Intent intent = (Intent) objectArray[0];
+                        int resultCode = (int) objectArray[1];
+
+                        Globals.STOP_BACKGROUND_MUSIC(THIS);
+
+                        startActivityForResult(intent, resultCode);
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    }
+                } catch (Exception ex) {
+                    System.err.println(ex.getMessage());
+                    ex.printStackTrace();
+                } finally {
+                    dbClose();
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     public boolean determineNextItem() {
@@ -181,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("MainActivity.determineNextItem > Debug: Play Intro Movie");
 
                     // Play intro movie
-                    intent = new Intent(this, Movie.class);
+                    intent = new Intent(THIS, Movie.class);
                     intent.putExtra(Code.RES_NAME, u.getUnitFirstTimeMovieFile());
                     intent.putExtra(Code.NEXT_BG_CODE, Code.INTRO);
                     resultCode = Code.INTRO;
@@ -192,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("MainActivity.determineNextItem > Debug: Play Intro Tutorial");
 
                     // Start tutorial
-                    intent = new Intent(this, Tutorial.class);
+                    intent = new Intent(THIS, Tutorial.class);
                     resultCode = Code.TUTORIAL;
                 }
             } else if (unitId < Globals.FINALE_ID) {
@@ -441,19 +603,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        resetUnitFirstTIme();
+        // resetUnitFirstTIme();
     }
 
     /**
      * On Activity Result
      * Responsible for database updates after receiving response
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * param requestCode
+     * param resultCode
+     * param data
      */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    //// @Override
+    /* protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Debug
         System.out.println("MainActivity.onActivityResult > Debug: Request (" + requestCode + ") and Result (" + resultCode + ")");
         System.out.println("-----------------------------------------------------------------------------");
@@ -468,11 +629,11 @@ public class MainActivity extends AppCompatActivity {
             boolean finaleComplete = false;
             boolean showNavMenu = false;
 
-            /* Resolve request completion
-             * ==========================
-             * - requestCode = finished activity's type (ie. Language-select, movie, drill)
-             * - resultCode = unitId of finished activity
-             */
+            //// Resolve request completion
+            //// ==========================
+            //// - requestCode = finished activity's type (ie. Language-select, movie, drill)
+            //// - resultCode = unitId of finished activity
+            ////
             try {
                 // Establish database connectivity
                 if (!dbEstablsh(!mInitialized)) {
@@ -602,7 +763,7 @@ public class MainActivity extends AppCompatActivity {
 
                             // Print out current sub id
                             System.out.println("Current sub id: " + subId);
-                            /* Sub id logic START */
+                            //// Sub id logic START
                             // Check if next drill is a word drill (a.k.a, after phonics)
                             if (nextDrill == Globals.WORDS_STARTING_ID) {
                                 // It will be a word drill
@@ -625,9 +786,9 @@ public class MainActivity extends AppCompatActivity {
                             }
                             // Print out new sub id
                             System.out.println("New sub id: " + u.getUnitSubIDInProgress());
-                            /* Sub id logic END */
+                            //// Sub id logic END
 
-                            /* Drill splash logic START */
+                            //// Drill splash logic START
                             // It should additionally apply to when sub id = 0 (no prior sub ids played)
                             // Update unit u model accordingly
                             if ((nextDrill == Globals.PHONICS_STARTING_ID && subId == 0) ||
@@ -637,7 +798,7 @@ public class MainActivity extends AppCompatActivity {
                                 // Reset UnitFirstTime 'Splash' Flag
                                 u.setUnitFirstTime(0);
                             }
-                            /* Drill splash logic END */
+                            //// Drill splash logic END
 
                             // Update unit u model
                             u.setUnitDrillLastPlayed(nextDrill - 1); // Update drill progress
@@ -681,9 +842,9 @@ public class MainActivity extends AppCompatActivity {
 
                         case Code.FINALE:
                             // Validate that current unit vs request code
-                        /* if (unitId != Globals.FINALE_ID) {
-                            throw new Exception("Request Code (" + requestCode + ") - Finale request code detected, but unitId (" + unitId + ") does not match that");
-                        } */
+                        //// if (unitId != Globals.FINALE_ID) {
+                        ////    throw new Exception("Request Code (" + requestCode + ") - Finale request code detected, but unitId (" + unitId + ") does not match that");
+                        ////}
 
                             // Update unit u model
                             u.setUnitFirstTimeMovie(1); // Mark finale as having completed
@@ -724,8 +885,8 @@ public class MainActivity extends AppCompatActivity {
                             throw new Exception("Request Code (" + requestCode + ") - Invalid");
                     }
 
-                /* // After all the above database updates, let's get the unitId of the next unit-to-play
-                unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase()); */
+                //// // After all the above database updates, let's get the unitId of the next unit-to-play
+                //// unitId = UnitHelper.getUnitToBePlayed(mDbHelper.getReadableDatabase());
 
                     // Debug
                     System.out.println("-----------------------------------------------------------------------------");
@@ -794,7 +955,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-    }
+    } */
 
     public int[] determineNextSplashBg() {
         // Index 0: the Code according to commons.Code
@@ -978,7 +1139,6 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 mDbHelper.createDatabase();
             }
-            // mDbHelper.createDatabase();
 
             // Test opening database
             mDbHelper.openDatabase();
@@ -1020,5 +1180,76 @@ public class MainActivity extends AppCompatActivity {
             System.err.println("MainActivity.dbEstablish > Exception: " + ex.getMessage());
         }
         return false;
+    }
+
+    protected void dbClose() {
+        if (mDbHelper != null) {
+            mDbHelper.close();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!mNewActivity) {
+            Globals.RESUME_BACKGROUND_MUSIC(THIS);
+        } else {
+            mNewActivity = false;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (!mNewActivity) {
+            Globals.PAUSE_BACKGROUND_MUSIC(THIS);
+        } else {
+            mNewActivity = false;
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+        int action = event.getAction();
+        if (action == KeyEvent.ACTION_UP) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    onBackPressed();
+                    return true;
+                default:
+                    return super.onKeyDown(keyCode, event);
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Hey, Smart Little Monkey!");
+        builder.setMessage("Want to stop reading?");
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Globals.STOP_BACKGROUND_MUSIC(THIS);
+                finishAndRemoveTask();
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            }
+        });
+        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(android.R.color.holo_blue_light, null));
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(android.R.color.holo_blue_light, null));
+            }
+        });
+        alertDialog.show();
     }
 }

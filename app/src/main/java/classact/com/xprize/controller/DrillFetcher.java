@@ -8,6 +8,12 @@ import android.database.sqlite.SQLiteException;
 import java.util.ArrayList;
 import java.util.List;
 
+import classact.com.xprize.activity.drill.tutorial.Tutorial;
+import classact.com.xprize.activity.link.LevelCompleteLink;
+import classact.com.xprize.activity.menu.controller.DatabaseController;
+import classact.com.xprize.activity.movie.Movie;
+import classact.com.xprize.activity.movie.MoviePausable;
+import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.controller.catalogue.MathDrills;
 import classact.com.xprize.controller.catalogue.PhonicsDrills;
@@ -21,15 +27,107 @@ import classact.com.xprize.database.helper.LetterSequenceHelper;
 import classact.com.xprize.database.helper.NumeralHelper;
 import classact.com.xprize.database.helper.UnitHelper;
 import classact.com.xprize.database.helper.WordHelper;
+import classact.com.xprize.database.model.Drill;
 import classact.com.xprize.database.model.DrillFlowWords;
-import classact.com.xprize.database.model.DrillWords;
+import classact.com.xprize.database.model.DrillType;
 import classact.com.xprize.database.model.Letter;
 import classact.com.xprize.database.model.Numerals;
+import classact.com.xprize.database.model.Section;
 import classact.com.xprize.database.model.Unit;
+import classact.com.xprize.database.model.UnitSection;
+import classact.com.xprize.database.model.UnitSectionDrill;
 import classact.com.xprize.database.model.Word;
 import classact.com.xprize.locale.Languages;
 
 public class DrillFetcher {
+
+    public static Object[] fetch(Context context, DbHelper dbHelper, int languageId, UnitSectionDrill unitSectionDrill) {
+        Object[] objectArray = new Object[2];
+
+        try {
+            // Setup Database Controller
+            DatabaseController mDb = DatabaseController.getInstance(context, Languages.ENGLISH);
+
+            // Extract ids
+            int unitSectionDrillId = unitSectionDrill.getUnitSectionDrillId();
+            int unitSectionId = unitSectionDrill.getUnitSectionId();
+            int drillId = unitSectionDrill.getDrillId();
+
+            // Get unit section
+            UnitSection unitSection = mDb.getUnitSection(unitSectionId);
+
+            // Get section
+            int sectionId = unitSection.getSectionId();
+            Section section = mDb.getSections().get(sectionId);
+
+            // Get drill and drill type name
+            Drill drill = mDb.getDrills().get(drillId);
+            int drillTypeId = drill.getDrillTypeId();
+            DrillType drillType = mDb.getDrillTypes().get(drillTypeId);
+
+            // Get unit
+            int unitId = unitSection.getUnitId();
+            Unit unit = mDb.getUnit(unitId);
+
+            String sectionName = section.getName();
+            String drillTypeName = drillType.getName();
+
+            Intent intent = null;
+            int resultCode = 0;
+
+            if (drillTypeName.equalsIgnoreCase("Cinematic")) {
+                if (sectionName.equalsIgnoreCase("Intro")) {
+                    intent = new Intent(context, Movie.class);
+                    intent.putExtra(Code.RES_NAME, unit.getUnitFirstTimeMovieFile());
+                    intent.putExtra(Code.NEXT_BG_CODE, Code.INTRO);
+                    resultCode = Code.INTRO;
+                } else if (sectionName.equalsIgnoreCase("Chapter End")) {
+                    if (!(unitId == 0 || unitId == 21)) {
+                        intent = new Intent(context, LevelCompleteLink.class);
+                        intent.putExtra(Code.RES_NAME, "level" + unitId);
+                        intent.putExtra(Code.NEXT_BG_RES, "star_level_" + unitId);
+                        resultCode = Code.CHAPTER_END;
+                    } else if (unitId == 21) {
+                        intent = new Intent(context, Movie.class);
+                        intent.putExtra(Code.RES_NAME, unit.getUnitFirstTimeMovieFile());
+                        intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
+                        resultCode = Code.FINALE;
+                    }
+                }
+            } else if (drillTypeName.equalsIgnoreCase("Movie")) {
+                if (sectionName.equalsIgnoreCase("Intro")) {
+                    intent = new Intent(context, MoviePausable.class);
+                    intent.putExtra(Code.RES_NAME, unit.getUnitFirstTimeMovieFile());
+                    intent.putExtra(Code.SHOW_MV_BUTTONS, true);
+                    intent.putExtra(Code.NEXT_BG_CODE, Code.MOVIE);
+                    resultCode = Code.MOVIE;
+                }
+            } else if (drillTypeName.equalsIgnoreCase("Tutorial")) {
+                intent = new Intent(context, Tutorial.class);
+                resultCode = Code.TUTORIAL;
+            } else if (drillTypeName.equalsIgnoreCase("Phonic")) {
+                intent = getPhonicsDrill(context, dbHelper, unitId, drillId, languageId, unitSection.getSectionSubId());
+                resultCode = Code.RUN_DRILL;
+            } else if (drillTypeName.equalsIgnoreCase("Word")) {
+                intent = getWordDrill(context, dbHelper, unitId, drillId, languageId, unitSectionDrill.getDrillSubId());
+                resultCode = Code.RUN_DRILL;
+            } else if (drillTypeName.equalsIgnoreCase("Book")) {
+                intent = getStoryDrill(context, dbHelper, unitId, drillId, languageId, unitSectionDrill.getDrillSubId());
+                resultCode = Code.RUN_DRILL;
+            } else if (drillTypeName.equalsIgnoreCase("Math")) {
+                intent = getMathDrill(context, dbHelper, unitId, drillId, languageId, unitSectionDrill.getDrillSubId());
+                resultCode = Code.RUN_DRILL;
+            }
+            objectArray[0] = intent;
+            objectArray[1] = resultCode;
+
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+            ex.printStackTrace();
+        }
+
+        return objectArray;
+    }
 
     public static Intent fetch(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int subId) {
         Intent intent = null;

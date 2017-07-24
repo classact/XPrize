@@ -1,13 +1,20 @@
 package classact.com.xprize.common;
 
 
+import android.content.Context;
+import android.content.res.AssetManager;
+import android.graphics.Typeface;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.support.design.widget.Snackbar;
 import android.view.View;
+import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import classact.com.xprize.R;
 import classact.com.xprize.activity.drill.sound.SoundDrillOneActivity;
 import classact.com.xprize.locale.Languages;
 
@@ -81,5 +88,61 @@ public class Globals {
         public void onClick(View v) {
             bugBar.dismiss();
         }
+    }
+
+    public static final int TO_MAIN = 9999;
+
+    private static MediaPlayer mBackgroundMusicPlayer;
+
+    public static Typeface TYPEFACE_EDU_AID(AssetManager assets) {
+        return Typeface.createFromAsset(assets, "fonts/edu_aid_gr1_solid.ttf");
+    }
+
+    public static int TEXT_MEASURED_WIDTH(TextView textView, String text) {
+        textView.setText(text);
+        textView.measure(0, 0);
+        return textView.getMeasuredWidth();
+    }
+
+    public static void SET_VOLUME(Context context, int volume) {
+        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+    }
+
+    public static void PLAY_BACKGROUND_MUSIC(Context context) {
+        if (mBackgroundMusicPlayer == null) {
+            mBackgroundMusicPlayer = mBackgroundMusicPlayer.create(context, R.raw.bg_music_001);
+        }
+        mBackgroundMusicPlayer.setLooping(true);
+        mBackgroundMusicPlayer.start();
+    }
+
+    public static void PAUSE_BACKGROUND_MUSIC(Context context) {
+        if (mBackgroundMusicPlayer == null) {
+            System.err.println("Background Music Player: Cannot pause, is null");
+            return;
+        }
+        mBackgroundMusicPlayer.pause();
+    }
+
+    public static void RESUME_BACKGROUND_MUSIC(Context context) {
+        if (mBackgroundMusicPlayer == null) {
+            PLAY_BACKGROUND_MUSIC(context);
+            return;
+        }
+        if (!mBackgroundMusicPlayer.isPlaying()) {
+            mBackgroundMusicPlayer.start();
+        }
+    }
+
+    public static void STOP_BACKGROUND_MUSIC(Context context) {
+        if (mBackgroundMusicPlayer == null) {
+            System.err.println("Background Music Player: Cannot stop, is null");
+            return;
+        }
+        mBackgroundMusicPlayer.stop();
+        mBackgroundMusicPlayer.reset();
+        mBackgroundMusicPlayer.release();
+        mBackgroundMusicPlayer = null;
     }
 }

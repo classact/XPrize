@@ -218,8 +218,9 @@ public class WordLetterLayout {
                 int bDiffOffset = 0;
                 if (alphaBase == Globals.ALPHA_BASE_MID_BOT) {
                     bDiffOffset = yMidBotList.get(i);
+                    System.out.println("XXXXXXXXXX: " + bDiffOffset);
                 }
-                int bDiff = (yBotList.get(i) - yTopList.get(i)) - bDiffOffset;
+                int bDiff = (yBotList.get(i) - yTopList.get(i)) + bDiffOffset;
                 if (baseDiff == 0) {
                     baseDiff = bDiff;
                 } else {

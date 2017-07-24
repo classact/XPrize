@@ -32,6 +32,7 @@ import java.util.Random;
 
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
+import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.view.TouchView;
 
@@ -1308,8 +1309,9 @@ public class Tutorial extends AppCompatActivity {
             mediaPlayer.stop();
             mediaPlayer.release();
         }
-        setResult(Code.NAV_MENU);
+        setResult(Globals.TO_MAIN);
         finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }
 

@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_sections_menu"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="classact.com.xprize.activity.menu.SectionsMenu">
+
+    <HorizontalScrollView
+        android:id="@+id/hsv"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="false"
+        android:scrollbars="none">
+
+        <RelativeLayout
+            android:id="@+id/container"
+            android:layout_width="3840dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_blue_xxl">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_container"
+                android:layout_width="3840dp"
+                android:layout_height="match_parent">
+
+                <android.support.constraint.Guideline
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/gl_v1"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.125"/>
+
+                <android.support.constraint.Guideline
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/gl_v2"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.315"/>
+
+                <android.support.constraint.Guideline
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/gl_v3"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.505"/>
+
+                <android.support.constraint.Guideline
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/gl_v4"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.695"/>
+
+                <android.support.constraint.Guideline
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/gl_v5"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.885"/>
+
+                <android.support.constraint.Guideline
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/gl_h1"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.35"/>
+
+                <android.support.constraint.Guideline
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/gl_h2"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.6"/>
+
+                <android.support.constraint.Guideline
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/gl_h3"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.85"/>
+
+                <TextView
+                    android:id="@+id/intro_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="228dp"
+                    android:text="Intro"
+                    android:textColor="@color/black"
+                    android:textSize="96sp"
+                    app:layout_constraintVertical_bias="0.5"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintBottom_toTopOf="@+id/gl_h2"
+                    app:layout_constraintLeft_toLeftOf="@+id/intro_button"
+                    app:layout_constraintRight_toRightOf="@+id/intro_button"/>
+
+                <ImageButton
+                    android:id="@+id/intro_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/gl_h2"
+                    app:layout_constraintLeft_toLeftOf="@+id/gl_v1"
+                    app:layout_constraintRight_toRightOf="@+id/gl_v1"
+                    app:layout_constraintTop_toTopOf="@+id/gl_h2"
+                    android:background="@drawable/intro_button"/>
+
+                <ImageButton
+                    android:id="@+id/intro_monkey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="246dp"
+                    android:layout_marginRight="160dp"
+                    app:layout_constraintBottom_toTopOf="@+id/gl_h2"
+                    app:layout_constraintRight_toLeftOf="@+id/gl_v1"
+                    android:background="@drawable/monkey_001_xs_button"/>
+
+                <TextView
+                    android:id="@+id/phonics_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="228dp"
+                    android:text="Phonics"
+                    android:textColor="@color/black"
+                    android:textSize="96sp"
+                    app:layout_constraintVertical_bias="0.5"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintBottom_toTopOf="@+id/gl_h2"
+                    app:layout_constraintLeft_toLeftOf="@+id/phonics_button"
+                    app:layout_constraintRight_toRightOf="@+id/phonics_button"/>
+
+                <ImageButton
+                    android:id="@+id/phonics_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/gl_h2"
+                    app:layout_constraintLeft_toLeftOf="@+id/gl_v2"
+                    app:layout_constraintRight_toRightOf="@+id/gl_v2"
+                    app:layout_constraintTop_toTopOf="@+id/gl_h2"
+                    android:background="@drawable/phonics_button"/>
+
+                <ImageButton
+                    android:id="@+id/phonics_monkey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="246dp"
+                    android:layout_marginRight="160dp"
+                    app:layout_constraintBottom_toTopOf="@+id/gl_h2"
+                    app:layout_constraintRight_toLeftOf="@+id/gl_v2"
+                    android:background="@drawable/monkey_001_xs_button"/>
+
+                <TextView
+                    android:id="@+id/words_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="228dp"
+                    android:text="Words"
+                    android:textColor="@color/black"
+                    android:textSize="96sp"
+                    app:layout_constraintVertical_bias="0.5"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintBottom_toTopOf="@+id/gl_h2"
+                    app:layout_constraintLeft_toLeftOf="@+id/words_button"
+                    app:layout_constraintRight_toRightOf="@+id/words_button"/>
+
+                <ImageButton
+                    android:id="@+id/words_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/gl_h2"
+                    app:layout_constraintLeft_toLeftOf="@+id/gl_v3"
+                    app:layout_constraintRight_toRightOf="@+id/gl_v3"
+                    app:layout_constraintTop_toTopOf="@+id/gl_h2"
+                    android:background="@drawable/words_button"/>
+
+                <ImageButton
+                    android:id="@+id/words_monkey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="246dp"
+                    android:layout_marginRight="160dp"
+                    app:layout_constraintBottom_toTopOf="@+id/gl_h2"
+                    app:layout_constraintRight_toLeftOf="@+id/gl_v3"
+                    android:background="@drawable/monkey_001_xs_button"/>
+
+                <TextView
+                    android:id="@+id/books_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="228dp"
+                    android:text="Books"
+                    android:textColor="@color/black"
+                    android:textSize="96sp"
+                    app:layout_constraintVertical_bias="0.5"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintBottom_toTopOf="@+id/gl_h2"
+                    app:layout_constraintLeft_toLeftOf="@+id/books_button"
+                    app:layout_constraintRight_toRightOf="@+id/books_button"/>
+
+                <ImageButton
+                    android:id="@+id/books_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/gl_h2"
+                    app:layout_constraintLeft_toLeftOf="@+id/gl_v4"
+                    app:layout_constraintRight_toRightOf="@+id/gl_v4"
+                    app:layout_constraintTop_toTopOf="@+id/gl_h2"
+                    android:background="@drawable/books_button"/>
+
+                <ImageButton
+                    android:id="@+id/books_monkey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="246dp"
+                    android:layout_marginRight="160dp"
+                    app:layout_constraintBottom_toTopOf="@+id/gl_h2"
+                    app:layout_constraintRight_toLeftOf="@+id/gl_v4"
+                    android:background="@drawable/monkey_001_xs_button"/>
+
+                <TextView
+                    android:id="@+id/maths_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="228dp"
+                    android:text="Maths"
+                    android:textColor="@color/black"
+                    android:textSize="96sp"
+                    app:layout_constraintVertical_bias="0.5"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintBottom_toTopOf="@+id/gl_h2"
+                    app:layout_constraintLeft_toLeftOf="@+id/maths_button"
+                    app:layout_constraintRight_toRightOf="@+id/maths_button"/>
+
+                <ImageButton
+                    android:id="@+id/maths_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/gl_h2"
+                    app:layout_constraintLeft_toLeftOf="@+id/gl_v5"
+                    app:layout_constraintRight_toRightOf="@+id/gl_v5"
+                    app:layout_constraintTop_toTopOf="@+id/gl_h2"
+                    android:background="@drawable/maths_button"/>
+
+                <ImageButton
+                    android:id="@+id/maths_monkey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="246dp"
+                    android:layout_marginRight="160dp"
+                    app:layout_constraintBottom_toTopOf="@+id/gl_h2"
+                    app:layout_constraintRight_toLeftOf="@+id/gl_v5"
+                    android:background="@drawable/monkey_001_xs_button"/>
+
+            </android.support.constraint.ConstraintLayout>
+
+        </RelativeLayout>
+
+    </HorizontalScrollView>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/chapter_header"
+            android:layout_width="1378dp"
+            android:layout_height="112dp"
+            android:background="@drawable/chapter_20_header"/>
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/chapter_book"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/chapter_book_xs"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="3dp"/>
+
+    <TextView
+        android:id="@+id/chapter_title"
+        android:text="Chapter"
+        android:textColor="@color/black"
+        android:textSize="72sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="172dp"
+        android:layout_marginTop="18dp"/>
+
+    <TextView
+        android:id="@+id/chapter_number"
+        android:text="1"
+        android:textColor="@color/black"
+        android:textSize="72sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="424dp"
+        android:layout_marginTop="18dp"/>
+
+</RelativeLayout>
