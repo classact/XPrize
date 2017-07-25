@@ -15,7 +15,6 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import classact.com.xprize.R;
-import classact.com.xprize.activity.drill.sound.SoundDrillOneActivity;
 import classact.com.xprize.locale.Languages;
 
 public class Globals {

@@ -387,6 +387,7 @@ public class PhonicsSubMenu extends AppCompatActivity {
                 finish();
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 break;
+            case Code.DRILL_SPLASH:
             case Code.INTRO:
             case Code.TUTORIAL:
             case Code.MOVIE:

@@ -59,6 +59,11 @@ public class MainActivity extends AppCompatActivity {
 
     private ConstraintLayout mRootView;
 
+    private boolean mPhonicsStarted;
+    private boolean mWordsStarted;
+    private boolean mBooksStarted;
+    private boolean mMathsStarted;
+
     private ImageButton mReadButton;
     private ImageButton mMusicButton;
     private ImageButton mStarsButton;
@@ -115,6 +120,11 @@ public class MainActivity extends AppCompatActivity {
 
         // System.out.println("!!!!!!!!!!!!!!!!!!!! " + Build.VERSION.SECURITY_PATCH + ", " + Build.VERSION.RELEASE);
 
+        mPhonicsStarted = false;
+        mWordsStarted = false;
+        mBooksStarted = false;
+        mMathsStarted = false;
+
         /* mInitialized = false;
 
         Intent intent = new Intent(this, LanguageSelect.class);
@@ -168,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (resultCode != Globals.TO_MAIN) {
             switch (requestCode) {
+                case Code.DRILL_SPLASH:
                 case Code.INTRO:
                 case Code.TUTORIAL:
                 case Code.MOVIE:
@@ -180,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
             switch (resultCode) {
+                case Code.DRILL_SPLASH:
                 case Code.INTRO:
                 case Code.TUTORIAL:
                 case Code.MOVIE:
@@ -191,11 +203,42 @@ public class MainActivity extends AppCompatActivity {
                 default:
                     break;
             }
+        } else {
+            DrillFetcher.mPhonicsStarted = false;
+            DrillFetcher.mWordsStarted = false;
+            DrillFetcher.mBooksStarted = false;
+            DrillFetcher.mMathsStarted = false;
         }
     }
 
     protected void processActivityResult(int code) {
         switch (code) {
+            case Code.DRILL_SPLASH:
+
+                // Setup Database Controller
+                mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
+
+                // Get unit section drill data
+                UnitSectionDrill nextUnitSectionDrill = mDb.getUnitSectionDrillInProgress();
+
+                try {
+                    if (dbEstablsh(false)) {
+                        Object[] objectArray = DrillFetcher.fetch(THIS, mDbHelper, Languages.ENGLISH, nextUnitSectionDrill);
+                        Intent intent = (Intent) objectArray[0];
+                        int resultCode = (int) objectArray[1];
+
+                        Globals.STOP_BACKGROUND_MUSIC(THIS);
+
+                        startActivityForResult(intent, resultCode);
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    }
+                } catch (Exception ex) {
+                    System.err.println(ex.getMessage());
+                    ex.printStackTrace();
+                } finally {
+                    dbClose();
+                }
+                break;
             case Code.INTRO:
             case Code.TUTORIAL:
             case Code.MOVIE:
@@ -207,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
                 mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
 
                 // Get unit section drill data
-                UnitSectionDrill nextUnitSectionDrill = mDb.moveToNextUnitSectionDrill();
+                nextUnitSectionDrill = mDb.moveToNextUnitSectionDrill();
 
                 try {
                     if (dbEstablsh(false)) {

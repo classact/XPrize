@@ -10,6 +10,11 @@ import java.util.List;
 
 import classact.com.xprize.activity.drill.tutorial.Tutorial;
 import classact.com.xprize.activity.link.LevelCompleteLink;
+import classact.com.xprize.activity.link.MathsLink;
+import classact.com.xprize.activity.link.PhonicsLink;
+import classact.com.xprize.activity.link.StoryLink;
+import classact.com.xprize.activity.link.WordsLink;
+import classact.com.xprize.activity.menu.Book;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
 import classact.com.xprize.activity.movie.Movie;
 import classact.com.xprize.activity.movie.MoviePausable;
@@ -40,6 +45,11 @@ import classact.com.xprize.database.model.Word;
 import classact.com.xprize.locale.Languages;
 
 public class DrillFetcher {
+
+    public static boolean mPhonicsStarted = false;
+    public static boolean mWordsStarted = false;
+    public static boolean mBooksStarted = false;
+    public static boolean mMathsStarted = false;
 
     public static Object[] fetch(Context context, DbHelper dbHelper, int languageId, UnitSectionDrill unitSectionDrill) {
         Object[] objectArray = new Object[2];
@@ -106,17 +116,41 @@ public class DrillFetcher {
                 intent = new Intent(context, Tutorial.class);
                 resultCode = Code.TUTORIAL;
             } else if (drillTypeName.equalsIgnoreCase("Phonic")) {
-                intent = getPhonicsDrill(context, dbHelper, unitId, drillId, languageId, unitSection.getSectionSubId());
-                resultCode = Code.RUN_DRILL;
+                if (!mPhonicsStarted) {
+                    intent = new Intent(context, PhonicsLink.class);
+                    resultCode = Code.DRILL_SPLASH;
+                    mPhonicsStarted = true;
+                } else {
+                    intent = getPhonicsDrill(context, dbHelper, unitId, drillId, languageId, unitSection.getSectionSubId());
+                    resultCode = Code.RUN_DRILL;
+                }
             } else if (drillTypeName.equalsIgnoreCase("Word")) {
-                intent = getWordDrill(context, dbHelper, unitId, drillId, languageId, unitSectionDrill.getDrillSubId());
-                resultCode = Code.RUN_DRILL;
+                if (!mWordsStarted) {
+                    intent = new Intent(context, WordsLink.class);
+                    resultCode = Code.DRILL_SPLASH;
+                    mWordsStarted = true;
+                } else {
+                    intent = getWordDrill(context, dbHelper, unitId, drillId, languageId, unitSectionDrill.getDrillSubId());
+                    resultCode = Code.RUN_DRILL;
+                }
             } else if (drillTypeName.equalsIgnoreCase("Book")) {
-                intent = getStoryDrill(context, dbHelper, unitId, drillId, languageId, unitSectionDrill.getDrillSubId());
-                resultCode = Code.RUN_DRILL;
+                if (!mBooksStarted) {
+                    intent = new Intent(context, StoryLink.class);
+                    resultCode = Code.DRILL_SPLASH;
+                    mBooksStarted = true;
+                } else {
+                    intent = getStoryDrill(context, dbHelper, unitId, drillId, languageId, unitSectionDrill.getDrillSubId());
+                    resultCode = Code.RUN_DRILL;
+                }
             } else if (drillTypeName.equalsIgnoreCase("Math")) {
-                intent = getMathDrill(context, dbHelper, unitId, drillId, languageId, unitSectionDrill.getDrillSubId());
-                resultCode = Code.RUN_DRILL;
+                if (!mMathsStarted) {
+                    intent = new Intent(context, MathsLink.class);
+                    resultCode = Code.DRILL_SPLASH;
+                    mMathsStarted = true;
+                } else {
+                    intent = getMathDrill(context, dbHelper, unitId, drillId, languageId, unitSectionDrill.getDrillSubId());
+                    resultCode = Code.RUN_DRILL;
+                }
             }
             objectArray[0] = intent;
             objectArray[1] = resultCode;

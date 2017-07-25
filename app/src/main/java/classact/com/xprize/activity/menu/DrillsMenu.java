@@ -465,6 +465,7 @@ public class DrillsMenu extends AppCompatActivity {
                 break;
         }
         switch (requestCode) {
+            case Code.DRILL_SPLASH:
             case Code.INTRO:
             case Code.TUTORIAL:
             case Code.MOVIE:
