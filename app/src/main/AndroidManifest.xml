@@ -192,7 +192,9 @@
         <activity android:name=".activity.menu.SectionsMenu" />
         <activity android:name=".activity.menu.PhonicsSubMenu" />
         <activity android:name=".activity.menu.MusicMenu" />
-        <activity android:name=".activity.menu.DrillsMenu"></activity>
+        <activity android:name=".activity.menu.DrillsMenu" />
+        <activity android:name=".activity.menu.HelpMenu" />
+        <activity android:name=".activity.menu.VolumeMenu"></activity>
     </application>
 
 </manifest>

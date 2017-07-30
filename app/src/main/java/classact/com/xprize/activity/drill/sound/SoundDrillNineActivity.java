@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -64,23 +65,26 @@ public class SoundDrillNineActivity extends AppCompatActivity {
         handler = new Handler(Looper.getMainLooper());
         writingContainer.addView(view);
 
+        ImageView timerClock = new ImageView(THIS);
+        timerClock.setImageResource(R.drawable.timer_clock_001);
+        timerClock.setScaleX(0.75f);
+        timerClock.setScaleY(0.75f);
+        timerClock.setX(1775f);
+        timerClock.setY(125f);
+        writingContainer.addView(timerClock);
+
         timer = new TextView(getApplicationContext());
-        timer.setBackgroundResource(android.R.color.transparent);
+        timer.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()), Typeface.BOLD);
         timerCounter = TIMER_MAX;
         timerReset = true;
         lastDrawnTime = 0l;
 
         timer.setText(String.valueOf(timerCounter));
-        timer.setTypeface(null, Typeface.BOLD);
         timer.setTextSize(115.0f);
         timer.setAlpha(0.4f);
         timer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
-        LinearLayout.LayoutParams timerLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        timerLayoutParams.topMargin = 175;
-        timerLayoutParams.leftMargin = 2100;
-        timer.setLayoutParams(timerLayoutParams);
-        timer.setVisibility(View.INVISIBLE);
+        timer.setX(1995f);
+        timer.setY(330f);
         writingContainer.addView(timer);
 
         data = getIntent().getExtras().getString("data");
@@ -275,7 +279,7 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                         if (!(startedDrawing || drawingTimeUp)) {
                             startedDrawing = true;
                             lastDrawnTime = 0l;
-                            timer.setVisibility(View.INVISIBLE);
+                            // timer.setVisibility(View.INVISIBLE);
 
                             // Debug
                             System.out.println("SoundDrillNineActivity.CustomWriteView.onTouchEvent > Debug: Started writing");

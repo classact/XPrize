@@ -2,6 +2,7 @@ package classact.com.xprize.activity.drill.sound;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -72,6 +73,8 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sound_drill_twelve);
         mRootView = (RelativeLayout) findViewById(R.id.activity_sound_drill_twelve);
         timeView = (TextView) findViewById( R.id.textViewtimer);
+        timeView.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()), Typeface.BOLD);
+
         buttonWord1 = (ImageButton)findViewById(R.id.button_word1);
         buttonWord2 = (ImageButton)findViewById(R.id.button_word_2);
         buttonWord3 = (ImageButton)findViewById(R.id.button_word3);

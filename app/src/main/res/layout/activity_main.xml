@@ -55,7 +55,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/gl_h2"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.475" />
+        app:layout_constraintGuide_percent="0.47" />
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -92,27 +92,30 @@
         android:id="@+id/read_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="290dp"
         app:layout_constraintLeft_toRightOf="@+id/gl_v3"
         app:layout_constraintRight_toLeftOf="@+id/gl_v3"
-        app:layout_constraintBottom_toTopOf="@+id/gl_h3"
+        app:layout_constraintTop_toTopOf="@+id/app_emblem"
         android:background="@drawable/read_button"/>
+
+    <ImageButton
+        android:id="@+id/help_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="140dp"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v3"
+        app:layout_constraintRight_toLeftOf="@+id/gl_v3"
+        app:layout_constraintTop_toTopOf="@+id/read_button"
+        android:background="@drawable/help_button"/>
 
     <ImageButton
         android:id="@+id/stars_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="140dp"
         app:layout_constraintLeft_toRightOf="@+id/gl_v3"
         app:layout_constraintRight_toLeftOf="@+id/gl_v3"
-        app:layout_constraintBottom_toTopOf="@+id/gl_h4"
+        app:layout_constraintTop_toTopOf="@+id/help_button"
         android:background="@drawable/stars_button"/>
-
-    <ImageButton
-        android:id="@+id/music_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toRightOf="@+id/gl_v3"
-        app:layout_constraintRight_toLeftOf="@+id/gl_v3"
-        app:layout_constraintBottom_toTopOf="@+id/gl_h5"
-        android:background="@drawable/music_button"/>
 
 </android.support.constraint.ConstraintLayout>

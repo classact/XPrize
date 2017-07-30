@@ -215,7 +215,7 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
             mTimerCounter = TIMER_MAX;
 
             mTimer.setText(String.valueOf(mTimerCounter));
-            mTimer.setTypeface(null, Typeface.BOLD);
+            mTimer.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()), Typeface.BOLD);
             mTimer.setTextSize(115.0f);
             mTimer.setAlpha(0.4f);
             mTimer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));

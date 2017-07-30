@@ -255,7 +255,7 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
 
     public void playSoundAgain(){
         try {
-            playSound(currentSound, new Runnable() {
+            playSound(currentPhonicSound, new Runnable() {
                 @Override
                 public void run() {
                     handler.postDelayed(new Runnable() {

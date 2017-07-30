@@ -1,14 +1,24 @@
 package classact.com.xprize.activity.menu;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.OvershootInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -81,7 +91,15 @@ public class StarsMenu extends AppCompatActivity {
 
     private SparseArray<Integer> mStarLevelBackgrounds;
 
+    Animation mBookAnimation;
+
+
+    private boolean mStarsExist;
+    private boolean mViewVisible;
+    private boolean mFirstMonkeyPlaced;
+
     private DatabaseController mDb;
+    private Handler mHandler;
     private Intent mIntent;
     private boolean mFinishActivity;
     private final Context THIS = this;
@@ -90,6 +108,9 @@ public class StarsMenu extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stars_menu);
+        mRootView = (ConstraintLayout) findViewById(R.id.activity_stars_menu);
+
+        mHandler = new Handler();
         mIntent = getIntent();
         mFinishActivity = false;
 
@@ -97,7 +118,6 @@ public class StarsMenu extends AppCompatActivity {
         mStarButtons = new ArrayList<>();
         mStarLevelBackgrounds = new SparseArray<>();
 
-        mRootView = (ConstraintLayout) findViewById(R.id.activity_stars_menu);
         mChapterBookButton = (ImageButton) findViewById(R.id.chapter_book_button);
 
         mChapterText = (TextView) findViewById(R.id.chapter_text);
@@ -227,59 +247,169 @@ public class StarsMenu extends AppCompatActivity {
             }
         }
 
+        mStarsExist = true;
+        mChapterBookButton.setAlpha(0f);
+        mChapterText.setAlpha(0f);
+
         if (currentChapterInProgress == 0) {
-            // DO SOMETHING!!!!
+            mStarsExist = false;
         }
 
         mMaxStars = 20;
-        mCurrentStarLimit = Math.min(numberOfUnlockedChapters, mMaxStars);
-        mCurrentStar = Math.min(currentChapterInProgress, mCurrentStarLimit);
-        mRootView.setBackgroundResource(mStarLevelBackgrounds.get(mCurrentStarLimit));
-
-        String chapterText = "Chapter " + mCurrentStar;
-        mChapterText.setText(chapterText);
-
         for (int i = 0; i < mMaxStars; i++) {
             ImageButton monkeyButton = mMonkeyButtons.get(i);
-            final int chapter = i+1;
-
-            if (chapter != mCurrentStar) {
-                monkeyButton.setVisibility(View.INVISIBLE);
-            }
+            monkeyButton.setAlpha(0f);
+            monkeyButton.setVisibility(View.INVISIBLE);
         }
 
-        for (int i = 0; i < mCurrentStarLimit; i++) {
-            ImageButton starButton = mStarButtons.get(i);
-            final int chapter = i+1;
-            starButton.setOnClickListener(new View.OnClickListener() {
+        if (mStarsExist) {
+            mCurrentStarLimit = Math.min(numberOfUnlockedChapters, mMaxStars);
+            mCurrentStar = Math.min(currentChapterInProgress, mCurrentStarLimit);
+            mRootView.setBackgroundResource(mStarLevelBackgrounds.get(mCurrentStarLimit));
+
+            String chapterText = "Chapter " + mCurrentStar;
+            mChapterText.setText(chapterText);
+
+            for (int i = 0; i < mCurrentStarLimit; i++) {
+                ImageButton starButton = mStarButtons.get(i);
+                final int chapter = i + 1;
+                starButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String chapterText = "Chapter " + chapter;
+                        mChapterText.setText(chapterText);
+                        placeMonkey(chapter);
+                    }
+                });
+            }
+
+            mChapterBookButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String chapterText = "Chapter " + chapter;
-                    mChapterText.setText(chapterText);
-                    placeMonkey(chapter);
+                    mFinishActivity = true;
+                    Intent intent = new Intent(THIS, SectionsMenu.class);
+                    intent.putExtra("selected_chapter", mCurrentStar);
+                    startActivityForResult(intent, 0);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                }
+            });
+
+            mBookAnimation = new TranslateAnimation(
+                    TranslateAnimation.ABSOLUTE, 0f,
+                    TranslateAnimation.ABSOLUTE, -0.001f,
+                    TranslateAnimation.RELATIVE_TO_PARENT, 0f,
+                    TranslateAnimation.RELATIVE_TO_PARENT, -0.0175f);
+            mBookAnimation.setDuration(900);
+            mBookAnimation.setRepeatCount(Animation.INFINITE);
+            mBookAnimation.setRepeatMode(Animation.REVERSE);
+            mBookAnimation.setInterpolator(new OvershootInterpolator());
+            mBookAnimation.setFillAfter(true);
+
+            mViewVisible = false;
+            mFirstMonkeyPlaced = false;
+            mRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    if (!mViewVisible) {
+                        mViewVisible = true;
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                placeMonkey(mCurrentStar);
+                            }
+                        }, 150);
+                    }
                 }
             });
         }
-
-        mChapterBookButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFinishActivity = true;
-                Intent intent = new Intent(THIS, SectionsMenu.class);
-                intent.putExtra("selected_chapter", mCurrentStar);
-                startActivityForResult(intent, 0);
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
-        });
     }
 
     public void placeMonkey(int chapter) {
-        if (chapter != mCurrentStar && chapter <= mMonkeyButtons.size()) {
-            ImageButton currentMonkey = mMonkeyButtons.get(mCurrentStar-1);
-            currentMonkey.setVisibility(View.INVISIBLE);
 
-            ImageButton newMonkey = mMonkeyButtons.get(chapter-1);
+        if (!mFirstMonkeyPlaced) {
+            mFirstMonkeyPlaced = true;
+
+            final ImageButton firstMonkey = mMonkeyButtons.get(chapter-1);
+            firstMonkey.setVisibility(View.VISIBLE);
+            firstMonkey.animate()
+                    .alpha(1)
+                    .setDuration(250)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            firstMonkey.setAlpha(1f);
+                        }
+                    });
+
+            ImageButton newStar = mStarButtons.get(chapter-1);
+            Globals.playStarWorks(THIS, newStar);
+
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mChapterBookButton.animate()
+                            .alpha(1f)
+                            .setDuration(1000)
+                            .setInterpolator(new LinearInterpolator())
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    super.onAnimationEnd(animation);
+                                    mChapterBookButton.setAlpha(1f);
+                                    mChapterBookButton.startAnimation(mBookAnimation);
+                                }
+                            });
+                    mChapterText.animate()
+                            .alpha(1f)
+                            .setDuration(1000)
+                            .setInterpolator(new LinearInterpolator())
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    super.onAnimationEnd(animation);
+                                    mChapterBookButton.setAlpha(1f);
+                                }
+                            });
+                }
+            }, 1000);
+
+            mCurrentStar = chapter;
+
+        } else if (chapter != mCurrentStar && chapter <= mMonkeyButtons.size()) {
+
+            final ImageButton currentMonkey = mMonkeyButtons.get(mCurrentStar-1);
+            currentMonkey.animate()
+                    .alpha(0)
+                    .setDuration(250)
+                    .setInterpolator(new AccelerateInterpolator())
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            currentMonkey.setAlpha(0f);
+                            currentMonkey.setVisibility(View.INVISIBLE);
+                        }
+                    });
+
+            final ImageButton newMonkey = mMonkeyButtons.get(chapter-1);
             newMonkey.setVisibility(View.VISIBLE);
+            newMonkey.animate()
+                    .alpha(1)
+                    .setDuration(250)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            newMonkey.setAlpha(1f);
+                        }
+                    });
+
+            ImageButton newStar = mStarButtons.get(chapter-1);
+            Globals.playStarWorks(THIS, newStar);
+            // Globals.playStarWorks(THIS, mChapterText, 0, 360);
             mCurrentStar = chapter;
         }
     }
@@ -339,7 +469,7 @@ public class StarsMenu extends AppCompatActivity {
                     onBackPressed();
                     return true;
                 default:
-                    return super.onKeyDown(keyCode, event);
+                    break;
             }
         }
         return super.onKeyDown(keyCode, event);
