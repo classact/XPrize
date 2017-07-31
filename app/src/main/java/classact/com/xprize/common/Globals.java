@@ -4,9 +4,13 @@ package classact.com.xprize.common;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.support.annotation.Dimension;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -105,6 +109,43 @@ public class Globals {
         textView.setText(text);
         textView.measure(0, 0);
         return textView.getMeasuredWidth();
+    }
+
+    public static Point TEXT_MEASURED_SIZE(TextView textView, String text) {
+        textView.setText(text);
+        textView.measure(0, 0);
+
+        Typeface textViewTypeface = textView.getTypeface();
+        float textViewTextSize = textView.getTextSize();
+        float textPaddingWidth = textView.getPaddingLeft() + textView.getPaddingRight();
+        float textPaddingHeight = textView.getPaddingTop() + textView.getPaddingBottom();
+
+        Paint p = new Paint();
+        Rect bounds = new Rect();
+        p.setTypeface(textViewTypeface);
+        p.setTextSize(textViewTextSize);
+        p.getTextBounds(text, 0, text.length(), bounds);
+
+        float textWidth = textView.getMeasuredWidth();
+        float textRawWidth = textWidth - textPaddingWidth;
+
+        float textBoundsWidth = bounds.width();
+        float textBoundsHeight = bounds.height();
+
+        float textBoldDiff = textRawWidth - textBoundsWidth;
+        float textRawHeight = textBoundsHeight + textBoldDiff;
+        float textHeight = textRawHeight + textPaddingHeight;
+
+        System.out.println(
+                "bw:" + textBoundsWidth +
+                ",bh:" + textBoundsHeight +
+                ",trw:" + textRawWidth +
+                ",twh:" + textRawHeight +
+                ",tw:" + textWidth +
+                ",th:" + textHeight);
+
+        Point textSize = new Point((int) textWidth, (int) textHeight);
+        return textSize;
     }
 
     public static void SET_VOLUME(Context context, int volume) {

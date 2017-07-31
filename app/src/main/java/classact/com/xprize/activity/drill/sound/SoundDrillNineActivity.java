@@ -3,6 +3,9 @@ package classact.com.xprize.activity.drill.sound;
 import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -14,6 +17,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -49,6 +53,9 @@ public class SoundDrillNineActivity extends AppCompatActivity {
     private final int TIMER_MAX = 5;
     private final int DRAW_WAIT_TIME = 1000;
 
+    private final float TIMER_MID_X = 2065f;
+    private final float TIMER_MID_Y = 425f;
+
     private final Context THIS = this;
 
     @Override
@@ -75,17 +82,24 @@ public class SoundDrillNineActivity extends AppCompatActivity {
 
         timer = new TextView(getApplicationContext());
         timer.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()), Typeface.BOLD);
+        timer.setPadding(16, 16, 16, 16);
         timerCounter = TIMER_MAX;
         timerReset = true;
         lastDrawnTime = 0l;
 
         timer.setText(String.valueOf(timerCounter));
         timer.setTextSize(115.0f);
-        timer.setAlpha(0.4f);
+        timer.setAlpha(0.8f);
         timer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
-        timer.setX(1995f);
-        timer.setY(330f);
+        // timer.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        timer.setX(TIMER_MID_X);
+        timer.setY(TIMER_MID_Y);
         writingContainer.addView(timer);
+
+        Point textSize = Globals.TEXT_MEASURED_SIZE(timer, String.valueOf(timerCounter));
+        System.out.println(textSize.x + ", " + textSize.y);
+        timer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
+        timer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
 
         data = getIntent().getExtras().getString("data");
 
@@ -237,9 +251,13 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                     if (timerReset) {
                         timerReset = false;
                         timerCounter = TIMER_MAX;
+                        timer.setTextColor(Color.parseColor("#000000"));
                     }
 
-                    timer.setText(String.valueOf(timerCounter));
+                    Point textSize = Globals.TEXT_MEASURED_SIZE(timer, String.valueOf(timerCounter));
+                    System.out.println(textSize.x + ", " + textSize.y);
+                    timer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
+                    timer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
 
                     if (timerCounter > 0) {
                         timerCounter--;
@@ -279,6 +297,7 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                         if (!(startedDrawing || drawingTimeUp)) {
                             startedDrawing = true;
                             lastDrawnTime = 0l;
+                            timer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
                             // timer.setVisibility(View.INVISIBLE);
 
                             // Debug
@@ -292,6 +311,12 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                         if (startedDrawing && !drawingTimeUp) {
                             startedDrawing = false;
                             timerReset = true;
+
+                            Point textSize = Globals.TEXT_MEASURED_SIZE(timer, String.valueOf(TIMER_MAX));
+                            System.out.println(textSize.x + ", " + textSize.y);
+                            timer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
+                            timer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
+
                             lastDrawnTime = new Date().getTime();
 
                             // Debug
