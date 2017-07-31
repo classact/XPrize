@@ -97,7 +97,6 @@ public class SoundDrillNineActivity extends AppCompatActivity {
         writingContainer.addView(timer);
 
         Point textSize = Globals.TEXT_MEASURED_SIZE(timer, String.valueOf(timerCounter));
-        System.out.println(textSize.x + ", " + textSize.y);
         timer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
         timer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
 
@@ -291,49 +290,39 @@ public class SoundDrillNineActivity extends AppCompatActivity {
         public boolean onTouchEvent(MotionEvent event) {
             super.onTouchEvent(event);
 
-            if (canDraw) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
+            if (drillComplete) {
+                return false;
+            }
+
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    if (canDraw) {
                         if (!(startedDrawing || drawingTimeUp)) {
                             startedDrawing = true;
                             lastDrawnTime = 0l;
                             timer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
-                            // timer.setVisibility(View.INVISIBLE);
-
-                            // Debug
-                            System.out.println("SoundDrillNineActivity.CustomWriteView.onTouchEvent > Debug: Started writing");
                         }
-                        break;
-                    case MotionEvent.ACTION_MOVE:
+                    }
+                    break;
+                case MotionEvent.ACTION_MOVE:
 
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (startedDrawing && !drawingTimeUp) {
-                            startedDrawing = false;
-                            timerReset = true;
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (canDraw && (startedDrawing && !drawingTimeUp) || canDraw && !startedDrawing) {
+                        startedDrawing = false;
+                        timerReset = true;
 
-                            Point textSize = Globals.TEXT_MEASURED_SIZE(timer, String.valueOf(TIMER_MAX));
-                            System.out.println(textSize.x + ", " + textSize.y);
-                            timer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
-                            timer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
+                        Point textSize = Globals.TEXT_MEASURED_SIZE(timer, String.valueOf(TIMER_MAX));
+                        System.out.println(textSize.x + ", " + textSize.y);
+                        timer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
+                        timer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
 
-                            lastDrawnTime = new Date().getTime();
+                        lastDrawnTime = new Date().getTime();
 
-                            // Debug
-                            System.out.println("SoundDrillNineActivity.CustomWriteView.onTouchEvent > Debug: Last Drawn Time (" +
-                                    lastDrawnTime + ")");
-
-                            handler.removeCallbacks(countDown);
-                            handler.postDelayed(countDown, DRAW_WAIT_TIME);
-
-                            // Debug
-                            System.out.println("SoundDrillNineActivity.CustomWriteView.onTouchEvent > Debug: Stopped writing");
-                        }
-                        break;
-                }
-            }
-            if (drillComplete) {
-                return false;
+                        handler.removeCallbacks(countDown);
+                        handler.postDelayed(countDown, DRAW_WAIT_TIME);
+                    }
+                    break;
             }
             return true;
         }
