@@ -250,7 +250,7 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                     if (timerReset) {
                         timerReset = false;
                         timerCounter = TIMER_MAX;
-                        timer.setTextColor(Color.parseColor("#000000"));
+                        timer.setTextColor(Color.DKGRAY);
                     }
 
                     Point textSize = Globals.TEXT_MEASURED_SIZE(timer, String.valueOf(timerCounter));
@@ -311,11 +311,6 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                     if (canDraw && (startedDrawing && !drawingTimeUp) || canDraw && !startedDrawing) {
                         startedDrawing = false;
                         timerReset = true;
-
-                        Point textSize = Globals.TEXT_MEASURED_SIZE(timer, String.valueOf(TIMER_MAX));
-                        System.out.println(textSize.x + ", " + textSize.y);
-                        timer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
-                        timer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
 
                         lastDrawnTime = new Date().getTime();
 
