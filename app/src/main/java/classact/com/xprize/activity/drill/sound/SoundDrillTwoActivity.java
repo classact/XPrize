@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -36,6 +37,8 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
     private String drillSound;
     private JSONObject data;
     private boolean itemsEnabled;
+
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -472,6 +475,15 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
                 if (play_mode == 2) {
                     if (item == correctItem) {
                         // setItemsEnabled(false);
+
+                        ImageView iv = null;
+                        if (item == 1) {
+                            iv = item1;
+                        } else if (item == 2) {
+                            iv = item2;
+                        }
+                        Globals.playStarWorks(THIS, iv);
+
                         itemsEnabled = false;
                         mRunnable = null; // Reset?
                         mRunnable = new Runnable() {
