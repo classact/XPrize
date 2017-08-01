@@ -427,7 +427,8 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                     word,
                     displayMetrics,
                     letterWidth,
-                    letterScale
+                    letterScale,
+                    true
             );
 
             for (int i = 0; i < lVs.size(); i++) {

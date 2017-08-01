@@ -413,10 +413,10 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    mp.start();
                     ImageView iv = items[correctItem];
                     int waitDuration = Math.min(mp.getDuration(), 200);
                     fadeIncorrect(iv, waitDuration);
+                    mp.start();
                 }
             });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {

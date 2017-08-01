@@ -409,7 +409,8 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                     wordString,
                     displayMetrics,
                     letterWidth,
-                    letterScale
+                    letterScale,
+                    true
             );
 
             letterCount = 0;
