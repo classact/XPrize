@@ -219,7 +219,7 @@ public class PhonicsDrills {
                 ObjectAndSound drillObject = new ObjectAndSound(rightWord.getImagePictureURI(), rightWord.getWordSoundURI(), "");
                 System.out.println("Processing Right Word: (id " + rightWord.getWordID() + ")" + rightWord.getWordName());
 
-                drillObject.setBeginningLetterSound(letter.getLetterSoundURI());
+                drillObject.setBeginningLetterSound(letter.getPhonicSoundURI());
 
                 // Get another right word
                 Word anotherRightWord = WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i+1));

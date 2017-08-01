@@ -212,4 +212,28 @@ public class Globals {
         ps3.setFadeOut(250, new AccelerateInterpolator());
         ps3.oneShot(v, 12);
     }
+
+    public static void playStarWorks(Context context, View v, int numOfSmallParticles, int numOfMediumParticles, int numOfLargeParticles) {
+
+        ParticleSystem particlesSmall = new ParticleSystem((Activity) context, numOfSmallParticles, R.drawable.star_particle_001_s, 1000);
+        particlesSmall.setScaleRange(0.7f, 1.3f);
+        particlesSmall.setSpeedRange(0.2f, 0.35f);
+        particlesSmall.setRotationSpeedRange(45, 180);
+        particlesSmall.setFadeOut(250, new AccelerateInterpolator());
+        particlesSmall.oneShot(v, numOfSmallParticles);
+
+        ParticleSystem particlesMedium = new ParticleSystem((Activity) context, numOfMediumParticles, R.drawable.star_particle_001_m, 1000);
+        particlesMedium.setScaleRange(0.7f, 1.3f);
+        particlesMedium.setSpeedRange(0.15f, 0.3f);
+        particlesMedium.setRotationSpeedRange(90, 270);
+        particlesMedium.setFadeOut(375, new AccelerateInterpolator());
+        particlesMedium.oneShot(v, numOfMediumParticles);
+
+        ParticleSystem particlesLarge = new ParticleSystem((Activity) context, numOfLargeParticles, R.drawable.star_particle_001_l, 1000);
+        particlesLarge.setScaleRange(0.7f, 1.3f);
+        particlesLarge.setSpeedRange(0.1f, 0.25f);
+        particlesLarge.setRotationSpeedRange(180, 360);
+        particlesLarge.setFadeOut(500, new AccelerateInterpolator());
+        particlesLarge.oneShot(v, numOfLargeParticles);
+    }
 }

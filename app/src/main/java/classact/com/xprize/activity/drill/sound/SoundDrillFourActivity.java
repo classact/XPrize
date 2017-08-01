@@ -1,6 +1,7 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.content.ClipData;
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -44,6 +45,8 @@ public class SoundDrillFourActivity extends AppCompatActivity {
     JSONObject params;
     private boolean itemsEnabled;
     private Runnable mRunnable;
+
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -483,6 +486,7 @@ public class SoundDrillFourActivity extends AppCompatActivity {
                 } else if (event.getAction() == DragEvent.ACTION_DROP && entered) {
                     int right = images.getJSONObject(currentItem).getInt("right");
                     if (right == 1) {
+                        Globals.playStarWorks(THIS, toyBox);
                         playRewardSound(true);
                     } else {
                         playRewardSound(false);

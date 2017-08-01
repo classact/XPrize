@@ -482,7 +482,7 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
                         } else if (item == 2) {
                             iv = item2;
                         }
-                        Globals.playStarWorks(THIS, iv);
+                        Globals.playStarWorks(THIS, iv, 15, 12, 9);
 
                         itemsEnabled = false;
                         mRunnable = null; // Reset?

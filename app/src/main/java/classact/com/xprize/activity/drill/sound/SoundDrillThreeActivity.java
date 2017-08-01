@@ -258,13 +258,7 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
             playSound(currentPhonicSound, new Runnable() {
                 @Override
                 public void run() {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            // setItemsEnabled(true);
-                            itemsEnabled = true;
-                        }
-                    }, mp.getDuration() - 100);
+                    itemsEnabled = true;
                 }
             });
         }
@@ -309,6 +303,15 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
         if (itemsEnabled) {
             if (item == correctItem) {
                 // setItemsEnabled(false);
+
+                ImageView iv = null;
+                if (item == 0) {
+                    iv = item1;
+                } else if (item == 1) {
+                    iv = item2;
+                }
+                Globals.playStarWorks(THIS, iv);
+
                 itemsEnabled = false;
                 mRunnable = null;
                 mRunnable = new Runnable() {
