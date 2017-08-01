@@ -5,7 +5,7 @@
     android:id="@+id/activity_stars_menu"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/star_level_1"
+    android:background="@drawable/star_level_0"
     tools:context="classact.com.xprize.activity.menu.StarsMenu">
 
     <android.support.constraint.Guideline

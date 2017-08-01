@@ -34,19 +34,19 @@ public class SectionsMenu extends AppCompatActivity {
     private TextView mChapterTitle;
     private TextView mChapterNumber;
 
-    private TextView mIntroTitle;
+    private TextView mStoryTitle;
     private TextView mPhonicsTitle;
     private TextView mWordsTitle;
     private TextView mBooksTitle;
     private TextView mMathsTitle;
 
-    private ImageButton mIntroButton;
+    private ImageButton mStoryButton;
     private ImageButton mPhonicsButton;
     private ImageButton mWordsButton;
     private ImageButton mBooksButton;
     private ImageButton mMathsButton;
 
-    private ImageButton mIntroMonkey;
+    private ImageButton mStoryMonkey;
     private ImageButton mPhonicsMonkey;
     private ImageButton mWordsMonkey;
     private ImageButton mBooksMonkey;
@@ -108,7 +108,7 @@ public class SectionsMenu extends AppCompatActivity {
         mChapterTitle = (TextView) findViewById(R.id.chapter_title);
         mChapterNumber = (TextView) findViewById(R.id.chapter_number);
 
-        mIntroTitle = (TextView) findViewById(R.id.intro_title);
+        mStoryTitle = (TextView) findViewById(R.id.intro_title);
         mPhonicsTitle = (TextView) findViewById(R.id.phonics_title);
         mWordsTitle = (TextView) findViewById(R.id.words_title);
         mBooksTitle = (TextView) findViewById(R.id.books_title);
@@ -117,19 +117,19 @@ public class SectionsMenu extends AppCompatActivity {
         mChapterTitle.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
         mChapterNumber.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
 
-        mIntroTitle.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
+        mStoryTitle.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
         mPhonicsTitle.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
         mWordsTitle.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
         mBooksTitle.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
         mMathsTitle.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
 
-        mIntroButton = (ImageButton) findViewById(R.id.intro_button);
+        mStoryButton = (ImageButton) findViewById(R.id.intro_button);
         mPhonicsButton = (ImageButton) findViewById(R.id.phonics_button);
         mWordsButton = (ImageButton) findViewById(R.id.words_button);
         mBooksButton = (ImageButton) findViewById(R.id.books_button);
         mMathsButton = (ImageButton) findViewById(R.id.maths_button);
 
-        mIntroMonkey = (ImageButton) findViewById(R.id.intro_monkey);
+        mStoryMonkey = (ImageButton) findViewById(R.id.intro_monkey);
         mPhonicsMonkey = (ImageButton) findViewById(R.id.phonics_monkey);
         mWordsMonkey = (ImageButton) findViewById(R.id.words_monkey);
         mBooksMonkey = (ImageButton) findViewById(R.id.books_monkey);
@@ -181,61 +181,61 @@ public class SectionsMenu extends AppCompatActivity {
             }
         }
 
-        final int INTRO_SECTION = DatabaseController.INTRO_SECTION;
+        final int STORY_SECTION = DatabaseController.STORY_SECTION;
         final int PHONICS_SECTION = DatabaseController.PHONICS_SECTION;
         final int WORDS_SECTION = DatabaseController.WORDS_SECTION;
         final int BOOKS_SECTION = DatabaseController.BOOKS_SECTION;
         final int MATHS_SECTION = DatabaseController.MATHS_SECTION;
 
-        int introWidth = Globals.TEXT_MEASURED_WIDTH(mIntroTitle, sectionHeadings.get(0));
+        int storyWidth = Globals.TEXT_MEASURED_WIDTH(mStoryTitle, sectionHeadings.get(0));
         int phonicsWidth = Globals.TEXT_MEASURED_WIDTH(mPhonicsTitle, sectionHeadings.get(1));
         int WordsWidth = Globals.TEXT_MEASURED_WIDTH(mWordsTitle, sectionHeadings.get(2));
         int booksWidth = Globals.TEXT_MEASURED_WIDTH(mBooksTitle, sectionHeadings.get(3));
         int mathsWidth = Globals.TEXT_MEASURED_WIDTH(mMathsTitle, sectionHeadings.get(4));
 
-        placeMonkey(mIntroMonkey, (int) ((float) introWidth/1.5f));
+        placeMonkey(mStoryMonkey, (int) ((float) storyWidth/1.5f));
         placeMonkey(mPhonicsMonkey, (int) ((float) phonicsWidth/1.5f));
         placeMonkey(mWordsMonkey, (int) ((float) WordsWidth/1.5f));
         placeMonkey(mBooksMonkey, (int) ((float) booksWidth/1.5f));
         placeMonkey(mMathsMonkey, (int) ((float) mathsWidth/1.5f));
 
         mButtonTitles = new LinkedHashMap<>();
-        mButtonTitles.put(mIntroButton, mIntroTitle);
+        mButtonTitles.put(mStoryButton, mStoryTitle);
         mButtonTitles.put(mPhonicsButton, mPhonicsTitle);
         mButtonTitles.put(mWordsButton, mWordsTitle);
         mButtonTitles.put(mBooksButton, mBooksTitle);
         mButtonTitles.put(mMathsButton, mMathsTitle);
 
         mButtonMonkeys = new LinkedHashMap<>();
-        mButtonMonkeys.put(mIntroButton, mIntroMonkey);
+        mButtonMonkeys.put(mStoryButton, mStoryMonkey);
         mButtonMonkeys.put(mPhonicsButton, mPhonicsMonkey);
         mButtonMonkeys.put(mWordsButton, mWordsMonkey);
         mButtonMonkeys.put(mBooksButton, mBooksMonkey);
         mButtonMonkeys.put(mMathsButton, mMathsMonkey);
 
         mButtonSections = new LinkedHashMap<>();
-        mButtonSections.put(mIntroButton, INTRO_SECTION);
+        mButtonSections.put(mStoryButton, STORY_SECTION);
         mButtonSections.put(mPhonicsButton, PHONICS_SECTION);
         mButtonSections.put(mWordsButton, WORDS_SECTION);
         mButtonSections.put(mBooksButton, BOOKS_SECTION);
         mButtonSections.put(mMathsButton, MATHS_SECTION);
 
         mSectionTitles = new LinkedHashMap<>();
-        mSectionTitles.put(INTRO_SECTION, mIntroTitle);
+        mSectionTitles.put(STORY_SECTION, mStoryTitle);
         mSectionTitles.put(PHONICS_SECTION, mPhonicsTitle);
         mSectionTitles.put(WORDS_SECTION, mWordsTitle);
         mSectionTitles.put(BOOKS_SECTION, mBooksTitle);
         mSectionTitles.put(MATHS_SECTION, mMathsTitle);
 
         mSectionMonkeys = new LinkedHashMap<>();
-        mSectionMonkeys.put(INTRO_SECTION, mIntroMonkey);
+        mSectionMonkeys.put(STORY_SECTION, mStoryMonkey);
         mSectionMonkeys.put(PHONICS_SECTION, mPhonicsMonkey);
         mSectionMonkeys.put(WORDS_SECTION, mWordsMonkey);
         mSectionMonkeys.put(BOOKS_SECTION, mBooksMonkey);
         mSectionMonkeys.put(MATHS_SECTION, mMathsMonkey);
 
         mSectionButtons = new LinkedHashMap<>();
-        mSectionButtons.put(INTRO_SECTION, mIntroButton);
+        mSectionButtons.put(STORY_SECTION, mStoryButton);
         mSectionButtons.put(PHONICS_SECTION, mPhonicsButton);
         mSectionButtons.put(WORDS_SECTION, mWordsButton);
         mSectionButtons.put(BOOKS_SECTION, mBooksButton);
@@ -259,7 +259,7 @@ public class SectionsMenu extends AppCompatActivity {
         }
 
         // Setup sections
-        int sectionIdInProgress = INTRO_SECTION; // Default section in progress
+        int sectionIdInProgress = STORY_SECTION; // Default section in progress
 
         List<Integer> parsedSectionIds = new ArrayList<>();
 

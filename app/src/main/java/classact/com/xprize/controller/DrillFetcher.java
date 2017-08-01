@@ -85,6 +85,8 @@ public class DrillFetcher {
             Intent intent = null;
             int resultCode = 0;
 
+            System.out.println("DrillFetcher: " + drillTypeName + " -> " + unitSectionDrillId + ", " + unitSection.getUnitSectionId());
+
             if (drillTypeName.equalsIgnoreCase("Cinematic")) {
                 if (sectionName.equalsIgnoreCase("Intro")) {
                     intent = new Intent(context, Movie.class);
@@ -92,20 +94,18 @@ public class DrillFetcher {
                     intent.putExtra(Code.NEXT_BG_CODE, Code.INTRO);
                     resultCode = Code.INTRO;
                 } else if (sectionName.equalsIgnoreCase("Chapter End")) {
-                    if (!(unitId == 0 || unitId == 21)) {
-                        intent = new Intent(context, LevelCompleteLink.class);
-                        intent.putExtra(Code.RES_NAME, "level" + unitId);
-                        intent.putExtra(Code.NEXT_BG_RES, "star_level_" + unitId);
-                        resultCode = Code.CHAPTER_END;
-                    } else if (unitId == 21) {
-                        intent = new Intent(context, Movie.class);
-                        intent.putExtra(Code.RES_NAME, unit.getUnitFirstTimeMovieFile());
-                        intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
-                        resultCode = Code.FINALE;
-                    }
+                    intent = new Intent(context, LevelCompleteLink.class);
+                    intent.putExtra(Code.RES_NAME, "level" + unitId);
+                    intent.putExtra(Code.NEXT_BG_RES, "star_level_" + unitId);
+                    resultCode = Code.CHAPTER_END;
+                } else if (sectionName.equalsIgnoreCase("Finale")) {
+                    intent = new Intent(context, Movie.class);
+                    intent.putExtra(Code.RES_NAME, unit.getUnitFirstTimeMovieFile());
+                    intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
+                    resultCode = Code.FINALE;
                 }
             } else if (drillTypeName.equalsIgnoreCase("Movie")) {
-                if (sectionName.equalsIgnoreCase("Intro")) {
+                if (sectionName.equalsIgnoreCase("Story")) {
                     intent = new Intent(context, MoviePausable.class);
                     intent.putExtra(Code.RES_NAME, unit.getUnitFirstTimeMovieFile());
                     intent.putExtra(Code.SHOW_MV_BUTTONS, true);

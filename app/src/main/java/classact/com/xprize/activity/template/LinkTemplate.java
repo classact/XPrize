@@ -199,7 +199,6 @@ public abstract class LinkTemplate extends AppCompatActivity {
             } else {
                 finishIntent();
             }
-            overridePendingTransition(0, android.R.anim.fade_out);
         } catch (ClassNotFoundException cnfex) {
             System.err.println(mActivityName + " > close: next activity's class could not be found");
         }

@@ -417,7 +417,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
                 startPair++;
                 String sound = words.getJSONObject(assignments[card - 1]).getString("sound");
                 int image = words.getJSONObject(assignments[card - 1]).getInt("image");
-                button.setBackgroundResource(R.drawable.cardsinglesmlback);
+                button.setBackgroundResource(R.drawable.cardsinglesmlback_empty);
                 button.setImageResource(image);
 
                 int cardWidth = 180;

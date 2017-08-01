@@ -79,11 +79,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mRootView = (ConstraintLayout) findViewById(R.id.activity_main);
 
+        mReadButton = (ImageButton) findViewById(R.id.read_button);
+        mHelpButton = (ImageButton) findViewById(R.id.help_button);
+        mStarsButton = (ImageButton) findViewById(R.id.stars_button);
+
+        // Check read button
+        checkReadButton();
+
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         mNewActivity = false;
 
         // Read Button
-        mReadButton = (ImageButton) findViewById(R.id.read_button);
         mReadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Help Button
-        mHelpButton = (ImageButton) findViewById(R.id.help_button);
         mHelpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Stars Button
-        mStarsButton = (ImageButton) findViewById(R.id.stars_button);
         mStarsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,6 +130,22 @@ public class MainActivity extends AppCompatActivity {
         mMathsStarted = false;
     }
 
+    public void checkReadButton() {
+        // Setup Database Controller
+        mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
+
+        // Get current unit section drill in progress
+        UnitSectionDrill currentUnitSectionDrill = mDb.getUnitSectionDrillInProgress();
+
+        // Check if it should display "Read" or "Continue"
+        if (currentUnitSectionDrill.getUnitSectionDrillId() == 1) {
+            mReadButton.setBackgroundResource(R.drawable.read_button);
+        } else {
+            mReadButton.setBackgroundResource(R.drawable.continue_button);
+        }
+
+    }
+
     public void playNextDrill() {
 
         // Setup Database Controller
@@ -136,7 +156,9 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             if (dbEstablsh(false)) {
+                System.out.println("About to play: " + unitSectionDrill.getUnitSectionDrillId());
                 Object[] objectArray = DrillFetcher.fetch(THIS, mDbHelper, Languages.ENGLISH, unitSectionDrill);
+                dbClose();
                 Intent intent = (Intent) objectArray[0];
                 int resultCode = (int) objectArray[1];
 
@@ -148,8 +170,35 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
             ex.printStackTrace();
-        } finally {
-            dbClose();
+        }
+    }
+
+    public void autoProgressDrill() {
+
+        System.out.println("!!!!!! Auto progress Drill !!!!!");
+
+        // Setup Database Controller
+        mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
+
+        // Get unit section drill data
+        UnitSectionDrill nextUnitSectionDrill = mDb.moveToNextUnitSectionDrill();
+
+        try {
+            if (dbEstablsh(false)) {
+                Object[] objectArray = DrillFetcher.fetch(THIS, mDbHelper, Languages.ENGLISH, nextUnitSectionDrill);
+                dbClose();
+                Intent intent = (Intent) objectArray[0];
+                int resultCode = (int) objectArray[1];
+
+
+                Globals.STOP_BACKGROUND_MUSIC(THIS);
+
+                startActivityForResult(intent, resultCode);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            }
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -194,8 +243,14 @@ public class MainActivity extends AppCompatActivity {
 
     protected void processActivityResult(int code) {
         switch (code) {
+            case Code.FINALE:
+                // Setup Database Controller
+                mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
+                mDb.moveToNextUnitSectionDrill();
+                mReadButton.setBackgroundResource(R.drawable.read_button);
+                System.out.println("FINALE!!!!");
+                break;
             case Code.DRILL_SPLASH:
-
                 // Setup Database Controller
                 mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
 
@@ -203,8 +258,10 @@ public class MainActivity extends AppCompatActivity {
                 UnitSectionDrill nextUnitSectionDrill = mDb.getUnitSectionDrillInProgress();
 
                 try {
+                    System.out.println("!!!!! DRILL SPLASH !!!!!!!");
                     if (dbEstablsh(false)) {
                         Object[] objectArray = DrillFetcher.fetch(THIS, mDbHelper, Languages.ENGLISH, nextUnitSectionDrill);
+                        dbClose();
                         Intent intent = (Intent) objectArray[0];
                         int resultCode = (int) objectArray[1];
 
@@ -216,42 +273,30 @@ public class MainActivity extends AppCompatActivity {
                 } catch (Exception ex) {
                     System.err.println(ex.getMessage());
                     ex.printStackTrace();
-                } finally {
-                    dbClose();
                 }
                 break;
             case Code.INTRO:
+                System.out.println("!!!!! INTRO !!!!!!!");
+                autoProgressDrill();
+                break;
             case Code.TUTORIAL:
+                System.out.println("!!!!! TUTORIAL !!!!!!!");
+                autoProgressDrill();
+                break;
             case Code.MOVIE:
+                System.out.println("!!!!! MOVIE !!!!!!!");
+                autoProgressDrill();
+                break;
             case Code.RUN_DRILL:
+                System.out.println("!!!!! RUN_DRILL !!!!!!!");
+                autoProgressDrill();
+                break;
             case Code.CHAPTER_END:
-            case Code.FINALE:
-
-                // Setup Database Controller
-                mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
-
-                // Get unit section drill data
-                nextUnitSectionDrill = mDb.moveToNextUnitSectionDrill();
-
-                try {
-                    if (dbEstablsh(false)) {
-                        Object[] objectArray = DrillFetcher.fetch(THIS, mDbHelper, Languages.ENGLISH, nextUnitSectionDrill);
-                        Intent intent = (Intent) objectArray[0];
-                        int resultCode = (int) objectArray[1];
-
-                        Globals.STOP_BACKGROUND_MUSIC(THIS);
-
-                        startActivityForResult(intent, resultCode);
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                    }
-                } catch (Exception ex) {
-                    System.err.println(ex.getMessage());
-                    ex.printStackTrace();
-                } finally {
-                    dbClose();
-                }
+                System.out.println("!!!!! CHAPTER_END !!!!!!!");
+                autoProgressDrill();
                 break;
             default:
+                System.out.println("!!!!! DEFAULT !!!!!!!");
                 break;
         }
     }
@@ -326,6 +371,7 @@ public class MainActivity extends AppCompatActivity {
         if (!mNewActivity) {
             Globals.RESUME_BACKGROUND_MUSIC(THIS);
         } else {
+            checkReadButton();
             mNewActivity = false;
         }
     }

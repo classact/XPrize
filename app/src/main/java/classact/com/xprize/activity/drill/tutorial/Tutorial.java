@@ -144,6 +144,7 @@ public class Tutorial extends AppCompatActivity {
     /* Handlers & Controllers */
     Handler delayHandler;
     private static TutorialController tutorialController;
+    Handler handler;
 
     /* Random generator */
     Random rnd;
@@ -269,6 +270,7 @@ public class Tutorial extends AppCompatActivity {
 
         // Instantiate handler
         delayHandler = new Handler();
+        handler = new Handler();
         tutorialController = new TutorialController(this);
 
         // Initialize Random Generator
@@ -434,7 +436,7 @@ public class Tutorial extends AppCompatActivity {
         currentState = state;
 
         // Add runnable to stop animation
-        Handler handler = new Handler();
+        handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -511,7 +513,7 @@ public class Tutorial extends AppCompatActivity {
         currentState = state;
 
         // Add runnable to stop animation
-        Handler handler = new Handler();
+        handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -587,7 +589,7 @@ public class Tutorial extends AppCompatActivity {
         currentState = state;
 
         // Add runnable to stop animation
-        Handler handler = new Handler();
+        handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -860,7 +862,7 @@ public class Tutorial extends AppCompatActivity {
         drawSurfaceShadow.setVisibility(View.INVISIBLE);
 
         // Add runnable to stop animation
-        Handler handler = new Handler();
+        handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -993,7 +995,7 @@ public class Tutorial extends AppCompatActivity {
         currentState = state;
 
         // Add runnable to stop animation
-        Handler handler = new Handler();
+        handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -1083,10 +1085,7 @@ public class Tutorial extends AppCompatActivity {
         if (mediaPlayer != null) {
             mediaPlayer.release();
         }
-
-        Intent intent = new Intent();
-        setResult(Code.TUTORIAL, intent);
-        finishAfterTransition();
+        finish();
         overridePendingTransition(0, android.R.anim.fade_out);
     }
 
@@ -1308,6 +1307,14 @@ public class Tutorial extends AppCompatActivity {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
             mediaPlayer.release();
+        }
+        if (delayHandler != null) {
+            delayHandler.removeCallbacksAndMessages(null);
+            delayHandler = null;
+        }
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+            handler = null;
         }
         setResult(Globals.TO_MAIN);
         finish();

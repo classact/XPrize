@@ -31,11 +31,13 @@ public class DatabaseController {
 
     public final static int INTRO_SECTION = 1;
     public final static int TUTORIAL_SECTION = 2;
-    public final static int PHONICS_SECTION = 3;
-    public final static int WORDS_SECTION = 4;
-    public final static int BOOKS_SECTION = 5;
-    public final static int MATHS_SECTION = 6;
-    public final static int CHAPTER_END_SECTION = 7;
+    public final static int STORY_SECTION = 3;
+    public final static int PHONICS_SECTION = 4;
+    public final static int WORDS_SECTION = 5;
+    public final static int BOOKS_SECTION = 6;
+    public final static int MATHS_SECTION = 7;
+    public final static int CHAPTER_END_SECTION = 8;
+    public final static int FINALE_SECTION = 9;
 
     private LinkedHashMap<Integer, Drill> mDrills;
     private LinkedHashMap<Integer, DrillType> mDrillTypes;
