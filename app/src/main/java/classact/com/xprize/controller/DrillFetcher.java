@@ -97,6 +97,9 @@ public class DrillFetcher {
                     intent = new Intent(context, LevelCompleteLink.class);
                     intent.putExtra(Code.RES_NAME, "level" + unitId);
                     intent.putExtra(Code.NEXT_BG_RES, "star_level_" + unitId);
+                    if (unitId > 0) {
+                        intent.putExtra(Code.PREV_BG_RES, "star_level_" + (unitId-1));
+                    }
                     resultCode = Code.CHAPTER_END;
                 } else if (sectionName.equalsIgnoreCase("Finale")) {
                     intent = new Intent(context, Movie.class);

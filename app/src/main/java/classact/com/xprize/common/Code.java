@@ -12,6 +12,7 @@ public class Code {
     public final static String SELECT_LANG = "SELECT_LANGUAGE";
     public final static String NEXT_BG_CODE = "NEXT_BG_CODE";
     public final static String NEXT_BG_RES = "NEXT_BG_RESOURCE";
+    public final static String PREV_BG_RES = "PREVIOUS_BG_RESOURCE";
 
     // ADMIN / EXTRA ACTIVITIES
     public final static int LANG = 0;

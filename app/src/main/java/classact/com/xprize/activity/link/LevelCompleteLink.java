@@ -1,7 +1,9 @@
 package classact.com.xprize.activity.link;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 
 import classact.com.xprize.R;
@@ -17,6 +19,13 @@ public class LevelCompleteLink extends LinkTemplate {
 
     private final String SWAHILI_PREFIX = "s_";
 
+    private String mPrevLevelBackground;
+    private String mNextLevelBackground;
+
+    private RelativeLayout mNewBackground;
+
+    private final Context THIS = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,10 +38,34 @@ public class LevelCompleteLink extends LinkTemplate {
         // Requires data from invoker intent
         Intent intent = getIntent();
 
-        String levelCompleteBackground = intent.getStringExtra(Code.NEXT_BG_RES);
-        int levelCompleteBackgroundResourceId = ResourceDecoder.getIdentifier(getApplicationContext(),
-                levelCompleteBackground, "drawable");
-        mBackground.setBackgroundResource(levelCompleteBackgroundResourceId);
+        mPrevLevelBackground = intent.getStringExtra(Code.PREV_BG_RES);
+        mNextLevelBackground = intent.getStringExtra(Code.NEXT_BG_RES);
+
+        int nextLevelBackgroundResourceId = ResourceDecoder.getIdentifier(THIS,
+                mNextLevelBackground, "drawable");
+
+        if (mPrevLevelBackground == null) {
+            mBackground.setBackgroundResource(nextLevelBackgroundResourceId);
+        } else {
+            int prevLevelBackgroundResourceId = ResourceDecoder.getIdentifier(THIS,
+                    mPrevLevelBackground, "drawable");
+            mBackground.setBackgroundResource(prevLevelBackgroundResourceId);
+
+            mNewBackground = new RelativeLayout(THIS);
+            RelativeLayout.LayoutParams newBackgroundLP = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.MATCH_PARENT,
+                    RelativeLayout.LayoutParams.MATCH_PARENT
+            );
+            mNewBackground.setLayoutParams(newBackgroundLP);
+            mNewBackground.setBackgroundResource(nextLevelBackgroundResourceId);
+            mNewBackground.setAlpha(0f);
+            mBackground.addView(mNewBackground);
+            mNewBackground.animate()
+                    .setStartDelay(1325L)
+                    .alpha(1f)
+                    .setDuration(1250)
+                    .setInterpolator(new LinearInterpolator());
+        }
 
         // Append appropriate language identifier if required
         // (Default is English)
@@ -48,6 +81,17 @@ public class LevelCompleteLink extends LinkTemplate {
         // Set activity name and next-activity class name
         super.mActivityName = "LevelCompleteLink";
         super.mNextActivityClassName = null;
+    }
+
+    @Override
+    public void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        if (mNewBackground != null) {
+            mNewBackground.animate()
+                    .alpha(1f)
+                    .setDuration(500)
+                    .setInterpolator(new LinearInterpolator());
+        }
     }
 
     @Override
