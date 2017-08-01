@@ -1,5 +1,7 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.content.Context;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
 import org.json.JSONArray;
@@ -44,6 +47,10 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
     private JSONObject[] orderedImages;
     private Random rnd;
 
+    private ImageView[] items;
+
+    private final Context THIS = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +61,7 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
         item2 = (ImageView)findViewById(R.id.item2);
         item3 = (ImageView)findViewById(R.id.item3);
         item4 = (ImageView)findViewById(R.id.item4);
-        toggleItemsVisibility(false);
+
         item1.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -87,12 +94,55 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        items = new ImageView[4];
+        items[0] = item1;
+        items[1] = item2;
+        items[2] = item3;
+        items[3] = item4;
+
+        toggleItemsVisibility(false);
+
         rnd = new Random();
         drillData = getIntent().getExtras().getString("data");
         currentSet = 0;
         handler = new Handler(Looper.getMainLooper());
         initialiseData();
         showSet();
+    }
+
+    private void playSound(String sound, final Runnable action) {
+        try {
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    if (action != null) {
+                        action.run();
+                    }
+                }
+            });
+            mp.prepare();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            if (action != null) {
+                action.run();
+            }
+        }
     }
 
     private void initialiseData(){
@@ -363,6 +413,9 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
+                    ImageView iv = items[correctItem];
+                    int waitDuration = Math.min(mp.getDuration(), 200);
+                    fadeIncorrect(iv, waitDuration);
                     mp.start();
                 }
             });
@@ -370,18 +423,12 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
-                    currentSet++;
-                    if (currentSet < sets.length()) {
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                showSet();
-                            }
-                        }, 1000);
-                    } else {
-                        mp.release();
-                        finish();
-                    }
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            repeatCorrect();
+                        }
+                    }, 500);
                 }
             });
             mp.prepare();
@@ -395,6 +442,67 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
         }
     }
 
+    public void repeatCorrect() {
+
+        try {
+            final String soundMatch = orderedImages[currentItem].getString("sound");
+
+            // Play current
+            playSound(currentItemName, new Runnable() {
+                @Override
+                public void run() {
+                    // Play sound match
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            playSound(soundMatch, new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Drill control logic
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            determineNextDrillItem();
+                                        }
+                                    }, 450);
+                                }
+                            });
+                        }
+                    }, 400);
+                }
+            });
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    public void determineNextDrillItem() {
+        try {
+            currentSet++;
+            if (currentSet < sets.length()) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Show next set
+                        showSet();
+                    }
+                }, 1000);
+            } else {
+                // End drill
+                mp.release();
+                finish();
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+
+            // End drill
+            mp.release();
+            finish();
+        }
+    }
+
     public void clickedItem(int item) {
         if (itemsEnabled) {
             try {
@@ -404,40 +512,26 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
                 // Otherwise can continuously carry on tapping
                 if (currentItem == correctItem) {
                     itemsEnabled = false;
+
+                    ImageView iv = getItem(currentItem);
+                    if (iv != null) {
+                        Globals.playStarWorks(THIS, iv);
+                    }
                 }
 
                 String sound = orderedImages[currentItem].getString("sound");
-                String soundPath = FetchResource.sound(getApplicationContext(), sound);
-                if (mp == null) {
-                    mp = new MediaPlayer();
-                }
-                mp.reset();
-                mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                playSound(sound, new Runnable() {
                     @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        mp.start();
-                    }
-                });
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp.reset();
+                    public void run() {
                         checkProgress();
                     }
                 });
-                mp.prepare();
             } catch (Exception ex) {
                 ex.printStackTrace();
-                if (mp != null){
-                    mp.release();
-                }
-                mp = null;
-                checkProgress();
-                // finish();
             }
         }
     }
+
     private void checkProgress(){
         if (currentItem == correctItem){
             playPositiveSound(ResourceSelector.getPositiveAffirmationSound(this));
@@ -447,36 +541,67 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
         }
     }
 
+    public ImageView getItem(int index) {
+        ImageView iv = null;
+        for (int i = 0; i < items.length; i++) {
+            if (i == index) {
+                iv = items[i];
+                break;
+            }
+        }
+        return iv;
+    }
+
+    public void fadeIncorrect(ImageView ivCorrect, long fadeDuration) {
+        for (int i = 0; i < items.length; i++) {
+            ImageView iv = items[i];
+            if (iv != ivCorrect) {
+                iv.animate()
+                        .alpha(0f)
+                        .setInterpolator(new LinearInterpolator())
+                        .setDuration(fadeDuration)
+                        .start();
+            }
+        }
+    }
+
     private void setItemsEnabled(boolean enable) {
-        item1.setEnabled(enable);
-        item2.setEnabled(enable);
-        item3.setEnabled(enable);
-        item4.setEnabled(enable);
+        for (int i = 0; i < items.length; i++) {
+            ImageView iv = items[i];
+            iv.setEnabled(enable);
+        }
     }
 
     public void toggleItemsVisibility(boolean show){
         if (show){
-            item1.setVisibility(View.VISIBLE);
-            item2.setVisibility(View.VISIBLE);
-            item3.setVisibility(View.VISIBLE);
-            item4.setVisibility(View.VISIBLE);
+            for (int i = 0; i < items.length; i++) {
+                ImageView iv = items[i];
+                iv.setVisibility(View.VISIBLE);
+                iv.setAlpha(1f);
+            }
         }
         else{
-            item1.setVisibility(View.INVISIBLE);
-            item2.setVisibility(View.INVISIBLE);
-            item3.setVisibility(View.INVISIBLE);
-            item4.setVisibility(View.INVISIBLE);
+            for (int i = 0; i < items.length; i++) {
+                ImageView iv = items[i];
+                iv.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)  {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            onBackPressed();
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        int action = event.getAction();
+
+        if (action == KeyEvent.ACTION_UP) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    onBackPressed();
+                    return true;
+                default:
+                    return super.onKeyDown(keyCode, event);
+            }
         }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -485,8 +610,13 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
             mp.stop();
             mp.release();
         }
-        setResult(Code.NAV_MENU);
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+            handler = null;
+        }
+        setResult(Globals.TO_MAIN);
         finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }
 

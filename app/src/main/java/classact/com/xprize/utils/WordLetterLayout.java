@@ -26,7 +26,8 @@ public class WordLetterLayout {
             String word,
             DisplayMetrics displayMetrics,
             float letterWidth,
-            float letterScale) {
+            float letterScale,
+            boolean evenWidths) {
 
         // Get letters
         System.out.println(word);
@@ -74,6 +75,14 @@ public class WordLetterLayout {
                 int bYBot = 0;
                 int bW = bitmap.getWidth();
                 int bH = bitmap.getHeight();
+
+                // Sort out even widths
+                if (!evenWidths) {
+                    float bitMapToLetterScale = letterWidth / bH;
+                    float uniqueWidth = bW * bitMapToLetterScale;
+                    ivLayout.width = (int) uniqueWidth;
+                }
+
                 // Get bitmap pixels
                 int[] bp = new int[bH * bW];
                 bitmap.getPixels(bp, 0, bW, 0, 0, bW, bH);
@@ -218,8 +227,9 @@ public class WordLetterLayout {
                 int bDiffOffset = 0;
                 if (alphaBase == Globals.ALPHA_BASE_MID_BOT) {
                     bDiffOffset = yMidBotList.get(i);
+                    System.out.println("XXXXXXXXXX: " + bDiffOffset);
                 }
-                int bDiff = (yBotList.get(i) - yTopList.get(i)) - bDiffOffset;
+                int bDiff = (yBotList.get(i) - yTopList.get(i)) + bDiffOffset;
                 if (baseDiff == 0) {
                     baseDiff = bDiff;
                 } else {

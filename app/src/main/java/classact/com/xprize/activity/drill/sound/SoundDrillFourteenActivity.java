@@ -2,6 +2,7 @@ package classact.com.xprize.activity.drill.sound;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -80,8 +81,11 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
 
     private final Context THIS = this;
 
-    private final int TIMER_MAX = 3;
+    private final int TIMER_MAX = 5;
     private final int DRAW_WAIT_TIME = 1000;
+
+    private final float TIMER_MID_X = 2065f;
+    private final float TIMER_MID_Y = 425f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,30 +122,34 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
         RelativeLayout parentLayout = (RelativeLayout) displayContainer.getParent();
         parentLayout.setBackgroundResource(R.drawable.background_drawapic3);
 
-        /*
-        // Custom letter container
-        letterContainer = new RelativeLayout(THIS);
-        RelativeLayout.LayoutParams letterContainerLayout = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.MATCH_PARENT
-        );
-        letterContainer.setLayoutParams(letterContainerLayout);
-        mRootView.addView(letterContainer);
+        // Add draw timer
+        ImageView timerClock = new ImageView(THIS);
+        timerClock.setImageResource(R.drawable.timer_clock_001);
+        timerClock.setScaleX(0.75f);
+        timerClock.setScaleY(0.75f);
+        timerClock.setX(1775f);
+        timerClock.setY(125f);
+        mRootView.addView(timerClock);
 
-        List<ImageView> letterViews = new ArrayList<>();
+        mTimer = new TextView(getApplicationContext());
+        mTimer.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()), Typeface.BOLD);
+        mTimer.setPadding(16, 16, 16, 16);
+        mTimerCounter = TIMER_MAX;
+        mTimerReset = true;
+        mLastWrittenTime = 0l;
 
-        for (int i = 0; i < displayContainer.getChildCount(); i++) {
-            ImageView iv = (ImageView) displayContainer.getChildAt(i);
-            letterViews.add(iv);
-        }
-        displayContainer.removeAllViews();
-        for (int i = 0; i < letterViews.size(); i++) {
-            letterContainer.addView(letterViews.get(i));
-        }
-        */
-        // mItemsParent.setGravity(Gravity.CENTER);
-        // mReceptaclesParent.setGravity(Gravity.CENTER);
-        // displayContainer.setGravity(Gravity.CENTER);
+        mTimer.setText(String.valueOf(mTimerCounter));
+        mTimer.setTextSize(115.0f);
+        mTimer.setAlpha(0.8f);
+        mTimer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
+        // timer.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        mTimer.setX(TIMER_MID_X);
+        mTimer.setY(TIMER_MID_Y);
+        mRootView.addView(mTimer);
+
+        Point textSize = Globals.TEXT_MEASURED_SIZE(mTimer, String.valueOf(mTimerCounter));
+        mTimer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
+        mTimer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
 
         String drillData = getIntent().getExtras().getString("data");
         handler = new Handler();
@@ -203,31 +211,16 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
             loadWord();
             displayContainer.setVisibility(View.INVISIBLE);
             writingContainer.removeAllViews();
-            mRootView.removeView(mTimer);
             writingView = new DrillFourteenWriteView(this, 0, true);
             writingView.setThisActivity(this);
             writingView.setAlpha(0.95f);
             writingContainer.addView(writingView);
 
-            // Add draw timer
-            mTimer = new TextView(getApplicationContext());
-            mTimer.setBackgroundResource(android.R.color.transparent);
             mTimerCounter = TIMER_MAX;
-
-            mTimer.setText(String.valueOf(mTimerCounter));
-            mTimer.setTypeface(null, Typeface.BOLD);
-            mTimer.setTextSize(115.0f);
-            mTimer.setAlpha(0.4f);
             mTimer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
-            LinearLayout.LayoutParams timerLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT);
-            timerLayoutParams.topMargin = 105;
-            timerLayoutParams.leftMargin = 2170;
-            mTimer.setLayoutParams(timerLayoutParams);
-            mTimer.setVisibility(View.INVISIBLE);
-            mRootView.addView(mTimer);
-
-            // Get position on scree
+            Point textSize = Globals.TEXT_MEASURED_SIZE(mTimer, String.valueOf(mTimerCounter));
+            mTimer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
+            mTimer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
 
             String sound = allData.getString("write");
             playSound(sound, new Runnable() {
@@ -391,7 +384,7 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
             float density = displayMetrics.density;
             int screenWidth = displayMetrics.widthPixels;
 
-            float letterWidth = 250f;
+            float letterWidth = 300f;
             float letterScale = letterWidth / 180f;
             int letterWidthSum = 0;
             int letterMarginSum = 0;
@@ -416,15 +409,17 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                     wordString,
                     displayMetrics,
                     letterWidth,
-                    letterScale
+                    letterScale,
+                    true
             );
 
             letterCount = 0;
             for (int i = 0; i < letterViews.size(); i++) {
                 ImageView iv = letterViews.get(i);
                 MarginLayoutParams ivLayout = (MarginLayoutParams) iv.getLayoutParams();
+                ivLayout.leftMargin = 10;
                 int width = ivLayout.width;
-                int leftMargin = ivLayout.leftMargin;
+                int leftMargin = 10;
                 Drawable d = iv.getDrawable();
                 if (d != null) {
                     letterWidthSum += width;
@@ -604,9 +599,9 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
             if (mCanWrite) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        mTimer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
                         mThisActivity.setIsWriting(true);
                         mThisActivity.setLastWrittenTime(0);
-                        mThisActivity.showTimer(false);
                         System.out.println("Writing not complete!");
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -618,7 +613,13 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                         mThisActivity.setLastWrittenTime(new Date().getTime());
 
                         handler.removeCallbacks(countDown);
-                        handler.postDelayed(countDown, DRAW_WAIT_TIME);
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mTimer.setTextColor(Color.DKGRAY);
+                                countDown.run();
+                            }
+                        }, DRAW_WAIT_TIME);
 
                         System.out.println("Writing complete!");
                         break;
@@ -643,8 +644,9 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                         mTimerCounter = TIMER_MAX;
                     }
 
-                    mTimer.setText(String.valueOf(mTimerCounter));
-                    mTimer.setVisibility(View.VISIBLE);
+                    Point textSize = Globals.TEXT_MEASURED_SIZE(mTimer, String.valueOf(mTimerCounter));
+                    mTimer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
+                    mTimer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
 
                     if (mTimerCounter > 0) {
                         mTimerCounter--;
@@ -654,6 +656,8 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                         mTimer.setTextColor(Color.parseColor("#33ccff"));
                         handler.postDelayed(showWordRunnable, 500);
                     }
+                } else {
+                    mTimer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
                 }
             } catch (Exception ex) {
                 System.err.println("==========================================");
@@ -664,14 +668,6 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
             }
         }
     };
-
-    public void showTimer(boolean showTimer) {
-        if (showTimer) {
-            mTimer.setVisibility(View.VISIBLE);
-        } else {
-            mTimer.setVisibility(View.INVISIBLE);
-        }
-    }
 
     public void setIsWriting(boolean isWriting) {
         mIsWriting = isWriting;
@@ -698,13 +694,19 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)  {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            onBackPressed();
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        int action = event.getAction();
+
+        if (action == KeyEvent.ACTION_UP) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    onBackPressed();
+                    return true;
+                default:
+                    return super.onKeyDown(keyCode, event);
+            }
         }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -713,7 +715,8 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
         if (mp != null) {
             mp.release();
         }
-        setResult(Code.NAV_MENU);
+        setResult(Globals.TO_MAIN);
         finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

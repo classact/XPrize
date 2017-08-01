@@ -1,6 +1,7 @@
 package classact.com.xprize.activity.link;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.widget.RelativeLayout;
 
 import classact.com.xprize.R;
@@ -33,7 +34,7 @@ public class WordsLink extends LinkTemplate {
 
     @Override
     public void finishIntent() {
-        finishAfterTransition();
-        overridePendingTransition(0, android.R.anim.fade_out);
+        finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

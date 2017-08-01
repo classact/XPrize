@@ -1,6 +1,7 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,13 +13,17 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import classact.com.xprize.R;
@@ -31,22 +36,29 @@ import classact.com.xprize.utils.WordLetterLayout;
 
 public class SoundDrillSevenActivity extends AppCompatActivity {
     //private SegmetedWritingView segmentWritingView;
-    private JSONArray data;
+
     private LinearLayout writingContainer;
     private MediaPlayer mp;
     private Handler handler;
     private String[] letterSounds;
     private String mWordSound;
+    private String mWordString;
     private int correctItem;
     private ImageView item1;
     private ImageView item2;
     private ImageView item3;
     private ImageView[] items;
+    private TextView mFullWordTextView;
     private int currentTripple;
-    private JSONObject params;
-    private ArrayList<JSONObject> currentWord;
     boolean itemsEnabled;
     boolean roundEnd;
+
+    private JSONArray data;
+    private JSONArray pictures;
+    private JSONObject params;
+    private ArrayList<JSONObject> currentWord;
+
+    private LinkedHashMap<ImageView, JSONObject> imagePictures;
 
     private final Context THIS = this;
 
@@ -78,6 +90,40 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
         showTripple();
     }
 
+    private void playSound(String sound, final Runnable action) {
+        try {
+            String soundPath = FetchResource.sound(getApplicationContext(), sound);
+            if (mp == null) {
+                mp = new MediaPlayer();
+            }
+            mp.reset();
+            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    if (action != null) {
+                        action.run();
+                    }
+                }
+            });
+            mp.prepare();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            mp = null;
+            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
+            if (action != null) {
+                action.run();
+            }
+        }
+    }
+
     private void initialiseData(String drillData){
         try{
             params = new JSONObject(drillData);
@@ -92,6 +138,12 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
         }
     }
 
+    private void hideAllLetters() {
+        for (int i = 0 ; i < writingContainer.getChildCount(); i++){
+            writingContainer.getChildAt(i).setVisibility(View.INVISIBLE);
+        }
+    }
+
     public void showTripple(){
         try {
             // Setup word
@@ -103,9 +155,12 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
             //segmentWritingView = new SegmetedWritingView(this,R.drawable.backgroundwhite);
             //writingContainer.removeAllViews();
             //
-            for (int i = 0 ; i < writingContainer.getChildCount(); i++){
-                writingContainer.getChildAt(i).setVisibility(View.INVISIBLE);
+
+            if (mFullWordTextView != null) {
+                writingContainer.removeView(mFullWordTextView);
             }
+
+            hideAllLetters();
 
             mWordSound = data.getJSONObject(currentTripple).getString("word_sound");
 
@@ -127,7 +182,9 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
             int totalWidth = 0;
             int screenWidth = displayMetrics.widthPixels;
 
-            JSONArray pictures = data.getJSONObject(currentTripple).getJSONArray("pictures");
+            pictures = data.getJSONObject(currentTripple).getJSONArray("pictures");
+            imagePictures = new LinkedHashMap<>();
+
             int[] shuffledArrayIndexes = FisherYates.shuffle(pictures.length()); // Randomized indexes
             int length = Math.min(pictures.length(), items.length);
             boolean foundCorrectItem = false;
@@ -136,6 +193,7 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 System.out.println("SoundDrillSevenActivity.showTripple > Debug: Shuffled index is (" + si + ")");
                 JSONObject pictureObject = pictures.getJSONObject(si);
                 ImageView iv = items[i];
+                imagePictures.put(iv, pictureObject);
 
                 totalWidth += width;
                 if (i > 0) {
@@ -157,6 +215,7 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                     correctItem = i;
                     System.out.println("SoundDrillSevenActivity.showTripple > Debug: correctItem is (" + correctItem + ")");
                 }
+                iv.setAlpha(1f);
             }
 
             // Image view
@@ -190,7 +249,9 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 // Otherwise, assign correct item to last item
                 shuffledArrayIndexes = FisherYates.shuffle(items.length);
                 correctItem = shuffledArrayIndexes[0];
-                items[correctItem].setImageResource(correctObject.getInt("picture"));
+                ImageView iv = items[correctItem];
+                iv.setImageResource(correctObject.getInt("picture"));
+                imagePictures.put(iv, correctObject);
             }
 
             // Clear word
@@ -231,8 +292,12 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                     letterWord,
                     displayMetrics,
                     letterWidth,
-                    letterScale
+                    letterScale,
+                    true
             );
+
+            mWordString = letterWord;
+
             playListenToWordAndTouch();
         }
         catch (Exception ex){
@@ -321,15 +386,31 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
         }
     }
 
-    public void clickedItem(int item) {
+    public void clickedItem(final int item) {
         if (itemsEnabled) {
             try {
+                ImageView iv = items[item];
+                JSONObject picture = imagePictures.get(iv);
+                String pictureSound = picture.getString("word_sound");
                 if (item == correctItem) {
                     roundEnd = true;
                     itemsEnabled = false;
-                    playAffirmationSound();
+                    if (iv != null) {
+                        Globals.playStarWorks(THIS, iv);
+                    }
+                    playSound(pictureSound, new Runnable() {
+                        @Override
+                        public void run() {
+                            playAffirmationSound(item);
+                        }
+                    });
                 } else {
-                    playThisSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
+                    playSound(pictureSound, new Runnable() {
+                        @Override
+                        public void run() {
+                            playThisSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
+                        }
+                    });
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -341,7 +422,20 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
         }
     }
 
-    private void playAffirmationSound(){
+    public void fadeIncorrect(ImageView ivCorrect, long fadeDuration) {
+        for (int i = 0; i < items.length; i++) {
+            ImageView iv = items[i];
+            if (iv != ivCorrect) {
+                iv.animate()
+                        .alpha(0f)
+                        .setInterpolator(new LinearInterpolator())
+                        .setDuration(fadeDuration)
+                        .start();
+            }
+        }
+    }
+
+    private void playAffirmationSound(final int item){
         try {
             int soundId = ResourceSelector.getPositiveAffirmationSound(getApplicationContext());
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
@@ -353,6 +447,9 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
+                    ImageView iv = items[item];
+                    int waitDuration = Math.min(mp.getDuration(), 200);
+                    fadeIncorrect(iv, waitDuration);
                     mp.start();
                 }
             });
@@ -360,7 +457,12 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
-                    showLettersAndPlayAndLetterSounds(0);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            showLettersAndPlayAndLetterSounds(0);
+                        }
+                    }, 400);
                 }
             });
             mp.prepare();
@@ -383,7 +485,7 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                     public void run() {
                         playFullWord();
                     }
-                }, 200);
+                }, 700);
             } else {
                 JSONObject letterOfCurrentWord = currentWord.get(i);
 
@@ -407,7 +509,12 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         mp.reset();
-                        showLettersAndPlayAndLetterSounds(i + 1);
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                showLettersAndPlayAndLetterSounds(i + 1);
+                            }
+                        }, 500);
                     }
                 });
                 mp.prepare();
@@ -470,6 +577,19 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
     public void playFullWord() {
         String sound = "";
         try{
+
+            hideAllLetters();
+
+            mFullWordTextView = new TextView(THIS);
+            mFullWordTextView.setText(mWordString);
+            mFullWordTextView.setTextSize(150f);
+            mFullWordTextView.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
+            mFullWordTextView.setTextColor(Color.BLACK);
+            writingContainer.addView(mFullWordTextView, 1);
+            MarginLayoutParams tViewLP = (MarginLayoutParams) mFullWordTextView.getLayoutParams();
+            tViewLP.topMargin = 19;
+            mFullWordTextView.setLayoutParams(tViewLP);
+
             // sound = letterSounds[0];
             sound = mWordSound;
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
@@ -495,14 +615,14 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                             public void run() {
                                 showTripple();
                             }
-                        }, 1000);
+                        }, 1300);
                     } else {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 theEnd();
                             }
-                        }, 1000);
+                        }, 1300);
                     }
                 }
             });
@@ -583,13 +703,19 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)  {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            onBackPressed();
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        int action = event.getAction();
+
+        if (action == KeyEvent.ACTION_UP) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    onBackPressed();
+                    return true;
+                default:
+                    return super.onKeyDown(keyCode, event);
+            }
         }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -598,8 +724,13 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
             mp.stop();
             mp.release();
         }
-        setResult(Code.NAV_MENU);
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+            handler = null;
+        }
+        setResult(Globals.TO_MAIN);
         finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }
 

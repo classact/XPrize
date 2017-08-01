@@ -21,7 +21,7 @@ public class DrillWordHelper {
 
     public static ArrayList<Integer> getDrillWords(SQLiteDatabase db, int languageID, int unitId, int subId, int drillId, int wordType, int limit){
         ArrayList<Integer> drillWords = new ArrayList<>();
-        Cursor cursor = db.rawQuery("SELECT WordID FROM tbl_DrillWords where LanguageID = "+languageID+" and WordType = " + wordType + " and UnitID = " + unitId + " and SubID = " + subId + " and DrillID = " + drillId + " ORDER BY RANDOM() LIMIT " + limit +";", null);
+        Cursor cursor = db.rawQuery("SELECT DISTINCT WordID FROM tbl_DrillWords where LanguageID = "+languageID+" and WordType = " + wordType + " and UnitID = " + unitId + " and SubID = " + subId + " and DrillID = " + drillId + " ORDER BY RANDOM() LIMIT " + limit +";", null);
         //DrillWords drillWord = new DrillWords();
         int drillWord=0;
         try {
@@ -75,7 +75,7 @@ public class DrillWordHelper {
     public static ArrayList<Integer> getWrongDrillWordsByLetter(SQLiteDatabase db, int languageID, /*int unitId, int subId, int drillId,*/ int wordType, String letter, int limit){
         ArrayList <Integer>drillWords = new ArrayList<>();
         Cursor cursor = db.rawQuery("" +
-                "SELECT dw.WordID FROM tbl_DrillWords dw " +
+                "SELECT DISTINCT dw.WordID FROM tbl_DrillWords dw " +
                 "INNER JOIN tbl_Word w ON dw.WordID = w._id " +
                 "WHERE dw.LanguageID = " + languageID + " " +
                 "AND dw.WordType = " + wordType + " " +

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_phonics_sub_menu"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_blue"
+    tools:context="classact.com.xprize.activity.menu.PhonicsSubMenu">
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_h_top"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="112dp"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_h_selection_instruction_bot"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="212dp"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_h_bot"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="1.0"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_mid"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_letter_1"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.2775"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_letter_2"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.7225"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_A"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintTop_toTopOf="@+id/gl_h_selection_instruction_bot"
+        app:layout_constraintLeft_toLeftOf="@+id/gl_v_letter_1"
+        app:layout_constraintRight_toRightOf="@+id/gl_v_letter_1"
+        app:layout_constraintBottom_toBottomOf="@+id/gl_h_bot"
+        android:background="@drawable/letter_a_button"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_B"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintTop_toTopOf="@+id/gl_h_selection_instruction_bot"
+        app:layout_constraintLeft_toLeftOf="@+id/gl_v_letter_2"
+        app:layout_constraintRight_toRightOf="@+id/gl_v_letter_2"
+        app:layout_constraintBottom_toBottomOf="@+id/gl_h_bot"
+        android:background="@drawable/sound_selected_ae_button"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/selection_instruction"
+        android:text="Choose a letter or sound !"
+        android:textSize="72sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_top"
+        app:layout_constraintLeft_toLeftOf="@+id/gl_v_mid"
+        app:layout_constraintRight_toRightOf="@+id/gl_v_mid"
+        app:layout_constraintBottom_toTopOf="@+id/button_A"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_h_monkeys"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="860dp"/>
+
+    <ImageButton
+        android:id="@+id/monkey_A"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="500dp"
+        android:layout_marginRight="32dp"
+        app:layout_constraintTop_toTopOf="@+id/gl_h_selection_instruction_bot"
+        app:layout_constraintRight_toLeftOf="@id/gl_v_letter_1"
+        app:layout_constraintBottom_toBottomOf="@+id/gl_h_bot"
+        android:background="@drawable/monkey_sing_l2r_button"/>
+
+    <ImageButton
+        android:id="@+id/monkey_B"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="500dp"
+        android:layout_marginLeft="32dp"
+        app:layout_constraintTop_toTopOf="@+id/gl_h_selection_instruction_bot"
+        app:layout_constraintLeft_toRightOf="@id/gl_v_letter_2"
+        app:layout_constraintBottom_toBottomOf="@+id/gl_h_bot"
+        android:background="@drawable/monkey_sing_r2l_button" />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/chapter_header"
+            android:layout_width="1378dp"
+            android:layout_height="112dp"
+            android:background="@drawable/chapter_20_header"/>
+    </FrameLayout>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_chapter_book"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_h_chapter_book"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="3dp" />
+
+    <ImageView
+        android:id="@+id/chapter_book"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/chapter_book_xs"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_chapter_book"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_chapter_book"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_chapter_title"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="172dp" />
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_h_chapter_title"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="18dp" />
+
+    <TextView
+        android:id="@+id/chapter_title"
+        android:text="Chapter"
+        android:textColor="@color/black"
+        android:textSize="72sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_chapter_title"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_chapter_title"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_chapter_number"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="424dp" />
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_h_chapter_number"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="18dp" />
+
+    <TextView
+        android:id="@+id/chapter_number"
+        android:text="1"
+        android:textColor="@color/black"
+        android:textSize="72sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_chapter_number"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_chapter_number"/>
+
+    <ImageView
+        android:id="@+id/chapter_book_open"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="36dp"
+        android:background="@drawable/chapter_book_open_xs"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_chapter_book"
+        app:layout_constraintLeft_toRightOf="@+id/chapter_number"/>
+
+    <TextView
+        android:id="@+id/chapter_section"
+        android:text="Phonics"
+        android:textColor="@color/black"
+        android:textSize="72sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="36dp"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_chapter_number"
+        app:layout_constraintLeft_toRightOf="@+id/chapter_book_open"/>
+
+</android.support.constraint.ConstraintLayout>

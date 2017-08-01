@@ -3,6 +3,9 @@ package classact.com.xprize.activity.drill.sound;
 import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -14,6 +17,8 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -48,6 +53,9 @@ public class SoundDrillNineActivity extends AppCompatActivity {
     private final int TIMER_MAX = 5;
     private final int DRAW_WAIT_TIME = 1000;
 
+    private final float TIMER_MID_X = 2065f;
+    private final float TIMER_MID_Y = 425f;
+
     private final Context THIS = this;
 
     @Override
@@ -64,24 +72,33 @@ public class SoundDrillNineActivity extends AppCompatActivity {
         handler = new Handler(Looper.getMainLooper());
         writingContainer.addView(view);
 
+        ImageView timerClock = new ImageView(THIS);
+        timerClock.setImageResource(R.drawable.timer_clock_001);
+        timerClock.setScaleX(0.75f);
+        timerClock.setScaleY(0.75f);
+        timerClock.setX(1775f);
+        timerClock.setY(125f);
+        writingContainer.addView(timerClock);
+
         timer = new TextView(getApplicationContext());
-        timer.setBackgroundResource(android.R.color.transparent);
+        timer.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()), Typeface.BOLD);
+        timer.setPadding(16, 16, 16, 16);
         timerCounter = TIMER_MAX;
         timerReset = true;
         lastDrawnTime = 0l;
 
         timer.setText(String.valueOf(timerCounter));
-        timer.setTypeface(null, Typeface.BOLD);
         timer.setTextSize(115.0f);
-        timer.setAlpha(0.4f);
+        timer.setAlpha(0.8f);
         timer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
-        LinearLayout.LayoutParams timerLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        timerLayoutParams.topMargin = 175;
-        timerLayoutParams.leftMargin = 2100;
-        timer.setLayoutParams(timerLayoutParams);
-        timer.setVisibility(View.INVISIBLE);
+        // timer.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        timer.setX(TIMER_MID_X);
+        timer.setY(TIMER_MID_Y);
         writingContainer.addView(timer);
+
+        Point textSize = Globals.TEXT_MEASURED_SIZE(timer, String.valueOf(timerCounter));
+        timer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
+        timer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
 
         data = getIntent().getExtras().getString("data");
 
@@ -233,9 +250,13 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                     if (timerReset) {
                         timerReset = false;
                         timerCounter = TIMER_MAX;
+                        timer.setTextColor(Color.DKGRAY);
                     }
 
-                    timer.setText(String.valueOf(timerCounter));
+                    Point textSize = Globals.TEXT_MEASURED_SIZE(timer, String.valueOf(timerCounter));
+                    System.out.println(textSize.x + ", " + textSize.y);
+                    timer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
+                    timer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
 
                     if (timerCounter > 0) {
                         timerCounter--;
@@ -269,55 +290,53 @@ public class SoundDrillNineActivity extends AppCompatActivity {
         public boolean onTouchEvent(MotionEvent event) {
             super.onTouchEvent(event);
 
-            if (canDraw) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
+            if (drillComplete) {
+                return false;
+            }
+
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    if (canDraw) {
                         if (!(startedDrawing || drawingTimeUp)) {
                             startedDrawing = true;
                             lastDrawnTime = 0l;
-                            timer.setVisibility(View.INVISIBLE);
-
-                            // Debug
-                            System.out.println("SoundDrillNineActivity.CustomWriteView.onTouchEvent > Debug: Started writing");
+                            timer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
                         }
-                        break;
-                    case MotionEvent.ACTION_MOVE:
+                    }
+                    break;
+                case MotionEvent.ACTION_MOVE:
 
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (startedDrawing && !drawingTimeUp) {
-                            startedDrawing = false;
-                            timerReset = true;
-                            lastDrawnTime = new Date().getTime();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (canDraw && (startedDrawing && !drawingTimeUp) || canDraw && !startedDrawing) {
+                        startedDrawing = false;
+                        timerReset = true;
 
-                            // Debug
-                            System.out.println("SoundDrillNineActivity.CustomWriteView.onTouchEvent > Debug: Last Drawn Time (" +
-                                    lastDrawnTime + ")");
+                        lastDrawnTime = new Date().getTime();
 
-                            handler.removeCallbacks(countDown);
-                            handler.postDelayed(countDown, DRAW_WAIT_TIME);
-
-                            // Debug
-                            System.out.println("SoundDrillNineActivity.CustomWriteView.onTouchEvent > Debug: Stopped writing");
-                        }
-                        break;
-                }
-            }
-            if (drillComplete) {
-                return false;
+                        handler.removeCallbacks(countDown);
+                        handler.postDelayed(countDown, DRAW_WAIT_TIME);
+                    }
+                    break;
             }
             return true;
         }
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)  {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            onBackPressed();
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        int action = event.getAction();
+
+        if (action == KeyEvent.ACTION_UP) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    onBackPressed();
+                    return true;
+                default:
+                    return super.onKeyDown(keyCode, event);
+            }
         }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -326,7 +345,8 @@ public class SoundDrillNineActivity extends AppCompatActivity {
             mp.stop();
             mp.release();
         }
-        setResult(Code.NAV_MENU);
+        setResult(Globals.TO_MAIN);
         finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

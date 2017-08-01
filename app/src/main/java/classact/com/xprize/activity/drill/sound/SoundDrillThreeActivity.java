@@ -255,16 +255,10 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
 
     public void playSoundAgain(){
         try {
-            playSound(currentSound, new Runnable() {
+            playSound(currentPhonicSound, new Runnable() {
                 @Override
                 public void run() {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            // setItemsEnabled(true);
-                            itemsEnabled = true;
-                        }
-                    }, mp.getDuration() - 100);
+                    itemsEnabled = true;
                 }
             });
         }
@@ -309,6 +303,15 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
         if (itemsEnabled) {
             if (item == correctItem) {
                 // setItemsEnabled(false);
+
+                ImageView iv = null;
+                if (item == 0) {
+                    iv = item1;
+                } else if (item == 1) {
+                    iv = item2;
+                }
+                Globals.playStarWorks(THIS, iv);
+
                 itemsEnabled = false;
                 mRunnable = null;
                 mRunnable = new Runnable() {
@@ -352,13 +355,19 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)  {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            onBackPressed();
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        int action = event.getAction();
+
+        if (action == KeyEvent.ACTION_UP) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    onBackPressed();
+                    return true;
+                default:
+                    return super.onKeyDown(keyCode, event);
+            }
         }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -367,7 +376,8 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
             mp.stop();
             mp.release();
         }
-        setResult(Code.NAV_MENU);
+        setResult(Globals.TO_MAIN);
         finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

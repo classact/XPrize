@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import classact.com.xprize.activity.drill.sound.SoundDrillEightActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillFiveActivity;
@@ -219,7 +220,7 @@ public class PhonicsDrills {
                 ObjectAndSound drillObject = new ObjectAndSound(rightWord.getImagePictureURI(), rightWord.getWordSoundURI(), "");
                 System.out.println("Processing Right Word: (id " + rightWord.getWordID() + ")" + rightWord.getWordName());
 
-                drillObject.setBeginningLetterSound(letter.getLetterSoundURI());
+                drillObject.setBeginningLetterSound(letter.getPhonicSoundURI());
 
                 // Get another right word
                 Word anotherRightWord = WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i+1));
@@ -289,7 +290,7 @@ public class PhonicsDrills {
     }
 
     public static Intent D7(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
-                            Letter letter, ArrayList<Word> rightDrillWords, ArrayList<Word> wrongDrillWords,
+                            Letter letter, List<Word> rightDrillWords, List<Word> wrongDrillWords,
                             String drillSound1
     ) throws SQLiteException, Exception {
         Intent intent = null;
@@ -319,7 +320,7 @@ public class PhonicsDrills {
                 ObjectAndSound<String> word = new ObjectAndSound<>(rightWord.getImagePictureURI(), rightWord.getWordSoundURI(), "");
                 word.setObjectSlowSound(rightWord.getWordSlowSoundURI());
 
-                ArrayList<String> letterSounds = new ArrayList<>();
+                List<String> letterSounds = new ArrayList<>();
                 StringBuilder sb = new StringBuilder();
 
                 String wordName = rightWord.getWordName();
@@ -337,11 +338,16 @@ public class PhonicsDrills {
                 spelledWord.setWord(word);
                 spelledWord.setettersSound(letterSounds);
 
-                ArrayList<DraggableImage<String>> letterImages = new ArrayList<>();
-                letterImages.add(new DraggableImage<>(0, 1, rightWord.getImagePictureURI()));
+                List<DraggableImage<String>> letterImages = new ArrayList<>();
+                DraggableImage<String> rightWordImage = new DraggableImage<>(0, 1, rightWord.getImagePictureURI());
+                rightWordImage.setSound(rightWord.getWordSoundURI());
+                letterImages.add(rightWordImage);
 
                 for (int k = wrongWordsCounter; k < wrongWordsMax; k++) {
-                    letterImages.add(new DraggableImage<>(0, 0, wrongDrillWords.get(k).getImagePictureURI()));
+                    Word wrongWord = wrongDrillWords.get(k);
+                    DraggableImage<String> wrongWordImage = new DraggableImage<>(0, 0, wrongWord.getImagePictureURI());
+                    wrongWordImage.setSound(wrongWord.getWordSoundURI());
+                    letterImages.add(wrongWordImage);
                 }
 
                 wrongWordsCounter += wrongWordsPerDrillItem;

@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_drills_menu"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_blue"
+    tools:context="classact.com.xprize.activity.menu.DrillsMenu">
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_mid"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_left"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.0"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_right"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="1.0"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_drill_text_left"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.1"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_drill_text_right"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.6"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_drill_star_left"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.35"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_drill_star_right"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.85"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_h_top"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="112dp"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_h_letter_top"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="212dp"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_h_bot"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="1.0"/>
+
+    <ImageButton
+        android:id="@+id/drill_button_01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_bias="0.05"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintRight_toLeftOf="@+id/gl_v_drill_star_left"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/drill_01_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_monkey_01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-20dp"
+        app:layout_constraintVertical_bias="0.05"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_drill_star_left"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/monkey_002_xs_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_button_02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_bias="0.275"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintRight_toLeftOf="@+id/gl_v_drill_star_left"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/drill_02_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_monkey_02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-20dp"
+        app:layout_constraintVertical_bias="0.275"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_drill_star_left"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/monkey_002_xs_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_button_03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintRight_toLeftOf="@+id/gl_v_drill_star_left"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/drill_03_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_monkey_03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-20dp"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_drill_star_left"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/monkey_002_xs_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_button_04"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_bias="0.725"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintRight_toLeftOf="@+id/gl_v_drill_star_left"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/drill_04_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_monkey_04"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-20dp"
+        app:layout_constraintVertical_bias="0.725"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_drill_star_left"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/monkey_002_xs_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_button_05"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_bias="0.95"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintRight_toLeftOf="@+id/gl_v_drill_star_left"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/drill_05_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_monkey_05"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-20dp"
+        app:layout_constraintVertical_bias="0.95"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_drill_star_left"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/monkey_002_xs_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_button_06"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_bias="0.05"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintRight_toLeftOf="@+id/gl_v_drill_star_right"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/drill_06_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_monkey_06"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-20dp"
+        app:layout_constraintVertical_bias="0.05"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_drill_star_right"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/monkey_002_xs_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_button_07"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_bias="0.275"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintRight_toLeftOf="@+id/gl_v_drill_star_right"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/drill_07_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_monkey_07"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-20dp"
+        app:layout_constraintVertical_bias="0.275"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_drill_star_right"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/monkey_002_xs_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_button_08"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintRight_toLeftOf="@+id/gl_v_drill_star_right"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/drill_08_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_monkey_08"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-20dp"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_drill_star_right"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/monkey_002_xs_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_button_09"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_bias="0.725"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintRight_toLeftOf="@+id/gl_v_drill_star_right"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/drill_09_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_monkey_09"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-20dp"
+        app:layout_constraintVertical_bias="0.725"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_drill_star_right"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/monkey_002_xs_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_button_10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_bias="0.95"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintRight_toLeftOf="@+id/gl_v_drill_star_right"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/drill_10_button"/>
+
+    <ImageButton
+        android:id="@+id/drill_monkey_10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-20dp"
+        app:layout_constraintVertical_bias="0.95"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_bot"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_drill_star_right"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_letter_top"
+        android:background="@drawable/monkey_002_xs_button"/>
+
+    <TextView
+        android:id="@+id/drill_instruction"
+        android:text="Choose a drill !"
+        android:textSize="72sp"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_top"
+        app:layout_constraintLeft_toLeftOf="@id/gl_v_mid"
+        app:layout_constraintRight_toRightOf="@id/gl_v_mid"
+        app:layout_constraintBottom_toTopOf="@+id/drill_button_01"/>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/chapter_header"
+            android:layout_width="1378dp"
+            android:layout_height="112dp"
+            android:background="@drawable/chapter_20_header"/>
+    </FrameLayout>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_chapter_book"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_h_chapter_book"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="3dp" />
+
+    <ImageView
+        android:id="@+id/chapter_book"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/chapter_book_xs"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_chapter_book"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_chapter_book"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_chapter_title"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="172dp" />
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_h_chapter_title"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="18dp" />
+
+    <TextView
+        android:id="@+id/chapter_title"
+        android:text="Chapter"
+        android:textColor="@color/black"
+        android:textSize="72sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_chapter_title"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_chapter_title"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_v_chapter_number"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="424dp" />
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_h_chapter_number"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="18dp" />
+
+    <TextView
+        android:id="@+id/chapter_number"
+        android:text="1"
+        android:textColor="@color/black"
+        android:textSize="72sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_chapter_number"
+        app:layout_constraintLeft_toRightOf="@+id/gl_v_chapter_number"/>
+
+    <ImageView
+        android:id="@+id/chapter_book_open"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="36dp"
+        android:background="@drawable/chapter_book_open_xs"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_chapter_book"
+        app:layout_constraintLeft_toRightOf="@+id/chapter_number"/>
+
+    <TextView
+        android:id="@+id/chapter_section"
+        android:text="Phonics"
+        android:textColor="@color/black"
+        android:textSize="72sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="36dp"
+        app:layout_constraintTop_toBottomOf="@+id/gl_h_chapter_number"
+        app:layout_constraintLeft_toRightOf="@+id/chapter_book_open"/>
+
+</android.support.constraint.ConstraintLayout>

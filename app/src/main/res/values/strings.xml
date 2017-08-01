@@ -10,4 +10,7 @@
     <string name="first_word">First word</string>
     <string name="second_word">Second Word</string>
     <string name="third_word">THIRD WORD</string>
+    <string name="play">Play</string>
+    <string name="read">Read</string>
+    <string name="Chapter">Chapter</string>
 </resources>

@@ -292,6 +292,7 @@ public class SoundDrillJsonBuilder {
                     drillData += ",";
                 }
                 drillData += "{\"picture\":" + ResourceDecoder.getIdentifier(context,draggableImage.getcontent(),"drawable") +
+                        ",\"word_sound\":\"" +  draggableImage.getSound() + "\"" +
                         ",\"correct\":" +  draggableImage.isRight() + "}";
             }
             drillData += "]}";

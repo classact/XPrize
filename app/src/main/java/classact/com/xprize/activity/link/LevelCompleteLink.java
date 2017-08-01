@@ -52,7 +52,7 @@ public class LevelCompleteLink extends LinkTemplate {
 
     @Override
     public void finishIntent() {
-        finishAfterTransition();
+        finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

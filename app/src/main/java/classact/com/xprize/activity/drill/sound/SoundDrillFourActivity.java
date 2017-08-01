@@ -1,6 +1,7 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.content.ClipData;
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -44,6 +45,8 @@ public class SoundDrillFourActivity extends AppCompatActivity {
     JSONObject params;
     private boolean itemsEnabled;
     private Runnable mRunnable;
+
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -483,6 +486,7 @@ public class SoundDrillFourActivity extends AppCompatActivity {
                 } else if (event.getAction() == DragEvent.ACTION_DROP && entered) {
                     int right = images.getJSONObject(currentItem).getInt("right");
                     if (right == 1) {
+                        Globals.playStarWorks(THIS, toyBox);
                         playRewardSound(true);
                     } else {
                         playRewardSound(false);
@@ -552,13 +556,19 @@ public class SoundDrillFourActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)  {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            onBackPressed();
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        int action = event.getAction();
+
+        if (action == KeyEvent.ACTION_UP) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    onBackPressed();
+                    return true;
+                default:
+                    return super.onKeyDown(keyCode, event);
+            }
         }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -567,7 +577,8 @@ public class SoundDrillFourActivity extends AppCompatActivity {
             mp.stop();
             mp.release();
         }
-        setResult(Code.NAV_MENU);
+        setResult(Globals.TO_MAIN);
         finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

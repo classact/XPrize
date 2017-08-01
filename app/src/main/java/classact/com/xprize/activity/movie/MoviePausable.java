@@ -211,8 +211,8 @@ public class MoviePausable extends AppCompatActivity {
             if (mVideoPlayer != null) {
                 mVideoPlayer.stop();
             }
-            setResult(Code.NAV_MENU);
             finish();
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
     }
 
@@ -562,11 +562,8 @@ public class MoviePausable extends AppCompatActivity {
      */
     protected void close(String nextActivityClassName) {
         System.out.println("close");
-
-        Intent intent = new Intent();
-        setResult(Code.MOVIE, intent);
         finish();
-        overridePendingTransition(0, android.R.anim.fade_out);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     /**
@@ -699,13 +696,19 @@ public class MoviePausable extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)  {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            onBackPressed();
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        int action = event.getAction();
+
+        if (action == KeyEvent.ACTION_UP) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    onBackPressed();
+                    return true;
+                default:
+                    return super.onKeyDown(keyCode, event);
+            }
         }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -713,7 +716,8 @@ public class MoviePausable extends AppCompatActivity {
         if (mVideoPlayer != null) {
             mVideoPlayer.stop();
         }
-        setResult(Code.NAV_MENU);
+        setResult(Globals.TO_MAIN);
         finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

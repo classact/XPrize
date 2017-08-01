@@ -1,6 +1,7 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.content.ClipData;
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -59,6 +60,8 @@ public class SoundDrillSixActivity extends AppCompatActivity {
     private JSONObject data;
     private boolean itemsEnabled;
     private Runnable mRunnable;
+
+    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,6 +161,7 @@ public class SoundDrillSixActivity extends AppCompatActivity {
                         isInReceptacle1 = false;
                     } else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle1) {
                         if ( positions[currentItem] == image1) {
+                            Globals.playStarWorks(THIS, receptacleBox1);
                             reward();
                         }
                     } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle1) {
@@ -190,6 +194,7 @@ public class SoundDrillSixActivity extends AppCompatActivity {
                         isInReceptacle2 = false;
                     } else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle2 ) {
                         if ( positions[currentItem] == image2) {
+                            Globals.playStarWorks(THIS, receptacleBox2);
                             reward();
                         }
                     } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle2) {
@@ -708,13 +713,19 @@ public class SoundDrillSixActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)  {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            onBackPressed();
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        int action = event.getAction();
+
+        if (action == KeyEvent.ACTION_UP) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    onBackPressed();
+                    return true;
+                default:
+                    return super.onKeyDown(keyCode, event);
+            }
         }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -723,7 +734,8 @@ public class SoundDrillSixActivity extends AppCompatActivity {
             mp.stop();
             mp.release();
         }
-        setResult(Code.NAV_MENU);
+        setResult(Globals.TO_MAIN);
         finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

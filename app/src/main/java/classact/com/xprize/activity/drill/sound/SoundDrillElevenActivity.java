@@ -417,7 +417,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
                 startPair++;
                 String sound = words.getJSONObject(assignments[card - 1]).getString("sound");
                 int image = words.getJSONObject(assignments[card - 1]).getInt("image");
-                button.setBackgroundResource(R.drawable.cardsinglesmlback);
+                button.setBackgroundResource(R.drawable.cardsinglesmlback_empty);
                 button.setImageResource(image);
 
                 int cardWidth = 180;
@@ -614,13 +614,19 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
     };
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)  {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            onBackPressed();
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        int action = event.getAction();
+
+        if (action == KeyEvent.ACTION_UP) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    onBackPressed();
+                    return true;
+                default:
+                    return super.onKeyDown(keyCode, event);
+            }
         }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -629,7 +635,8 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
             mp.stop();
             mp.release();
         }
-        setResult(Code.NAV_MENU);
+        setResult(Globals.TO_MAIN);
         finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }
