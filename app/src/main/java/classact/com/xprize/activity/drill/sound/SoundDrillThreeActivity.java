@@ -1,14 +1,17 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -50,6 +53,35 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
         demoItem = (ImageView)findViewById(R.id.item_demo);
         item1 = (ImageView)findViewById(R.id.item1);
         item2 = (ImageView)findViewById(R.id.item2);
+
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float density = displayMetrics.density;
+
+        // demoItem.setBackgroundColor(Color.argb(100, 0, 0, 255));
+
+        ViewGroup.MarginLayoutParams demoItemLP = (ViewGroup.MarginLayoutParams) demoItem.getLayoutParams();
+        demoItemLP.width = (int) density * 326;
+        demoItemLP.height = (int) density * 380;
+        demoItemLP.topMargin = (int) density * 60;
+        demoItemLP.setMarginStart((int) density * 485);
+        demoItem.setLayoutParams(demoItemLP);
+
+        // item1.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        // item2.setBackgroundColor(Color.argb(100, 0, 255, 0));
+
+        ViewGroup.MarginLayoutParams item1LP = (ViewGroup.MarginLayoutParams) item1.getLayoutParams();
+        ViewGroup.MarginLayoutParams item2LP = (ViewGroup.MarginLayoutParams) item2.getLayoutParams();
+        item1LP.width = (int) density * 326;
+        item2LP.width = (int) density * 326;
+        item1LP.height = (int) density * 380;
+        item2LP.height = (int) density * 380;
+        item1LP.leftMargin = (int) density * 170;
+        item2LP.leftMargin = (int) density * 290;
+        item1LP.bottomMargin = (int) density * 160;
+        item2LP.bottomMargin = (int) density * 160;
+        item1.setLayoutParams(item1LP);
+        item2.setLayoutParams(item2LP);
+
         itemsLayout = (LinearLayout)findViewById(R.id.items);
         rnd = new Random();
         // setItemsEnabled(false);

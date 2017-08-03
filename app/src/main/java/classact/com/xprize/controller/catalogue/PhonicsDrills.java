@@ -46,15 +46,26 @@ public class PhonicsDrills {
             DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
             Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
-            ObjectAndSound<String> letterObject = new ObjectAndSound<>(letter.getLetterPictureLowerCaseBlackURI(), letter.getLetterSoundURI(), letter.getPhonicSoundURI());
-            ArrayList<ObjectAndSound<String>> drillObjects = new ArrayList<>();
+            int letterType = letter.getIsLetter();
+
+            ObjectAndSound<String> letterObject = new ObjectAndSound<>(
+                    letter.getLetterPictureLowerCaseBlackURI(),
+                    letter.getLetterSoundURI(),
+                    letter.getPhonicSoundURI());
+            List<ObjectAndSound<String>> drillObjects = new ArrayList<>();
             ArrayList<Integer> drillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
 
             for (int i=0; i < drillWordIDs.size(); i++ ){
                 Word word = WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(i));
                 drillObjects.add(new ObjectAndSound<String>(word.getImagePictureURI(), word.getWordSoundURI(), word.getWordSlowSoundURI()));
             }
-            String drillData = SoundDrillJsonBuilder.getSoundDrillOneJson(context, letterObject, drillFlowWord.getDrillSound1(), drillFlowWord.getDrillSound2(), drillFlowWord.getDrillSound3(), drillObjects);
+            String drillData = SoundDrillJsonBuilder.getSoundDrillOneJson(context,
+                    letterObject,
+                    letterType,
+                    drillFlowWord.getDrillSound1(),
+                    drillFlowWord.getDrillSound2(),
+                    drillFlowWord.getDrillSound3(),
+                    drillObjects);
             intent = new Intent(context, SoundDrillOneActivity.class);
             intent.putExtra("data", drillData);
 
@@ -105,28 +116,74 @@ public class PhonicsDrills {
         return intent;
     }
 
-    public static Intent D3(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
+    public static Intent D3(Context context, DbHelper dbHelper, int unitId, int subId, int drillId, int languageId,
                             int letterId, int limit
     ) throws SQLiteException, Exception {
         Intent intent;
 
         try {
             DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-            Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
-            ArrayList<SoundDrillThreeObject> sets = new ArrayList<>();
-            ArrayList<Integer> wrongLetters = LetterHelper.getWrongSingleLetters(dbHelper.getReadableDatabase(), languageId, letterId, limit);
-            ObjectAndSound<String> objectAndSound = new ObjectAndSound<>(letter.getLetterPictureLowerCaseBlackURI(), letter.getLetterSoundURI(), letter.getPhonicSoundURI());
 
-            for (int i=0; i < wrongLetters.size(); i++ ) { //
-                Letter wrongLetter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, wrongLetters.get(i));
-                ObjectAndSound<String> rightObject = new ObjectAndSound<>(letter.getLetterPictureLowerCaseBlackURI(), "", "");
-                ObjectAndSound<String> wrongObject = new ObjectAndSound<>(wrongLetter.getLetterPictureLowerCaseBlackURI(), "", "");
+            List<Integer> excludedLetterIds = new ArrayList<>();
+            List<Letter> correctLetters = new ArrayList<>();
+            List<SoundDrillThreeObject> sets = new ArrayList<>();
+
+            Letter primaryLetter = LetterHelper.getLetter(
+                    dbHelper.getReadableDatabase(), languageId, letterId);
+            excludedLetterIds.add(primaryLetter.getLetterId());
+            System.out.println("Primary Letter: " + primaryLetter.getLetterName());
+
+            List<Letter> secondaryLetters = LetterHelper.getLettersBelow(
+                    dbHelper.getReadableDatabase(), languageId, unitId, subId, 2);
+            for (int i = 0; i < secondaryLetters.size(); i++) {
+                Letter secondaryLetter = secondaryLetters.get(i);
+                excludedLetterIds.add(secondaryLetter.getLetterId());
+                correctLetters.add(secondaryLetter);
+                System.out.println("Secondary Letter: "+ secondaryLetter.getLetterName());
+            }
+
+            List<Letter> wrongLetters = LetterHelper.getLettersExcludingIds(
+                    dbHelper.getReadableDatabase(), excludedLetterIds, languageId, 5);
+            for (int i = 0; i < wrongLetters.size(); i++) {
+                Letter wrongLetter = wrongLetters.get(i);
+                System.out.println("Wrong Letter: " + wrongLetter.getLetterName());
+            }
+
+            for (int i = correctLetters.size(); i < wrongLetters.size(); i++) {
+                correctLetters.add(primaryLetter);
+            }
+
+            for (int i = 0; i < correctLetters.size(); i++) {
+                Letter correctLetter = correctLetters.get(i);
+                Letter wrongLetter = wrongLetters.get(i);
+                System.out.println("Correct Letter: " + correctLetter.getLetterName());
+
+                ObjectAndSound<String> objectAndSound = new ObjectAndSound<>(
+                        correctLetter.getLetterPictureLowerCaseBlackURI(),
+                        correctLetter.getLetterSoundURI(),
+                        correctLetter.getPhonicSoundURI());
+
+                ObjectAndSound<String> rightObject = new ObjectAndSound<>(
+                        correctLetter.getLetterPictureLowerCaseBlackURI(),
+                        correctLetter.getLetterSoundURI(),
+                        correctLetter.getPhonicSoundURI());
+                ObjectAndSound<String> wrongObject = new ObjectAndSound<>(
+                        wrongLetter.getLetterPictureLowerCaseBlackURI(),
+                        wrongLetter.getLetterSoundURI(),
+                        wrongLetter.getPhonicSoundURI());
+
                 RightWrongPair pair = new RightWrongPair(rightObject, wrongObject);
+
                 SoundDrillThreeObject obj = new SoundDrillThreeObject(objectAndSound, pair);
                 sets.add(obj);
             }
 
-            String drillData = SoundDrillJsonBuilder.getSoundDrillThreeJson(context, drillFlowWords.getDrillSound1(), drillFlowWords.getDrillSound2(), drillFlowWords.getDrillSound3(), sets);
+            String drillData = SoundDrillJsonBuilder.getSoundDrillThreeJson(
+                    context,
+                    drillFlowWords.getDrillSound1(),
+                    drillFlowWords.getDrillSound2(),
+                    drillFlowWords.getDrillSound3(),
+                    sets);
             intent = new Intent(context, SoundDrillThreeActivity.class);
             intent.putExtra("data", drillData);
 
@@ -147,7 +204,11 @@ public class PhonicsDrills {
         try {
             DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
             ArrayList<DraggableImage<ObjectAndSound>> images = new ArrayList<>();
+
+
             Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+
+
             ArrayList<Integer> rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, rightlimit);
             int lastPosition=0;
             for (int i=0; i < rightDrillWordIDs.size(); i++ ){
@@ -168,7 +229,13 @@ public class PhonicsDrills {
                 images.add(image);
             }
 
-            String drillData = SoundDrillJsonBuilder.getSoundDrillFourActivity(context, letter.getLetterSoundURI(), drillFlowWords.getDrillSound3(), drillFlowWords.getDrillSound1(), drillFlowWords.getDrillSound2(), images);
+            String drillData = SoundDrillJsonBuilder.getSoundDrillFourActivity(
+                    context,
+                    letter.getLetterSoundURI(),
+                    drillFlowWords.getDrillSound3(),
+                    drillFlowWords.getDrillSound1(),
+                    drillFlowWords.getDrillSound2(),
+                    images);
             intent = new Intent(context, SoundDrillFourActivity.class);
             intent.putExtra("data", drillData);
 

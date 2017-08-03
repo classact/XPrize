@@ -230,7 +230,7 @@ public class DrillFetcher {
                     int limit = 5; // 5 cupcakes selectable
 
                     // Fetch D3
-                    intent = PhonicsDrills.D3(context, dbHelper, unitId, drillId, languageId, letterId, limit);
+                    intent = PhonicsDrills.D3(context, dbHelper, unitId, subId, drillId, languageId, letterId, limit);
                     break;
                 }
                 case 4: {

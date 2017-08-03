@@ -1,6 +1,7 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -46,6 +47,10 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sound_drill_two);
         item1 = (ImageView)findViewById(R.id.item1);
         item2 = (ImageView)findViewById(R.id.item2);
+
+        // item1.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        // item2.setBackgroundColor(Color.argb(100, 0, 255, 0));
+
         itemsEnabled = false;
         item1.setOnClickListener(
                 new View.OnClickListener() {
@@ -93,6 +98,7 @@ public class SoundDrillTwoActivity extends AppCompatActivity {
             play_mode = 1;
             item1.setVisibility(View.INVISIBLE);
             item2.setVisibility(View.INVISIBLE);
+
             int correctImage = pairs.getJSONObject(currentPair - 1).getInt("correctimage");
             int wrongImage = pairs.getJSONObject(currentPair - 1).getInt("wrongimage");
             Random rand = new Random();

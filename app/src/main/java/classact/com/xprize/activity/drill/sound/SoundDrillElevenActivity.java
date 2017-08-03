@@ -1,5 +1,7 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -13,7 +15,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -447,6 +453,14 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     mp.start();
+                    if (startPair == 2) {
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                playStarWorksIfCorrect();
+                            }
+                        }, 100);
+                    }
                 }
             });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -454,7 +468,7 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
                     if (startPair == 2) {
-                        handler.postDelayed(isCorrectPair, 500);
+                        handler.postDelayed(isCorrectPair, 200);
                     }
                 }
             });
@@ -556,11 +570,21 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         card.setImageResource(0);
     }
 
-    private void hideCard(ImageButton card){
-        card.setImageResource(0);
-        card.setBackgroundResource(0);
-        card.setVisibility(View.INVISIBLE);
+    private void hideCard(final ImageButton card){
         card.setEnabled(false);
+        card.animate()
+                .alpha(0f)
+                .setDuration(125L)
+                .setInterpolator(new DecelerateInterpolator())
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        card.setImageResource(0);
+                        card.setBackgroundResource(0);
+                        card.setVisibility(View.INVISIBLE);
+                    }
+                });
     }
 
     private void reward(){
@@ -583,14 +607,23 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         }
     }
 
+    public void playStarWorksIfCorrect() {
+        if (assignments[openPair[0] - 1] == assignments[openPair[1] - 1]){
+            ImageButton card1 = getCard(openPair[0]);
+            ImageButton card2 = getCard(openPair[1]);
+            Globals.playStarWorks(THIS, card1);
+            Globals.playStarWorks(THIS, card2);
+        }
+    }
+
     Runnable isCorrectPair = new Runnable() {
         @Override
         public void run() {
             if (assignments[openPair[0] - 1] == assignments[openPair[1] - 1]){
-                ImageButton card = getCard(openPair[0]);
-                hideCard(card);
-                card = getCard(openPair[1]);
-                hideCard(card);
+                ImageButton card1 = getCard(openPair[0]);
+                ImageButton card2 = getCard(openPair[1]);
+                hideCard(card1);;
+                hideCard(card2);
                 correctSets ++;
                 reward();
                 if (correctSets < 5)

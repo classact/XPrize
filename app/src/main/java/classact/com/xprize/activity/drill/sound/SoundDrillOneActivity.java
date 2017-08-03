@@ -31,6 +31,7 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
     private Handler handler;
     SoundPrescence soundPrescence;
     private int currentObject;
+    private int letterType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,7 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
         try {
             drillData = new JSONObject(data);
             int item = drillData.getInt("letter");
+            letterType = drillData.getInt("letter_type");
             letter.setImageResource(item);
             objects = drillData.getJSONArray("objects");
         }
@@ -111,7 +113,11 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
     public void playNormalLetterSound(){
         String sound = "";
         try {
-            sound = drillData.getString("letter_sound");
+            if (letterType == 1) {
+                sound = drillData.getString("letter_sound");
+            } else {
+                sound = drillData.getString("letter_phonic_sound");
+            }
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -158,7 +164,11 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
     public void playPhonicSoundIntro(){
         String sound = "";
         try {
-            sound = drillData.getString("it_makes_sound");
+            if (letterType == 1) {
+                sound = drillData.getString("it_makes_sound");
+            } else {
+                sound = "m_phrase26";
+            }
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();
@@ -313,7 +323,11 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
         try {
             int image = objects.getJSONObject(currentObject).getInt("object");
             letter.setImageResource(image);
-            sound = drillData.getString("letter_sound");
+            if (letterType == 1) {
+                sound = drillData.getString("letter_sound");
+            } else {
+                sound = drillData.getString("letter_phonic_sound");
+            }
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             if (mp == null) {
                 mp = new MediaPlayer();

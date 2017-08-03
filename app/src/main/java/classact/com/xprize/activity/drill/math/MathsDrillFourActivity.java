@@ -144,24 +144,40 @@ public class MathsDrillFourActivity extends AppCompatActivity {
     private void clicked(boolean left){
         if (touchEnabled && !drillComplete) {
             try {
+                ImageView iv = null;
+
                 String checkBigger = allData.getString("check_bigger");
                 int leftItems = allData.getInt("number_of_left_items");
                 int rightItems = allData.getInt("number_of_right_items");
+
                 boolean isRight = false;
+
                 if (checkBigger.equalsIgnoreCase("yes")) {
-                    if (left && leftItems >= rightItems)
+                    if (left && leftItems >= rightItems) {
                         isRight = true;
-                    else if (!left && rightItems >= leftItems)
+                        iv = leftNumber;
+                    } else if (!left && rightItems >= leftItems) {
                         isRight = true;
+                        iv = rightNumber;
+                    }
                 } else {
-                    if (left && leftItems <= rightItems)
+                    if (left && leftItems <= rightItems) {
                         isRight = true;
-                    else if (!left && rightItems <= leftItems)
+                        iv = leftNumber;
+                    } else if (!left && rightItems <= leftItems) {
                         isRight = true;
+                        iv = rightNumber;
+                    }
                 }
+
                 if (isRight) {
                     touchEnabled = false;
                     drillComplete = true;
+
+                    if (iv != null) {
+                        Globals.playStarWorks(THIS, iv);
+                    }
+
                     playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
                         @Override
                         public void run() {

@@ -14,6 +14,7 @@ import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -49,6 +50,8 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
     private ImageView[] fillerViews;
     private ImageView[] visibleFillerViews;
 
+    private ImageView itemToFillSub;
+
     private LinkedHashMap<ImageView, Integer> draggableViewIndexes;
 
     private boolean dragEnabled;
@@ -65,12 +68,14 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         parentView = (RelativeLayout) findViewById(R.id.activity_maths_drill_seven);
 
         itemsContainer = (LinearLayout)findViewById(R.id.itemsContainer);
+        // itemsContainer.setBackgroundColor(Color.argb(100, 0, 255, 0));
         itemsContainer.setOnDragListener(this);
         itemToFill = (ImageView)findViewById(R.id.missing);
 
         RelativeLayout.LayoutParams itemsContainerLayout = (RelativeLayout.LayoutParams) itemsContainer.getLayoutParams();
         itemsContainerLayout.leftMargin += 70;
         itemsContainer.setLayoutParams(itemsContainerLayout);
+        itemsContainer.setPadding(0, 0, 0, 0);
 
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         float density = displayMetrics.density;
@@ -81,6 +86,18 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         itemFillLayout.width = itemFillWidth;
         itemFillLayout.height = itemFillWidth;
         itemToFill.setLayoutParams(itemFillLayout);
+
+        int ivFillWidth = (int) ((float) 175 * density);
+
+        itemToFillSub = new ImageView(THIS);
+        parentView.addView(itemToFillSub);
+        ViewGroup.MarginLayoutParams itemToFillSubLP = (ViewGroup.MarginLayoutParams) itemToFillSub.getLayoutParams();
+        itemToFillSubLP.width = ivFillWidth;
+        itemToFillSubLP.height = ivFillWidth;
+        itemToFillSub.setLayoutParams(itemToFillSubLP);
+        // itemToFillSub.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        itemToFillSub.setX(1670f);
+        itemToFillSub.setY(430f);
 
         pattern = (ImageView)findViewById(R.id.pattern);
 
@@ -200,7 +217,8 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
             JSONObject item = allData.getJSONArray("completion_pieces").getJSONObject(draggedItemIndex);
             String image = item.getString("image");
             int imageId = FetchResource.imageId(THIS, image);
-            itemToFill.setImageResource(imageId);
+            itemToFill.setImageResource(0);
+            itemToFillSub.setImageResource(imageId);
         }
         catch (Exception ex){
             Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();

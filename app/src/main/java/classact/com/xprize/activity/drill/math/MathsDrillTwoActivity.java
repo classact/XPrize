@@ -15,6 +15,9 @@ import android.widget.RelativeLayout;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import classact.com.xprize.R;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
@@ -34,6 +37,9 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
     private RelativeLayout objectsContainer;
     private Handler handler;
     private boolean touchEnabled;
+
+    private LinkedHashMap<Integer, ImageView> mNumberNumberMap;
+
     private final Context THIS = this;
 
     private final int PICTURES_FRAME_WIDTH = 745;
@@ -150,6 +156,8 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                 Square[] squares = squarePacker.get(n);
                 int[] scrambles = FisherYates.shuffle(n);
 
+                mNumberNumberMap = new LinkedHashMap<>();
+
                 for (int i = 0; i < squares.length; i++) {
                     int si = scrambles[i];
                     // Get square
@@ -182,12 +190,16 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                     // Setup listener
                     final int numberIndex = i;
 
+                    iv.setAlpha(0.2f);
+
                     iv.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             numberClicked(numberIndex);
                         }
                     });
+
+                    mNumberNumberMap.put(numberIndex, iv);
                 }
             }
         } catch (Exception ex) {
@@ -280,24 +292,31 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                     });
                 } else {
                     touchEnabled = false;
+                    ImageView iv = mNumberNumberMap.get(position);
+                    Globals.playStarWorks(THIS, iv);
                     playSound(sound, new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                                handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        handler.postDelayed(new Runnable() {
+                                        playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
                                             @Override
                                             public void run() {
-                                                if (mp != null) {
-                                                    mp.release();
-                                                }
-                                                finish();
+                                                handler.postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        if (mp != null) {
+                                                            mp.release();
+                                                        }
+                                                        finish();
+                                                    }
+                                                }, 100);
                                             }
-                                        }, 100);
+                                        });
                                     }
-                                });
+                                }, 50);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                                 finish();
@@ -340,8 +359,12 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             touchEnabled = true;
+                            for (Map.Entry<Integer, ImageView> entrySet : mNumberNumberMap.entrySet()) {
+                                ImageView iv = entrySet.getValue();
+                                iv.setAlpha(1f);
+                            }
                         }
-                    }, 500);
+                    }, 200);
                 }
             });
         }
