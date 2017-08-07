@@ -137,7 +137,7 @@ public class PhonicsSubMenu extends AppCompatActivity {
 
         // Setup selected sound resources
         mSelectedSoundResource.put("a-e", R.drawable.sound_selected_ae_button);
-        mSelectedSoundResource.put("a-i", R.drawable.sound_selected_ai_button);
+        mSelectedSoundResource.put("ai", R.drawable.sound_selected_ai_button);
         mSelectedSoundResource.put("ay", R.drawable.sound_selected_ay_button);
         mSelectedSoundResource.put("ch", R.drawable.sound_selected_ch_button);
         mSelectedSoundResource.put("ck", R.drawable.sound_selected_ck_button);
@@ -148,12 +148,12 @@ public class PhonicsSubMenu extends AppCompatActivity {
         mSelectedSoundResource.put("oo", R.drawable.sound_selected_oo_button);
         mSelectedSoundResource.put("sh", R.drawable.sound_selected_sh_button);
         mSelectedSoundResource.put("th", R.drawable.sound_selected_th_button);
-        mSelectedSoundResource.put("ue", R.drawable.sound_selected_ue_button);
+        mSelectedSoundResource.put("u-e", R.drawable.sound_selected_ue_button);
         mSelectedSoundResource.put("wh", R.drawable.sound_selected_wh_button);
 
         // Setup non-selected sound resources
         mNonSelectedSoundResource.put("a-e", R.drawable.sound_ae_button);
-        mNonSelectedSoundResource.put("a-i", R.drawable.sound_ai_button);
+        mNonSelectedSoundResource.put("ai", R.drawable.sound_ai_button);
         mNonSelectedSoundResource.put("ay", R.drawable.sound_ay_button);
         mNonSelectedSoundResource.put("ch", R.drawable.sound_ch_button);
         mNonSelectedSoundResource.put("ck", R.drawable.sound_ck_button);
@@ -164,7 +164,7 @@ public class PhonicsSubMenu extends AppCompatActivity {
         mNonSelectedSoundResource.put("oo", R.drawable.sound_oo_button);
         mNonSelectedSoundResource.put("sh", R.drawable.sound_sh_button);
         mNonSelectedSoundResource.put("th", R.drawable.sound_th_button);
-        mNonSelectedSoundResource.put("ue", R.drawable.sound_ue_button);
+        mNonSelectedSoundResource.put("u-e", R.drawable.sound_ue_button);
         mNonSelectedSoundResource.put("wh", R.drawable.sound_wh_button);
 
         // Setup chapter header image resources
@@ -328,6 +328,8 @@ public class PhonicsSubMenu extends AppCompatActivity {
         int resourceB = 0;
         boolean soundAFound = false;
         boolean soundBFound = false;
+
+        System.out.println("A B C: " + a + ", " + b + ", " + c);
 
         // Check if "a" is selected
         if (a.equalsIgnoreCase(c)) {

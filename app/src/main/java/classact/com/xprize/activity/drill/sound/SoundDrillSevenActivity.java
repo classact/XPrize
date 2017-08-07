@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
@@ -20,14 +19,12 @@ import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import classact.com.xprize.R;
-import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
@@ -514,7 +511,7 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
                             public void run() {
                                 showLettersAndPlayAndLetterSounds(i + 1);
                             }
-                        }, 500);
+                        }, 400);
                     }
                 });
                 mp.prepare();

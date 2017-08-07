@@ -277,6 +277,9 @@ public class PhonicsDrills {
             int wrongWordCounter = 0;
             int maxWrongWordsPerItem = 3;
             int numberOfRightDrillWords = rightDrillWordIDs.size();
+            if (numberOfRightDrillWords % 2 > 0) {
+                numberOfRightDrillWords -= 1; // make it even
+            }
             ArrayList<ObjectAndSound> images;
 
             for (int i = 0; i < numberOfRightDrillWords; i += 2) {

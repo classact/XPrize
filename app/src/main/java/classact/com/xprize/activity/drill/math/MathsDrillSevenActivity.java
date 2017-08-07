@@ -68,7 +68,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         parentView = (RelativeLayout) findViewById(R.id.activity_maths_drill_seven);
 
         itemsContainer = (LinearLayout)findViewById(R.id.itemsContainer);
-        // itemsContainer.setBackgroundColor(Color.argb(100, 0, 255, 0));
+        itemsContainer.setBackgroundColor(Color.argb(100, 0, 255, 0));
         itemsContainer.setOnDragListener(this);
         itemToFill = (ImageView)findViewById(R.id.missing);
 
@@ -95,7 +95,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         itemToFillSubLP.width = ivFillWidth;
         itemToFillSubLP.height = ivFillWidth;
         itemToFillSub.setLayoutParams(itemToFillSubLP);
-        // itemToFillSub.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        itemToFillSub.setBackgroundColor(Color.argb(100, 255, 0, 0));
         itemToFillSub.setX(1670f);
         itemToFillSub.setY(430f);
 

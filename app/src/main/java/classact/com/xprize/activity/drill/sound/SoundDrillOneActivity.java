@@ -1,6 +1,8 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,7 +12,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,17 +38,73 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
     private int currentObject;
     private int letterType;
 
+    private RelativeLayout mRootView;
+
+    private ImageButton mStartButton;
+    private ImageButton mPauseButton;
+    private ImageButton mStopButton;
+    private int mStage;
+
+    private final Context THIS = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_one);
         letter = (ImageView)findViewById(R.id.item1);
+        // letter.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        RelativeLayout.LayoutParams letterLP = (RelativeLayout.LayoutParams) letter.getLayoutParams();
+        letterLP.removeRule(RelativeLayout.CENTER_HORIZONTAL);
+        letterLP.leftMargin = 765;
+        letter.setLayoutParams(letterLP);
+
+        mRootView = (RelativeLayout) letter.getParent();
+        // System.out.println("XXXX " + letterLP.leftMargin + " XXXX");
+
+        mStartButton = new ImageButton(THIS);
+        mStartButton.setBackgroundResource(R.drawable.play_button);
+        mRootView.addView(mStartButton);
+        ViewGroup.MarginLayoutParams mStartButtonLP = (ViewGroup.MarginLayoutParams) mStartButton.getLayoutParams();
+        mStartButtonLP.width = 200;
+        mStartButtonLP.height = 200;
+        mStartButton.setLayoutParams(mStartButtonLP);
+
+        mPauseButton = new ImageButton(THIS);
+        mPauseButton.setBackgroundResource(R.drawable.pause_button);
+        mRootView.addView(mPauseButton);
+        ViewGroup.MarginLayoutParams mPauseButtonLP = (ViewGroup.MarginLayoutParams) mPauseButton.getLayoutParams();
+        mPauseButtonLP.width = 200;
+        mPauseButtonLP.height = 200;
+        mPauseButton.setLayoutParams(mPauseButtonLP);
+        mPauseButton.setX(200f);
+
+        mStopButton = new ImageButton(THIS);
+        mStopButton.setBackgroundResource(R.drawable.tutorial_stop_practice_button);
+        mRootView.addView(mStopButton);
+        ViewGroup.MarginLayoutParams mStopButtonLP = (ViewGroup.MarginLayoutParams) mStopButton.getLayoutParams();
+        mStopButtonLP.width = 200;
+        mStopButtonLP.height = 200;
+        mStopButton.setLayoutParams(mStopButtonLP);
+        mStopButton.setX(400f);
+
         String drillData = getIntent().getExtras().getString("data");
         initialiseData(drillData);
         soundPrescence = new SoundPrescence(this);
         handler = new Handler(Looper.getMainLooper());
         //this letter is a small
         playIntro();
+    }
+
+    public void stage1() {
+        // This is the letter
+        // "M"
+        // It makes the sound "mmm"
+        // Now you try
+    }
+
+    public void stage2() {
+        // "M" mushroom
+
     }
 
     //
@@ -324,7 +385,8 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
             int image = objects.getJSONObject(currentObject).getInt("object");
             letter.setImageResource(image);
             if (letterType == 1) {
-                sound = drillData.getString("letter_sound");
+                // sound = drillData.getString("letter_sound");
+                sound = drillData.getString("letter_phonic_sound");
             } else {
                 sound = drillData.getString("letter_phonic_sound");
             }
@@ -443,6 +505,9 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
         if (mp != null) {
             mp.stop();
             mp.release();
+        }
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
         }
         setResult(Globals.TO_MAIN);
         finish();

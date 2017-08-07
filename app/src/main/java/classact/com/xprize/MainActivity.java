@@ -15,33 +15,16 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import java.io.IOException;
-import java.util.Date;
 
-import classact.com.xprize.activity.drill.tutorial.Tutorial;
-import classact.com.xprize.activity.link.LevelCompleteLink;
-import classact.com.xprize.activity.link.MathsLink;
-import classact.com.xprize.activity.link.PhonicsLink;
-import classact.com.xprize.activity.link.StoryLink;
-import classact.com.xprize.activity.link.WordsLink;
 import classact.com.xprize.activity.menu.HelpMenu;
-import classact.com.xprize.activity.menu.MusicMenu;
 import classact.com.xprize.activity.menu.StarsMenu;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
-import classact.com.xprize.activity.movie.Movie;
-import classact.com.xprize.activity.movie.MoviePausable;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.controller.DrillFetcher;
 import classact.com.xprize.database.DbHelper;
-import classact.com.xprize.database.helper.UnitHelper;
-import classact.com.xprize.database.model.Drill;
-import classact.com.xprize.database.model.DrillType;
-import classact.com.xprize.database.model.Section;
-import classact.com.xprize.database.model.Unit;
-import classact.com.xprize.database.model.UnitSection;
 import classact.com.xprize.database.model.UnitSectionDrill;
 import classact.com.xprize.locale.Languages;
-import classact.com.xprize.utils.ResourceDecoder;
 
 public class MainActivity extends AppCompatActivity {
 

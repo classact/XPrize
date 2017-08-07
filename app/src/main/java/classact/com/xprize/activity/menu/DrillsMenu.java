@@ -242,7 +242,7 @@ public class DrillsMenu extends AppCompatActivity {
         // Or navigate to different intent
         String drillInstruction = "";
         switch (mSelectedSection) {
-            case DatabaseController.INTRO_SECTION:
+            case DatabaseController.STORY_SECTION:
                 UnitSectionDrill unitSectionDrill = null;
                 for (Map.Entry<Integer, UnitSectionDrill> entry : mUnitSectionDrillMap.entrySet()) {
                     unitSectionDrill = entry.getValue();
@@ -255,18 +255,19 @@ public class DrillsMenu extends AppCompatActivity {
                             .getName().equalsIgnoreCase("Movie") &&
                             mDb.getSections()
                                     .get(sectionId)
-                                    .getName().equalsIgnoreCase("Intro")) {
+                                    .getName().equalsIgnoreCase("Story")) {
                         break;
                     }
                 }
                 try {
                     if (unitSectionDrill == null) {
-                        throw new Exception("DrillsMenu: Cannot play intro movie");
+                        throw new Exception("DrillsMenu: Cannot play story movie");
                     }
                     mDb.playUnitSectionDrill(unitSectionDrill.getUnitSectionDrillId());
 
                     if (dbEstablsh()) {
                         Object[] objectArray = DrillFetcher.fetch(THIS, mDbHelper, Languages.ENGLISH, unitSectionDrill);
+                        dbClose();
                         Intent intent = (Intent) objectArray[0];
                         int resultCode = (int) objectArray[1];
 
@@ -279,8 +280,6 @@ public class DrillsMenu extends AppCompatActivity {
                 } catch (Exception ex) {
                     System.err.println(ex.getMessage());
                     ex.printStackTrace();
-                } finally {
-                    dbClose();
                 }
                 break;
             case DatabaseController.PHONICS_SECTION:
@@ -310,7 +309,7 @@ public class DrillsMenu extends AppCompatActivity {
                 break;
             case DatabaseController.WORDS_SECTION:
                 // mRootView.setBackgroundResource(R.drawable.bg_pink);
-                drillInstruction = "Learn to write words !";
+                drillInstruction = "Learn to read and write words !";
                 break;
             case DatabaseController.BOOKS_SECTION:
                 // mRootView.setBackgroundResource(R.drawable.bg_green);
@@ -380,6 +379,7 @@ public class DrillsMenu extends AppCompatActivity {
                     try {
                         if (dbEstablsh()) {
                             Object[] objectArray = DrillFetcher.fetch(THIS, mDbHelper, Languages.ENGLISH, unitSectionDrill);
+                            dbClose();
                             Intent intent = (Intent) objectArray[0];
                             int resultCode = (int) objectArray[1];
 
@@ -392,8 +392,6 @@ public class DrillsMenu extends AppCompatActivity {
                     } catch (Exception ex) {
                         System.err.println(ex.getMessage());
                         ex.printStackTrace();
-                    } finally {
-                        dbClose();
                     }
                 }
             });
