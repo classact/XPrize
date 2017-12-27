@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
@@ -24,11 +25,12 @@ import java.util.Arrays;
 import java.util.Random;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 
-public class MathsDrillSixAndFourActivity extends AppCompatActivity implements View.OnTouchListener, View.OnDragListener {
+public class MathsDrillSixAndFourActivity extends DrillActivity implements View.OnTouchListener, View.OnDragListener {
     private JSONObject allData;
     private MediaPlayer mp;
     private Handler handler;
@@ -61,10 +63,18 @@ public class MathsDrillSixAndFourActivity extends AppCompatActivity implements V
     private RelativeLayout parentView;
     private final Context THIS = this;
 
+    private MathDrill06EViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_six_and_four);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill06EViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
 
         parentView = (RelativeLayout) findViewById(R.id.activity_maths_drill_six_and_four);
 

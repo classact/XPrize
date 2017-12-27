@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -18,12 +19,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
-public class SoundDrillFourActivity extends AppCompatActivity {
+public class SoundDrillFourActivity extends DrillActivity {
     private ImageView item1;
     private ImageView item2;
     private ImageView item3;
@@ -48,10 +50,18 @@ public class SoundDrillFourActivity extends AppCompatActivity {
 
     private final Context THIS = this;
 
+    private SoundDrill04ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_four);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill04ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
 
         toyBox = (ImageView) findViewById(R.id.toybox);
 

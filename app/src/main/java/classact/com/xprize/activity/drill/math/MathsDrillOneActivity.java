@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -17,11 +18,13 @@ import org.json.JSONObject;
 import java.util.Arrays;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
+import classact.com.xprize.activity.drill.sound.SoundDrill15ViewModel;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 
-public class MathsDrillOneActivity extends AppCompatActivity {
+public class MathsDrillOneActivity extends DrillActivity {
     private JSONObject allData;
     private JSONArray numbers;
     private MediaPlayer mp;
@@ -34,10 +37,19 @@ public class MathsDrillOneActivity extends AppCompatActivity {
     private RelativeLayout rln; // numbers layout
     private final Context THIS = this;
 
+    private MathDrill01ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_one);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill01ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         rootLayout = (RelativeLayout) findViewById(R.id.activity_maths_unit_one);
         handler = new Handler();
 

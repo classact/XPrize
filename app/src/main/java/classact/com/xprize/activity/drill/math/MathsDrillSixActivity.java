@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -18,13 +19,14 @@ import org.json.JSONObject;
 import java.util.Random;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.locale.Languages;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 
-public class MathsDrillSixActivity extends AppCompatActivity {
+public class MathsDrillSixActivity extends DrillActivity {
     private RelativeLayout objectsContainer;
     private ImageView demoShape;
     private ImageView shape1;
@@ -38,10 +40,19 @@ public class MathsDrillSixActivity extends AppCompatActivity {
 
     private final Context THIS = this;
 
+    private MathDrill06AViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_six);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill06AViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         objectsContainer = (RelativeLayout)findViewById(R.id.objectsContainer);
         demoShape = (ImageView)findViewById(R.id.demo_shape);
 

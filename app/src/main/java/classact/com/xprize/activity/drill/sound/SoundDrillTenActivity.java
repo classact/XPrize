@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
@@ -19,13 +20,14 @@ import org.json.JSONObject;
 import java.util.Random;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 
-public class SoundDrillTenActivity extends AppCompatActivity {
+public class SoundDrillTenActivity extends DrillActivity {
 
     private final int FLASH_LEFT_MARGIN = 130;
     private final int FLASH_TOP_MARGIN = 675;
@@ -52,10 +54,19 @@ public class SoundDrillTenActivity extends AppCompatActivity {
     private JSONObject allData;
     private boolean buttonsEnabled;
 
+    private SoundDrill10ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_ten);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill10ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         buttonsEnabled = false;
         buttonWord1 = (ImageButton)findViewById(R.id.button_word1);
         buttonWord2 = (ImageButton)findViewById(R.id.button_word2);

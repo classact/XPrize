@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Color;
@@ -26,13 +27,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 
-public class SoundDrillFifteenActivity extends AppCompatActivity {
+public class SoundDrillFifteenActivity extends DrillActivity {
 
     private ImageView container1;
     private ImageView container2;
@@ -91,12 +93,18 @@ public class SoundDrillFifteenActivity extends AppCompatActivity {
 
     private Handler handler;
 
+    private SoundDrill15ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Debug
-        // System.out.println("SDFifteenActivity.OnCreate > Debug: MC");
         setContentView(R.layout.activity_sound_drill_fifteen);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill15ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
 
         mRootView = (RelativeLayout) findViewById(R.id.activity_sound_drill_fifteen);
         mRootView.setBackgroundResource(R.drawable.backgroundwriteletters);

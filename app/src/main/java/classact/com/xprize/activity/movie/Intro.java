@@ -36,7 +36,7 @@ public class Intro extends AppCompatActivity {
         mVideoCover = (ImageView) findViewById(R.id.intro_video_cover);
         mVideCoverContainer = (RelativeLayout) findViewById(R.id.intro_video_cover_container);
 
-        String resourceName = "intro_movie";
+        String resourceName = "movie_intro";
         if (Globals.SELECTED_LANGUAGE == Languages.SWAHILI) {
             mVideoCover.setBackgroundResource(R.drawable.tutorial_intro_bg_swahili);
             resourceName = "s" + resourceName;

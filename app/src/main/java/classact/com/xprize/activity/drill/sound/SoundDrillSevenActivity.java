@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -25,13 +26,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 import classact.com.xprize.utils.WordLetterLayout;
 
-public class SoundDrillSevenActivity extends AppCompatActivity {
+public class SoundDrillSevenActivity extends DrillActivity {
     //private SegmetedWritingView segmentWritingView;
 
     private LinearLayout writingContainer;
@@ -59,10 +61,19 @@ public class SoundDrillSevenActivity extends AppCompatActivity {
 
     private final Context THIS = this;
 
+    private SoundDrill07ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_seven);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill07ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         itemsEnabled = false;
         roundEnd = false;
         item1 = (ImageView)findViewById(R.id.item1);

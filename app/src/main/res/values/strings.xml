@@ -13,4 +13,13 @@
     <string name="play">Play</string>
     <string name="read">Read</string>
     <string name="Chapter">Chapter</string>
+
+    <string name="Bookmark">Bookmark</string>
+    <string name="Pause_Button">Pause Button</string>
+    <string name="Stop_Button">Stop Button</string>
+
+    <string name="Background_Image">Background Image</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -2,6 +2,7 @@ package classact.com.xprize.activity.drill.sound;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -30,13 +31,14 @@ import java.util.Arrays;
 import java.util.Random;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 import classact.com.xprize.utils.TextShrinker;
 
-public class SoundDrillElevenActivity extends AppCompatActivity {
+public class SoundDrillElevenActivity extends DrillActivity {
     private ImageButton ImageButtonWord1;
     private ImageButton ImageButtonWord2;
     private ImageButton ImageButtonWord3;
@@ -62,10 +64,19 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
 
     private final Context THIS = this;
 
+    private SoundDrill11ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_eleven);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill11ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         ImageButtonWord1 = (ImageButton)findViewById(R.id.button_word1);
         ImageButtonWord2 = (ImageButton)findViewById(R.id.button_word2);
         ImageButtonWord3 = (ImageButton)findViewById(R.id.button_word3);

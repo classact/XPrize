@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -22,12 +23,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 import classact.com.xprize.utils.TextShrinker;
 
-public class SoundDrillTwelveActivity extends AppCompatActivity {
+public class SoundDrillTwelveActivity extends DrillActivity {
 
     private final String DRILL_DATA_KEY = "DRILL_DATA";
 
@@ -67,9 +69,18 @@ public class SoundDrillTwelveActivity extends AppCompatActivity {
 
     private final Context THIS = this;
 
+    private SoundDrill12ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill12ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         setContentView(R.layout.activity_sound_drill_twelve);
         mRootView = (RelativeLayout) findViewById(R.id.activity_sound_drill_twelve);
         timeView = (TextView) findViewById( R.id.textViewtimer);

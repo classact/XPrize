@@ -601,7 +601,7 @@ public class DatabaseController {
             // Initialize DbHelper
             mDbHelper = DbHelper.getDbHelper(mContext);
             // Create database (or connect to existing)
-            mDbHelper.createDatabase();
+            mDbHelper.createDatabase(false);
             // Test opening database
             mDbHelper.openDatabase();
             // All good

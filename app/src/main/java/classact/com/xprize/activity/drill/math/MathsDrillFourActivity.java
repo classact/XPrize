@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -13,12 +14,13 @@ import android.widget.RelativeLayout;
 import org.json.JSONObject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.SquarePacker;
 
-public class MathsDrillFourActivity extends AppCompatActivity {
+public class MathsDrillFourActivity extends DrillActivity {
     private RelativeLayout rightContainer;
     private RelativeLayout leftContainer;
     private ImageView leftNumber;
@@ -34,10 +36,19 @@ public class MathsDrillFourActivity extends AppCompatActivity {
 
     private final Context THIS = this;
 
+    private MathDrill04ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_four);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill04ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         leftContainer = (RelativeLayout)findViewById(R.id.left_container);
         // leftContainer.setBackgroundColor(Color.argb(150, 255, 0, 0));
         RelativeLayout.LayoutParams lcParams = (RelativeLayout.LayoutParams) leftContainer.getLayoutParams();

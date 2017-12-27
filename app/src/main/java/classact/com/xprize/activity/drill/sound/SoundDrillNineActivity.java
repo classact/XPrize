@@ -1,6 +1,7 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.app.ActionBar;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -29,12 +30,13 @@ import org.json.JSONObject;
 import java.util.Date;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.view.WriteView;
 
-public class SoundDrillNineActivity extends AppCompatActivity {
+public class SoundDrillNineActivity extends DrillActivity {
     CustomWriteView view;
     private MediaPlayer mp;
     private Handler handler;
@@ -58,10 +60,19 @@ public class SoundDrillNineActivity extends AppCompatActivity {
 
     private final Context THIS = this;
 
+    private SoundDrill09ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_nine);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill09ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         startedDrawing = false;
         drawingTimeUp = false;
         canDraw = false;

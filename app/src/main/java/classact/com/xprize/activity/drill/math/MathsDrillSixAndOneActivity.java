@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -15,11 +16,12 @@ import android.widget.RelativeLayout;
 import org.json.JSONObject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 
-public class MathsDrillSixAndOneActivity extends AppCompatActivity {
+public class MathsDrillSixAndOneActivity extends DrillActivity {
     private ImageView largeShape;
     private ImageView smallShape;
     private MediaPlayer mp;
@@ -29,10 +31,19 @@ public class MathsDrillSixAndOneActivity extends AppCompatActivity {
 
     private final Context THIS = this;
 
+    private MathDrill06BViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_six_and_one);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill06BViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         largeShape = (ImageView)findViewById(R.id.big_shape);
         smallShape = (ImageView)findViewById(R.id.small_shape);
 

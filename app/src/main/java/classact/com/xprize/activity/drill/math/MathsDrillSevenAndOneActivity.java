@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
@@ -32,7 +33,7 @@ import classact.com.xprize.utils.RandomExcluding;
 
 import android.os.Handler;
 
-public class MathsDrillSevenAndOneActivity extends AppCompatActivity implements View.OnTouchListener, View.OnDragListener {
+public class MathsDrillSevenAndOneActivity extends DrillActivity implements View.OnTouchListener, View.OnDragListener {
     private RelativeLayout itemsReceptacle;
     private ImageView filler1;
     private ImageView filler2;

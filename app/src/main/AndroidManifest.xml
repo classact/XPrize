@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
+        android:name="classact.com.xprize.CleverLittleMonkeyApp"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
@@ -43,7 +44,7 @@
             >
         </activity>
         <activity
-            android:name=".activity.movie.Movie"
+            android:name=".activity.movie.MovieActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="landscape">
             >
@@ -194,7 +195,9 @@
         <activity android:name=".activity.menu.MusicMenu" />
         <activity android:name=".activity.menu.DrillsMenu" />
         <activity android:name=".activity.menu.HelpMenu" />
-        <activity android:name=".activity.menu.VolumeMenu"></activity>
+        <activity android:name=".activity.menu.VolumeMenu" />
+        <activity android:name=".activity.CoreActivity" />
+        <activity android:name=".activity.drill.books.StoryActivity"/>
     </application>
 
 </manifest>

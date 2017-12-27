@@ -8,15 +8,15 @@ import android.database.sqlite.SQLiteException;
 import java.util.ArrayList;
 import java.util.List;
 
+import classact.com.xprize.activity.drill.books.StoryActivity;
 import classact.com.xprize.activity.drill.tutorial.Tutorial;
 import classact.com.xprize.activity.link.LevelCompleteLink;
 import classact.com.xprize.activity.link.MathsLink;
 import classact.com.xprize.activity.link.PhonicsLink;
 import classact.com.xprize.activity.link.StoryLink;
 import classact.com.xprize.activity.link.WordsLink;
-import classact.com.xprize.activity.menu.Book;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
-import classact.com.xprize.activity.movie.Movie;
+import classact.com.xprize.activity.movie.MovieActivity;
 import classact.com.xprize.activity.movie.MoviePausable;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
@@ -89,9 +89,9 @@ public class DrillFetcher {
 
             if (drillTypeName.equalsIgnoreCase("Cinematic")) {
                 if (sectionName.equalsIgnoreCase("Intro")) {
-                    intent = new Intent(context, Movie.class);
-                    intent.putExtra(Code.RES_NAME, unit.getUnitFirstTimeMovieFile());
-                    intent.putExtra(Code.NEXT_BG_CODE, Code.INTRO);
+                    intent = new Intent(context, MovieActivity.class);
+//                    intent.putExtra(Code.RES_NAME, unit.getUnitFirstTimeMovieFile());
+//                    intent.putExtra(Code.NEXT_BG_CODE, Code.INTRO);
                     resultCode = Code.INTRO;
                 } else if (sectionName.equalsIgnoreCase("Chapter End")) {
                     intent = new Intent(context, LevelCompleteLink.class);
@@ -102,17 +102,17 @@ public class DrillFetcher {
                     }
                     resultCode = Code.CHAPTER_END;
                 } else if (sectionName.equalsIgnoreCase("Finale")) {
-                    intent = new Intent(context, Movie.class);
+                    intent = new Intent(context, MovieActivity.class);
                     intent.putExtra(Code.RES_NAME, unit.getUnitFirstTimeMovieFile());
                     intent.putExtra(Code.NEXT_BG_CODE, Code.FINALE);
                     resultCode = Code.FINALE;
                 }
             } else if (drillTypeName.equalsIgnoreCase("Movie")) {
                 if (sectionName.equalsIgnoreCase("Story")) {
-                    intent = new Intent(context, MoviePausable.class);
-                    intent.putExtra(Code.RES_NAME, unit.getUnitFirstTimeMovieFile());
-                    intent.putExtra(Code.SHOW_MV_BUTTONS, true);
-                    intent.putExtra(Code.NEXT_BG_CODE, Code.MOVIE);
+                    intent = new Intent(context, MovieActivity.class);
+//                    intent.putExtra(Code.RES_NAME, unit.getUnitFirstTimeMovieFile());
+//                    intent.putExtra(Code.SHOW_MV_BUTTONS, true);
+//                    intent.putExtra(Code.NEXT_BG_CODE, Code.MOVIE);
                     resultCode = Code.MOVIE;
                 }
             } else if (drillTypeName.equalsIgnoreCase("Tutorial")) {
@@ -142,7 +142,7 @@ public class DrillFetcher {
                     resultCode = Code.DRILL_SPLASH;
                     mBooksStarted = true;
                 } else {
-                    intent = getStoryDrill(context, dbHelper, unitId, drillId, languageId, unitSectionDrill.getDrillSubId());
+                    intent = new Intent(context, StoryActivity.class);
                     resultCode = Code.RUN_DRILL;
                 }
             } else if (drillTypeName.equalsIgnoreCase("Math")) {

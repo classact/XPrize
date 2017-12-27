@@ -5,16 +5,37 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
 
+ext.support_version = "26.1.0"
+ext.constraint_layout_version = "1.1.0-beta3"
+ext.junit_version = "4.12"
+ext.espresso_version = "2.2.2"
+ext.rxandroid_version = "2.0.1"
+ext.rxjava_version = "2.1.2"
+ext.rxrelay_version = "2.0.0"
+ext.arch_version = "1.0.0"
+ext.arch_lifecycle_runtime_version = "1.0.3"
+ext.gson_vesion = "2.8.1"
+ext.dagger_version = "2.11"
+ext.butterknife_version = "8.8.1"
+ext.glide_version = "4.2.0"
+ext.retrofit_version = "2.3.0"
+ext.timber_version = "4.5.1"
+ext.leonids_version = "1.3.2"
+ext.tess_two_version = "8.0.0"
+ext.kotlin_version = "1.1.51"
+
 allprojects {
     repositories {
+        google()
         jcenter()
+        maven { url 'https://maven.google.com' }
     }
 }
 

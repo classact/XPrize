@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
@@ -30,13 +31,14 @@ import java.util.Random;
 import java.util.concurrent.Exchanger;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.RandomExcluding;
 
-public class MathsDrillFiveAndOneActivity extends AppCompatActivity implements View.OnTouchListener, View.OnDragListener {
+public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.OnTouchListener, View.OnDragListener {
 
     private JSONObject allData;
     private JSONArray things;
@@ -77,10 +79,19 @@ public class MathsDrillFiveAndOneActivity extends AppCompatActivity implements V
 
     private final Context THIS = this;
 
+    private MathDrill05BViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_five_and_one);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill05BViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         equationNumberOne = (ImageView)findViewById(R.id.equation_one);
         // equationNumberOne.setBackgroundColor(Color.argb(100, 255, 0, 0));
         equationNumberOne.setColorFilter(Color.argb(255, 255, 255, 255));

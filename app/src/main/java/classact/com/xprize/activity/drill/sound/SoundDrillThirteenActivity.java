@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Color;
@@ -27,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
@@ -34,7 +36,7 @@ import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 import classact.com.xprize.utils.WordLetterLayout;
 
-public class SoundDrillThirteenActivity extends AppCompatActivity {
+public class SoundDrillThirteenActivity extends DrillActivity {
 
     private LinearLayout container1;
     private LinearLayout container2;
@@ -92,14 +94,19 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
     private LinkedHashMap<String, List<Integer>> letterMap;
 
+    private SoundDrill13ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Debug
-        System.out.println("SDThirteenActivity.OnCreate > Debug: MC");
-
         setContentView(R.layout.activity_sound_drill_thirteen);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill13ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         container1 = (LinearLayout) findViewById(R.id.container1);
         container2 = (LinearLayout) findViewById(R.id.container2);
         container3 = (LinearLayout) findViewById(R.id.container3);

@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.inject.Inject;
+
 import classact.com.xprize.database.helper.SQLiteAssetHelper;
 
 /**
@@ -42,7 +44,8 @@ public class DbHelper extends SQLiteAssetHelper {
         return myDbHelper;
     }
 
-	private DbHelper(Context c) {
+	@Inject
+	public DbHelper(Context c) {
 		super(c, DATABASE_NAME, null, DATABASE_VERSION);
 		this.myContext = c;
 		this.DATABASE_PATH = c.getApplicationInfo().dataDir + "/databases/";

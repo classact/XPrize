@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -19,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
@@ -26,7 +28,7 @@ import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.Square;
 import classact.com.xprize.utils.SquarePacker;
 
-public class MathsDrillTwoActivity extends AppCompatActivity {
+public class MathsDrillTwoActivity extends DrillActivity {
     private JSONObject allData;
     private MediaPlayer mp;
     private ImageView numberOne;
@@ -47,10 +49,19 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
     private final int NUMBERS_FRAME_WIDTH = 745;
     private final int NUMBERS_FRAME_HEIGHT = 955;
 
+    private MathDrill02ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_two);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill02ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         rootLayout = (RelativeLayout) findViewById(R.id.activity_math_drill_two);
         objectsContainer = (RelativeLayout) findViewById(R.id.objects_container);
 

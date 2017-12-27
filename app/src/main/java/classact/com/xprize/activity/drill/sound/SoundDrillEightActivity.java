@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
@@ -38,7 +40,7 @@ import classact.com.xprize.view.PathAnimationView;
 import classact.com.xprize.view.PathCoordinate;
 import classact.com.xprize.view.WriteView;
 
-public class SoundDrillEightActivity extends AppCompatActivity implements PathAnimationView.AnimationDone{
+public class SoundDrillEightActivity extends DrillActivity implements PathAnimationView.AnimationDone{
     private RelativeLayout drawArea;
     private PathAnimationView animationView;
     private DrillEightWriteView writingView;
@@ -65,10 +67,19 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
     private RelativeLayout mDetectionView;
     private final Context THIS = this;
 
+    private SoundDrill08ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_eight);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill08ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         letter = (ImageView)findViewById(R.id.item1);
         drawArea = (RelativeLayout) findViewById(R.id.draw_area);
         String drillData = getIntent().getExtras().getString("data");

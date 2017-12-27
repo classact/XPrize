@@ -1,17 +1,14 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -21,13 +18,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import classact.com.xprize.R;
-import classact.com.xprize.activity.menu.LanguageSelect;
-import classact.com.xprize.common.Code;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.SoundPrescence;
 
-public class SoundDrillOneActivity extends AppCompatActivity implements SoundPrescence.SoundPresenceListener {
+public class SoundDrillOneActivity extends DrillActivity implements SoundPrescence.SoundPresenceListener {
     private JSONObject drillData;
     private ImageView letter;
     private JSONArray objects;
@@ -38,54 +34,29 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
     private int currentObject;
     private int letterType;
 
-    private RelativeLayout mRootView;
-
-    private ImageButton mStartButton;
-    private ImageButton mPauseButton;
-    private ImageButton mStopButton;
     private int mStage;
 
     private final Context THIS = this;
+
+    private SoundDrill01ViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_one);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill01ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         letter = (ImageView)findViewById(R.id.item1);
         // letter.setBackgroundColor(Color.argb(100, 255, 0, 0));
         RelativeLayout.LayoutParams letterLP = (RelativeLayout.LayoutParams) letter.getLayoutParams();
         letterLP.removeRule(RelativeLayout.CENTER_HORIZONTAL);
         letterLP.leftMargin = 765;
         letter.setLayoutParams(letterLP);
-
-        mRootView = (RelativeLayout) letter.getParent();
-        // System.out.println("XXXX " + letterLP.leftMargin + " XXXX");
-
-        mStartButton = new ImageButton(THIS);
-        mStartButton.setBackgroundResource(R.drawable.play_button);
-        mRootView.addView(mStartButton);
-        ViewGroup.MarginLayoutParams mStartButtonLP = (ViewGroup.MarginLayoutParams) mStartButton.getLayoutParams();
-        mStartButtonLP.width = 200;
-        mStartButtonLP.height = 200;
-        mStartButton.setLayoutParams(mStartButtonLP);
-
-        mPauseButton = new ImageButton(THIS);
-        mPauseButton.setBackgroundResource(R.drawable.pause_button);
-        mRootView.addView(mPauseButton);
-        ViewGroup.MarginLayoutParams mPauseButtonLP = (ViewGroup.MarginLayoutParams) mPauseButton.getLayoutParams();
-        mPauseButtonLP.width = 200;
-        mPauseButtonLP.height = 200;
-        mPauseButton.setLayoutParams(mPauseButtonLP);
-        mPauseButton.setX(200f);
-
-        mStopButton = new ImageButton(THIS);
-        mStopButton.setBackgroundResource(R.drawable.tutorial_stop_practice_button);
-        mRootView.addView(mStopButton);
-        ViewGroup.MarginLayoutParams mStopButtonLP = (ViewGroup.MarginLayoutParams) mStopButton.getLayoutParams();
-        mStopButtonLP.width = 200;
-        mStopButtonLP.height = 200;
-        mStopButton.setLayoutParams(mStopButtonLP);
-        mStopButton.setX(400f);
 
         String drillData = getIntent().getExtras().getString("data");
         initialiseData(drillData);

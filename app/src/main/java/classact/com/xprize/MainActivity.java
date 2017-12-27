@@ -1,5 +1,7 @@
 package classact.com.xprize;
 
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,12 +12,16 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
+import classact.com.xprize.activity.drill.books.StoryActivity;
 import classact.com.xprize.activity.menu.HelpMenu;
 import classact.com.xprize.activity.menu.StarsMenu;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
@@ -25,8 +31,9 @@ import classact.com.xprize.controller.DrillFetcher;
 import classact.com.xprize.database.DbHelper;
 import classact.com.xprize.database.model.UnitSectionDrill;
 import classact.com.xprize.locale.Languages;
+import dagger.android.support.DaggerAppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends DaggerAppCompatActivity {
 
     private final boolean ALLOW_DB_RECOPY = false;
 
@@ -56,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
     private boolean mNewActivity;
     private final Context THIS = this;
 
+    @Inject DbHelper dbHelper;
+    @Inject ViewModelProvider.Factory vmFactory;
+    MainActivityViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
         mHelpButton = (ImageButton) findViewById(R.id.help_button);
         mStarsButton = (ImageButton) findViewById(R.id.stars_button);
 
+//        vm = ViewModelProviders.of(this, vmFactory).get(MainActivityViewModel.class);
+
+        Log.d("DB HELPER IS ", "" + (dbHelper != null));
+
         // Check read button
         checkReadButton();
 
@@ -73,23 +88,16 @@ public class MainActivity extends AppCompatActivity {
         mNewActivity = false;
 
         // Read Button
-        mReadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playNextDrill();
-            }
-        });
+        mReadButton.setOnClickListener((v) -> playNextDrill());
 
         // Help Button
-        mHelpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        mHelpButton.setOnClickListener((v) -> {
                 mNewActivity = true;
+//                Intent intent = new Intent(THIS, StoryActivity.class);
                 Intent intent = new Intent(THIS, HelpMenu.class);
                 startActivityForResult(intent, 0);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
-        });
+            });
 
         // Stars Button
         mStarsButton.setOnClickListener(new View.OnClickListener() {

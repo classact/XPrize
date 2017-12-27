@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -28,13 +29,14 @@ import java.util.Date;
 import java.util.List;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.WordLetterLayout;
 import classact.com.xprize.view.WriteView;
 
-public class SoundDrillFourteenActivity extends AppCompatActivity {
+public class SoundDrillFourteenActivity extends DrillActivity {
     private ImageView item1;
     private ImageView item2;
     private ImageView item3;
@@ -87,10 +89,18 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
     private final float TIMER_MID_X = 2065f;
     private final float TIMER_MID_Y = 425f;
 
+    private SoundDrill14ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_fourteen);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill14ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
 
         item1 = (ImageView) findViewById(R.id.item1);
         item2 = (ImageView) findViewById(R.id.item2);

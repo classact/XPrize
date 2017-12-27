@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -20,13 +21,14 @@ import android.widget.RelativeLayout;
 import org.json.JSONObject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.Square;
 import classact.com.xprize.utils.SquarePacker;
 
-public class MathsDrillThreeActivity extends AppCompatActivity {
+public class MathsDrillThreeActivity extends DrillActivity {
     private JSONObject allData;
     private MediaPlayer mp;
     private int segment = 1;
@@ -42,10 +44,19 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
     private Handler handler;
     private final Context THIS = this;
 
+    private MathDrill03ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_three);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill03ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         itemsContainer = (RelativeLayout) findViewById(R.id.itemsContainer);
         itemsReceptacle = (RelativeLayout)findViewById(R.id.itemsReceptacle);
         itemsReceptacle.setOnDragListener(new View.OnDragListener() {

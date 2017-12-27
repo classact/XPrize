@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Random;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
@@ -35,7 +37,7 @@ import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.Square;
 import classact.com.xprize.utils.SquarePacker;
 
-public class MathsDrillFiveActivity extends AppCompatActivity {
+public class MathsDrillFiveActivity extends DrillActivity {
     private JSONObject allData;
     private MediaPlayer mp;
     private Handler handler;
@@ -57,10 +59,19 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
 
     private final Context THIS = this;
 
+    private MathDrill05AViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_five);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill05AViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
         objectsContainer = (RelativeLayout)findViewById(R.id.itemsContainer);
         numbersContainer = (RelativeLayout)findViewById(R.id.numbers_container);
         numberOne = (ImageView)findViewById(R.id.cakedemo_obect);
