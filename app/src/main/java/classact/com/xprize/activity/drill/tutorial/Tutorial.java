@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.tutorial;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -31,12 +32,14 @@ import java.io.IOException;
 import java.util.Random;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
+import classact.com.xprize.activity.drill.math.MathDrill07BViewModel;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.view.TouchView;
 
-public class Tutorial extends AppCompatActivity {
+public class Tutorial extends DrillActivity {
 
     /* STATES */
     private String currentState;
@@ -138,23 +141,27 @@ public class Tutorial extends AppCompatActivity {
     AnimationDrawable pauseDemoAnimation;
     Button pauseButton;
 
-    /* MediaPlayer */
-    MediaPlayer mediaPlayer;
-
     /* Handlers & Controllers */
-    Handler delayHandler;
     private static TutorialController tutorialController;
-    Handler handler;
 
     /* Random generator */
     Random rnd;
 
+    private TutorialViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Set content view
         setContentView(R.layout.activity_tutorial);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(TutorialViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
 
         // Instantiate views
         introView = findViewById(R.id.content_tutorial_intro);
@@ -269,9 +276,7 @@ public class Tutorial extends AppCompatActivity {
         pauseButton = (Button) findViewById(R.id.tutorial_pause_button);
 
         // Instantiate handler
-        delayHandler = new Handler();
-        handler = new Handler();
-        tutorialController = new TutorialController(this);
+        tutorialController = new TutorialController(this, handler);
 
         // Initialize Random Generator
         rnd = new Random();
@@ -359,8 +364,7 @@ public class Tutorial extends AppCompatActivity {
         currentState = state;
 
         // Add runnable to stop animation
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        handler.delayed(new Runnable() {
             @Override
             public void run() {
                 // Show demo cover
@@ -436,8 +440,7 @@ public class Tutorial extends AppCompatActivity {
         currentState = state;
 
         // Add runnable to stop animation
-        handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        handler.delayed(new Runnable() {
             @Override
             public void run() {
                 // Show demo cover
@@ -513,8 +516,7 @@ public class Tutorial extends AppCompatActivity {
         currentState = state;
 
         // Add runnable to stop animation
-        handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        handler.delayed(new Runnable() {
             @Override
             public void run() {
                 // Show demo cover
@@ -589,8 +591,7 @@ public class Tutorial extends AppCompatActivity {
         currentState = state;
 
         // Add runnable to stop animation
-        handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        handler.delayed(new Runnable() {
             @Override
             public void run() {
                 // Show demo cover
@@ -862,8 +863,7 @@ public class Tutorial extends AppCompatActivity {
         drawSurfaceShadow.setVisibility(View.INVISIBLE);
 
         // Add runnable to stop animation
-        handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        handler.delayed(new Runnable() {
             @Override
             public void run() {
                 // Show demo cover
@@ -995,8 +995,7 @@ public class Tutorial extends AppCompatActivity {
         currentState = state;
 
         // Add runnable to stop animation
-        handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        handler.delayed(new Runnable() {
             @Override
             public void run() {
                 // Show demo cover
@@ -1082,9 +1081,7 @@ public class Tutorial extends AppCompatActivity {
         */
 
         // Release media player
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-        }
+        mediaPlayer.reset();
         finish();
         overridePendingTransition(0, android.R.anim.fade_out);
     }
@@ -1129,46 +1126,10 @@ public class Tutorial extends AppCompatActivity {
             }
 
             // Get resource file descriptor, using name
-            String soundPath = FetchResource.sound(getApplicationContext(), name);
-
-            // Reset media player
-            if (mediaPlayer == null) {
-                mediaPlayer = new MediaPlayer();
-            }
-
-            // Reset media player
-            mediaPlayer.reset();
-
-            // Set data source of media player
-            mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-
-
-            // Set on completion listener
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-
-                    // Release all previous media player instances
-                    mp.reset();
-
-                    // Send Message to controller
-                    sendMessageToController("play", currentState + PLAY_COMPLETE);
-                }
+            playSound(name, () -> {
+                // Send Message to controller
+                sendMessageToController("play", currentState + PLAY_COMPLETE);
             });
-
-            // Set on prepared listener
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-
-                    // Play the tune ~ ♪♫♪
-                    mediaPlayer.start();
-                }
-            });
-
-            // Prepare the media player
-            mediaPlayer.prepare();
-
         } catch (IOException ioex) {
             System.err.println("Tutorial.play > IOException: " + ioex.getMessage());
 
@@ -1290,35 +1251,6 @@ public class Tutorial extends AppCompatActivity {
             default:
                 break;
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)  {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            onBackPressed();
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-        }
-        if (delayHandler != null) {
-            delayHandler.removeCallbacksAndMessages(null);
-            delayHandler = null;
-        }
-        if (handler != null) {
-            handler.removeCallbacksAndMessages(null);
-            handler = null;
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }
 

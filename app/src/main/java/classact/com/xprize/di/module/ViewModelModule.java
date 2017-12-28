@@ -33,6 +33,7 @@ import classact.com.xprize.activity.drill.sound.SoundDrill12ViewModel;
 import classact.com.xprize.activity.drill.sound.SoundDrill13ViewModel;
 import classact.com.xprize.activity.drill.sound.SoundDrill14ViewModel;
 import classact.com.xprize.activity.drill.sound.SoundDrill15ViewModel;
+import classact.com.xprize.activity.drill.tutorial.TutorialViewModel;
 import classact.com.xprize.activity.movie.MovieActivityViewModel;
 import classact.com.xprize.di.ViewModelKey;
 import classact.com.xprize.fragment.control.ControlViewModel;
@@ -67,6 +68,10 @@ public abstract class ViewModelModule {
     @ViewModelKey(MovieActivityViewModel.class)
     abstract ViewModel bindMovieActivityViewModel(MovieActivityViewModel movieActivityViewModel);
 
+    @Binds
+    @IntoMap
+    @ViewModelKey(TutorialViewModel.class)
+    abstract ViewModel bindTutorialActivityViewModel(TutorialViewModel tutorialViewModel);
 
     /* Sound Drill Activities */
 

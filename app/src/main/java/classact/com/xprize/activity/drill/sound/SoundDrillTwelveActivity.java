@@ -44,14 +44,13 @@ public class SoundDrillTwelveActivity extends DrillActivity {
     private ImageButton buttonWord1;
     private ImageButton buttonWord2;
     private ImageButton buttonWord3;
-    private MediaPlayer mp;
     private TextView timeView;
     private int time;
     public JSONArray wordSets;
-    private Handler timeHandler = new Handler();
-    private Handler setHandler = new Handler();
-    private Handler emergencyHandler = new Handler();
-    private Handler buttonEnablingHandler = new Handler();
+//    private Handler timeHandler = new Handler();
+//    private Handler setHandler = new Handler();
+//    private Handler emergencyHandler = new Handler();
+//    private Handler buttonEnablingHandler = new Handler();
     private int currentSet = 0;
     private int correctWord = 0;
     private JSONObject params;
@@ -80,6 +79,9 @@ public class SoundDrillTwelveActivity extends DrillActivity {
                 .get(SoundDrill12ViewModel.class)
                 .register(getLifecycle())
                 .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
 
         setContentView(R.layout.activity_sound_drill_twelve);
         mRootView = (RelativeLayout) findViewById(R.id.activity_sound_drill_twelve);
@@ -209,168 +211,51 @@ public class SoundDrillTwelveActivity extends DrillActivity {
             wordSets = params.getJSONArray("sets");
             currentSet = 0;
             String sound = params.getString("quick_mothers_coming");
-
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
+            playSound(sound, () -> {
+                timeView.setTextColor(Color.DKGRAY);
+                handler.delayed(this::countDownTracker,1000); // time handler
+                nextSet();
             });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    timeView.setTextColor(Color.DKGRAY);
-                    mp.reset();
-                    timeHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            countDownTracker();
-                        }
-                    }, 1000);
-                    nextSet();
-                }
-            });
-            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
-        }
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
         }
     }
 
     private void playSound(String sound){
 
         try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
+            playSound(sound, () -> {
+                if (gameOver) {
+                    // Update colour of text
+                    timeView.setTextColor(LOSE_RED);
+
+                    // Update colour tint of word to light gray
+                    buttonWord1.setColorFilter(NADA_GRAY);
+                    buttonWord2.setColorFilter(NADA_GRAY);
+                    buttonWord3.setColorFilter(NADA_GRAY);
+
+                    handler.delayed(this::startConcluding,350); // setHandler
                 }
             });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-
-                    if (gameOver) {
-                        // Update colour of text
-                        timeView.setTextColor(LOSE_RED);
-
-                        // Update colour tint of word to light gray
-                        buttonWord1.setColorFilter(NADA_GRAY);
-                        buttonWord2.setColorFilter(NADA_GRAY);
-                        buttonWord3.setColorFilter(NADA_GRAY);
-
-                        setHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                startConcluding();
-                            }
-                        }, 350);
-                    }
-                }
-            });
-            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            setHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    timeView.setTextColor(LOSE_RED);
-                    startConcluding();
-                }
-            }, 1150);
         }
     }
 
     private void playSoundWithActionAfterCompletion(int soundId){
-
         try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (mNextAction != null) {
-                        mNextAction.run();
-                    }
-                }
-            });
-            mp.prepare();
+            playSound(soundId, mNextAction);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
     private void nextSet(){
 
         try{
-
             JSONArray words = wordSets.getJSONObject(currentSet).getJSONArray("words");
             buttonWord1.setImageResource(words.getJSONObject(0).getInt("image"));
             if (words.getJSONObject(0).getInt("correct") == 1)
@@ -386,21 +271,14 @@ public class SoundDrillTwelveActivity extends DrillActivity {
             buttonWord2 = TextShrinker.shrink(buttonWord2, 390, 0.9f, getResources());
             buttonWord3 = TextShrinker.shrink(buttonWord3, 390, 0.9f, getResources());
 
-            setHandler.postDelayed(saySound,500);
+            handler.delayed(saySound,500); // setHandler
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
     public void wordClicked(int word){
-
-        // Debug
-        System.out.println("-- SoundTrillTwelveActivity.wordClicked > Debug: METHOD CALLED");
 
         // Update last button word clicked
         mLastButtonWordClicked = word;
@@ -448,7 +326,7 @@ public class SoundDrillTwelveActivity extends DrillActivity {
                             // check if the next set exists
                             if (++currentSet < wordSets.length()) {
                                 // Play next set
-                                setHandler.postDelayed(playNextSet, 200);
+                                handler.delayed(playNextSet, 200); // setHandler
                             } else {
 
                                 // Update colour tint of word to WIN_CYAN
@@ -471,17 +349,12 @@ public class SoundDrillTwelveActivity extends DrillActivity {
                                     case 3:
                                         break;
                                 }
-                                setHandler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        startConcluding();
-                                    }
-                                }, 350);
+                                handler.delayed(() -> startConcluding(), 350); // setHandler
                             }
                         }
                     };
 
-                    playSoundWithActionAfterCompletion(ResourceSelector.getPositiveAffirmationSound(this));
+                    playSoundWithActionAfterCompletion(ResourceSelector.getPositiveAffirmationSound(context));
                 } else {
 
                     // Highlight clicked word as errored
@@ -507,10 +380,7 @@ public class SoundDrillTwelveActivity extends DrillActivity {
 
                     // After completion of negative sound, ensure that
                     // all button words revert back to original colour
-                    mNextAction = new Runnable() {
-
-                        @Override
-                        public void run() {
+                    mNextAction = () -> {
                             if (!gameOver) {
                                 buttonWord1.setColorFilter(Color.TRANSPARENT);
                                 buttonWord2.setColorFilter(Color.TRANSPARENT);
@@ -525,55 +395,41 @@ public class SoundDrillTwelveActivity extends DrillActivity {
                                 buttonWord2.setColorFilter(NADA_GRAY);
                                 buttonWord3.setColorFilter(NADA_GRAY);
 
-                                setHandler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        startConcluding();
-                                    }
-                                }, 350);
+                                handler.delayed(this::startConcluding,350); // setHandler
                             }
-                        }
-                    };
+                        };
                     if (!gameOver) {
-                        playSound(FetchResource.negativeAffirmation(THIS), new Runnable() {
-                            @Override
-                            public void run() {
-                                if (gameOver) {
+                        playSound(FetchResource.negativeAffirmation(THIS), () -> {
+                            if (gameOver) {
 
-                                    // Update colour of text
-                                    timeView.setTextColor(LOSE_RED);
+                                // Update colour of text
+                                timeView.setTextColor(LOSE_RED);
 
-                                    // Update colour tint of word to LOSE_RED
-                                    switch (mLastButtonWordClicked) {
-                                        case 0:
-                                            buttonWord1.setColorFilter(LOSE_RED);
-                                            buttonWord2.setColorFilter(NADA_GRAY);
-                                            buttonWord3.setColorFilter(NADA_GRAY);
-                                            break;
-                                        case 1:
-                                            buttonWord1.setColorFilter(NADA_GRAY);
-                                            buttonWord2.setColorFilter(LOSE_RED);
-                                            buttonWord3.setColorFilter(NADA_GRAY);
-                                            break;
-                                        case 2:
-                                            buttonWord1.setColorFilter(NADA_GRAY);
-                                            buttonWord2.setColorFilter(NADA_GRAY);
-                                            buttonWord3.setColorFilter(LOSE_RED);
-                                            break;
-                                        case 3:
-                                            break;
-                                    }
+                                // Update colour tint of word to LOSE_RED
+                                switch (mLastButtonWordClicked) {
+                                    case 0:
+                                        buttonWord1.setColorFilter(LOSE_RED);
+                                        buttonWord2.setColorFilter(NADA_GRAY);
+                                        buttonWord3.setColorFilter(NADA_GRAY);
+                                        break;
+                                    case 1:
+                                        buttonWord1.setColorFilter(NADA_GRAY);
+                                        buttonWord2.setColorFilter(LOSE_RED);
+                                        buttonWord3.setColorFilter(NADA_GRAY);
+                                        break;
+                                    case 2:
+                                        buttonWord1.setColorFilter(NADA_GRAY);
+                                        buttonWord2.setColorFilter(NADA_GRAY);
+                                        buttonWord3.setColorFilter(LOSE_RED);
+                                        break;
+                                    case 3:
+                                        break;
+                                }
 
-                                    setHandler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            startConcluding();
-                                        }
-                                    }, 750);
-                                } else {
-                                    if (mNextAction != null) {
-                                        mNextAction.run();
-                                    }
+                                handler.delayed(this::startConcluding, 750); // setHandler
+                            } else {
+                                if (mNextAction != null) {
+                                    mNextAction.run();
                                 }
                             }
                         });
@@ -581,10 +437,6 @@ public class SoundDrillTwelveActivity extends DrillActivity {
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
     }
@@ -603,17 +455,17 @@ public class SoundDrillTwelveActivity extends DrillActivity {
                 timeView.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
 
                 if (String.valueOf(time).equalsIgnoreCase("6")) {
-                    emergencyHandler.postDelayed(countdownEmergency, 250);
+                    handler.delayed(countdownEmergency, 250); // emergencyHandler
                 }
 
                 // Set post delayed for next number in countdown
-                timeHandler.postDelayed(countdown, 1000);// wait for 1 seconds to start activity
+                handler.delayed(countdown, 1000);// wait for 1 seconds to start activity // timerHandler
             }
         }
         else {
             gameOver = true;
 
-            if (mp != null && !mp.isPlaying()) {
+            if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
                 // Update colour of text
                 timeView.setTextColor(LOSE_RED);
 
@@ -622,49 +474,22 @@ public class SoundDrillTwelveActivity extends DrillActivity {
                 buttonWord2.setColorFilter(NADA_GRAY);
                 buttonWord3.setColorFilter(NADA_GRAY);
 
-                setHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        startConcluding();
-                    }
-                }, 1000);
+                handler.delayed(this::startConcluding,1000); // setHandler
             }
         }
     }
 
     public void startConcluding() {
-
-        timeHandler.removeCallbacks(countdown);
+        handler.removeCallbacks(countdown); // timeHandler
         try {
-
             // Disable all buttons
             setButtonsEnabled(false);
 
             String sound = params.getString("you_got");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    sayCorrectCount();
-                }
-            });
-            mp.prepare();
+            playSound(sound, this::sayCorrectCount);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -693,38 +518,10 @@ public class SoundDrillTwelveActivity extends DrillActivity {
                     sound = params.getString("count_6");
                     break;
             }
-
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    sayWords();
-                }
-            });
-            mp.prepare();
+            playSound(sound, this::sayWords);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            setHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    sayWords();
-                }
-            }, 800);
         }
     }
 
@@ -732,30 +529,10 @@ public class SoundDrillTwelveActivity extends DrillActivity {
 
         try {
             String sound = params.getString("words_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    setHandler.postDelayed(finishRunnable, 300);
-                }
-            });
-            mp.prepare();
+            playSound(sound, () -> handler.delayed(finishRunnable,300)); // setHandler
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -771,14 +548,9 @@ public class SoundDrillTwelveActivity extends DrillActivity {
         }
     }
 
-    Runnable finishRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
-        }
+    Runnable finishRunnable = () -> {
+        finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     };
 
     Runnable countdown = new Runnable() {
@@ -806,9 +578,9 @@ public class SoundDrillTwelveActivity extends DrillActivity {
                         if (timeView != null) {
                             timeView.setTextColor(Color.DKGRAY);
                             if (time > 3) {
-                                emergencyHandler.postDelayed(countdownEmergency, 500);
+                                handler.delayed(countdownEmergency, 500); // emergencyHandler
                             } else {
-                                emergencyHandler.postDelayed(countdownEmergency, 250);
+                                handler.delayed(countdownEmergency, 250); // emergencyHandler
                             }
                         }
                         emergencyRed = false;
@@ -816,9 +588,9 @@ public class SoundDrillTwelveActivity extends DrillActivity {
                         timeView.setTextColor(Color.RED);
                         emergencyRed = true;
                         if (time > 3) {
-                            emergencyHandler.postDelayed(countdownEmergency, 500);
+                            handler.delayed(countdownEmergency, 500); // emergencyHandler
                         } else {
-                            emergencyHandler.postDelayed(countdownEmergency, 250);
+                            handler.delayed(countdownEmergency, 250); // emergencyHandler
                         }
                     }
                 }
@@ -828,99 +600,76 @@ public class SoundDrillTwelveActivity extends DrillActivity {
         }
     };
 
-    Runnable playNextSet = new Runnable() {
-        @Override
-        public void run() {
-
-            if (!gameOver) {
-                // Change color tint back to normal
-                switch (correctWord) {
-                    case 0:
-                        buttonWord1.setColorFilter(Color.TRANSPARENT);
-                        break;
-                    case 1:
-                        buttonWord2.setColorFilter(Color.TRANSPARENT);
-                        break;
-                    case 2:
-                        buttonWord3.setColorFilter(Color.TRANSPARENT);
-                        break;
-                    case 3:
-                        break;
-                }
-
-                nextSet();
-            } else {
-
-                // Update colour of text
-                timeView.setTextColor(LOSE_RED);
-
-                // Update colour tint of word to LOSE_RED
-                switch (mLastButtonWordClicked) {
-                    case 0:
-                        buttonWord1.setColorFilter(WIN_CYAN);
-                        buttonWord2.setColorFilter(NADA_GRAY);
-                        buttonWord3.setColorFilter(NADA_GRAY);
-                        break;
-                    case 1:
-                        buttonWord1.setColorFilter(NADA_GRAY);
-                        buttonWord2.setColorFilter(WIN_CYAN);
-                        buttonWord3.setColorFilter(NADA_GRAY);
-                        break;
-                    case 2:
-                        buttonWord1.setColorFilter(NADA_GRAY);
-                        buttonWord2.setColorFilter(NADA_GRAY);
-                        buttonWord3.setColorFilter(WIN_CYAN);
-                        break;
-                    case 3:
-                        break;
-                }
-
-                setHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        startConcluding();
-                    }
-                }, 350);
+    Runnable playNextSet = () -> {
+        if (!gameOver) {
+            // Change color tint back to normal
+            switch (correctWord) {
+                case 0:
+                    buttonWord1.setColorFilter(Color.TRANSPARENT);
+                    break;
+                case 1:
+                    buttonWord2.setColorFilter(Color.TRANSPARENT);
+                    break;
+                case 2:
+                    buttonWord3.setColorFilter(Color.TRANSPARENT);
+                    break;
+                case 3:
+                    break;
             }
+            nextSet();
+        } else {
+
+            // Update colour of text
+            timeView.setTextColor(LOSE_RED);
+
+            // Update colour tint of word to LOSE_RED
+            switch (mLastButtonWordClicked) {
+                case 0:
+                    buttonWord1.setColorFilter(WIN_CYAN);
+                    buttonWord2.setColorFilter(NADA_GRAY);
+                    buttonWord3.setColorFilter(NADA_GRAY);
+                    break;
+                case 1:
+                    buttonWord1.setColorFilter(NADA_GRAY);
+                    buttonWord2.setColorFilter(WIN_CYAN);
+                    buttonWord3.setColorFilter(NADA_GRAY);
+                    break;
+                case 2:
+                    buttonWord1.setColorFilter(NADA_GRAY);
+                    buttonWord2.setColorFilter(NADA_GRAY);
+                    buttonWord3.setColorFilter(WIN_CYAN);
+                    break;
+                case 3:
+                    break;
+            }
+            handler.delayed(this::startConcluding,350); // setHandler
         }
     };
 
 
-    Runnable saySound = new Runnable() {
-        @Override
-        public void run() {
+    Runnable saySound = () -> {
+        try {
+            if (!gameOver) {
+                // Get sound resource
+                String sound = wordSets.getJSONObject(currentSet).getString("sound");
 
-            try {
-                if (!gameOver) {
-                    // Get sound resource
-                    String sound = wordSets.getJSONObject(currentSet).getString("sound");
-
-                    // Add a next action to be played after a few hundred milliseconds
+                // Add a next action to be played after a few hundred milliseconds
                     /* Note that this is not done after completion,
                        in case the child can determine the next word
                        after hearing the first syllable. Ie. 'who' vs. 'the'
                      */
-                    buttonEnablingHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Enable buttons
-                            if (!gameOver) {
-                                setButtonsEnabled(true);
-                            }
-                        }
-                    }, 500);
+                handler.delayed(() -> {
+                    if (!gameOver) {
+                        setButtonsEnabled(true);
+                    }
+                }, 500); // buttonEnablingHandler
 
-                    // Play sound with action happening after sound completion
-                    playSound(sound);
-                }
+                // Play sound with action happening after sound completion
+                playSound(sound);
             }
-            catch (Exception ex) {
-                ex.printStackTrace();
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
-            }
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
         }
     };
 
@@ -945,75 +694,5 @@ public class SoundDrillTwelveActivity extends DrillActivity {
         // Initialize everything to start the drill again
         initializeGUI();
         initializeData(mDrillData);
-    }
-
-    @Override
-    protected void onPause() {
-        // Call the super always
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        // Call the super always
-        super.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        // Call the super always
-        super.onDestroy();
-
-        if (mp != null) {
-            mp.release();
-            mp = null;
-        }
-
-        if (timeHandler != null) {
-            timeHandler.removeCallbacksAndMessages(null);
-            timeHandler = null;
-        }
-
-        if (setHandler != null) {
-            setHandler.removeCallbacksAndMessages(null);
-            setHandler = null;
-        }
-
-        if (emergencyHandler != null) {
-            emergencyHandler.removeCallbacksAndMessages(null);
-            emergencyHandler = null;
-        }
-
-        if (buttonEnablingHandler != null) {
-            buttonEnablingHandler.removeCallbacksAndMessages(null);
-            buttonEnablingHandler = null;
-        }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.stop();
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

@@ -1,4 +1,4 @@
-package classact.com.xprize.activity.drill.sound;
+package classact.com.xprize.activity.drill.tutorial;
 
 import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
@@ -6,28 +6,27 @@ import android.content.Context;
 import javax.inject.Inject;
 
 import classact.com.xprize.utils.Bus;
-import classact.com.xprize.utils.LiveHandler;
 import classact.com.xprize.viewmodel.DrillViewModel;
 
 /**
- * Created by hcdjeong on 2017/12/27.
+ * Created by hcdjeong on 2017/12/28.
  */
 
-public class SoundDrill12ViewModel extends DrillViewModel {
+public class TutorialViewModel extends DrillViewModel {
 
     @Inject
-    public SoundDrill12ViewModel(Bus bus) {
+    public TutorialViewModel(Bus bus) {
         super(bus);
     }
 
     @Override
-    public SoundDrill12ViewModel register(Lifecycle lifecycle) {
+    public TutorialViewModel register(Lifecycle lifecycle) {
         super.register(lifecycle);
         return this;
     }
 
     @Override
-    public SoundDrill12ViewModel prepare(Context context) {
+    public TutorialViewModel prepare(Context context) {
         return this;
     }
 }

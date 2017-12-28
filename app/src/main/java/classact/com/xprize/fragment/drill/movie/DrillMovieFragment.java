@@ -176,4 +176,9 @@ public class DrillMovieFragment extends MenuFragment implements
     public void onResumeEvent() {
 
     }
+
+    @Override
+    public void onStopEvent() {
+
+    }
 }

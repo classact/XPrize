@@ -44,6 +44,7 @@ public abstract class MenuFragment extends DaggerFragment {
 
     public abstract void onPauseEvent();
     public abstract void onResumeEvent();
+    public abstract void onStopEvent();
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -71,9 +72,9 @@ public abstract class MenuFragment extends DaggerFragment {
                         }));
     }
 
-    protected void onStopEvent() {
-        getActivity().moveTaskToBack(true);
-    }
+//    protected void onStopEvent() {
+//        getActivity().moveTaskToBack(true);
+//    }
 
     protected void loadImage(@NonNull String resName, @NonNull ImageView imageView) {
         checkNotNull(resName);

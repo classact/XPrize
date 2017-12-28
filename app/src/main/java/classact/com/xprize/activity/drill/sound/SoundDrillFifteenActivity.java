@@ -57,7 +57,6 @@ public class SoundDrillFifteenActivity extends DrillActivity {
     private int currentItem;
     public JSONArray drills;
     private int currentDrill;
-    private MediaPlayer mp;
     private int correctItems;
     private JSONObject allData;
 
@@ -91,8 +90,6 @@ public class SoundDrillFifteenActivity extends DrillActivity {
     private RelativeLayout mRootView;
     private final Context THIS = this;
 
-    private Handler handler;
-
     private SoundDrill15ViewModel vm;
 
     @Override
@@ -105,6 +102,9 @@ public class SoundDrillFifteenActivity extends DrillActivity {
                 .get(SoundDrill15ViewModel.class)
                 .register(getLifecycle())
                 .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
 
         mRootView = (RelativeLayout) findViewById(R.id.activity_sound_drill_fifteen);
         mRootView.setBackgroundResource(R.drawable.backgroundwriteletters);
@@ -178,8 +178,6 @@ public class SoundDrillFifteenActivity extends DrillActivity {
         );
         mPlaceHoldersParent.setLayoutParams(mPlaceHoldersParentLayout);
         mRootView.addView(mPlaceHoldersParent);
-
-        handler = new Handler();
 
         /* Container BG test **
         int maxLength = MAX_LETTERS;
@@ -594,10 +592,10 @@ public class SoundDrillFifteenActivity extends DrillActivity {
                                     mEndDrill = true;
                                     // Play affirmation sound
                                     int mpDurLeft = 0;
-                                    if (mp != null && mp.isPlaying()) {
-                                        mpDurLeft = mp.getDuration() - mp.getCurrentPosition();
+                                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                                        mpDurLeft = mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition();
                                     }
-                                    handler.postDelayed(new Runnable() {
+                                    handler.delayed(new Runnable() {
                                         @Override
                                         public void run() {
                                             mThisActivity.playSound(YAY, YAY);
@@ -610,10 +608,10 @@ public class SoundDrillFifteenActivity extends DrillActivity {
                                     mThisActivity.setDrillComplete(true);
                                     // Play affirmation sound
                                     int mpDurLeft = 0;
-                                    if (mp != null && mp.isPlaying()) {
-                                        mpDurLeft = mp.getDuration() - mp.getCurrentPosition();
+                                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                                        mpDurLeft = mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition();
                                     }
-                                    handler.postDelayed(new Runnable() {
+                                    handler.delayed(new Runnable() {
                                         @Override
                                         public void run() {
                                             mThisActivity.playSound(YAY, YAY);
@@ -679,36 +677,23 @@ public class SoundDrillFifteenActivity extends DrillActivity {
             String soundPath;
             // Determine sound path
             if (sound.equalsIgnoreCase(YAY)) {
-                soundPath = "android.resource://" + getApplicationContext().getPackageName() + "/" +
-                        ResourceSelector.getPositiveAffirmationSound(getApplicationContext());
+                soundPath = "android.resource://" + context.getPackageName() + "/" +
+                        ResourceSelector.getPositiveAffirmationSound(context);
             } else if (sound.equalsIgnoreCase(NAY)) {
-                soundPath = "android.resource://" + getApplicationContext().getPackageName() + "/" +
-                        ResourceSelector.getNegativeAffirmationSound(getApplicationContext());;
+                soundPath = "android.resource://" + context.getPackageName() + "/" +
+                        ResourceSelector.getNegativeAffirmationSound(context);;
             } else {
-                soundPath = FetchResource.sound(getApplicationContext(), sound);
-            }
-            // Init media player if required
-            if (mp == null) {
-                mp = new MediaPlayer();
+                soundPath = FetchResource.sound(context, sound);
             }
             // Reset media player
-            mp.reset();
-            // Set data source of media player
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            // Set listeners
-            mp.setOnPreparedListener(new SoundDrillFifteenActivity.SoundListener(mThisActivity, tag, sound, soundPath));
-            mp.setOnCompletionListener(new SoundDrillFifteenActivity.SoundListener(mThisActivity, tag, sound, soundPath));
+            mediaPlayer.reset();
+            mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mediaPlayer.setOnPreparedListener(new SoundDrillFifteenActivity.SoundListener(mThisActivity, tag, sound, soundPath));
+            mediaPlayer.setOnCompletionListener(new SoundDrillFifteenActivity.SoundListener(mThisActivity, tag, sound, soundPath));
             // Prepare media player to Rock and Rumble ~ ♩ ♪ ♫ ♬
-            mp.prepare();
+            mediaPlayer.prepare();
         } catch (Exception ex) {
             ex.printStackTrace();
-            // System.err.println("==============================");
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            (new SoundDrillFifteenActivity.SoundListener(mThisActivity, tag, sound, null)).onCompletion(null);
         }
     }
 
@@ -732,27 +717,27 @@ public class SoundDrillFifteenActivity extends DrillActivity {
             // System.out.println("SDFifteenActivity.SoundListener(class).onPrepared > Debug: MC");
             switch (mTag) {
                 case DRAG_WORD_TO_WRITE: {
-                    mp.start();
+                    mediaPlayer.start();
                     break;
                 }
                 case THIS_IS: {
-                    mp.start();
+                    mediaPlayer.start();
                     break;
                 }
                 case SENTENCE_SOUND: {
-                    mp.start();
+                    mediaPlayer.start();
                     break;
                 }
                 case WORD_SOUND: {
-                    mp.start();
+                    mediaPlayer.start();
                     break;
                 }
                 case NAY: {
-                    mp.start();
+                    mediaPlayer.start();
                     break;
                 }
                 case YAY: {
-                    mp.start();
+                    mediaPlayer.start();
                     break;
                 }
                 default: {
@@ -763,6 +748,7 @@ public class SoundDrillFifteenActivity extends DrillActivity {
 
         @Override
         public void onCompletion(MediaPlayer mp) {
+            mediaPlayer.stop();
             // Debug
             // System.out.println("SDFifteenActivity.SoundListener(class).onCompletion > Debug: MC");
             switch (mTag) {
@@ -962,32 +948,5 @@ public class SoundDrillFifteenActivity extends DrillActivity {
 
     public ImageView[] getLetterImageViews() {
         return mWordImageViews;
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        handler = null;
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

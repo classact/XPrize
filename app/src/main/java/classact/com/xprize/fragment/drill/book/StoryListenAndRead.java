@@ -1059,4 +1059,9 @@ public class StoryListenAndRead extends DrillFragment {
     public void onResumeEvent() {
         disableTouchScreen();
     }
+
+    @Override
+    public void onStopEvent() {
+
+    }
 }

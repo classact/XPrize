@@ -30,6 +30,7 @@ import classact.com.xprize.activity.drill.sound.SoundDrillThirteenActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillThreeActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillTwelveActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillTwoActivity;
+import classact.com.xprize.activity.drill.tutorial.Tutorial;
 import classact.com.xprize.activity.movie.MovieActivity;
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -59,6 +60,13 @@ public abstract class ActivityModule {
             DrillMovieFragmentModule.class
     })
     abstract MovieActivity contributeMovieActivity();
+
+    /* Tutorial Activity */
+
+    @ContributesAndroidInjector(modules = {
+            ControlFragmentModule.class
+    })
+    abstract Tutorial contributeTutorialActivity();
 
     /* Sound Drill Activities */
 

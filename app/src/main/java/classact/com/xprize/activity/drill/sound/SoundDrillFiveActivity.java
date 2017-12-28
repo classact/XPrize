@@ -29,7 +29,6 @@ import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillFiveActivity extends DrillActivity {
-    private MediaPlayer mp;
     private ImageView demoItem;
     private ImageView item1;
     private ImageView item2;
@@ -38,7 +37,6 @@ public class SoundDrillFiveActivity extends DrillActivity {
     private String drillData;
     private JSONArray sets;
     JSONArray images;
-    private Handler handler;
     private int currentSet;
     private int currentItem;
     private int correctItem;
@@ -65,6 +63,9 @@ public class SoundDrillFiveActivity extends DrillActivity {
                 .get(SoundDrill05ViewModel.class)
                 .register(getLifecycle())
                 .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
 
         demoItem = (ImageView)findViewById(R.id.item_demo);
         itemsEnabled = false;
@@ -117,43 +118,8 @@ public class SoundDrillFiveActivity extends DrillActivity {
         rnd = new Random();
         drillData = getIntent().getExtras().getString("data");
         currentSet = 0;
-        handler = new Handler(Looper.getMainLooper());
         initialiseData();
         showSet();
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
     }
 
     private void initialiseData(){
@@ -163,10 +129,6 @@ public class SoundDrillFiveActivity extends DrillActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -219,87 +181,26 @@ public class SoundDrillFiveActivity extends DrillActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
     public void playBahatiHasA(){
         try {
             String sound = params.getString("bahati_has_a");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    playCurrentItemSound();
-                }
-            });
-            mp.prepare();
+            playSound(sound, this::playCurrentItemSound);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
     public void playCurrentItemSound(){
         try {
-            String soundPath = FetchResource.sound(getApplicationContext(), currentItemName);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            playSheNeedsSomethingElse();
-                        }
-                    }, 500);
-                }
-            });
-            mp.prepare();
+            playSound(currentItemName, () ->
+                    handler.delayed(this::playSheNeedsSomethingElse, 500));
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", currentItemName).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playSheNeedsSomethingElse();
-                }
-            }, 1300);
         }
     }
 
@@ -307,33 +208,11 @@ public class SoundDrillFiveActivity extends DrillActivity {
         try {
             toggleItemsVisibility(true);
             String sound = params.getString("she_needs_something_else");
+            playSound(sound, this::playCurrentSound);
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    playCurrentSound();
-                }
-            });
-            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -341,115 +220,41 @@ public class SoundDrillFiveActivity extends DrillActivity {
         try {
             toggleItemsVisibility(true);
             String soundPath = FetchResource.sound(getApplicationContext(), currentSound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            itemsEnabled = true;
-                        }
-                    }, mp.getDuration() - 100);
-                }
+            mediaPlayer.reset();
+            mediaPlayer.setDataSource(context, Uri.parse(soundPath));
+            mediaPlayer.setOnPreparedListener((mp) -> {
+                mediaPlayer.start();
+                    handler.delayed(() -> itemsEnabled = true, mp.getDuration() - 100);
+                });
+            mediaPlayer.setOnCompletionListener((mp) -> {
+                mediaPlayer.stop();
             });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                }
-            });
-            mp.prepare();
+            mediaPlayer.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", currentSound).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    itemsEnabled = true;
-                }
-            }, 700);
-        }
-    }
-
-    private void playSound(int soundId){
-        try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
     private void playPositiveSound(int soundId){
         try {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    ImageView iv = items[correctItem];
-                    int waitDuration = Math.min(mp.getDuration(), 200);
-                    fadeIncorrect(iv, waitDuration);
-                    mp.start();
-                }
+            mediaPlayer.reset();
+            mediaPlayer.setDataSource(context, myUri);
+            mediaPlayer.setOnPreparedListener((mp) -> {
+                ImageView iv = items[correctItem];
+                int waitDuration = Math.min(mp.getDuration(), 200);
+                fadeIncorrect(iv, waitDuration);
+                mp.start();
             });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            repeatCorrect();
-                        }
-                    }, 500);
-                }
+            mediaPlayer.setOnCompletionListener((mp) -> {
+                mp.stop();
+                handler.delayed(this::repeatCorrect, 500);
             });
-            mp.prepare();
+            mediaPlayer.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -459,31 +264,14 @@ public class SoundDrillFiveActivity extends DrillActivity {
             final String soundMatch = orderedImages[currentItem].getString("sound");
 
             // Play current
-            playSound(currentItemName, new Runnable() {
-                @Override
-                public void run() {
-                    // Play sound match
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            playSound(soundMatch, new Runnable() {
-                                @Override
-                                public void run() {
-                                    // Drill control logic
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            determineNextDrillItem();
-                                        }
-                                    }, 450);
-                                }
-                            });
-                        }
-                    }, 400);
-                }
+            playSound(currentItemName, () -> {
+                handler.delayed(() ->
+                        playSound(soundMatch, () ->
+                                handler.delayed(this::determineNextDrillItem,
+                                    450)),
+                    400);
             });
         } catch (Exception ex) {
-            System.err.println(ex.getMessage());
             ex.printStackTrace();
         }
     }
@@ -492,25 +280,14 @@ public class SoundDrillFiveActivity extends DrillActivity {
         try {
             currentSet++;
             if (currentSet < sets.length()) {
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Show next set
-                        showSet();
-                    }
-                }, 1000);
+                handler.delayed(this::showSet, 1000);
             } else {
                 // End drill
-                mp.release();
                 finish();
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
             ex.printStackTrace();
-
-            // End drill
-            mp.release();
-            finish();
         }
     }
 
@@ -531,12 +308,7 @@ public class SoundDrillFiveActivity extends DrillActivity {
                 }
 
                 String sound = orderedImages[currentItem].getString("sound");
-                playSound(sound, new Runnable() {
-                    @Override
-                    public void run() {
-                        checkProgress();
-                    }
-                });
+                playSound(sound, this::checkProgress);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -548,7 +320,7 @@ public class SoundDrillFiveActivity extends DrillActivity {
             playPositiveSound(ResourceSelector.getPositiveAffirmationSound(this));
         }
         else{
-            playSound(ResourceSelector.getNegativeAffirmationSound(this));
+            playSound(ResourceSelector.getNegativeAffirmationSound(this), null);
         }
     }
 
@@ -597,37 +369,6 @@ public class SoundDrillFiveActivity extends DrillActivity {
                 iv.setVisibility(View.INVISIBLE);
             }
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.stop();
-            mp.release();
-        }
-        if (handler != null) {
-            handler.removeCallbacksAndMessages(null);
-            handler = null;
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }
 

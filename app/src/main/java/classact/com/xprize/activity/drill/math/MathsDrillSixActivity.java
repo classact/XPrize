@@ -3,10 +3,6 @@ package classact.com.xprize.activity.drill.math;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
@@ -33,9 +29,7 @@ public class MathsDrillSixActivity extends DrillActivity {
     private ImageView shape2;
     private ImageView shape3;
     private JSONObject allData;
-    private MediaPlayer mp;
     private boolean touchEnabled;
-    private Handler handler;
     private ImageView[] shapeImageViews;
 
     private final Context THIS = this;
@@ -53,6 +47,9 @@ public class MathsDrillSixActivity extends DrillActivity {
                 .register(getLifecycle())
                 .prepare(context);
 
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         objectsContainer = (RelativeLayout)findViewById(R.id.objectsContainer);
         demoShape = (ImageView)findViewById(R.id.demo_shape);
 
@@ -64,7 +61,6 @@ public class MathsDrillSixActivity extends DrillActivity {
         shape2.setImageResource(0);
         shape3.setImageResource(0);
 
-        handler = new Handler();
         touchEnabled = false;
         initialise();
     }
@@ -260,14 +256,10 @@ public class MathsDrillSixActivity extends DrillActivity {
                 String objectToTouch = allData.getString("object_sound");
                 if (objectToTouch.equalsIgnoreCase(touchedObject)) {
                     touchEnabled = false;
-                    playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mp != null) {
-                                mp.release();
-                            }
-                            finish();
-                        }
+                    playSound(FetchResource.positiveAffirmation(THIS), () -> {
+                        mediaPlayer.reset();
+                        finish();
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     });
                 } else {
                     playSound(FetchResource.negativeAffirmation(THIS), null);
@@ -368,65 +360,5 @@ public class MathsDrillSixActivity extends DrillActivity {
         catch (Exception ex){
             ex.printStackTrace();
         }
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

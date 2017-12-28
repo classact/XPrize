@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
@@ -45,9 +46,7 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
     private ImageView item4;
     private ImageView item5;
     private ImageView item6;
-    private MediaPlayer mp;
     private JSONObject allData;
-    private android.os.Handler handler;
 
     private int missingValue;
     private int currentValue;
@@ -63,13 +62,24 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
     private RelativeLayout parentView;
     private final Context THIS = this;
 
+    private MathDrill07BViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_seven_and_one);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill07BViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         parentView = (RelativeLayout) findViewById(R.id.activity_maths_drill_seven);
 
-        handler = new Handler();
         itemsReceptacle = (RelativeLayout)findViewById(R.id.itemsReceptacle);
         initialiseData();
     }
@@ -323,10 +333,9 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
             playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
                 @Override
                 public void run() {
-                    if (mp != null) {
-                        mp.release();
-                    }
+                    mediaPlayer.reset();
                     finish();
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
             });
         }
@@ -391,10 +400,10 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
                 case DragEvent.ACTION_DROP:
                     if (dragEnabled) {
                         if (!isCorrectItem()) {
-                            if (mp != null) {
-                                if (mp.isPlaying()) {
-                                    int timeLeft = mp.getDuration() - mp.getCurrentPosition();
-                                    handler.postDelayed(new Runnable() {
+                            if (mediaPlayer != null) {
+                                if (mediaPlayer.isPlaying()) {
+                                    int timeLeft = mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition();
+                                    handler.delayed(new Runnable() {
                                         @Override
                                         public void run() {
                                             playSound(FetchResource.negativeAffirmation(THIS), null);
@@ -417,10 +426,10 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
                         placeItem();
                         ImageView view = (ImageView) event.getLocalState();
                         view.setVisibility(View.INVISIBLE);
-                        if (mp != null) {
-                            if (mp.isPlaying()) {
-                                int timeLeft = mp.getDuration() - mp.getCurrentPosition();
-                                handler.postDelayed(new Runnable() {
+                        if (mediaPlayer != null) {
+                            if (mediaPlayer.isPlaying()) {
+                                int timeLeft = mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition();
+                                handler.delayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         end();
@@ -486,73 +495,5 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
         public int getValue() {
             return value;
         }
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if (mp != null){
-            mp.release();
-        }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

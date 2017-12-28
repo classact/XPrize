@@ -27,8 +27,6 @@ import classact.com.xprize.utils.FetchResource;
 public class MathsDrillOneActivity extends DrillActivity {
     private JSONObject allData;
     private JSONArray numbers;
-    private MediaPlayer mp;
-    private Handler handler;
     private int currentNumber;
     private int[] positions;
     private int currentPosition;
@@ -50,8 +48,10 @@ public class MathsDrillOneActivity extends DrillActivity {
                 .register(getLifecycle())
                 .prepare(context);
 
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         rootLayout = (RelativeLayout) findViewById(R.id.activity_maths_unit_one);
-        handler = new Handler();
 
         rln = new RelativeLayout(getApplicationContext());
         rootLayout.addView(rln);
@@ -66,40 +66,6 @@ public class MathsDrillOneActivity extends DrillActivity {
         initialiseData();
     }
 
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
-    }
-
     private void initialiseData(){
         try {
             String drillData = getIntent().getExtras().getString("data");
@@ -108,14 +74,10 @@ public class MathsDrillOneActivity extends DrillActivity {
             System.out.println("::: NUMBER OF NUMBERS = " + numbers.length());
             positionAndShowNumbers();
             String sound = allData.getString("its_time_to_count");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    mp.reset();
-                    currentNumber = 1;
-                    returnRunnable = showNumbersRunnable;
-                    showNumbers();
-                }
+            playSound(sound, () -> {
+                currentNumber = 1;
+                returnRunnable = showNumbersRunnable;
+                showNumbers();
             });
         }
         catch (Exception ex){
@@ -160,7 +122,7 @@ public class MathsDrillOneActivity extends DrillActivity {
                 if ((currentNumber-1) == positions[i])
                     currentPosition = i;
             showNumber(FetchResource.imageId(THIS, numbers, positions[currentPosition], "numeral_sparkling"), currentPosition);
-            handler.postDelayed(resetNumberRunnable,200);
+            handler.delayed(resetNumberRunnable,200);
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -173,7 +135,7 @@ public class MathsDrillOneActivity extends DrillActivity {
             try {
                 showNumber(FetchResource.imageId(THIS, numbers, positions[currentPosition], "numeral"), currentPosition);
                 currentNumber++;
-                handler.postDelayed(returnRunnable,500);
+                handler.delayed(returnRunnable,500);
             }
             catch (Exception ex){
                 ex.printStackTrace();
@@ -196,12 +158,7 @@ public class MathsDrillOneActivity extends DrillActivity {
     private void showNumbers(){
         try {
             String sound = numbers.getJSONObject(currentNumber - 1).getString("sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    sparkle();
-                }
-            });
+            playSound(sound, this::sparkle);
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -213,12 +170,7 @@ public class MathsDrillOneActivity extends DrillActivity {
             currentNumber = 1;
             returnRunnable = sayNumbersRunnable;
             String sound = allData.getString("say_numbers_with_me");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    sayNumbers();
-                }
-            });
+            playSound(sound, this::sayNumbers);
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -231,16 +183,11 @@ public class MathsDrillOneActivity extends DrillActivity {
             if (currentNumber <= numbers.length())
                 sayNumbers();
             else
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run(){
-                        handler.removeCallbacks(returnRunnable);
-                        handler.removeCallbacks(showNumbersRunnable);
-                        if (mp != null) {
-                            mp.release();
-                        }
-                        finish();
-                    }
+                handler.delayed(() -> {
+                    handler.removeCallbacks(returnRunnable);
+                    handler.removeCallbacks(showNumbersRunnable);
+                    finish();
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 },200);
         }
     };
@@ -248,51 +195,10 @@ public class MathsDrillOneActivity extends DrillActivity {
     private void sayNumbers(){
         try {
             String sound = numbers.getJSONObject(currentNumber - 1).getString("sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    sparkle();
-                }
-            });
+            playSound(sound, this::sparkle);
         }
         catch (Exception ex){
             ex.printStackTrace();
         }
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if (mp != null){
-            mp.release();
-        }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        handler.removeCallbacks(returnRunnable);
-        handler.removeCallbacks(showNumbersRunnable);
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

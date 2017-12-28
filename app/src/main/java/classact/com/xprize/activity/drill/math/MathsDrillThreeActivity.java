@@ -30,7 +30,6 @@ import classact.com.xprize.utils.SquarePacker;
 
 public class MathsDrillThreeActivity extends DrillActivity {
     private JSONObject allData;
-    private MediaPlayer mp;
     private int segment = 1;
     private RelativeLayout itemsContainer;
     private int draggedItems = 0;
@@ -41,7 +40,6 @@ public class MathsDrillThreeActivity extends DrillActivity {
     private boolean dragEnabled;
     private boolean drillComplete;
     private boolean endDrill;
-    private Handler handler;
     private final Context THIS = this;
 
     private MathDrill03ViewModel vm;
@@ -56,6 +54,9 @@ public class MathsDrillThreeActivity extends DrillActivity {
                 .get(MathDrill03ViewModel.class)
                 .register(getLifecycle())
                 .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
 
         itemsContainer = (RelativeLayout) findViewById(R.id.itemsContainer);
         itemsReceptacle = (RelativeLayout)findViewById(R.id.itemsReceptacle);
@@ -99,42 +100,7 @@ public class MathsDrillThreeActivity extends DrillActivity {
         dragEnabled = false;
         drillComplete = false;
         endDrill = false;
-        handler = new Handler();
         initialiseData();
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
     }
 
     private void initialiseData(){
@@ -144,7 +110,7 @@ public class MathsDrillThreeActivity extends DrillActivity {
             targetItems = allData.getInt("number_of_items");
             placeObjects();
             final String sound = allData.getString("monkey_wants_to_eat");
-            handler.postDelayed(new Runnable() {
+            handler.delayed(new Runnable() {
                 @Override
                 public void run() {
                     playSound(sound, new Runnable() {
@@ -219,7 +185,7 @@ public class MathsDrillThreeActivity extends DrillActivity {
         public void run() {
             if (drillComplete && !endDrill) {
                 endDrill = true;
-                handler.postDelayed(new Runnable() {
+                handler.delayed(new Runnable() {
                     @Override
                     public void run() {
                         playSound(FetchResource.positiveAffirmation(THIS), placementRunnable);
@@ -227,10 +193,9 @@ public class MathsDrillThreeActivity extends DrillActivity {
                 }, 300);
             } else if (endDrill) {
                 handler.removeCallbacks(placementRunnable);
-                if (mp != null) {
-                    mp.release();
-                }
+                mediaPlayer.reset();
                 finish();
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         }
     };
@@ -330,10 +295,6 @@ public class MathsDrillThreeActivity extends DrillActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -352,10 +313,6 @@ public class MathsDrillThreeActivity extends DrillActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -389,32 +346,5 @@ public class MathsDrillThreeActivity extends DrillActivity {
         catch (Exception ex){
             ex.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        handler.removeCallbacks(placementRunnable);
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

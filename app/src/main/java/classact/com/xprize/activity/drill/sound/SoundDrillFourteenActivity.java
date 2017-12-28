@@ -64,12 +64,10 @@ public class SoundDrillFourteenActivity extends DrillActivity {
     private DrillFourteenWriteView writingView;
     private JSONArray words;
     private int currentWord;
-    private MediaPlayer mp;
     private int currentTries;
     private JSONObject allData;
 
     String textholder;
-    Handler handler;
 
     private boolean mCanWrite;
     private boolean mIsWriting;
@@ -101,6 +99,9 @@ public class SoundDrillFourteenActivity extends DrillActivity {
                 .get(SoundDrill14ViewModel.class)
                 .register(getLifecycle())
                 .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
 
         item1 = (ImageView) findViewById(R.id.item1);
         item2 = (ImageView) findViewById(R.id.item2);
@@ -162,7 +163,6 @@ public class SoundDrillFourteenActivity extends DrillActivity {
         mTimer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
 
         String drillData = getIntent().getExtras().getString("data");
-        handler = new Handler();
         initialiseData(drillData);
     }
 
@@ -174,40 +174,6 @@ public class SoundDrillFourteenActivity extends DrillActivity {
             startDrill();
         } catch (Exception ex) {
             ex.printStackTrace();
-        }
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
         }
     }
 
@@ -513,7 +479,7 @@ public class SoundDrillFourteenActivity extends DrillActivity {
             playSound(sound, new Runnable() {
                 @Override
                 public void run() {
-                    handler.postDelayed(wereYouCorrectRunnable,100);
+                    handler.delayed(wereYouCorrectRunnable,100);
                 }
             });
         }
@@ -530,7 +496,7 @@ public class SoundDrillFourteenActivity extends DrillActivity {
                 playSound(sound, new Runnable() {
                     @Override
                     public void run() {
-                        handler.postDelayed(continueRunnable, 2000);
+                        handler.delayed(continueRunnable, 2000);
                     }
                 });
             }
@@ -540,18 +506,14 @@ public class SoundDrillFourteenActivity extends DrillActivity {
         }
     };
 
-    public Runnable continueRunnable = new Runnable() {
-        @Override
-        public void run() {
-            currentWord++;
-            if (currentWord <= words.length()) {
-                startDrill();
-            } else {
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
-            }
+    public Runnable continueRunnable = () -> {
+        currentWord++;
+        if (currentWord <= words.length()) {
+            startDrill();
+        } else {
+            mediaPlayer.reset();
+            finish();
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
     };
 
@@ -623,7 +585,7 @@ public class SoundDrillFourteenActivity extends DrillActivity {
                         mThisActivity.setLastWrittenTime(new Date().getTime());
 
                         handler.removeCallbacks(countDown);
-                        handler.postDelayed(new Runnable() {
+                        handler.delayed(new Runnable() {
                             @Override
                             public void run() {
                                 mTimer.setTextColor(Color.DKGRAY);
@@ -643,9 +605,6 @@ public class SoundDrillFourteenActivity extends DrillActivity {
         @Override
         public void run() {
             try {
-
-                System.out.println("Starting countdown!! " + mIsWriting + ", " + mLastWrittenTime);
-
                 long currentTime = new Date().getTime();
 
                 if (!(mIsWriting || mLastWrittenTime == 0l || (currentTime - mLastWrittenTime) < DRAW_WAIT_TIME )) {
@@ -660,21 +619,17 @@ public class SoundDrillFourteenActivity extends DrillActivity {
 
                     if (mTimerCounter > 0) {
                         mTimerCounter--;
-                        handler.postDelayed(countDown, 1000);
+                        handler.delayed(countDown, 1000);
                     } else {
                         mCanWrite = false;
                         mTimer.setTextColor(Color.parseColor("#33ccff"));
-                        handler.postDelayed(showWordRunnable, 500);
+                        handler.delayed(showWordRunnable, 500);
                     }
                 } else {
                     mTimer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
                 }
             } catch (Exception ex) {
-                System.err.println("==========================================");
-                System.err.println("SDFourteenActivity.countDown > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------");
                 ex.printStackTrace();
-                System.err.println("==========================================");
             }
         }
     };
@@ -701,32 +656,5 @@ public class SoundDrillFourteenActivity extends DrillActivity {
 
     public long getLastWrittenTime() {
         return mLastWrittenTime;
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        handler = null;
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

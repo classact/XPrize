@@ -47,8 +47,6 @@ public class SoundDrillTenActivity extends DrillActivity {
     private ImageButton flashButton;
     private JSONArray words;
     private int currentWord;
-    private MediaPlayer mp;
-    private Handler handler;
     private int mode;
     private JSONObject[] objects;
     private JSONObject allData;
@@ -66,6 +64,9 @@ public class SoundDrillTenActivity extends DrillActivity {
                 .get(SoundDrill10ViewModel.class)
                 .register(getLifecycle())
                 .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
 
         buttonsEnabled = false;
         buttonWord1 = (ImageButton)findViewById(R.id.button_word1);
@@ -127,7 +128,6 @@ public class SoundDrillTenActivity extends DrillActivity {
 
         initialiseButtons();
         String drillData = getIntent().getExtras().getString("data");
-        handler = new Handler();
         mode = 1;
         initialiseData(drillData);
     }
@@ -142,40 +142,15 @@ public class SoundDrillTenActivity extends DrillActivity {
             words = allData.getJSONArray("words");
             flashButton.setVisibility(View.INVISIBLE);
             String sound = allData.getString("instructions");
-
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
+            playSound(sound, () -> {
+                currentWord = 0;
+                flashButton.setVisibility(View.VISIBLE);
+                showWord();
             });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    currentWord = 0;
-                    flashButton.setVisibility(View.VISIBLE);
-                    showWord();
-                }
-            });
-            mp.prepare();
         } catch (Exception ex) {
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
-
-
 
     private void initialiseButtons() {
 
@@ -248,10 +223,6 @@ public class SoundDrillTenActivity extends DrillActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -261,54 +232,10 @@ public class SoundDrillTenActivity extends DrillActivity {
         System.out.println("-- SoundTrillTenActivity.playSoundAndShowNext > Debug: METHOD CALLED");
 
         try {
-            // Get sound path
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-
-            // Reset media player
-            mp.reset();
-
-            // Set data source to sound path
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-
-            // Set on prepared listener
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-
-                    // Start the sound
-                    mp.start();
-                }
-            });
-
-            // Set on completion listener
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-
-                    // Reset media player
-                    mp.reset();
-
-                    // After 0.5s, show the next word
-                    handler.postDelayed(showNextWord, 500);
-                }
-            });
-
-            // Prepare the media player
-            mp.prepare();
+            playSound(sound, () ->  handler.delayed(showNextWord, 500));
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    showNextWord.run();
-                }
-            }, 1300);
         }
     }
 
@@ -340,7 +267,7 @@ public class SoundDrillTenActivity extends DrillActivity {
                 currentWord = 0;
 
                 // After 0.1s, begin touch words (get data ready for mode 2)
-                handler.postDelayed(beginTouchWord,100);
+                handler.delayed(beginTouchWord,100);
             }
         }
     };
@@ -354,41 +281,19 @@ public class SoundDrillTenActivity extends DrillActivity {
         try{
             sound = objects[currentWord].getString("sound");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            buttonsEnabled = true;
-                        }
-                    }, mp.getDuration() - 250);
-                }
+            mediaPlayer.reset();
+            mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mediaPlayer.setOnPreparedListener((mp) -> {
+                mp.start();
+                handler.delayed(() -> buttonsEnabled = true, mp.getDuration() - 250);
             });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                }
+            mediaPlayer.setOnCompletionListener((mp) -> {
+                mediaPlayer.stop();
             });
-            mp.prepare();
+            mediaPlayer.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();;
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    buttonsEnabled = true;
-                }
-            }, 550);
         }
     }
 
@@ -397,59 +302,14 @@ public class SoundDrillTenActivity extends DrillActivity {
         // Debug
         System.out.println("-- SoundTrillTenActivity.sayTouchWord > Debug: METHOD CALLED");
 
-        String sound = "";
+        String sound;
         try {
             // Extra sound resourcefrom 'allData' array
             sound = allData.getString("touch");
-
-            // Get sound path
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-
-            // Reset media player
-            mp.reset();
-
-            // Set media player's data source to sound path
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-
-            // Set on prepared listener
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-
-                    // Start the media player
-                    mp.start();
-                }
-            });
-
-            // Set on completion listener
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-
-                    // Reset the media player
-                    mp.reset();
-
-                    // Play word sound
-                    playWordSound();
-                }
-            });
-
-            // Prepare the media player
-            mp.prepare();
+            playSound(sound, this::playWordSound);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playWordSound();
-                }
-            }, 800);
         }
     }
 
@@ -559,23 +419,7 @@ public class SoundDrillTenActivity extends DrillActivity {
             }
             catch (Exception ex){
                 ex.printStackTrace();
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
-
             }
-        }
-    };
-
-    public Runnable sayWord = new Runnable() {
-        @Override
-        public void run() {
-
-            // Debug
-            System.out.println("-- SoundTrillTenActivity.sayWord.run(Runnable) > Debug: METHOD CALLED");
-
-            playWordSound();
         }
     };
 
@@ -611,109 +455,58 @@ public class SoundDrillTenActivity extends DrillActivity {
         }
     }
 
-    private void playThisSound(int soundid){
-
-        // Debug
-        System.out.println("-- SoundTrillTenActivity.playThisSound > Debug: METHOD CALLED");
-
+    private void playThisSound(int soundId){
+        
         try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
+            playSound(soundId, () -> {
+                Random rand = new Random();
+                currentWord = rand.nextInt(5);
 
-                    Random rand = new Random();
-                    currentWord = rand.nextInt(5);
-
-                    // Check if word exists
-                    if (objects[currentWord] == null) {
-                        // It doesn't so find the next one that exists
-                        currentWord = -1;
-                        int k = 0;
-                        boolean done = false;
-                        while (!done) {
-                            if (objects[k] != null) {
-                                currentWord = k;
+                // Check if word exists
+                if (objects[currentWord] == null) {
+                    // It doesn't so find the next one that exists
+                    currentWord = -1;
+                    int k = 0;
+                    boolean done = false;
+                    while (!done) {
+                        if (objects[k] != null) {
+                            currentWord = k;
+                            done = true;
+                        } else {
+                            k++;
+                            if (k == 5) {
                                 done = true;
-                            } else {
-                                k++;
-                                if (k == 5) {
-                                    done = true;
-                                }
                             }
                         }
                     }
-                    if (currentWord > -1) {
-                        // Say the word
-                        sayTouchWord();
-                    } else {
-                        // No words exit
-                        // End it
-
-                        // Debug
-                        System.out.println("SoundTrillTenActivity.playThisSound > Debug: " +
-                                        "Finishing with Current Word (" + currentWord + ")");
-                        finish();
-                    }
+                }
+                if (currentWord > -1) {
+                    // Say the word
+                    sayTouchWord();
+                } else {
+                    // No words exit
+                    // End it
+                    finish();
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
             });
-            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
     public void checkIfWordCorrect(int word){
-
-        // Debug
-        System.out.println("-- SoundTrillTenActivity.checkIfWordCorrect > Debug: METHOD CALLED");
-
+        
         if (buttonsEnabled) {
             if (word == currentWord) {
                 buttonsEnabled = false;
                 reward(word);
-                playThisSound(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
+                playThisSound(ResourceSelector.getPositiveAffirmationSound(context));
                 currentWord++;
             } else {
-                try {
-                    int soundid = ResourceSelector.getNegativeAffirmationSound(getApplicationContext());
-                    Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
-                    mp.reset();
-                    mp.setDataSource(getApplicationContext(), myUri);
-                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            mp.start();
-                        }
-                    });
-                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            mp.reset();
-                        }
-                    });
-                    mp.prepare();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    if (mp != null) {
-                        mp.release();
-                    }
-                    finish();
-                }
+                int soundId = ResourceSelector.getNegativeAffirmationSound(context);
+                playSound(soundId, null);
             }
         }
     }
@@ -724,40 +517,5 @@ public class SoundDrillTenActivity extends DrillActivity {
         buttonWord3.setEnabled(enable);
         buttonWord4.setEnabled(enable);
         buttonWord5.setEnabled(enable);
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-
-        // Debug
-        System.out.println("-- SoundTrillTenActivity.onPause > Debug: METHOD CALLED");
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.stop();
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

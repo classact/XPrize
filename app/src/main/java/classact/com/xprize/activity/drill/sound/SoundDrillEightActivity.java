@@ -47,8 +47,6 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
     private JSONObject drillData;
     private JSONArray paths;
     private ImageView letter;
-    private MediaPlayer mp;
-    private Handler handler;
     private int numberOfChecks = 0;
     private int repeat = 1;
 
@@ -80,6 +78,9 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
                 .register(getLifecycle())
                 .prepare(context);
 
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         letter = (ImageView)findViewById(R.id.item1);
         drawArea = (RelativeLayout) findViewById(R.id.draw_area);
         String drillData = getIntent().getExtras().getString("data");
@@ -96,8 +97,6 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
         RelativeLayout.LayoutParams letterLayout = (RelativeLayout.LayoutParams) letter.getLayoutParams();
         letterLayout.topMargin += OFFSET_Y;
         letter.setLayoutParams(letterLayout);
-
-        handler = new Handler(Looper.getMainLooper());
         startDrill();
     }
 
@@ -111,40 +110,6 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
         catch (Exception ex){
             ex.printStackTrace();
             Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
         }
     }
 
@@ -180,7 +145,6 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
         }
         catch(Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -197,7 +161,6 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -222,7 +185,6 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -317,7 +279,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
                 playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
                     @Override
                     public void run() {
-                        handler.postDelayed(new Runnable() {
+                        handler.delayed(new Runnable() {
                             @Override
                             public void run() {
                                 completed();
@@ -345,10 +307,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
             repeat++;
             startDrill();
         } else {
-            if (mp != null) {
-                mp.release();
-            }
-            handler.postDelayed(new Runnable() {
+            handler.delayed(new Runnable() {
                 @Override
                 public void run() {
                     finish();
@@ -441,11 +400,11 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
 
                     if (mTimerCounter > 0) {
                         mTimerCounter--;
-                        handler.postDelayed(countDown, 1000);
+                        handler.delayed(countDown, 1000);
                     } else {
                         mCanDraw = false;
                         mTimer.setTextColor(Color.parseColor("#33ccff"));
-                        handler.postDelayed(checkDone, 500);
+                        handler.delayed(checkDone, 500);
                     }
                 }
             } catch (Exception ex) {
@@ -488,7 +447,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
                         mThisActivity.setLastDrawnTime(new Date().getTime());
 
                         handler.removeCallbacks(countDown);
-                        handler.postDelayed(countDown, DRAW_WAIT_TIME);
+                        handler.delayed(countDown, DRAW_WAIT_TIME);
 
                         System.out.println("Drawing complete!");
                         break;
@@ -528,32 +487,5 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
 
     public long getLastDrawnTime() {
         return mLastDrawnTime;
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        handler = null;
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

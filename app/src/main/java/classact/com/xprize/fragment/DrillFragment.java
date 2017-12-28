@@ -62,6 +62,7 @@ public abstract class DrillFragment extends DaggerFragment {
 
     public abstract void onPauseEvent();
     public abstract void onResumeEvent();
+    public abstract void onStopEvent();
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -138,9 +139,9 @@ public abstract class DrillFragment extends DaggerFragment {
                         }));
     }
 
-    protected void onStopEvent() {
-        getActivity().moveTaskToBack(true);
-    }
+//    protected void onStopEvent() {
+//        getActivity().moveTaskToBack(true);
+//    }
 
     @Override
     public void onResume() {

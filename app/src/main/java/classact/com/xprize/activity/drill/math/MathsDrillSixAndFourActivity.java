@@ -32,8 +32,6 @@ import classact.com.xprize.utils.FetchResource;
 
 public class MathsDrillSixAndFourActivity extends DrillActivity implements View.OnTouchListener, View.OnDragListener {
     private JSONObject allData;
-    private MediaPlayer mp;
-    private Handler handler;
     private ImageView numberOne;
     private ImageView numberTwo;
     private ImageView numberThree;
@@ -75,6 +73,9 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
                 .get(MathDrill06EViewModel.class)
                 .register(getLifecycle())
                 .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
 
         parentView = (RelativeLayout) findViewById(R.id.activity_maths_drill_six_and_four);
 
@@ -261,10 +262,9 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
                             playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (mp != null) {
-                                        mp.release();
-                                    }
+                                    mediaPlayer.reset();
                                     finish();
+                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                                 }
                             });
                         }
@@ -562,73 +562,5 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
         public int getValue() {
             return value;
         }
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if (mp != null){
-            mp.release();
-        }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

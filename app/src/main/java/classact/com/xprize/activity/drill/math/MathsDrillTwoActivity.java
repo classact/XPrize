@@ -30,14 +30,12 @@ import classact.com.xprize.utils.SquarePacker;
 
 public class MathsDrillTwoActivity extends DrillActivity {
     private JSONObject allData;
-    private MediaPlayer mp;
     private ImageView numberOne;
     private ImageView numberTwo;
     private ImageView numberThree;
     private JSONArray numbers;
     private RelativeLayout rootLayout;
     private RelativeLayout objectsContainer;
-    private Handler handler;
     private boolean touchEnabled;
 
     private LinkedHashMap<Integer, ImageView> mNumberNumberMap;
@@ -62,6 +60,9 @@ public class MathsDrillTwoActivity extends DrillActivity {
                 .register(getLifecycle())
                 .prepare(context);
 
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         rootLayout = (RelativeLayout) findViewById(R.id.activity_math_drill_two);
         objectsContainer = (RelativeLayout) findViewById(R.id.objects_container);
 
@@ -79,7 +80,6 @@ public class MathsDrillTwoActivity extends DrillActivity {
         }
 
         // Init data blah blah
-        handler = new Handler();
         touchEnabled = false;
         initialiseData();
 
@@ -218,40 +218,6 @@ public class MathsDrillTwoActivity extends DrillActivity {
         }
     }
 
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
-    }
-
     private void initialiseData(){
         try {
             String drillData = getIntent().getExtras().getString("data");
@@ -305,42 +271,25 @@ public class MathsDrillTwoActivity extends DrillActivity {
                     touchEnabled = false;
                     ImageView iv = mNumberNumberMap.get(position);
                     Globals.playStarWorks(THIS, iv);
-                    playSound(sound, new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                handler.postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        if (mp != null) {
-                                                            mp.release();
-                                                        }
-                                                        finish();
-                                                    }
-                                                }, 100);
-                                            }
-                                        });
-                                    }
-                                }, 50);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                                finish();
-                            }
+                    playSound(sound, () -> {
+                        try {
+                            handler.delayed(() -> {
+                                playSound(FetchResource.positiveAffirmation(context), () -> {
+                                    handler.delayed(() -> {
+                                        mediaPlayer.reset();
+                                        finish();
+                                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                                    }, 100);
+                                });
+                            }, 50);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            finish();
                         }
                     });
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
     }
@@ -366,7 +315,7 @@ public class MathsDrillTwoActivity extends DrillActivity {
             playSound(sound, new Runnable() {
                 @Override
                 public void run() {
-                    handler.postDelayed(new Runnable() {
+                    handler.delayed(new Runnable() {
                         @Override
                         public void run() {
                             touchEnabled = true;
@@ -382,32 +331,5 @@ public class MathsDrillTwoActivity extends DrillActivity {
         catch (Exception ex){
             ex.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.stop();
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

@@ -22,6 +22,8 @@ import org.json.JSONObject;
 
 import java.util.Random;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
@@ -29,24 +31,22 @@ import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 
 public class SoundDrillThreeActivity extends DrillActivity {
-    private MediaPlayer mp;
-    private ImageView demoItem;
-    private ImageView item1;
-    private ImageView item2;
+
+    @BindView(R.id.item_demo) ImageView demoItem;
+    @BindView(R.id.item1) ImageView item1;
+    @BindView(R.id.item2) ImageView item2;
+    @BindView(R.id.items) LinearLayout itemsLayout;
+
     private String drillData;
     private JSONArray sets;
-    private Handler handler;
     private int currentSet;
     private int correctItem;
     private String currentSound;
     private String currentPhonicSound;
-    private LinearLayout itemsLayout;
     private JSONObject params;
     private Runnable mRunnable;
     private boolean itemsEnabled;
     private Random rnd;
-
-    private final Context THIS = this;
 
     private SoundDrill03ViewModel vm;
 
@@ -54,6 +54,7 @@ public class SoundDrillThreeActivity extends DrillActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_three);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -61,9 +62,8 @@ public class SoundDrillThreeActivity extends DrillActivity {
                 .register(getLifecycle())
                 .prepare(context);
 
-        demoItem = (ImageView)findViewById(R.id.item_demo);
-        item1 = (ImageView)findViewById(R.id.item1);
-        item2 = (ImageView)findViewById(R.id.item2);
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
 
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         float density = displayMetrics.density;
@@ -93,29 +93,13 @@ public class SoundDrillThreeActivity extends DrillActivity {
         item1.setLayoutParams(item1LP);
         item2.setLayoutParams(item2LP);
 
-        itemsLayout = (LinearLayout)findViewById(R.id.items);
         rnd = new Random();
         // setItemsEnabled(false);
         itemsEnabled = false;
-        item1.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        clickedItem(0);
-                    }
-                }
-        );
-        item2.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        clickedItem(1);
-                    }
-                }
-        );
+        item1.setOnClickListener((v) -> clickedItem(0));
+        item2.setOnClickListener((v) -> clickedItem(1));
         drillData = getIntent().getExtras().getString("data");
         currentSet = 0;
-        handler = new Handler(Looper.getMainLooper());
         initialiseData();
         showSet();
     }
@@ -128,41 +112,6 @@ public class SoundDrillThreeActivity extends DrillActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
         }
     }
 
@@ -172,7 +121,7 @@ public class SoundDrillThreeActivity extends DrillActivity {
         try{
             JSONObject setData = sets.getJSONObject(currentSet);
             String image = setData.getString("image");
-            demoItem.setImageResource(FetchResource.imageId(THIS, image));
+            demoItem.setImageResource(FetchResource.imageId(context, image));
             currentSound = setData.getString("sound");
             currentPhonicSound = setData.getString("phonic_sound");
             JSONArray images = setData.getJSONArray("images");
@@ -198,83 +147,47 @@ public class SoundDrillThreeActivity extends DrillActivity {
             // Determine where item{1|2}JSONObject should be assigned to
             if (correctItem == 0) {
                 // item1 is item1JSONObject
-                item1.setImageResource(FetchResource.imageId(THIS, item1JSONObject, "image"));
-                item2.setImageResource(FetchResource.imageId(THIS, item2JSONObject, "image"));
+                item1.setImageResource(FetchResource.imageId(context, item1JSONObject, "image"));
+                item2.setImageResource(FetchResource.imageId(context, item2JSONObject, "image"));
             } else if (correctItem == 1) {
                 // item1 is item2JSONObject
-                item1.setImageResource(FetchResource.imageId(THIS, item2JSONObject, "image"));
-                item2.setImageResource(FetchResource.imageId(THIS, item1JSONObject, "image"));
+                item1.setImageResource(FetchResource.imageId(context, item2JSONObject, "image"));
+                item2.setImageResource(FetchResource.imageId(context, item1JSONObject, "image"));
             }
 
             String sound = params.getString("this_is_the_letter");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    playSound();
-                }
-            });
+            playSound(sound, this::playSound);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     public void playSound(){
         try {
-            playSound(currentSound, new Runnable() {
-                @Override
-                public void run() {
-                    playItMakes();
-                }
-            });
+            playSound(currentSound, this::playItMakes);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playItMakes();
-                }
-            }, 800);
         }
     }
 
     private void playItMakes(){
         try {
             String sound = params.getString("it_makes_sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    playPhonicSound();
-                }
-            });
+            playSound(sound, this::playPhonicSound);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     private void playPhonicSound(){
         try {
-            playSound(currentPhonicSound, new Runnable() {
-                @Override
-                public void run() {
-                    playNextSound();
-                }
-            });
+            playSound(currentPhonicSound, this::playNextSound);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playNextSound();
-                }
-            }, 800);
         }
     }
 
@@ -283,62 +196,19 @@ public class SoundDrillThreeActivity extends DrillActivity {
             demoItem.setVisibility(View.INVISIBLE);
             itemsLayout.setVisibility(View.VISIBLE);
             String sound = params.getString("touch");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    playSoundAgain();
-                }
-            });
+            playSound(sound, this::playSoundAgain);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     public void playSoundAgain(){
         try {
-            playSound(currentPhonicSound, new Runnable() {
-                @Override
-                public void run() {
-                    itemsEnabled = true;
-                }
-            });
+            playSound(currentPhonicSound, () -> itemsEnabled = true);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    itemsEnabled = true;
-                }
-            }, 700);
-        }
-    }
-
-    private void playSoundAndRunnableAfterCompletion(String sound) {
-        try {
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    if (mRunnable != null) {
-                        mRunnable.run();
-                    }
-                }
-            });
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                   if (mRunnable != null) {
-                       mRunnable.run();
-                   }
-                }
-            }, 800);
         }
     }
 
@@ -353,74 +223,29 @@ public class SoundDrillThreeActivity extends DrillActivity {
                 } else if (item == 1) {
                     iv = item2;
                 }
-                Globals.playStarWorks(THIS, iv);
+                starWorks.play(this, iv); // Globals.playStarWorks(context, iv);
 
                 itemsEnabled = false;
                 mRunnable = null;
-                mRunnable = new Runnable() {
-                    @Override
-                    public void run() {
+                mRunnable = () -> {
                         if (currentSet < sets.length() - 1) {
                             currentSet++;
-                            handler.postDelayed(nextDrill, 350);
+                            // Next drill
+                            handler.delayed(this::showSet, 350);
                         } else {
-                            if (mp != null) {
-                                mp.release();
-                            }
                             finish();
+                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                         }
-                    }
-                };
-                playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mRunnable != null) {
-                            mRunnable.run();
-                        }
-                    }
-                });
+                    };
+                playSound(FetchResource.positiveAffirmation(context), mRunnable);
             } else {
-                playSound(FetchResource.negativeAffirmation(THIS), null);
+                playSound(FetchResource.negativeAffirmation(context), null);
             }
         }
     }
-
-    private Runnable nextDrill = new Runnable(){
-        @Override
-        public void run() {
-            showSet();
-        }
-    };
 
     private void setItemsEnabled(boolean enable) {
         item1.setEnabled(enable);
         item2.setEnabled(enable);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.stop();
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }
