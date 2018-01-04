@@ -511,7 +511,6 @@ public class SoundDrillFourteenActivity extends DrillActivity {
         if (currentWord <= words.length()) {
             startDrill();
         } else {
-            mediaPlayer.reset();
             finish();
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
@@ -536,20 +535,6 @@ public class SoundDrillFourteenActivity extends DrillActivity {
                 //reward5.setImageResource(R.drawable.rewardball1colour);
                 break;
         }
-    }
-
-    private void rewardAndGoNext(){
-        reward();
-        playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
-            @Override
-            public void run() {
-                currentWord++;
-                if (currentWord <= 5)
-                    startDrill();
-                else
-                    finish();
-            }
-        });
     }
 
     private class DrillFourteenWriteView extends WriteView {

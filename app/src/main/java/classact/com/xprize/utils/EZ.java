@@ -14,6 +14,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import javax.inject.Inject;
@@ -33,6 +35,39 @@ public class EZ {
     @Inject
     public EZ(Context context) {
         this.context = context;
+    }
+
+    public ImageButton controlButton() {
+        ImageButton controlButton = new ImageButton(context);
+        controlButton.setBackgroundColor(Color.TRANSPARENT);
+        ViewGroup.MarginLayoutParams controlButtonLayoutParams = new ViewGroup.MarginLayoutParams(
+                ViewGroup.MarginLayoutParams.WRAP_CONTENT,
+                ViewGroup.MarginLayoutParams.WRAP_CONTENT
+        );
+        controlButton.setLayoutParams(controlButtonLayoutParams);
+        controlButton.setScaleX(0.65f);
+        controlButton.setScaleY(0.65f);
+        return controlButton;
+    }
+
+    public FrameLayout frameFull() {
+        FrameLayout frame = new FrameLayout(context);
+        FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+        );
+        frame.setLayoutParams(frameLayoutParams);
+        return frame;
+    }
+
+    public FrameLayout frame() {
+        FrameLayout frame = new FrameLayout(context);
+        FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        frame.setLayoutParams(frameLayoutParams);
+        return frame;
     }
 
     public void size(View view, int width, int height) {

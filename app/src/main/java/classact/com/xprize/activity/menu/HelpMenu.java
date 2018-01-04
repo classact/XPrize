@@ -4,28 +4,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 
-import classact.com.xprize.R;
-import classact.com.xprize.activity.menu.controller.DatabaseController;
-import classact.com.xprize.common.Globals;
+import javax.inject.Inject;
 
-public class HelpMenu extends AppCompatActivity {
+import classact.com.xprize.R;
+import classact.com.xprize.common.Globals;
+import dagger.android.support.DaggerAppCompatActivity;
+
+public class HelpMenu extends DaggerAppCompatActivity {
 
     private ConstraintLayout mRootView;
 
     private ImageButton mTutorialButton;
     private ImageButton mVolumeButton;
 
-    private DatabaseController mDb;
     private Handler mHandler;
     private Intent mIntent;
     private boolean mFinishActivity;
-    private final Context THIS = this;
+
+    @Inject Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,7 @@ public class HelpMenu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mFinishActivity = true;
-                Intent intent = new Intent(THIS, VolumeMenu.class);
+                Intent intent = new Intent(context, VolumeMenu.class);
                 startActivityForResult(intent, 0);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
@@ -84,7 +85,7 @@ public class HelpMenu extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         if (!mFinishActivity) {
-            Globals.RESUME_BACKGROUND_MUSIC(THIS);
+            Globals.RESUME_BACKGROUND_MUSIC(context);
         } else {
             mFinishActivity = false;
         }
@@ -95,7 +96,7 @@ public class HelpMenu extends AppCompatActivity {
         super.onPause();
         if (!mFinishActivity) {
             mHandler.removeCallbacksAndMessages(null);
-            Globals.PAUSE_BACKGROUND_MUSIC(THIS);
+            Globals.PAUSE_BACKGROUND_MUSIC(context);
         }
     }
 

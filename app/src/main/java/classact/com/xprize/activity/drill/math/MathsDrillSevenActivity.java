@@ -59,7 +59,6 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
     private final int DRAG_TAG = 0;
 
     private RelativeLayout parentView;
-    private final Context THIS = this;
 
     private MathDrill07AViewModel vm;
 
@@ -101,7 +100,7 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
 
         int ivFillWidth = (int) ((float) 175 * density);
 
-        itemToFillSub = new ImageView(THIS);
+        itemToFillSub = new ImageView(context);
         parentView.addView(itemToFillSub);
         ViewGroup.MarginLayoutParams itemToFillSubLP = (ViewGroup.MarginLayoutParams) itemToFillSub.getLayoutParams();
         itemToFillSubLP.width = ivFillWidth;
@@ -139,8 +138,8 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
             String patternImage = allData.getString("demo_pattern");
-            int patternImageId = FetchResource.imageId(THIS, patternImage);
-            pattern.setImageResource(patternImageId);
+            int patternImageId = FetchResource.imageId(context, patternImage);
+            loadImage(pattern, patternImageId);
 
             dragEnabled = false;
 
@@ -153,7 +152,7 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -169,7 +168,7 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -186,7 +185,7 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -202,7 +201,7 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -218,7 +217,7 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -227,12 +226,12 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
         try{
             JSONObject item = allData.getJSONArray("completion_pieces").getJSONObject(draggedItemIndex);
             String image = item.getString("image");
-            int imageId = FetchResource.imageId(THIS, image);
+            int imageId = FetchResource.imageId(context, image);
             itemToFill.setImageResource(0);
-            itemToFillSub.setImageResource(imageId);
+            loadImage(itemToFillSub, imageId);
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -245,7 +244,7 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
                 isCorrectItem = true;
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
         return isCorrectItem;
@@ -272,11 +271,11 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
             for (int i = 0; i < numberOfItems; i++) {
                 JSONObject obj = fillers.getJSONObject(i);
                 String objImage = obj.getString("image");
-                int objImageId = FetchResource.imageId(THIS, objImage);
+                int objImageId = FetchResource.imageId(context, objImage);
 
                 int si = s[i];
                 ImageView fillerView = fillerViews[si];
-                fillerView.setImageResource(objImageId);
+                loadImage(fillerView, objImageId);
                 draggableViewIndexes.put(fillerView, i);
                 fillerView.setOnTouchListener(this);
                 fillerView.setVisibility(View.VISIBLE);
@@ -285,7 +284,7 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
             respaceFillers();
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -348,7 +347,7 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
                     break;
             }
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
         return false;
@@ -373,7 +372,7 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
                 case DragEvent.ACTION_DROP:
                     if (dragEnabled) {
                         if (!isCorrectItem()) {
-                            playSound(FetchResource.negativeAffirmation(THIS), null);
+                            playSound(FetchResource.negativeAffirmation(context), null);
                             return false;
                         }
                         return true;
@@ -386,10 +385,9 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
                         ImageView view = (ImageView) event.getLocalState();
                         view.setVisibility(View.INVISIBLE);
                         dragEnabled = false;
-                        playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                        playSound(FetchResource.positiveAffirmation(context), new Runnable() {
                             @Override
                             public void run() {
-                                mediaPlayer.reset();
                                 finish();
                                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                             }
@@ -403,7 +401,7 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
                     break;
             }
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
         return false;

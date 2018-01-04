@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -16,14 +15,16 @@ import android.widget.TextView;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import classact.com.xprize.R;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.database.model.UnitSection;
-import classact.com.xprize.locale.Languages;
+import dagger.android.support.DaggerAppCompatActivity;
 
-public class PhonicsSubMenu extends AppCompatActivity {
+public class PhonicsSubMenu extends DaggerAppCompatActivity {
 
     private TextView mChapterTitle;
     private TextView mChapterNumber;
@@ -42,14 +43,15 @@ public class PhonicsSubMenu extends AppCompatActivity {
     private ImageButton mMonkeyA;
     private ImageButton mMonkeyB;
 
-    private DatabaseController mDb;
     private Intent mIntent;
     private int mSelectedChapter;
     private int mSelectedSection;
     private int mSelectedSubId;
     private ConstraintLayout mRootView;
     private boolean mFinishActivity;
-    private final Context THIS = this;
+
+    @Inject DatabaseController mDb;
+    @Inject Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,9 +198,6 @@ public class PhonicsSubMenu extends AppCompatActivity {
         mChapterSection.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
         mSelectionInstruction.setTypeface(Globals.TYPEFACE_EDU_AID(assets));
 
-        // Get database controller
-        mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
-
         // Setup sub id button map
         LinkedHashMap<Integer, ImageButton> subIdButtonMap = new LinkedHashMap<>();
         subIdButtonMap.put(1, mButtonA);
@@ -263,7 +262,7 @@ public class PhonicsSubMenu extends AppCompatActivity {
 
                         UnitSection selectedUnitSection = mDb.getUnitSection(mSelectedChapter, mSelectedSection, 1);
 
-                        Intent intent = new Intent(THIS, DrillsMenu.class);
+                        Intent intent = new Intent(context, DrillsMenu.class);
                         intent.putExtra("selected_chapter", mSelectedChapter);
                         intent.putExtra("selected_section", mSelectedSection);
                         intent.putExtra("selected_unit_section", selectedUnitSection.getUnitSectionId());
@@ -298,7 +297,7 @@ public class PhonicsSubMenu extends AppCompatActivity {
 
                         UnitSection selectedUnitSection = mDb.getUnitSection(mSelectedChapter, mSelectedSection, 2);
 
-                        Intent intent = new Intent(THIS, DrillsMenu.class);
+                        Intent intent = new Intent(context, DrillsMenu.class);
                         intent.putExtra("selected_chapter", mSelectedChapter);
                         intent.putExtra("selected_section", mSelectedSection);
                         intent.putExtra("selected_unit_section", selectedUnitSection.getUnitSectionId());
@@ -411,7 +410,7 @@ public class PhonicsSubMenu extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         if (!mFinishActivity) {
-            Globals.RESUME_BACKGROUND_MUSIC(THIS);
+            Globals.RESUME_BACKGROUND_MUSIC(context);
         } else {
             mFinishActivity = false;
         }
@@ -421,7 +420,7 @@ public class PhonicsSubMenu extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         if (!mFinishActivity) {
-            Globals.PAUSE_BACKGROUND_MUSIC(THIS);
+            Globals.PAUSE_BACKGROUND_MUSIC(context);
         }
     }
 

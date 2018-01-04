@@ -10,7 +10,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import javax.inject.Inject;
 
@@ -94,6 +97,9 @@ public abstract class DrillActivity extends DaggerAppCompatActivity {
             Toast.makeText(context, "Error for ‘" + sound + "’", Toast.LENGTH_LONG).show();
             Log.e("Drill Activity", "playSound(sound, action)");
             ex.printStackTrace();
+            if (action != null) {
+                handler.delayed(action, 800);
+            }
         }
     }
 
@@ -116,6 +122,9 @@ public abstract class DrillActivity extends DaggerAppCompatActivity {
             Toast.makeText(context, "Error for sound id ‘" + soundId + "’", Toast.LENGTH_LONG).show();
             Log.e("Drill Activity", "playSound(soundId, action)");
             ex.printStackTrace();
+            if (action != null) {
+                handler.delayed(action, 800);
+            }
         }
     }
 
@@ -141,6 +150,12 @@ public abstract class DrillActivity extends DaggerAppCompatActivity {
             Toast.makeText(context, "Error for sound id ‘" + soundId + "’", Toast.LENGTH_LONG).show();
             Log.e("Drill Activity", "playSound(soundId, preparedAction, preparedDelayMillis, completeAction, completeDelayMillis)");
             ex.printStackTrace();
+            if (preparedAction != null) {
+                preparedAction.run();
+                if (completeAction != null) {
+                    handler.delayed(completeAction, 800);
+                }
+            }
         }
     }
 
@@ -167,6 +182,12 @@ public abstract class DrillActivity extends DaggerAppCompatActivity {
             Toast.makeText(context, "Error for ‘" + sound + "’", Toast.LENGTH_LONG).show();
             Log.e("Drill Activity", "playSound(sound, preparedAction, preparedDelayMillis, completeAction, completeDelayMillis)");
             ex.printStackTrace();
+            if (preparedAction != null) {
+                preparedAction.run();
+                if (completeAction != null) {
+                    handler.delayed(completeAction, 200);
+                }
+            }
         }
     }
 
@@ -218,9 +239,23 @@ public abstract class DrillActivity extends DaggerAppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    public void loadImage(ImageView iv, int resId) {
+        Glide.with(this).load(resId).into(iv);
+    }
+
     @Override
     public void onBackPressed() {
         setResult(Globals.TO_MAIN);
+        if (compositeDisposable != null) {
+            compositeDisposable.clear();
+        }
+//        if (mediaPlayer != null) {
+//            mediaPlayer.reset();
+//            mediaPlayer.release();
+//        }
+//        if (handler != null) {
+//            handler.removeCallbacksAndMessages(null);
+//        }
         finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }

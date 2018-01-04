@@ -7,11 +7,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
@@ -20,68 +22,75 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.database.model.Unit;
-import classact.com.xprize.locale.Languages;
+import dagger.android.support.DaggerAppCompatActivity;
 
-public class StarsMenu extends AppCompatActivity {
+public class StarsMenu extends DaggerAppCompatActivity {
 
-    private ConstraintLayout mRootView;
+    @BindView(R.id.activity_stars_menu) ConstraintLayout mRootView;
 
-    private ImageButton mMonkeyButton01;
-    private ImageButton mMonkeyButton02;
-    private ImageButton mMonkeyButton03;
-    private ImageButton mMonkeyButton04;
-    private ImageButton mMonkeyButton05;
-    private ImageButton mMonkeyButton06;
-    private ImageButton mMonkeyButton07;
-    private ImageButton mMonkeyButton08;
-    private ImageButton mMonkeyButton09;
-    private ImageButton mMonkeyButton10;
-    private ImageButton mMonkeyButton11;
-    private ImageButton mMonkeyButton12;
-    private ImageButton mMonkeyButton13;
-    private ImageButton mMonkeyButton14;
-    private ImageButton mMonkeyButton15;
-    private ImageButton mMonkeyButton16;
-    private ImageButton mMonkeyButton17;
-    private ImageButton mMonkeyButton18;
-    private ImageButton mMonkeyButton19;
-    private ImageButton mMonkeyButton20;
+    @BindView(R.id.monkey_button_01) ImageButton mMonkeyButton01;
+    @BindView(R.id.monkey_button_02) ImageButton mMonkeyButton02;
+    @BindView(R.id.monkey_button_03) ImageButton mMonkeyButton03;
+    @BindView(R.id.monkey_button_04) ImageButton mMonkeyButton04;
+    @BindView(R.id.monkey_button_05) ImageButton mMonkeyButton05;
+    @BindView(R.id.monkey_button_06) ImageButton mMonkeyButton06;
+    @BindView(R.id.monkey_button_07) ImageButton mMonkeyButton07;
+    @BindView(R.id.monkey_button_08) ImageButton mMonkeyButton08;
+    @BindView(R.id.monkey_button_09) ImageButton mMonkeyButton09;
+    @BindView(R.id.monkey_button_10) ImageButton mMonkeyButton10;
+    @BindView(R.id.monkey_button_11) ImageButton mMonkeyButton11;
+    @BindView(R.id.monkey_button_12) ImageButton mMonkeyButton12;
+    @BindView(R.id.monkey_button_13) ImageButton mMonkeyButton13;
+    @BindView(R.id.monkey_button_14) ImageButton mMonkeyButton14;
+    @BindView(R.id.monkey_button_15) ImageButton mMonkeyButton15;
+    @BindView(R.id.monkey_button_16) ImageButton mMonkeyButton16;
+    @BindView(R.id.monkey_button_17) ImageButton mMonkeyButton17;
+    @BindView(R.id.monkey_button_18) ImageButton mMonkeyButton18;
+    @BindView(R.id.monkey_button_19) ImageButton mMonkeyButton19;
+    @BindView(R.id.monkey_button_20) ImageButton mMonkeyButton20;
 
-    private ImageButton mStarButton01;
-    private ImageButton mStarButton02;
-    private ImageButton mStarButton03;
-    private ImageButton mStarButton04;
-    private ImageButton mStarButton05;
-    private ImageButton mStarButton06;
-    private ImageButton mStarButton07;
-    private ImageButton mStarButton08;
-    private ImageButton mStarButton09;
-    private ImageButton mStarButton10;
-    private ImageButton mStarButton11;
-    private ImageButton mStarButton12;
-    private ImageButton mStarButton13;
-    private ImageButton mStarButton14;
-    private ImageButton mStarButton15;
-    private ImageButton mStarButton16;
-    private ImageButton mStarButton17;
-    private ImageButton mStarButton18;
-    private ImageButton mStarButton19;
-    private ImageButton mStarButton20;
+    @BindView(R.id.star_button_01) ImageButton mStarButton01;
+    @BindView(R.id.star_button_02) ImageButton mStarButton02;
+    @BindView(R.id.star_button_03) ImageButton mStarButton03;
+    @BindView(R.id.star_button_04) ImageButton mStarButton04;
+    @BindView(R.id.star_button_05) ImageButton mStarButton05;
+    @BindView(R.id.star_button_06) ImageButton mStarButton06;
+    @BindView(R.id.star_button_07) ImageButton mStarButton07;
+    @BindView(R.id.star_button_08) ImageButton mStarButton08;
+    @BindView(R.id.star_button_09) ImageButton mStarButton09;
+    @BindView(R.id.star_button_10) ImageButton mStarButton10;
+    @BindView(R.id.star_button_11) ImageButton mStarButton11;
+    @BindView(R.id.star_button_12) ImageButton mStarButton12;
+    @BindView(R.id.star_button_13) ImageButton mStarButton13;
+    @BindView(R.id.star_button_14) ImageButton mStarButton14;
+    @BindView(R.id.star_button_15) ImageButton mStarButton15;
+    @BindView(R.id.star_button_16) ImageButton mStarButton16;
+    @BindView(R.id.star_button_17) ImageButton mStarButton17;
+    @BindView(R.id.star_button_18) ImageButton mStarButton18;
+    @BindView(R.id.star_button_19) ImageButton mStarButton19;
+    @BindView(R.id.star_button_20) ImageButton mStarButton20;
 
-    private ImageButton mChapterBookButton;
-    private TextView mChapterText;
+    @BindView(R.id.chapter_book_button) ImageButton mChapterBookButton;
+    @BindView(R.id.chapter_text) TextView mChapterText;
 
     private List<ImageButton> mMonkeyButtons;
     private List<ImageButton> mStarButtons;
@@ -89,7 +98,7 @@ public class StarsMenu extends AppCompatActivity {
     private int mCurrentStarLimit;
     private int mCurrentStar;
 
-    private SparseArray<Integer> mStarLevelBackgrounds;
+    private SparseIntArray mStarLevelBackgrounds;
 
     Animation mBookAnimation;
 
@@ -97,18 +106,29 @@ public class StarsMenu extends AppCompatActivity {
     private boolean mStarsExist;
     private boolean mViewVisible;
     private boolean mFirstMonkeyPlaced;
-
-    private DatabaseController mDb;
+    
     private Handler mHandler;
     private Intent mIntent;
     private boolean mFinishActivity;
-    private final Context THIS = this;
+    
+    @Inject DatabaseController mDb;
+    @Inject Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stars_menu);
-        mRootView = (ConstraintLayout) findViewById(R.id.activity_stars_menu);
+        ButterKnife.bind(this);
+
+        ImageView background = new ImageView(context);
+        background.setBackgroundColor(Color.TRANSPARENT);
+        background.setScaleType(ImageView.ScaleType.FIT_XY);
+        ViewGroup.MarginLayoutParams backgroundLayoutParams = new ViewGroup.MarginLayoutParams(
+                ViewGroup.MarginLayoutParams.MATCH_PARENT,
+                ViewGroup.MarginLayoutParams.MATCH_PARENT
+        );
+        background.setLayoutParams(backgroundLayoutParams);
+        mRootView.addView(background, 0);
 
         mHandler = new Handler();
         mIntent = getIntent();
@@ -116,55 +136,10 @@ public class StarsMenu extends AppCompatActivity {
 
         mMonkeyButtons = new ArrayList<>();
         mStarButtons = new ArrayList<>();
-        mStarLevelBackgrounds = new SparseArray<>();
+        mStarLevelBackgrounds = new SparseIntArray();
 
-        mChapterBookButton = (ImageButton) findViewById(R.id.chapter_book_button);
-
-        mChapterText = (TextView) findViewById(R.id.chapter_text);
         mChapterText.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
         mChapterText.setTextColor(Color.argb(255, 255, 205, 0));
-
-        mMonkeyButton01 = (ImageButton) findViewById(R.id.monkey_button_01);
-        mMonkeyButton02 = (ImageButton) findViewById(R.id.monkey_button_02);
-        mMonkeyButton03 = (ImageButton) findViewById(R.id.monkey_button_03);
-        mMonkeyButton04 = (ImageButton) findViewById(R.id.monkey_button_04);
-        mMonkeyButton05 = (ImageButton) findViewById(R.id.monkey_button_05);
-        mMonkeyButton06 = (ImageButton) findViewById(R.id.monkey_button_06);
-        mMonkeyButton07 = (ImageButton) findViewById(R.id.monkey_button_07);
-        mMonkeyButton08 = (ImageButton) findViewById(R.id.monkey_button_08);
-        mMonkeyButton09 = (ImageButton) findViewById(R.id.monkey_button_09);
-        mMonkeyButton10 = (ImageButton) findViewById(R.id.monkey_button_10);
-        mMonkeyButton11 = (ImageButton) findViewById(R.id.monkey_button_11);
-        mMonkeyButton12 = (ImageButton) findViewById(R.id.monkey_button_12);
-        mMonkeyButton13 = (ImageButton) findViewById(R.id.monkey_button_13);
-        mMonkeyButton14 = (ImageButton) findViewById(R.id.monkey_button_14);
-        mMonkeyButton15 = (ImageButton) findViewById(R.id.monkey_button_15);
-        mMonkeyButton16 = (ImageButton) findViewById(R.id.monkey_button_16);
-        mMonkeyButton17 = (ImageButton) findViewById(R.id.monkey_button_17);
-        mMonkeyButton18 = (ImageButton) findViewById(R.id.monkey_button_18);
-        mMonkeyButton19 = (ImageButton) findViewById(R.id.monkey_button_19);
-        mMonkeyButton20 = (ImageButton) findViewById(R.id.monkey_button_20);
-
-        mStarButton01 = (ImageButton) findViewById(R.id.star_button_01);
-        mStarButton02 = (ImageButton) findViewById(R.id.star_button_02);
-        mStarButton03 = (ImageButton) findViewById(R.id.star_button_03);
-        mStarButton04 = (ImageButton) findViewById(R.id.star_button_04);
-        mStarButton05 = (ImageButton) findViewById(R.id.star_button_05);
-        mStarButton06 = (ImageButton) findViewById(R.id.star_button_06);
-        mStarButton07 = (ImageButton) findViewById(R.id.star_button_07);
-        mStarButton08 = (ImageButton) findViewById(R.id.star_button_08);
-        mStarButton09 = (ImageButton) findViewById(R.id.star_button_09);
-        mStarButton10 = (ImageButton) findViewById(R.id.star_button_10);
-        mStarButton11 = (ImageButton) findViewById(R.id.star_button_11);
-        mStarButton12 = (ImageButton) findViewById(R.id.star_button_12);
-        mStarButton13 = (ImageButton) findViewById(R.id.star_button_13);
-        mStarButton14 = (ImageButton) findViewById(R.id.star_button_14);
-        mStarButton15 = (ImageButton) findViewById(R.id.star_button_15);
-        mStarButton16 = (ImageButton) findViewById(R.id.star_button_16);
-        mStarButton17 = (ImageButton) findViewById(R.id.star_button_17);
-        mStarButton18 = (ImageButton) findViewById(R.id.star_button_18);
-        mStarButton19 = (ImageButton) findViewById(R.id.star_button_19);
-        mStarButton20 = (ImageButton) findViewById(R.id.star_button_20);
 
         mMonkeyButtons.add(mMonkeyButton01);
         mMonkeyButtons.add(mMonkeyButton02);
@@ -229,9 +204,7 @@ public class StarsMenu extends AppCompatActivity {
         mStarLevelBackgrounds.put(18, R.drawable.star_level_18);
         mStarLevelBackgrounds.put(19, R.drawable.star_level_19);
         mStarLevelBackgrounds.put(20, R.drawable.star_level_20);
-
-        mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
-
+        
         LinkedHashMap<Integer, Unit> units = mDb.getUnits();
         int numberOfUnlockedChapters = 0;
         int currentChapterInProgress = 0;
@@ -262,7 +235,8 @@ public class StarsMenu extends AppCompatActivity {
 
         mCurrentStarLimit = Math.min(numberOfUnlockedChapters, mMaxStars);
         mCurrentStar = Math.min(currentChapterInProgress, mCurrentStarLimit);
-        mRootView.setBackgroundResource(mStarLevelBackgrounds.get(mCurrentStarLimit));
+        mRootView.setBackgroundColor(Color.TRANSPARENT);
+        Glide.with(this).load(mStarLevelBackgrounds.get(mCurrentStarLimit)).into(background);
 
         String chapterText = "Chapter " + mCurrentStar;
         mChapterText.setText(chapterText);
@@ -270,13 +244,10 @@ public class StarsMenu extends AppCompatActivity {
         for (int i = 0; i < mCurrentStarLimit; i++) {
             ImageButton starButton = mStarButtons.get(i);
             final int chapter = i + 1;
-            starButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String chapterText = "Chapter " + chapter;
-                    mChapterText.setText(chapterText);
+            starButton.setOnClickListener((v) -> {
+                    String text = "Chapter " + chapter;
+                    mChapterText.setText(text);
                     placeMonkey(chapter);
-                }
             });
         }
 
@@ -284,7 +255,7 @@ public class StarsMenu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mFinishActivity = true;
-                Intent intent = new Intent(THIS, SectionsMenu.class);
+                Intent intent = new Intent(context, SectionsMenu.class);
                 intent.putExtra("selected_chapter", mCurrentStar);
                 startActivityForResult(intent, 0);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -319,6 +290,7 @@ public class StarsMenu extends AppCompatActivity {
                         }, 150);
                     }
                 }
+                mRootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
     }
@@ -343,7 +315,7 @@ public class StarsMenu extends AppCompatActivity {
                     });
 
             ImageButton newStar = mStarButtons.get(chapter-1);
-            Globals.playStarWorks(THIS, newStar);
+            Globals.playStarWorks(this, newStar);
 
             mHandler.postDelayed(new Runnable() {
                 @Override
@@ -408,7 +380,7 @@ public class StarsMenu extends AppCompatActivity {
                     });
 
             ImageButton newStar = mStarButtons.get(chapter-1);
-            Globals.playStarWorks(THIS, newStar);
+            Globals.playStarWorks(this, newStar);
             // Globals.playStarWorks(THIS, mChapterText, 0, 360);
             mCurrentStar = chapter;
         }
@@ -420,9 +392,7 @@ public class StarsMenu extends AppCompatActivity {
         switch (resultCode) {
             case Globals.TO_MAIN:
                 setResult(Globals.TO_MAIN);
-                mFinishActivity = true;
-                finish();
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                finishActivity();
                 break;
             case Code.DRILL_SPLASH:
             case Code.INTRO:
@@ -432,9 +402,7 @@ public class StarsMenu extends AppCompatActivity {
             case Code.CHAPTER_END:
             case Code.FINALE:
                 setResult(resultCode);
-                mFinishActivity = true;
-                finish();
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                finishActivity();
                 break;
             default:
                 break;
@@ -446,7 +414,7 @@ public class StarsMenu extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         if (!mFinishActivity) {
-            Globals.RESUME_BACKGROUND_MUSIC(THIS);
+            Globals.RESUME_BACKGROUND_MUSIC(context);
         } else {
             mFinishActivity = false;
         }
@@ -456,7 +424,7 @@ public class StarsMenu extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         if (!mFinishActivity) {
-            Globals.PAUSE_BACKGROUND_MUSIC(THIS);
+            Globals.PAUSE_BACKGROUND_MUSIC(context);
         }
     }
 
@@ -477,6 +445,10 @@ public class StarsMenu extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        finishActivity();
+    }
+
+    public void finishActivity() {
         mFinishActivity = true;
         finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

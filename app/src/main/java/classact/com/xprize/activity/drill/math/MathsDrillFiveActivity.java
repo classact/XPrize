@@ -55,8 +55,6 @@ public class MathsDrillFiveActivity extends DrillActivity {
     boolean drillComplete;
     boolean endDrill;
 
-    private final Context THIS = this;
-
     private MathDrill05AViewModel vm;
 
     @Override
@@ -109,7 +107,7 @@ public class MathsDrillFiveActivity extends DrillActivity {
                     try {
                         if (draggedItems > targetItems) {
                             if (dragEnabled && !drillComplete) {
-                                playSound(FetchResource.negativeAffirmation(THIS), placementRunnable);
+                                playSound(FetchResource.negativeAffirmation(context), placementRunnable);
                             }
                         } else {
                             ImageView view = (ImageView) event.getLocalState();
@@ -153,7 +151,7 @@ public class MathsDrillFiveActivity extends DrillActivity {
     private void placeOnShelf(View view){
         try {
             ImageView destination = (ImageView) itemsReceptacle.getChildAt(draggedItems - 1);
-            destination.setImageResource(itemResId);
+            loadImage(destination, itemResId);
             destination.setVisibility(View.VISIBLE);
             playSound(getNumberSound(), placementRunnable);
             if (draggedItems == targetItems) {
@@ -280,10 +278,10 @@ public class MathsDrillFiveActivity extends DrillActivity {
                     // Get square
                     Square square = squares[count++];
                     // Get drawable
-                    Drawable d = getResources().getDrawable(imageId, null);
+                    // Drawable d = getResources().getDrawable(imageId, null);
                     // Create image view
-                    ImageView iv = new ImageView(getApplicationContext());
-                    iv.setImageDrawable(d);
+                    ImageView iv = new ImageView(context);
+                    loadImage(iv, imageId);
                     iv.setScaleX(0.8f);
                     iv.setScaleY(0.8f);
                     // iv.setBackgroundColor(Color.argb(150, 0, 0, 255));
@@ -328,11 +326,10 @@ public class MathsDrillFiveActivity extends DrillActivity {
                 handler.delayed(new Runnable() {
                     @Override
                     public void run() {
-                        playSound(FetchResource.positiveAffirmation(THIS), placementRunnable);
+                        playSound(FetchResource.positiveAffirmation(context), placementRunnable);
                     }
                 }, 500);
             } else if (endDrill) {
-                mediaPlayer.reset();
                 finish();
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
@@ -360,13 +357,13 @@ public class MathsDrillFiveActivity extends DrillActivity {
                 }
                 switch (pos) {
                     case 0:
-                        numberOne.setImageResource(FetchResource.imageId(this, numbers, i, "image"));
+                        loadImage(numberOne, FetchResource.imageId(this, numbers, i, "image"));
                         break;
                     case 1:
-                        numberTwo.setImageResource(FetchResource.imageId(this, numbers, i, "image"));
+                        loadImage(numberTwo, FetchResource.imageId(this, numbers, i, "image"));
                         break;
                     case 2:
-                        numberThree.setImageResource(FetchResource.imageId(this, numbers, i, "image"));
+                        loadImage(numberThree, FetchResource.imageId(this, numbers, i, "image"));
                         break;
                 }
             }
@@ -384,7 +381,6 @@ public class MathsDrillFiveActivity extends DrillActivity {
                 playSound(FetchResource.positiveAffirmation(this), new Runnable() {
                     @Override
                     public void run() {
-                        mediaPlayer.reset();
                         finish();
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     }

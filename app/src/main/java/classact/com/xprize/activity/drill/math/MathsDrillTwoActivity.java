@@ -40,8 +40,6 @@ public class MathsDrillTwoActivity extends DrillActivity {
 
     private LinkedHashMap<Integer, ImageView> mNumberNumberMap;
 
-    private final Context THIS = this;
-
     private final int PICTURES_FRAME_WIDTH = 745;
     private final int PICTURES_FRAME_HEIGHT = 955;
     private final int NUMBERS_FRAME_WIDTH = 745;
@@ -114,10 +112,10 @@ public class MathsDrillTwoActivity extends DrillActivity {
                     // Get square
                     Square square = squares[i];
                     // Get drawable
-                    Drawable d = getResources().getDrawable(imageId, null);
+                    // Drawable d = getResources().getDrawable(imageId, null);
                     // Create image view
                     ImageView iv = new ImageView(getApplicationContext());
-                    iv.setImageDrawable(d);
+                    loadImage(iv, imageId);
                     iv.setScaleX(0.8f);
                     iv.setScaleY(0.8f);
                     // iv.setBackgroundColor(Color.argb(150, 0, 0, 255));
@@ -174,11 +172,10 @@ public class MathsDrillTwoActivity extends DrillActivity {
                     // Get square
                     Square square = squares[si];
                     // Get drawable
-                    Drawable d = getResources()
-                            .getDrawable(FetchResource.imageId(this, numbers, i, "image"), null);
+                    // Drawable d = getResources().getDrawable(FetchResource.imageId(this, numbers, i, "image"), null);
                     // Create image view
-                    ImageView iv = new ImageView(getApplicationContext());
-                    iv.setImageDrawable(d);
+                    ImageView iv = new ImageView(context);
+                    loadImage(iv, FetchResource.imageId(this, numbers, i, "image"));
                     iv.setScaleX(0.8f);
                     iv.setScaleY(0.8f);
                     // iv.setBackgroundColor(Color.argb(150, 0, 0, 255));
@@ -261,7 +258,7 @@ public class MathsDrillTwoActivity extends DrillActivity {
                         @Override
                         public void run() {
                             try {
-                                playSound(FetchResource.negativeAffirmation(THIS), null);
+                                playSound(FetchResource.negativeAffirmation(context), null);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -270,13 +267,12 @@ public class MathsDrillTwoActivity extends DrillActivity {
                 } else {
                     touchEnabled = false;
                     ImageView iv = mNumberNumberMap.get(position);
-                    Globals.playStarWorks(THIS, iv);
+                    Globals.playStarWorks(this, iv);
                     playSound(sound, () -> {
                         try {
                             handler.delayed(() -> {
                                 playSound(FetchResource.positiveAffirmation(context), () -> {
                                     handler.delayed(() -> {
-                                        mediaPlayer.reset();
                                         finish();
                                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                                     }, 100);
@@ -284,7 +280,6 @@ public class MathsDrillTwoActivity extends DrillActivity {
                             }, 50);
                         } catch (Exception ex) {
                             ex.printStackTrace();
-                            finish();
                         }
                     });
                 }

@@ -32,8 +32,6 @@ public class MathsDrillSixActivity extends DrillActivity {
     private boolean touchEnabled;
     private ImageView[] shapeImageViews;
 
-    private final Context THIS = this;
-
     private MathDrill06AViewModel vm;
 
     @Override
@@ -70,8 +68,8 @@ public class MathsDrillSixActivity extends DrillActivity {
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
             String objectImage = allData.getString("demo_object");
-            int objectImageId = FetchResource.imageId(THIS, objectImage);
-            demoShape.setImageResource(objectImageId);
+            int objectImageId = FetchResource.imageId(context, objectImage);
+            loadImage(demoShape, objectImageId);
             // demoShape.setBackgroundColor(Color.argb(100, 0, 0, 255));
 
             DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
@@ -154,8 +152,8 @@ public class MathsDrillSixActivity extends DrillActivity {
                 ImageView iv = shapeImageViews[i];
 
                 final String shapeName = shapes[i];
-                int imageId = FetchResource.imageId(THIS, shapeName);
-                iv.setImageResource(imageId);
+                int imageId = FetchResource.imageId(context, shapeName);
+                loadImage(iv, imageId);
 
                 // Now here is where shape sound is used / passed in as a comparator
                 final String shapeSound = shape_sounds[i];
@@ -256,13 +254,12 @@ public class MathsDrillSixActivity extends DrillActivity {
                 String objectToTouch = allData.getString("object_sound");
                 if (objectToTouch.equalsIgnoreCase(touchedObject)) {
                     touchEnabled = false;
-                    playSound(FetchResource.positiveAffirmation(THIS), () -> {
-                        mediaPlayer.reset();
+                    playSound(FetchResource.positiveAffirmation(context), () -> {
                         finish();
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     });
                 } else {
-                    playSound(FetchResource.negativeAffirmation(THIS), null);
+                    playSound(FetchResource.negativeAffirmation(context), null);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

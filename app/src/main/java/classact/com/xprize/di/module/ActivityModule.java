@@ -31,6 +31,12 @@ import classact.com.xprize.activity.drill.sound.SoundDrillThreeActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillTwelveActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillTwoActivity;
 import classact.com.xprize.activity.drill.tutorial.Tutorial;
+import classact.com.xprize.activity.menu.DrillsMenu;
+import classact.com.xprize.activity.menu.HelpMenu;
+import classact.com.xprize.activity.menu.PhonicsSubMenu;
+import classact.com.xprize.activity.menu.SectionsMenu;
+import classact.com.xprize.activity.menu.StarsMenu;
+import classact.com.xprize.activity.menu.VolumeMenu;
 import classact.com.xprize.activity.movie.MovieActivity;
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -42,8 +48,30 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 public abstract class ActivityModule {
 
+    /* Main Activity */
+
     @ContributesAndroidInjector(modules = ControlFragmentModule.class)
     abstract MainActivity contributeMainActivity();
+
+    /* Menu Activities */
+
+    @ContributesAndroidInjector(modules = ControlFragmentModule.class)
+    abstract HelpMenu contributeHelpMenuActivity();
+
+    @ContributesAndroidInjector(modules = ControlFragmentModule.class)
+    abstract VolumeMenu contributeVolumeMenuActivity();
+
+    @ContributesAndroidInjector(modules = ControlFragmentModule.class)
+    abstract StarsMenu contributeStarsMenuActivity();
+
+    @ContributesAndroidInjector(modules = ControlFragmentModule.class)
+    abstract SectionsMenu contributeSectionsMenuActivity();
+
+    @ContributesAndroidInjector(modules = ControlFragmentModule.class)
+    abstract PhonicsSubMenu contributePhonicsSubMenuActivity();
+
+    @ContributesAndroidInjector(modules = ControlFragmentModule.class)
+    abstract DrillsMenu contributeDrillsMenuActivity();
 
     /* Story Drill Activity */
 

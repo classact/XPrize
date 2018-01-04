@@ -40,7 +40,6 @@ public class MathsDrillThreeActivity extends DrillActivity {
     private boolean dragEnabled;
     private boolean drillComplete;
     private boolean endDrill;
-    private final Context THIS = this;
 
     private MathDrill03ViewModel vm;
 
@@ -171,7 +170,7 @@ public class MathsDrillThreeActivity extends DrillActivity {
 
     private void placeOnTable(){
         ImageView item = (ImageView)itemsReceptacle.getChildAt(draggedItems - 1);
-        item.setImageResource(itemResId);
+        loadImage(item, itemResId);
         item.setVisibility(View.VISIBLE);
         playSound(getNumberSound(), placementRunnable);
         if (draggedItems == targetItems){
@@ -188,12 +187,11 @@ public class MathsDrillThreeActivity extends DrillActivity {
                 handler.delayed(new Runnable() {
                     @Override
                     public void run() {
-                        playSound(FetchResource.positiveAffirmation(THIS), placementRunnable);
+                        playSound(FetchResource.positiveAffirmation(context), placementRunnable);
                     }
                 }, 300);
             } else if (endDrill) {
                 handler.removeCallbacks(placementRunnable);
-                mediaPlayer.reset();
                 finish();
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
@@ -244,10 +242,11 @@ public class MathsDrillThreeActivity extends DrillActivity {
                 // Get square
                 Square square = squares[i];
                 // Get drawable
-                Drawable d = getResources().getDrawable(imageId, null);
+                // Drawable d = getResources().getDrawable(imageId, null);
                 // Create image view
-                ImageView iv = new ImageView(getApplicationContext());
-                iv.setImageDrawable(d);
+                ImageView iv = new ImageView(context);
+                // iv.setImageDrawable(d);
+                loadImage(iv, imageId);
                 iv.setScaleX(0.8f);
                 iv.setScaleY(0.8f);
                 // iv.setBackgroundColor(Color.argb(150, 0, 0, 255));
@@ -267,7 +266,6 @@ public class MathsDrillThreeActivity extends DrillActivity {
                 iv.setX((float) square.x);
                 iv.setY((float) square.y);
 
-                iv.setImageResource(itemResId);
                 iv.setVisibility(View.VISIBLE);
                 iv.setOnTouchListener(new View.OnTouchListener() {
                     @Override

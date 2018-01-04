@@ -47,8 +47,6 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
     private boolean dragEnabled;
     private boolean touchEnabled;
 
-    private final Context THIS = this;
-
     private MathDrill06DViewModel vm;
 
     @Override
@@ -114,7 +112,7 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -125,16 +123,16 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
             draggedItems = 0;
             int count = allData.getInt("number_of_objects");
             String res = allData.getString("objects_image");
-            int resId = FetchResource.imageId(THIS, res);
+            int resId = FetchResource.imageId(context, res);
             for(int i = 0; i < count;i++){
                 ImageView image = (ImageView) objectsContainer.getChildAt(i);
-                image.setImageResource(resId);
+                loadImage(image, resId);
                 image.setVisibility(View.VISIBLE);
                 image.setOnTouchListener(this);
             }
         }
         catch(Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -163,8 +161,8 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
                         JSONObject number = numbers.getJSONObject(i);
                         String imageName = number.getString("image");
                         int value = number.getInt("value");
-                        int imageId = FetchResource.imageId(THIS, imageName);
-                        numberOne.setImageResource(imageId);
+                        int imageId = FetchResource.imageId(context, imageName);
+                        loadImage(numberOne, imageId);
                         numberOne.setTag(String.valueOf(value));
                         numberOne.setAlpha(0.2f);
                         break;
@@ -172,8 +170,8 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
                         number = numbers.getJSONObject(i);
                         imageName = number.getString("image");
                         value = number.getInt("value");
-                        imageId = FetchResource.imageId(THIS, imageName);
-                        numberTwo.setImageResource(imageId);
+                        imageId = FetchResource.imageId(context, imageName);
+                        loadImage(numberTwo, imageId);
                         numberTwo.setTag(String.valueOf(value));
                         numberTwo.setAlpha(0.2f);
                         break;
@@ -181,8 +179,8 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
                         number = numbers.getJSONObject(i);
                         imageName = number.getString("image");
                         value = number.getInt("value");
-                        imageId = FetchResource.imageId(THIS, imageName);
-                        numberThree.setImageResource(imageId);
+                        imageId = FetchResource.imageId(context, imageName);
+                        loadImage(numberThree, imageId);
                         numberThree.setTag(String.valueOf(value));
                         numberThree.setAlpha(0.2f);
                         break;
@@ -192,7 +190,7 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
             }
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -209,7 +207,7 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
                 numberObjects.put(value, new NumberObject(image, sound, value));
             }
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -233,12 +231,12 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
                     playSound(numberSound, new Runnable() {
                         @Override
                         public void run() {
-                            playSound(FetchResource.negativeAffirmation(THIS), null);
+                            playSound(FetchResource.negativeAffirmation(context), null);
                         }
                     });
                 }
             } catch (Exception ex) {
-                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
             }
         }
@@ -255,7 +253,7 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -271,7 +269,7 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -288,7 +286,7 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -304,7 +302,7 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -320,21 +318,21 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
 
     private void nextSequence() {
         try {
-            playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+            playSound(FetchResource.positiveAffirmation(context), new Runnable() {
                 @Override
                 public void run() {
                     sayTouch();
                 }
             });
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -353,16 +351,15 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
 
     private void end() {
-        playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+        playSound(FetchResource.positiveAffirmation(context), new Runnable() {
             @Override
             public void run() {
-                mediaPlayer.reset();
                 finish();
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
@@ -386,7 +383,7 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
                     break;
             }
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
         return false;
@@ -445,7 +442,7 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
                     break;
             }
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
         return false;

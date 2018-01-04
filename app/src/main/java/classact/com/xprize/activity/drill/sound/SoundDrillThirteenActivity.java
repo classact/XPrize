@@ -746,10 +746,6 @@ public class SoundDrillThirteenActivity extends DrillActivity {
                 }
                 case YAY: {
                     if (mThisActivity.getEndDrill()) {
-
-                        // Release media player
-                        mp.reset();
-
                         // Finish activity
                         mThisActivity.finish();
                         mThisActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

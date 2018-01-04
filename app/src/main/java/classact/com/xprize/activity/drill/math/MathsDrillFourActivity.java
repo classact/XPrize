@@ -33,8 +33,6 @@ public class MathsDrillFourActivity extends DrillActivity {
     private final int CONTAINER_WIDTH = 750;
     private final int CONTAINER_HEIGHT = 730;
 
-    private final Context THIS = this;
-
     private MathDrill04ViewModel vm;
 
     @Override
@@ -157,13 +155,12 @@ public class MathsDrillFourActivity extends DrillActivity {
                         starWorks.play(this, iv);
                     }
 
-                    playSound(FetchResource.positiveAffirmation(THIS), () -> {
-                        mediaPlayer.reset();
+                    playSound(FetchResource.positiveAffirmation(context), () -> {
                         finish();
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     });
                 } else {
-                    playSound(FetchResource.negativeAffirmation(THIS), null);
+                    playSound(FetchResource.negativeAffirmation(context), null);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -193,14 +190,14 @@ public class MathsDrillFourActivity extends DrillActivity {
 
             // Left objects
             // Set number
-            numberId = FetchResource.imageId(THIS, allData, "left_number_image");
-            leftNumber.setImageResource(numberId);
+            numberId = FetchResource.imageId(context, allData, "left_number_image");
+            loadImage(leftNumber, numberId);
 
             // Set data
             n = allData.getInt("number_of_left_items");
             w = CONTAINER_WIDTH;
             h = CONTAINER_HEIGHT;
-            imageId = FetchResource.imageId(THIS, allData, "left_items_item");
+            imageId = FetchResource.imageId(context, allData, "left_items_item");
 
             // Pack squares
             SquarePacker.generate(this, leftContainer, n, w, h, imageId);
@@ -223,14 +220,14 @@ public class MathsDrillFourActivity extends DrillActivity {
 
             // Right objects
             // Set number
-            numberId = FetchResource.imageId(THIS, allData, "right_number_image");
-            rightNumber.setImageResource(numberId);
+            numberId = FetchResource.imageId(context, allData, "right_number_image");
+            loadImage(rightNumber, numberId);
 
             // Set data
             n = allData.getInt("number_of_right_items");
             w = CONTAINER_WIDTH;
             h = CONTAINER_HEIGHT;
-            imageId = FetchResource.imageId(THIS, allData, "right_items_item");
+            imageId = FetchResource.imageId(context, allData, "right_items_item");
 
             // Pack squares
             SquarePacker.generate(this, rightContainer, n, w, h, imageId);

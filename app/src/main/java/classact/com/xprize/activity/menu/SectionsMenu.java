@@ -3,7 +3,6 @@ package classact.com.xprize.activity.menu;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
@@ -20,6 +19,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import classact.com.xprize.R;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
 import classact.com.xprize.common.Code;
@@ -27,9 +28,9 @@ import classact.com.xprize.common.Globals;
 import classact.com.xprize.database.model.Section;
 import classact.com.xprize.database.model.Unit;
 import classact.com.xprize.database.model.UnitSection;
-import classact.com.xprize.locale.Languages;
+import dagger.android.support.DaggerAppCompatActivity;
 
-public class SectionsMenu extends AppCompatActivity {
+public class SectionsMenu extends DaggerAppCompatActivity {
 
     private TextView mChapterTitle;
     private TextView mChapterNumber;
@@ -72,11 +73,12 @@ public class SectionsMenu extends AppCompatActivity {
     private final float MAX_HSV_WIDTH = 5120f;
     private final float SCN_CH_DIFF = MAX_CH_WIDTH - MAX_SCN_WIDTH;
 
-    private DatabaseController mDb;
     private Intent mIntent;
     private int mSelectedChapter;
     private boolean mFinishActivity;
-    private final Context THIS = this;
+
+    @Inject DatabaseController mDb;
+    @Inject Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,7 +158,6 @@ public class SectionsMenu extends AppCompatActivity {
         mChapterHeaderImageResources.add(R.drawable.chapter_19_header);
         mChapterHeaderImageResources.add(R.drawable.chapter_20_header);
 
-        mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
         LinkedHashMap<Integer, Section> sectionMap = mDb.getSections();
         LinkedHashMap<Integer, UnitSection> unitSectionMap = mDb.getUnitSections(mSelectedChapter);
         List<UnitSection> unitSections = new ArrayList<>();
@@ -321,9 +322,9 @@ public class SectionsMenu extends AppCompatActivity {
                     int selectedSectionId = mButtonSections.get(button);
                     Intent intent = null;
                     if (selectedSectionId == DatabaseController.PHONICS_SECTION) {
-                        intent = new Intent(THIS, PhonicsSubMenu.class);
+                        intent = new Intent(context, PhonicsSubMenu.class);
                     } else {
-                        intent = new Intent(THIS, DrillsMenu.class);
+                        intent = new Intent(context, DrillsMenu.class);
 
                         UnitSection unitSection = mDb.getUnitSection(mSelectedChapter, selectedSectionId, 0);
                         intent.putExtra("selected_unit_section", unitSection.getUnitSectionId());
@@ -410,7 +411,7 @@ public class SectionsMenu extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         if (!mFinishActivity) {
-            Globals.RESUME_BACKGROUND_MUSIC(THIS);
+            Globals.RESUME_BACKGROUND_MUSIC(context);
         } else {
             mFinishActivity = false;
         }
@@ -420,7 +421,7 @@ public class SectionsMenu extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         if (!mFinishActivity) {
-            Globals.PAUSE_BACKGROUND_MUSIC(THIS);
+            Globals.PAUSE_BACKGROUND_MUSIC(context);
         }
     }
 

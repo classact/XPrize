@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.menu.controller;
 
+import android.arch.persistence.room.Database;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
@@ -7,6 +8,9 @@ import android.database.sqlite.SQLiteException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedHashMap;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.database.DbHelper;
@@ -42,29 +46,27 @@ public class DatabaseController {
     private LinkedHashMap<Integer, Drill> mDrills;
     private LinkedHashMap<Integer, DrillType> mDrillTypes;
     private LinkedHashMap<Integer, Section> mSections;
+    
+    private int languageId;
+    
+    private DbHelper dbHelper;
 
-    private static DatabaseController mDatabaseController;
-    private static Context mContext;
-    private static int mLanguageId;
-    private DbHelper mDbHelper;
+    @Inject
+    public DatabaseController(DbHelper dbHelper) {
+        this.dbHelper = dbHelper;
+        this.languageId = 1;
+    }
 
-    private DatabaseController() {}
-
-    public static DatabaseController getInstance(Context context, int languageId) {
-        if (mDatabaseController == null) {
-            mDatabaseController = new DatabaseController();
-        }
-        mContext = context;
-        mLanguageId = languageId;
-        return mDatabaseController;
+    public void setLanguage(int languageId) {
+        this.languageId = languageId;
     }
 
     public LinkedHashMap<Integer, Section> getSections() {
         if (mSections == null) {
             try {
-                // Establish database connection
-                if (dbEstablsh()) {
-                    mSections = SectionHelper.getSections(mDbHelper.getReadableDatabase(), mLanguageId);
+                // Open database connection
+                if (dbOpen()) {
+                    mSections = SectionHelper.getSections(dbHelper.getReadableDatabase(), languageId);
                 }
             } catch (Exception ex) {
                 System.err.println(ex.getMessage());
@@ -80,9 +82,9 @@ public class DatabaseController {
     public LinkedHashMap<Integer, Drill> getDrills() {
         if (mDrills == null) {
             try {
-                // Establish database connection
-                if (dbEstablsh()) {
-                    mDrills = DrillHelper.getDrills(mDbHelper.getReadableDatabase());
+                // Open database connection
+                if (dbOpen()) {
+                    mDrills = DrillHelper.getDrills(dbHelper.getReadableDatabase());
                 }
             } catch (Exception ex) {
                 System.err.println(ex.getMessage());
@@ -98,9 +100,9 @@ public class DatabaseController {
     public LinkedHashMap<Integer, DrillType> getDrillTypes() {
         if (mDrillTypes == null) {
             try {
-                // Establish database connection
-                if (dbEstablsh()) {
-                    mDrillTypes = DrillTypeHelper.getDrillTypes(mDbHelper.getReadableDatabase(), mLanguageId);
+                // Open database connection
+                if (dbOpen()) {
+                    mDrillTypes = DrillTypeHelper.getDrillTypes(dbHelper.getReadableDatabase(), languageId);
                 }
             } catch (Exception ex) {
                 System.err.println(ex.getMessage());
@@ -116,9 +118,9 @@ public class DatabaseController {
     public LinkedHashMap<Integer, Unit> getUnits() {
         LinkedHashMap<Integer, Unit> units = null;
         try {
-            // Establish database connection
-            if (dbEstablsh()) {
-                units = UnitHelper.getUnits(mDbHelper.getReadableDatabase());
+            // Open database connection
+            if (dbOpen()) {
+                units = UnitHelper.getUnits(dbHelper.getReadableDatabase());
             }
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -133,10 +135,10 @@ public class DatabaseController {
     public Unit getUnit(int unitId) {
         Unit unit = null;
         try {
-            // Establish database connection
-            if (dbEstablsh()) {
+            // Open database connection
+            if (dbOpen()) {
                 unit = UnitHelper.getUnitInfo(
-                        mDbHelper.getReadableDatabase(), unitId);
+                        dbHelper.getReadableDatabase(), unitId);
             }
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -151,11 +153,11 @@ public class DatabaseController {
     public LinkedHashMap<Integer, UnitSection> getUnitSections(int unitId) {
         LinkedHashMap<Integer, UnitSection> unitSections = null;
         try {
-            // Establish database connection
-            if (dbEstablsh()) {
+            // Open database connection
+            if (dbOpen()) {
                 unitSections = UnitSectionHelper.getUnitSections(
-                        mDbHelper.getReadableDatabase(),
-                        mLanguageId,
+                        dbHelper.getReadableDatabase(),
+                        languageId,
                         unitId);
             }
         } catch (Exception ex) {
@@ -171,11 +173,11 @@ public class DatabaseController {
     public LinkedHashMap<Integer, UnitSection> getUnitSections(int unitId, int sectionId) {
         LinkedHashMap<Integer, UnitSection> unitSections = null;
         try {
-            // Establish database connection
-            if (dbEstablsh()) {
+            // Open database connection
+            if (dbOpen()) {
                 unitSections = UnitSectionHelper.getUnitSections(
-                        mDbHelper.getReadableDatabase(),
-                        mLanguageId,
+                        dbHelper.getReadableDatabase(),
+                        languageId,
                         unitId,
                         sectionId);
             }
@@ -192,10 +194,10 @@ public class DatabaseController {
     public UnitSection getUnitSection(int unitSectionId) {
         UnitSection unitSection = null;
         try {
-            // Establish database connection
-            if (dbEstablsh()) {
+            // Open database connection
+            if (dbOpen()) {
                 unitSection = UnitSectionHelper.getUnitSection(
-                        mDbHelper.getReadableDatabase(), unitSectionId);
+                        dbHelper.getReadableDatabase(), unitSectionId);
             }
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -210,10 +212,10 @@ public class DatabaseController {
     public UnitSection getUnitSection(int unitId, int sectionId, int sectionSubId) {
         UnitSection unitSection = null;
         try {
-            // Establish database connection
-            if (dbEstablsh()) {
+            // Open database connection
+            if (dbOpen()) {
                 unitSection = UnitSectionHelper.getUnitSection(
-                        mDbHelper.getReadableDatabase(), unitId, sectionId, sectionSubId);
+                        dbHelper.getReadableDatabase(), unitId, sectionId, sectionSubId);
             }
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -229,11 +231,11 @@ public class DatabaseController {
     public LinkedHashMap<Integer, UnitSectionDrill> getUnitSectionDrills(int unitSectionId) {
         LinkedHashMap<Integer, UnitSectionDrill> unitSectionDrills = null;
         try {
-            // Establish database connection
-            if (dbEstablsh()) {
+            // Open database connection
+            if (dbOpen()) {
                 unitSectionDrills = UnitSectionDrillHelper.getUnitSectionDrills(
-                        mDbHelper.getReadableDatabase(),
-                        mLanguageId,
+                        dbHelper.getReadableDatabase(),
+                        languageId,
                         unitSectionId);
             }
         } catch (Exception ex) {
@@ -249,10 +251,10 @@ public class DatabaseController {
     public UnitSectionDrill getUnitSectionDrill(int unitSectionDrillId) {
         UnitSectionDrill unitSectionDrill = null;
         try {
-            // Establish database connection
-            if (dbEstablsh()) {
+            // Open database connection
+            if (dbOpen()) {
                 unitSectionDrill = UnitSectionDrillHelper.getUnitSectionDrill(
-                        mDbHelper.getReadableDatabase(), unitSectionDrillId);
+                        dbHelper.getReadableDatabase(), unitSectionDrillId);
             }
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -267,10 +269,10 @@ public class DatabaseController {
     public UnitSectionDrill getUnitSectionDrillInProgress() {
         UnitSectionDrill unitSectionDrill = null;
         try {
-            // Establish database connection
-            if (dbEstablsh()) {
+            // Open database connection
+            if (dbOpen()) {
                 unitSectionDrill = UnitSectionDrillHelper.getUnitSectionDrillInProgress(
-                        mDbHelper.getReadableDatabase(), mLanguageId);
+                        dbHelper.getReadableDatabase(), languageId);
             }
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -284,53 +286,53 @@ public class DatabaseController {
 
     public void playUnitSectionDrill(int unitSectionDrillId) {
         try {
-            // Establish database connection
-            if (dbEstablsh()) {
+            // Open database connection
+            if (dbOpen()) {
 
                 // Get unit section drill
                 UnitSectionDrill unitSectionDrill = UnitSectionDrillHelper.getUnitSectionDrill(
-                        mDbHelper.getReadableDatabase(),
+                        dbHelper.getReadableDatabase(),
                         unitSectionDrillId);
                 // Validate unit section drill
                 if (unitSectionDrill == null) {
                     throw new Exception("Database Controller: playUnitSectionDrill Err#1");
                 }
                 // Clear in progress of all unlocked unit section drills
-                UnitSectionDrillHelper.clearInProgress(mDbHelper.getWritableDatabase());
+                UnitSectionDrillHelper.clearInProgress(dbHelper.getWritableDatabase());
                 // Setup in progress for selected unit section drill
                 unitSectionDrill.setInProgress(1);
                 // Update selected unit section drill
-                UnitSectionDrillHelper.update(mDbHelper.getWritableDatabase(), unitSectionDrill);
+                UnitSectionDrillHelper.update(dbHelper.getWritableDatabase(), unitSectionDrill);
 
                 // Get unit section
                 UnitSection unitSection = UnitSectionHelper.getUnitSection(
-                        mDbHelper.getReadableDatabase(),
+                        dbHelper.getReadableDatabase(),
                         unitSectionDrill.getUnitSectionId());
                 // Validate unit section
                 if (unitSection == null) {
                     throw new Exception("Database Controller: playUnitSectionDrill Err#2");
                 }
                 // Clear in progress for all unlocked unit sections
-                UnitSectionHelper.clearInProgress(mDbHelper.getWritableDatabase());
+                UnitSectionHelper.clearInProgress(dbHelper.getWritableDatabase());
                 // Setup in progress for selected unit section
                 unitSection.setInProgress(1);
                 // Update selected unit section
-                UnitSectionHelper.update(mDbHelper.getWritableDatabase(), unitSection);
+                UnitSectionHelper.update(dbHelper.getWritableDatabase(), unitSection);
 
                 // Get unit
                 Unit unit = UnitHelper.getUnitInfo(
-                        mDbHelper.getReadableDatabase(),
+                        dbHelper.getReadableDatabase(),
                         unitSection.getUnitId());
                 // Validate unit section
                 if (unit == null) {
                     throw new Exception("Database Controller: playUnitSectionDrill Err#3");
                 }
                 // Clear in progress for all unlocked units
-                UnitHelper.clearInProgress(mDbHelper.getWritableDatabase());
+                UnitHelper.clearInProgress(dbHelper.getWritableDatabase());
                 // Setup unit details (includes in progress)
                 unit = refactorUnit(unit, unitSection, unitSectionDrill);
                 // Update selected unit
-                UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), unit);
+                UnitHelper.updateUnitInfo(dbHelper.getWritableDatabase(), unit);
             }
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -343,52 +345,52 @@ public class DatabaseController {
 
     public void playNextUnitSectionDrill() {
         try {
-            // Establish database connection
-            if (dbEstablsh()) {
+            // Open database connection
+            if (dbOpen()) {
 
                 // Get unit section drill
                 UnitSectionDrill unitSectionDrill = UnitSectionDrillHelper.getUnitSectionDrillInProgress(
-                        mDbHelper.getReadableDatabase(), mLanguageId);
+                        dbHelper.getReadableDatabase(), languageId);
                 // Validate unit section drill
                 if (unitSectionDrill == null) {
                     throw new Exception("Database Controller: playNextUnitSectionDrill Err#1");
                 }
                 // Clear in progress of all unlocked unit section drills
-                UnitSectionDrillHelper.clearInProgress(mDbHelper.getWritableDatabase());
+                UnitSectionDrillHelper.clearInProgress(dbHelper.getWritableDatabase());
                 // Setup in progress for selected unit section drill
                 unitSectionDrill.setInProgress(1);
                 // Update selected unit section drill
-                UnitSectionDrillHelper.update(mDbHelper.getWritableDatabase(), unitSectionDrill);
+                UnitSectionDrillHelper.update(dbHelper.getWritableDatabase(), unitSectionDrill);
 
                 // Get unit section
                 UnitSection unitSection = UnitSectionHelper.getUnitSection(
-                        mDbHelper.getReadableDatabase(),
+                        dbHelper.getReadableDatabase(),
                         unitSectionDrill.getUnitSectionId());
                 // Validate unit section
                 if (unitSection == null) {
                     throw new Exception("Database Controller: playNextUnitSectionDrill Err#2");
                 }
                 // Clear in progress for all unlocked unit sections
-                UnitSectionHelper.clearInProgress(mDbHelper.getWritableDatabase());
+                UnitSectionHelper.clearInProgress(dbHelper.getWritableDatabase());
                 // Setup in progress for selected unit section
                 unitSection.setInProgress(1);
                 // Update selected unit section
-                UnitSectionHelper.update(mDbHelper.getWritableDatabase(), unitSection);
+                UnitSectionHelper.update(dbHelper.getWritableDatabase(), unitSection);
 
                 // Get unit
                 Unit unit = UnitHelper.getUnitInfo(
-                        mDbHelper.getReadableDatabase(),
+                        dbHelper.getReadableDatabase(),
                         unitSection.getUnitId());
                 // Validate unit section
                 if (unit == null) {
                     throw new Exception("Database Controller: playNextUnitSectionDrill Err#3");
                 }
                 // Clear in progress for all unlocked units
-                UnitHelper.clearInProgress(mDbHelper.getWritableDatabase());
+                UnitHelper.clearInProgress(dbHelper.getWritableDatabase());
                 // Setup unit details (includes in progress)
                 unit = refactorUnit(unit, unitSection, unitSectionDrill);
                 // Update selected unit
-                UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), unit);
+                UnitHelper.updateUnitInfo(dbHelper.getWritableDatabase(), unit);
             }
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -402,11 +404,11 @@ public class DatabaseController {
     private UnitSectionDrill getPreviousUnitSectionDrill(int unitSectionDrillId) {
         UnitSectionDrill previousUnitSectionDrill = null;
         try {
-            // Establish database connection
-            if (dbEstablsh()) {
+            // Open database connection
+            if (dbOpen()) {
                 // Get the given unit section drill
                 UnitSectionDrill unitSectionDrill = UnitSectionDrillHelper.getUnitSectionDrill(
-                        mDbHelper.getReadableDatabase(), unitSectionDrillId);
+                        dbHelper.getReadableDatabase(), unitSectionDrillId);
                 // Validate given unit section drill
                 if (unitSectionDrill == null) {
                     throw new Exception("Database Controller: getPreviousUnitSectionDrill Err#1");
@@ -415,7 +417,7 @@ public class DatabaseController {
                 int previousUnitSectionDrillId = unitSectionDrillId - 1;
                 // Get the unit section drill if it exists
                 previousUnitSectionDrill = UnitSectionDrillHelper.getUnitSectionDrill(
-                        mDbHelper.getReadableDatabase(), previousUnitSectionDrillId);
+                        dbHelper.getReadableDatabase(), previousUnitSectionDrillId);
                 // Validate previous unit section drill
                 if (previousUnitSectionDrill == null) {
                     throw new Exception("Database Controller: getPreviousUnitSectionDrill Err#2");
@@ -434,32 +436,32 @@ public class DatabaseController {
     public UnitSectionDrill moveToNextUnitSectionDrill() {
         UnitSectionDrill nextUnitSectionDrill = null;
         try {
-            // Establish database connection
-            if (dbEstablsh()) {
+            // Open database connection
+            if (dbOpen()) {
                 // Get the current unit section drill in progress
                 UnitSectionDrill unitSectionDrill = UnitSectionDrillHelper.getUnitSectionDrillInProgress(
-                        mDbHelper.getReadableDatabase(), mLanguageId);
+                        dbHelper.getReadableDatabase(), languageId);
 
                 // Get next unit section drill id
                 int nextUnitSectionDrillId = unitSectionDrill.getUnitSectionDrillId() + 1;
 
                 // Get next unit section drill
                 nextUnitSectionDrill = UnitSectionDrillHelper.getUnitSectionDrill(
-                        mDbHelper.getReadableDatabase(), nextUnitSectionDrillId);
+                        dbHelper.getReadableDatabase(), nextUnitSectionDrillId);
 
                 // Validate if it could be found
                 if (nextUnitSectionDrill == null) {
 
                     // Go back to first unit section drill
                     nextUnitSectionDrill = UnitSectionDrillHelper.getFirstUnitSectionDrill(
-                            mDbHelper.getReadableDatabase());
+                            dbHelper.getReadableDatabase());
                 }
 
                 // Get Unlocked Date
                 String unlockedDate = Globals.STANDARD_DATE_TIME_STRING(new Date());
 
                 // Clear in progress of all unlocked unit section drills
-                UnitSectionDrillHelper.clearInProgress(mDbHelper.getWritableDatabase());
+                UnitSectionDrillHelper.clearInProgress(dbHelper.getWritableDatabase());
                 // Setup in progress for next unit section drill
                 nextUnitSectionDrill.setInProgress(1);
                 // Setup unlocked + unlocked date for next unit section drill
@@ -468,18 +470,18 @@ public class DatabaseController {
                     nextUnitSectionDrill.setUnlockedDate(unlockedDate);
                 }
                 // Update next unit section drill
-                UnitSectionDrillHelper.update(mDbHelper.getWritableDatabase(), nextUnitSectionDrill);
+                UnitSectionDrillHelper.update(dbHelper.getWritableDatabase(), nextUnitSectionDrill);
 
                 // Get next unit section
                 UnitSection nextUnitSection = UnitSectionHelper.getUnitSection(
-                        mDbHelper.getReadableDatabase(),
+                        dbHelper.getReadableDatabase(),
                         nextUnitSectionDrill.getUnitSectionId());
                 // Validate next unit section
                 if (nextUnitSection == null) {
                     throw new Exception("Database Controller: moveToNextUnitSectionDrill Err#1");
                 }
                 // Clear in progress for all unlocked unit sections
-                UnitSectionHelper.clearInProgress(mDbHelper.getWritableDatabase());
+                UnitSectionHelper.clearInProgress(dbHelper.getWritableDatabase());
                 // Setup in progress for next unit section
                 nextUnitSection.setInProgress(1);
                 // Setup unlocked + unlocked date for next unit section
@@ -488,18 +490,18 @@ public class DatabaseController {
                     nextUnitSection.setUnlockedDate(unlockedDate);
                 }
                 // Update next unit section
-                UnitSectionHelper.update(mDbHelper.getWritableDatabase(), nextUnitSection);
+                UnitSectionHelper.update(dbHelper.getWritableDatabase(), nextUnitSection);
 
                 // Get next unit
                 Unit nextUnit = UnitHelper.getUnitInfo(
-                        mDbHelper.getReadableDatabase(),
+                        dbHelper.getReadableDatabase(),
                         nextUnitSection.getUnitId());
                 // Validate next unit
                 if (nextUnit == null) {
                     throw new Exception("Database Controller: moveToNextUnitSectionDrill Err#2");
                 }
                 // Clear in progress for all unlocked units
-                UnitHelper.clearInProgress(mDbHelper.getWritableDatabase());
+                UnitHelper.clearInProgress(dbHelper.getWritableDatabase());
                 // Setup unlocked + unlocked date for next unit
                 if (nextUnit.getUnitUnlocked() == 0) {
                     nextUnit.setUnitUnlocked(1);
@@ -507,7 +509,7 @@ public class DatabaseController {
                 // Setup unit details (includes in progress)
                 nextUnit = refactorUnit(nextUnit, nextUnitSection, nextUnitSectionDrill);
                 // Update next unit
-                UnitHelper.updateUnitInfo(mDbHelper.getWritableDatabase(), nextUnit);
+                UnitHelper.updateUnitInfo(dbHelper.getWritableDatabase(), nextUnit);
             }
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -581,10 +583,10 @@ public class DatabaseController {
     public Object run(DatabaseQuery databaseQuery) {
         Object result = null;
         try {
-            // Establish database connection
-            if (dbEstablsh()) {
+            // Open database connection
+            if (dbOpen()) {
                 // Get result
-                result = databaseQuery.execute(mDbHelper);
+                result = databaseQuery.execute(dbHelper);
             }
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -596,20 +598,11 @@ public class DatabaseController {
         return result;
     }
 
-    private boolean dbEstablsh() {
+    private boolean dbOpen() {
         try {
-            // Initialize DbHelper
-            mDbHelper = DbHelper.getDbHelper(mContext);
-            // Create database (or connect to existing)
-            mDbHelper.createDatabase(false);
-            // Test opening database
-            mDbHelper.openDatabase();
-            // All good
+            dbHelper.openDatabase();
             return true;
-
             // Otherwise
-        } catch (IOException ioex) {
-            System.err.println("DatabaseController.dbEstablish > IOException: " + ioex.getMessage());
         } catch (SQLiteException sqlex) {
             System.err.println("DatabaseController.dbEstablish > SQLiteException: " + sqlex.getMessage());
         } catch (Exception ex) {
@@ -619,8 +612,8 @@ public class DatabaseController {
     }
 
     private void dbClose() {
-        if (mDbHelper != null) {
-            mDbHelper.close();
+        if (dbHelper != null) {
+            dbHelper.close();
         }
     }
 }

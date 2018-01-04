@@ -2,18 +2,24 @@ package classact.com.xprize.activity.drill.sound;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
-import classact.com.xprize.utils.FetchResource;
 
 public class SoundDrillOneActivity extends DrillActivity {
+
+    @BindView(R.id.activity_sound_drill_one) RelativeLayout rootView;
+
     private JSONObject drillData;
     private ImageView letter;
     private JSONArray objects;
@@ -30,6 +36,7 @@ public class SoundDrillOneActivity extends DrillActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_one);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -50,6 +57,14 @@ public class SoundDrillOneActivity extends DrillActivity {
         String drillData = getIntent().getExtras().getString("data");
         initialiseData(drillData);
         //this letter is a small
+
+        pauseScreen = ez.frameFull();
+        pauseScreen.setClickable(true);
+        pauseScreen.setFocusable(true);
+        pauseScreen.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        ez.gray(pauseScreen);
+        rootView.addView(pauseScreen);
+
         playIntro();
     }
 
@@ -77,6 +92,7 @@ public class SoundDrillOneActivity extends DrillActivity {
             objects = drillData.getJSONArray("objects");
         }
         catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -85,18 +101,19 @@ public class SoundDrillOneActivity extends DrillActivity {
     // Play the introduction sound.  This is the letter
     //
     private void playIntro(){
-        String sound = "";
+        String sound;
         try {
             sound = drillData.getString("intro");
             playSound(sound, this::playNormalLetterSound);
         }
         catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
 
     public void playNormalLetterSound(){
-        String sound = "";
+        String sound;
         try {
             if (letterType == 1) {
                 sound = drillData.getString("letter_sound");
@@ -106,12 +123,13 @@ public class SoundDrillOneActivity extends DrillActivity {
             playSound(sound, this::playPhonicSoundIntro);
         }
         catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
 
     public void playPhonicSoundIntro(){
-        String sound = "";
+        String sound;
         try {
             if (letterType == 1) {
                 sound = drillData.getString("it_makes_sound");
@@ -120,29 +138,32 @@ public class SoundDrillOneActivity extends DrillActivity {
             }
             playSound(sound, this::playletterSound);
         }
-        catch (Exception ex){
+        catch (Exception ex) {
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
 
     public void playletterSound(){
-        String sound = "";
+        String sound;
         try {
             sound = drillData.getString("letter_phonic_sound");
             playSound(sound, this::nowYouTry);
         }
         catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
 
     private void nowYouTry(){
-        String sound = "";
+        String sound;
         try {
             sound = drillData.getString("now_you_try");
             playSound(sound, this::intiatePrescence);
         }
         catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -166,7 +187,8 @@ public class SoundDrillOneActivity extends DrillActivity {
             }
             playSound(sound, this::playObject);
         }
-        catch (Exception ex){
+        catch (Exception ex) {
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -180,13 +202,13 @@ public class SoundDrillOneActivity extends DrillActivity {
                 if (currentObject < 3){
                     handler.delayed(this::soundAndObject,1000);
                 } else {
-                    mediaPlayer.reset();
                     finish();
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
             });
         }
         catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }

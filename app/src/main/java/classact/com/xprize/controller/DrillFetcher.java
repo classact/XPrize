@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import classact.com.xprize.activity.drill.books.StoryActivity;
 import classact.com.xprize.activity.drill.tutorial.Tutorial;
 import classact.com.xprize.activity.link.LevelCompleteLink;
@@ -17,7 +19,6 @@ import classact.com.xprize.activity.link.StoryLink;
 import classact.com.xprize.activity.link.WordsLink;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
 import classact.com.xprize.activity.movie.MovieActivity;
-import classact.com.xprize.activity.movie.MoviePausable;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.controller.catalogue.MathDrills;
@@ -46,17 +47,21 @@ import classact.com.xprize.locale.Languages;
 
 public class DrillFetcher {
 
-    public static boolean mPhonicsStarted = false;
-    public static boolean mWordsStarted = false;
-    public static boolean mBooksStarted = false;
-    public static boolean mMathsStarted = false;
+    public boolean mPhonicsStarted = false;
+    public boolean mWordsStarted = false;
+    public boolean mBooksStarted = false;
+    public boolean mMathsStarted = false;
 
-    public static Object[] fetch(Context context, DbHelper dbHelper, int languageId, UnitSectionDrill unitSectionDrill) {
-        Object[] objectArray = new Object[2];
+    private DatabaseController mDb;
+
+    @Inject
+    public DrillFetcher(DatabaseController mDb) {
+        this.mDb = mDb;
+    }
+
+    public void fetch(Object[] objectArray, Context context, DbHelper dbHelper, int languageId, UnitSectionDrill unitSectionDrill) {
 
         try {
-            // Setup Database Controller
-            DatabaseController mDb = DatabaseController.getInstance(context, Languages.ENGLISH);
 
             // Extract ids
             int unitSectionDrillId = unitSectionDrill.getUnitSectionDrillId();
@@ -162,11 +167,9 @@ public class DrillFetcher {
             System.err.println(ex.getMessage());
             ex.printStackTrace();
         }
-
-        return objectArray;
     }
 
-    public static Intent fetch(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int subId) {
+    public Intent fetch(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int subId) {
         Intent intent = null;
 
         // fetch drill to return according to type
@@ -194,7 +197,7 @@ public class DrillFetcher {
         return intent;
     }
 
-    private static Intent getPhonicsDrill(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int subId) throws SQLiteException, Exception {
+    private Intent getPhonicsDrill(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int subId) throws SQLiteException, Exception {
         Intent intent = null;
         try {
 
@@ -332,7 +335,7 @@ public class DrillFetcher {
         return intent;
     }
 
-    private static Intent getWordDrill(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int subId) throws SQLiteException, Exception {
+    private Intent getWordDrill(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int subId) throws SQLiteException, Exception {
         Intent intent;
 
         try {
@@ -517,7 +520,7 @@ public class DrillFetcher {
         return intent;
     }
 
-    private static Intent getStoryDrill(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int subId) throws SQLiteException, Exception {
+    private Intent getStoryDrill(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int subId) throws SQLiteException, Exception {
         Intent intent = null;
         try {
             switch (drillId) {
@@ -541,7 +544,7 @@ public class DrillFetcher {
         return intent;
     }
 
-    private static Intent getMathDrill(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int subId) throws SQLiteException, Exception {
+    private Intent getMathDrill(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int subId) throws SQLiteException, Exception {
         Intent intent = null;
 
         // Get math drillId, as drillIds start from 1 to 7 with current solution

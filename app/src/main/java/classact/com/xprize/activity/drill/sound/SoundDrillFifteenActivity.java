@@ -771,12 +771,9 @@ public class SoundDrillFifteenActivity extends DrillActivity {
                 }
                 case YAY: {
                     if (mThisActivity.getEndDrill()) {
-                        // Release media player
-                        mp.release();
-                        // Release handle
-                        handler = null;
                         // Finish activity
                         mThisActivity.finish();
+                        mThisActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     } else if (mThisActivity.getDrillComplete()) {
                         // Prepare next drill
                         mThisActivity.prepareDrill();

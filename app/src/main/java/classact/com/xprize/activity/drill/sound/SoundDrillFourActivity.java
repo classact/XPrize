@@ -7,20 +7,18 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.DragEvent;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
-import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
@@ -141,15 +139,7 @@ public class SoundDrillFourActivity extends DrillActivity {
             drillSound = params.getString("drillsound");
         }
         catch (Exception ex){
-            System.err.println("------------------------------------------------------");
-            System.err.println("SoundDrillFourActivity.initialiseData > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------");
             ex.printStackTrace();
-            System.err.println("------------------------------------------------------");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -178,15 +168,7 @@ public class SoundDrillFourActivity extends DrillActivity {
             mp.prepare();
         }
         catch (Exception ex){
-            System.err.println("------------------------------------------------------");
-            System.err.println("SoundDrillFourActivity.playDamaNeedsToCleanSound > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------");
             ex.printStackTrace();
-            System.err.println("------------------------------------------------------");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -214,16 +196,8 @@ public class SoundDrillFourActivity extends DrillActivity {
             });
             mp.prepare();
         }
-        catch (Exception ex){
-            System.err.println("------------------------------------------------------");
-            System.err.println("SoundDrillFourActivity.playDragThePicturesThatStartWithSound > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------");
+        catch (Exception ex) {
             ex.printStackTrace();
-            System.err.println("------------------------------------------------------");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -250,19 +224,8 @@ public class SoundDrillFourActivity extends DrillActivity {
             });
             mp.prepare();
         }
-        catch (Exception ex){
+        catch (Exception ex) {
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", drillSound).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playIntoTheBoxSound();
-                }
-            }, 800);
         }
     }
 
@@ -291,16 +254,8 @@ public class SoundDrillFourActivity extends DrillActivity {
             });
             mp.prepare();
         }
-        catch (Exception ex){
-            System.err.println("------------------------------------------------------");
-            System.err.println("SoundDrillFourActivity.playIntoTheBoxSound > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------");
+        catch (Exception ex) {
             ex.printStackTrace();
-            System.err.println("------------------------------------------------------");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -331,19 +286,6 @@ public class SoundDrillFourActivity extends DrillActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (mRunnable != null) {
-                        mRunnable.run();
-                    }
-                }
-            }, 800);
         }
     }
 
@@ -373,15 +315,7 @@ public class SoundDrillFourActivity extends DrillActivity {
             mp.prepare();
         }
         catch (Exception ex){
-            System.err.println("------------------------------------------------------");
-            System.err.println("SoundDrillFourActivity.playSoundAndRunnableAfterCompletion > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------");
             ex.printStackTrace();
-            System.err.println("------------------------------------------------------");
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -409,11 +343,6 @@ public class SoundDrillFourActivity extends DrillActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
         }
     }
 
@@ -440,15 +369,8 @@ public class SoundDrillFourActivity extends DrillActivity {
             mp.prepare();
         }
         catch (Exception ex){
-            System.err.println("------------------------------------------------------");
-            System.err.println("SoundDrillFourActivity.playSound > Exception: " + ex.getMessage());
-            System.err.println("------------------------------------------------------");
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            System.err.println("------------------------------------------------------");
-            /*if (mp != null) {
-                mp.release();
-            }
-            finish();*/
         }
     }
 
@@ -466,15 +388,7 @@ public class SoundDrillFourActivity extends DrillActivity {
                     return true;
                 }
             } catch (Exception ex) {
-                System.err.println("------------------------------------------------------");
-                System.err.println("SoundDrillFourActivity.dragItem > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------");
                 ex.printStackTrace();
-                System.err.println("------------------------------------------------------");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
         return false;
@@ -510,15 +424,8 @@ public class SoundDrillFourActivity extends DrillActivity {
                 }
                 return true;
             } catch (Exception ex) {
-                System.err.println("------------------------------------------------------");
-                System.err.println("SoundDrillFourActivity.onItemDraggedIntoToyboxListener > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------------------");
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
-                System.err.println("------------------------------------------------------");
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
             return false;
         }
@@ -541,10 +448,8 @@ public class SoundDrillFourActivity extends DrillActivity {
                 mRunnable = new Runnable() {
                     @Override
                     public void run() {
-                        if (mp != null) {
-                            mp.release();
-                        }
                         finish();
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     }
                 };
                 playSoundAndRunnableAfterCompletion(ResourceSelector.getPositiveAffirmationSound(this));

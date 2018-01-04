@@ -33,7 +33,6 @@ public class MathsDrillOneActivity extends DrillActivity {
     private Runnable returnRunnable;
     private RelativeLayout rootLayout;
     private RelativeLayout rln; // numbers layout
-    private final Context THIS = this;
 
     private MathDrill01ViewModel vm;
 
@@ -112,7 +111,7 @@ public class MathsDrillOneActivity extends DrillActivity {
     private void showNumber(int resId, int position){
         ImageView number = (ImageView) rootLayout.getChildAt(position);
         number.setVisibility(View.VISIBLE);
-        number.setImageResource(resId);
+        loadImage(number, resId);
     }
 
     private void sparkle(){
@@ -121,7 +120,7 @@ public class MathsDrillOneActivity extends DrillActivity {
             for(int i = 0; i < 21 ; i++)
                 if ((currentNumber-1) == positions[i])
                     currentPosition = i;
-            showNumber(FetchResource.imageId(THIS, numbers, positions[currentPosition], "numeral_sparkling"), currentPosition);
+            showNumber(FetchResource.imageId(context, numbers, positions[currentPosition], "numeral_sparkling"), currentPosition);
             handler.delayed(resetNumberRunnable,200);
         }
         catch (Exception ex){
@@ -133,7 +132,7 @@ public class MathsDrillOneActivity extends DrillActivity {
         @Override
         public void run() {
             try {
-                showNumber(FetchResource.imageId(THIS, numbers, positions[currentPosition], "numeral"), currentPosition);
+                showNumber(FetchResource.imageId(context, numbers, positions[currentPosition], "numeral"), currentPosition);
                 currentNumber++;
                 handler.delayed(returnRunnable,500);
             }

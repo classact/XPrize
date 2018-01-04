@@ -29,8 +29,6 @@ public class MathsDrillSixAndTwoActivity extends DrillActivity {
 
     private boolean touchEnabled;
 
-    private final Context THIS = this;
-
     private MathDrill06CViewModel vm;
 
     @Override
@@ -101,8 +99,8 @@ public class MathsDrillSixAndTwoActivity extends DrillActivity {
             String shapeOneImage = shapeOne.getString("image_name");
             String shapeTwoImage = shapeTwo.getString("image_name");
 
-            int shapeOneImageId = FetchResource.imageId(THIS, shapeOneImage);
-            int shapeTwoImageId = FetchResource.imageId(THIS, shapeTwoImage);
+            int shapeOneImageId = FetchResource.imageId(context, shapeOneImage);
+            int shapeTwoImageId = FetchResource.imageId(context, shapeTwoImage);
 
             ImageView[] orderedSquareContainers = {
                     shapeContainerOne,
@@ -156,7 +154,7 @@ public class MathsDrillSixAndTwoActivity extends DrillActivity {
 
             // Big shape one
             ImageView iv1 = shuffledSquareContainers[0];
-            iv1.setImageResource(shapeOneImageId);
+            loadImage(iv1, shapeOneImageId);
             iv1 = scale(iv1, BIG_SCALE);
             iv1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -167,7 +165,7 @@ public class MathsDrillSixAndTwoActivity extends DrillActivity {
 
             // Small shape two
             ImageView iv2 = shuffledSquareContainers[1];
-            iv2.setImageResource(shapeTwoImageId);
+            loadImage(iv2, shapeTwoImageId);
             iv2 = scale(iv2, SMALL_SCALE);
             iv2.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -178,7 +176,7 @@ public class MathsDrillSixAndTwoActivity extends DrillActivity {
 
             // Big shape two
             ImageView iv3 = shuffledSquareContainers[2];
-            iv3.setImageResource(shapeTwoImageId);
+            loadImage(iv3, shapeTwoImageId);
             iv3 = scale(iv3, BIG_SCALE);
             iv3.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -189,7 +187,7 @@ public class MathsDrillSixAndTwoActivity extends DrillActivity {
 
             // Small shape one
             ImageView iv4 = shuffledSquareContainers[3];
-            iv4.setImageResource(shapeOneImageId);
+            loadImage(iv4, shapeOneImageId);
             iv4 = scale(iv4, SMALL_SCALE);
             iv3.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -264,16 +262,15 @@ public class MathsDrillSixAndTwoActivity extends DrillActivity {
                 String objectToTouch = allData.getString("object_comparative_sound");
                 if (objectToTouch.equalsIgnoreCase(touchedObject)) {
                     touchEnabled = false;
-                    playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                    playSound(FetchResource.positiveAffirmation(context), new Runnable() {
                         @Override
                         public void run() {
-                            mediaPlayer.reset();
                             finish();
                             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                         }
                     });
                 } else {
-                    playSound(FetchResource.negativeAffirmation(THIS), null);
+                    playSound(FetchResource.negativeAffirmation(context), null);
                 }
             }
         }

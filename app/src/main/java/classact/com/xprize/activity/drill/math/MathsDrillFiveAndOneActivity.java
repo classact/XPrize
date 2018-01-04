@@ -3,16 +3,10 @@ package classact.com.xprize.activity.drill.math;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.ClipDescription;
-import android.content.Context;
 import android.graphics.Color;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.DragEvent;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -23,16 +17,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.Exchanger;
 
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
-import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
@@ -74,8 +63,6 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
     private boolean touchNumbersEnabled;
 
     private int currentDragIndex;
-
-    private final Context THIS = this;
 
     private MathDrill05BViewModel vm;
 
@@ -224,14 +211,14 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
             equationNumbers = new LinkedHashMap<>();
             // Set equation number values to '0' (no objects collected so far)
             int zeroImageId = FetchResource.imageId(this, numberObjects.get(0).getImage());
-            equationNumberOne.setImageResource(zeroImageId);
-            equationNumberTwo.setImageResource(zeroImageId);
+            loadImage(equationNumberOne, zeroImageId);
+            loadImage(equationNumberTwo, zeroImageId);
             // Add equation numbers to equation numbers hash map
             equationNumbers.put(aObjectImage, equationNumberOne);
             equationNumbers.put(bObjectImage, equationNumberTwo);
             // Set equation answer to question mark
             int questionMarkImageId = FetchResource.imageId(this, "questionmark_black");
-            equationAnswer.setImageResource(questionMarkImageId);
+            loadImage(equationAnswer, questionMarkImageId);
             LinearLayout.LayoutParams equationAnswerLP = (LinearLayout.LayoutParams) equationAnswer.getLayoutParams();
             float sd = getResources().getDisplayMetrics().density;
             equationAnswerLP.width = (int) (sd * 125);
@@ -256,10 +243,10 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
 
                 if (i < aCount) {
                     co = new CustomObject(aObjectImage, aObjectSound);
-                    iv.setImageResource(aObjectImageId);
+                    loadImage(iv, aObjectImageId);
                 } else if (i < abCount) {
                     co = new CustomObject(bObjectImage, bObjectSound);
-                    iv.setImageResource(bObjectImageId);
+                    loadImage(iv, bObjectImageId);
                 }
                 objectContainerObjects.put(index, co);
                 iv.setTag("" + index);
@@ -374,7 +361,7 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
 
                     String image = co.getImage();
                     int imageId = FetchResource.imageId(this, image);
-                    iv.setImageResource(imageId);
+                    loadImage(iv, imageId);
 
                     int nextIndex = receptacleObjects.size();
 
@@ -405,7 +392,7 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
                     // Update image view for respective equation number
                     ImageView equationNumber = equationNumbers.get(objectImage);
                     int numberImageId = FetchResource.imageId(this, numberObjects.get(numOfCollectedObjects).getImage());
-                    equationNumber.setImageResource(numberImageId);
+                    loadImage(equationNumber, numberImageId);
 
                     // Get the number sound to play
                     String numberSound = numberObjects.get(numOfCollectedObjects).getSound();
@@ -460,7 +447,6 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
             final String answerSound = numberObjects.get(answerValue).getSound();
             playSound(equationSound, () -> {
                 playSound(answerSound, () -> {
-                    mediaPlayer.reset();
                     finish();
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 });
@@ -484,7 +470,7 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
                 ImageView iv = (ImageView) numbersContainer.getChildAt(i);
                 CustomObject number = numberObjects.get(chosenValue); // scrambled order
                 int numberImageId = FetchResource.imageId(this, number.getImage());
-                iv.setImageResource(numberImageId);
+                loadImage(iv, numberImageId);
 
                 final String numberSound = number.getSound();
                 iv.setOnClickListener(new View.OnClickListener() {
@@ -502,11 +488,11 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
                                 equationAnswer.setLayoutParams(equationAnswerLP);
 
                                 String answerImage = numberObjects.get(answerValue).getImage();
-                                int answerImageId = FetchResource.imageId(THIS, answerImage);
-                                equationAnswer.setImageResource(answerImageId);
+                                int answerImageId = FetchResource.imageId(context, answerImage);
+                                loadImage(equationAnswer, answerImageId);
 
                                 playSound(numberSound, () -> {
-                                    playSound(FetchResource.positiveAffirmation(THIS), () -> {
+                                    playSound(FetchResource.positiveAffirmation(context), () -> {
                                         handler.delayed(() -> endingSequence(), 250);
                                     });
                                 });
@@ -515,7 +501,7 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
                                 playSound(numberSound, new Runnable() {
                                     @Override
                                     public void run() {
-                                        playSound(FetchResource.negativeAffirmation(THIS), null);
+                                        playSound(FetchResource.negativeAffirmation(context), null);
                                     }
                                 });
                             }

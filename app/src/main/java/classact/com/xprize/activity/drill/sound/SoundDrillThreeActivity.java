@@ -1,21 +1,12 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
-import android.graphics.Color;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -26,8 +17,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
-import classact.com.xprize.common.Code;
-import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 
 public class SoundDrillThreeActivity extends DrillActivity {

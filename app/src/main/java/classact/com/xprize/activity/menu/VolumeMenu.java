@@ -4,16 +4,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
 import classact.com.xprize.R;
 import classact.com.xprize.common.Globals;
+import dagger.android.support.DaggerAppCompatActivity;
 
-public class VolumeMenu extends AppCompatActivity {
+public class VolumeMenu extends DaggerAppCompatActivity {
 
     private ConstraintLayout mRootView;
 
@@ -24,7 +26,8 @@ public class VolumeMenu extends AppCompatActivity {
     private Intent mIntent;
     private int mSelectedLanguage;
     private boolean mFinishActivity;
-    private final Context THIS = this;
+
+    @Inject Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +51,7 @@ public class VolumeMenu extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int volume = (int) (((float) progress) / 15f * 100f);
                 mVolumePercentage.setText("" + volume + " %");
-                Globals.SET_VOLUME(THIS, progress);
+                Globals.SET_VOLUME(context, progress);
             }
 
             @Override
@@ -83,7 +86,7 @@ public class VolumeMenu extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         if (!mFinishActivity) {
-            Globals.RESUME_BACKGROUND_MUSIC(THIS);
+            Globals.RESUME_BACKGROUND_MUSIC(context);
             mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             mVolumeSeekbar.setProgress(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
         } else {
@@ -95,7 +98,7 @@ public class VolumeMenu extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         if (!mFinishActivity) {
-            Globals.PAUSE_BACKGROUND_MUSIC(THIS);
+            Globals.PAUSE_BACKGROUND_MUSIC(context);
         }
     }
 

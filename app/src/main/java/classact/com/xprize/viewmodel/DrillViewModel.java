@@ -3,6 +3,7 @@ package classact.com.xprize.viewmodel;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
+import android.util.Log;
 
 import classact.com.xprize.event.PauseEvent;
 import classact.com.xprize.event.ResumeEvent;
@@ -79,6 +80,7 @@ public abstract class DrillViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
+        Log.d("Drill View Model", "onCleared");
         if (compositeDisposable != null) {
             compositeDisposable.clear();
             compositeDisposable = null;

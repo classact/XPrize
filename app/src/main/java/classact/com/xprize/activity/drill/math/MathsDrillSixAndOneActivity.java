@@ -28,8 +28,6 @@ public class MathsDrillSixAndOneActivity extends DrillActivity {
 
     private boolean touchEnabled;
 
-    private final Context THIS = this;
-
     private MathDrill06BViewModel vm;
 
     @Override
@@ -78,7 +76,7 @@ public class MathsDrillSixAndOneActivity extends DrillActivity {
             allData = new JSONObject(drillData);
 
             String objectImage = allData.getString("object_name");
-            int objectImageId = FetchResource.imageId(THIS, objectImage);
+            int objectImageId = FetchResource.imageId(context, objectImage);
 
             largeShape.setImageResource(objectImageId);
             smallShape.setImageResource(objectImageId);
@@ -217,18 +215,17 @@ public class MathsDrillSixAndOneActivity extends DrillActivity {
                 String objectToTouch = allData.getString("object_comparative_sound");
                 if (objectToTouch.equalsIgnoreCase(touchedObject)) {
                     touchEnabled = false;
-                    playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                    playSound(FetchResource.positiveAffirmation(context), new Runnable() {
                         @Override
                         public void run() {
                             handler.delayed(() -> {
-                                mediaPlayer.reset();
                                 finish();
                                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                             }, 0);
                         }
                     });
                 } else {
-                    playSound(FetchResource.negativeAffirmation(THIS), null);
+                    playSound(FetchResource.negativeAffirmation(context), null);
                 }
             }
         }

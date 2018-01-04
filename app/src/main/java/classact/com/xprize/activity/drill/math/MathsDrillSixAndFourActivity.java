@@ -59,7 +59,6 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
     private boolean touchEnabled;
 
     private RelativeLayout parentView;
-    private final Context THIS = this;
 
     private MathDrill06EViewModel vm;
 
@@ -114,7 +113,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
         });
         itemsReceptacle = (RelativeLayout)findViewById(R.id.monkeysReceptable);
 
-        monkey = new RelativeLayout(THIS);
+        monkey = new RelativeLayout(context);
         // monkey.setBackgroundColor(Color.argb(100, 255, 0, 0));
         parentView.addView(monkey);
         RelativeLayout.LayoutParams monkeyLP = (RelativeLayout.LayoutParams) monkey.getLayoutParams();
@@ -139,8 +138,8 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
             setupNumberObjects();
 
             String answerImage = allData.getString("answer_image");
-            int answerImageId = FetchResource.imageId(THIS, answerImage);
-            equationAnswer.setImageResource(answerImageId);
+            int answerImageId = FetchResource.imageId(context, answerImage);
+            loadImage(equationAnswer, answerImageId);
 
             touchEnabled = false;
             dragEnabled = false;
@@ -154,7 +153,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -166,26 +165,26 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
             targetItems = allData.getInt("number_of_given_objects");
 
             String numOfObjectsImage = allData.getString("number_of_objects_image");
-            int numOfObjectsImageId = FetchResource.imageId(THIS, numOfObjectsImage);
+            int numOfObjectsImageId = FetchResource.imageId(context, numOfObjectsImage);
 
             String numOfObjectsGivenImage = allData.getString("number_of_given_objects_image");
-            int numOfObjectsGivenImageId = FetchResource.imageId(THIS, numOfObjectsGivenImage);
+            int numOfObjectsGivenImageId = FetchResource.imageId(context, numOfObjectsGivenImage);
 
-            equationNumberOne.setImageResource(numOfObjectsImageId);
-            equationNumberTwo.setImageResource(numOfObjectsGivenImageId);
+            loadImage(equationNumberOne, numOfObjectsImageId);
+            loadImage(equationNumberTwo, numOfObjectsGivenImageId);
 
             String objectsImage = allData.getString("objects_image");
-            itemResId = FetchResource.imageId(THIS, objectsImage);
+            itemResId = FetchResource.imageId(context, objectsImage);
 
             for(int i = 0; i < count;i++){
                 ImageView image = (ImageView)objectsContainer.getChildAt(i);
-                image.setImageResource(itemResId);
+                loadImage(image, itemResId);
                 image.setVisibility(View.VISIBLE);
                 image.setOnTouchListener(this);
             }
         }
         catch(Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -215,25 +214,25 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
                         JSONObject number = numbers.getJSONObject(i);
                         String numberImage = number.getString("image");
                         int value = number.getInt("value");
-                        int numberImageid = FetchResource.imageId(THIS, numberImage);
-                        numberOne.setImageResource(numberImageid);
-                        numberOne.setTag(String.valueOf(value));
+                        int numberImageId = FetchResource.imageId(context, numberImage);
+                        loadImage(numberOne, numberImageId);
+                        // numberOne.setTag(String.valueOf(value));
                         break;
                     case 1:
                         number = numbers.getJSONObject(i);
                         numberImage = number.getString("image");
                         value = number.getInt("value");
-                        numberImageid = FetchResource.imageId(THIS, numberImage);
-                        numberTwo.setImageResource(numberImageid);
-                        numberTwo.setTag(String.valueOf(value));
+                        numberImageId = FetchResource.imageId(context, numberImage);
+                        loadImage(numberTwo, numberImageId);
+                        // numberTwo.setTag(String.valueOf(value));
                         break;
                     case 2:
                         number = numbers.getJSONObject(i);
                         numberImage = number.getString("image");
                         value = number.getInt("value");
-                        numberImageid = FetchResource.imageId(THIS, numberImage);
-                        numberThree.setImageResource(numberImageid);
-                        numberThree.setTag(String.valueOf(value));
+                        numberImageId = FetchResource.imageId(context, numberImage);
+                        loadImage(numberThree, numberImageId);
+                        // numberThree.setTag(String.valueOf(value));
                         break;
                     default:
                         break;
@@ -241,7 +240,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
             }
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -259,10 +258,9 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
                     playSound(numberSound, new Runnable() {
                         @Override
                         public void run() {
-                            playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                            playSound(FetchResource.positiveAffirmation(context), new Runnable() {
                                 @Override
                                 public void run() {
-                                    mediaPlayer.reset();
                                     finish();
                                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                                 }
@@ -273,12 +271,12 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
                     playSound(numberSound, new Runnable() {
                         @Override
                         public void run() {
-                            playSound(FetchResource.negativeAffirmation(THIS), null);
+                            playSound(FetchResource.negativeAffirmation(context), null);
                         }
                     });
                 }
             } catch (Exception ex) {
-                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
             }
         }
@@ -295,7 +293,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -313,7 +311,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -333,7 +331,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -349,7 +347,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -366,7 +364,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -383,14 +381,14 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
 
     private void placeOnTable(){
         ImageView destination = (ImageView) itemsReceptacle.getChildAt(draggedItems - 1);
-        destination.setImageResource(itemResId);
+        loadImage(destination, itemResId);
         destination.setVisibility(View.VISIBLE);
     }
 
@@ -409,7 +407,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -426,7 +424,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -437,18 +435,16 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
         try {
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
-                    String tag = (String) v.getTag();
-                    ClipData.Item item = new ClipData.Item(tag);
-                    ClipData dragData = new ClipData(tag, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
+                    // ClipData dragData = new ClipData(tag, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
                     View.DragShadowBuilder dragShadow = new View.DragShadowBuilder(v);
-                    v.startDragAndDrop(dragData, dragShadow, v, 0);
+                    v.startDragAndDrop(null, dragShadow, v, 0);
                     v.setVisibility(View.INVISIBLE);
                     return true;
                 default:
                     break;
             }
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
         return false;
@@ -460,10 +456,10 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
         try {
             switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
-                    if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
-                        return true;
-                    }
-                    return false;
+//                    if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+//                        return true;
+//                    }
+                    return true;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     return true;
                 case DragEvent.ACTION_DRAG_LOCATION:
@@ -497,7 +493,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
                             playSound(numberSound, new Runnable() {
                                 @Override
                                 public void run() {
-                                    playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                                    playSound(FetchResource.positiveAffirmation(context), new Runnable() {
                                         @Override
                                         public void run() {
                                             showEquation();
@@ -517,7 +513,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
                     break;
             }
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
         return false;
@@ -535,7 +531,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
                 numberObjects.put(value, new NumberObject(image, sound, value));
             }
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
