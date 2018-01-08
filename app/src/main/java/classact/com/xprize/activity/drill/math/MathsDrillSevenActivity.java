@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.LinkedHashMap;
 
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
@@ -66,6 +67,7 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_seven);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)

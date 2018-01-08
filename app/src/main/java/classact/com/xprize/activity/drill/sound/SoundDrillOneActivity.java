@@ -1,9 +1,9 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -18,17 +18,17 @@ import classact.com.xprize.activity.DrillActivity;
 
 public class SoundDrillOneActivity extends DrillActivity {
 
-    @BindView(R.id.activity_sound_drill_one) RelativeLayout rootView;
+    @BindView(R.id.activity_sound_drill_one) ConstraintLayout rootView;
+    @BindView(R.id.background) ImageView background;
+    @BindView(R.id.letter) ImageView letter;
+    @BindView(R.id.image) ImageView image;
 
     private JSONObject drillData;
-    private ImageView letter;
     private JSONArray objects;
     private int currentObject;
     private int letterType;
 
     private int mStage;
-
-    private final Context THIS = this;
 
     private SoundDrill01ViewModel vm;
 

@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
@@ -29,6 +30,8 @@ import classact.com.xprize.utils.Square;
 import classact.com.xprize.utils.SquarePacker;
 
 public class MathsDrillTwoActivity extends DrillActivity {
+
+
     private JSONObject allData;
     private ImageView numberOne;
     private ImageView numberTwo;
@@ -51,6 +54,7 @@ public class MathsDrillTwoActivity extends DrillActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_two);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)

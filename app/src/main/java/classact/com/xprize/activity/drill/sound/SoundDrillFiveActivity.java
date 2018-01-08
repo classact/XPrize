@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
@@ -13,6 +14,8 @@ import org.json.JSONObject;
 
 import java.util.Random;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
@@ -21,6 +24,16 @@ import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillFiveActivity extends DrillActivity {
+
+    @BindView(R.id.activity_sound_drill_five) ConstraintLayout rootView;
+
+    @BindView(R.id.background) ImageView background;
+    @BindView(R.id.target_image) ImageView targetImage;
+    @BindView(R.id.image_NW) ImageView imageNW;
+    @BindView(R.id.image_NE) ImageView imageNE;
+    @BindView(R.id.image_SW) ImageView imageSW;
+    @BindView(R.id.image_SE) ImageView imageSE;
+
     private ImageView demoItem;
     private ImageView item1;
     private ImageView item2;
@@ -49,6 +62,7 @@ public class SoundDrillFiveActivity extends DrillActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_five);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -58,13 +72,7 @@ public class SoundDrillFiveActivity extends DrillActivity {
 
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
-
-        demoItem = (ImageView)findViewById(R.id.item_demo);
         itemsEnabled = false;
-        item1 = (ImageView)findViewById(R.id.item1);
-        item2 = (ImageView)findViewById(R.id.item2);
-        item3 = (ImageView)findViewById(R.id.item3);
-        item4 = (ImageView)findViewById(R.id.item4);
 
         item1.setOnClickListener(
                 new View.OnClickListener() {
@@ -363,4 +371,3 @@ public class SoundDrillFiveActivity extends DrillActivity {
         }
     }
 }
-

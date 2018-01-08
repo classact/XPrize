@@ -22,6 +22,8 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
@@ -30,6 +32,15 @@ import classact.com.xprize.utils.ResourceSelector;
 import classact.com.xprize.utils.TextShrinker;
 
 public class SoundDrillTwelveActivity extends DrillActivity {
+
+    @BindView(R.id.activity_sound_drill_twelve) RelativeLayout rootView;
+
+    @BindView(R.id.layout1) RelativeLayout layout1;
+    @BindView(R.id.textViewtimer) TextView timeView;
+
+    @BindView(R.id.button_word1) ImageButton buttonWord1;
+    @BindView(R.id.button_word2) ImageButton buttonWord2;
+    @BindView(R.id.button_word3) ImageButton buttonWord3;
 
     private final String DRILL_DATA_KEY = "DRILL_DATA";
 
@@ -41,10 +52,6 @@ public class SoundDrillTwelveActivity extends DrillActivity {
 
     private String mDrillData;
 
-    private ImageButton buttonWord1;
-    private ImageButton buttonWord2;
-    private ImageButton buttonWord3;
-    private TextView timeView;
     private int time;
     public JSONArray wordSets;
 //    private Handler timeHandler = new Handler();
@@ -66,13 +73,13 @@ public class SoundDrillTwelveActivity extends DrillActivity {
     private final float TIMER_MID_X = 580f;
     private final float TIMER_MID_Y = 215f;
 
-    private final Context THIS = this;
-
     private SoundDrill12ViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sound_drill_twelve);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -83,7 +90,6 @@ public class SoundDrillTwelveActivity extends DrillActivity {
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
 
-        setContentView(R.layout.activity_sound_drill_twelve);
         mRootView = (RelativeLayout) findViewById(R.id.activity_sound_drill_twelve);
         timeView = (TextView) findViewById( R.id.textViewtimer);
 
@@ -104,14 +110,10 @@ public class SoundDrillTwelveActivity extends DrillActivity {
         timeView.setTextColor(NADA_GRAY);
         // timeView.setBackgroundColor(Color.argb(100, 0, 0, 255));
 
-        buttonWord1 = (ImageButton)findViewById(R.id.button_word1);
-        buttonWord2 = (ImageButton)findViewById(R.id.button_word_2);
-        buttonWord3 = (ImageButton)findViewById(R.id.button_word3);
-
         RelativeLayout bwLayout = (RelativeLayout) buttonWord1.getParent();
         bwLayout.removeAllViews();
 
-        mButtonView = new RelativeLayout(THIS);
+        mButtonView = new RelativeLayout(context);
         RelativeLayout.LayoutParams mButtonViewLayout = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT
@@ -298,15 +300,15 @@ public class SoundDrillTwelveActivity extends DrillActivity {
                     switch (word) {
                         case 0:
                             buttonWord1.setColorFilter(WIN_CYAN);
-                            Globals.playStarWorks(THIS, buttonWord1);
+                            Globals.playStarWorks(this, buttonWord1);
                             break;
                         case 1:
                             buttonWord2.setColorFilter(WIN_CYAN);
-                            Globals.playStarWorks(THIS, buttonWord2);
+                            Globals.playStarWorks(this, buttonWord2);
                             break;
                         case 2:
                             buttonWord3.setColorFilter(WIN_CYAN);
-                            Globals.playStarWorks(THIS, buttonWord3);
+                            Globals.playStarWorks(this, buttonWord3);
                             break;
                         case 3:
                             break;
@@ -399,7 +401,7 @@ public class SoundDrillTwelveActivity extends DrillActivity {
                             }
                         };
                     if (!gameOver) {
-                        playSound(FetchResource.negativeAffirmation(THIS), () -> {
+                        playSound(FetchResource.negativeAffirmation(context), () -> {
                             if (gameOver) {
 
                                 // Update colour of text

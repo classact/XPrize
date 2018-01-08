@@ -30,6 +30,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
@@ -41,7 +43,10 @@ import classact.com.xprize.view.PathCoordinate;
 import classact.com.xprize.view.WriteView;
 
 public class SoundDrillEightActivity extends DrillActivity implements PathAnimationView.AnimationDone{
-    private RelativeLayout drawArea;
+
+    @BindView(R.id.draw_area) RelativeLayout drawArea;
+    @BindView(R.id.item1) ImageView item1;
+
     private PathAnimationView animationView;
     private DrillEightWriteView writingView;
     private JSONObject drillData;
@@ -63,7 +68,6 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
     private final int OFFSET_Y = 90;
 
     private RelativeLayout mDetectionView;
-    private final Context THIS = this;
 
     private SoundDrill08ViewModel vm;
 
@@ -71,6 +75,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_eight);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -85,7 +90,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
         drawArea = (RelativeLayout) findViewById(R.id.draw_area);
         String drillData = getIntent().getExtras().getString("data");
 
-        mDetectionView = new RelativeLayout(THIS);
+        mDetectionView = new RelativeLayout(context);
         RelativeLayout.LayoutParams detectionLayout = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT
@@ -109,7 +114,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -208,7 +213,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
             });
         } catch (Exception ex) {
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -262,7 +267,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
             });
         } catch (Exception ex) {
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -276,7 +281,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
     public void checkIsDone(){
         try {
             if (writingView.didDraw()) {
-                playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                playSound(FetchResource.positiveAffirmation(context), new Runnable() {
                     @Override
                     public void run() {
                         handler.delayed(new Runnable() {
@@ -298,7 +303,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
             } */
         } catch (Exception ex) {
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -334,7 +339,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
                     paths = new JSONObject(result.toString()).getJSONArray("paths");
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
                 } finally {
                     reader.close();
                 }
@@ -343,7 +348,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -359,7 +364,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
                     path.add(coordinate);
 
                     /*
-                    ImageView iv = new ImageView(THIS);
+                    ImageView iv = new ImageView(context);
                     mDetectionView.addView(iv);
                     RelativeLayout.LayoutParams ivLayout = (RelativeLayout.LayoutParams) iv.getLayoutParams();
                     int ivWidth = 10;
@@ -376,7 +381,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
         return pathsArray;
     }
@@ -410,7 +415,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     };

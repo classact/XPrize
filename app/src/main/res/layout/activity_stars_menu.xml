@@ -5,7 +5,7 @@
     android:id="@+id/activity_stars_menu"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/star_level_0"
+    android:background="@drawable/bg_star_level"
     tools:context="classact.com.xprize.activity.menu.StarsMenu">
 
     <android.support.constraint.Guideline
@@ -22,25 +22,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.097"/>
 
-    <ImageButton
-        android:id="@+id/star_button_01"
+    <ImageView
+        android:id="@+id/star_01"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_01"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_01"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_01"
         app:layout_constraintRight_toRightOf="@+id/gl_v_01"
         app:layout_constraintTop_toTopOf="@+id/gl_h_01"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_01"
+    <ImageView
+        android:id="@+id/monkey_01"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_01"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_01"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_01"
         app:layout_constraintRight_toRightOf="@+id/gl_v_01"
         app:layout_constraintTop_toTopOf="@+id/gl_h_01"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -56,25 +58,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.1445"/>
 
-    <ImageButton
-        android:id="@+id/star_button_02"
+    <ImageView
+        android:id="@+id/star_02"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_02"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_02"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_02"
         app:layout_constraintRight_toRightOf="@+id/gl_v_02"
         app:layout_constraintTop_toTopOf="@+id/gl_h_02"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_02"
+    <ImageView
+        android:id="@+id/monkey_02"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_02"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_02"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_02"
         app:layout_constraintRight_toRightOf="@+id/gl_v_02"
         app:layout_constraintTop_toTopOf="@+id/gl_h_02"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -90,25 +94,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.1075"/>
 
-    <ImageButton
-        android:id="@+id/star_button_03"
+    <ImageView
+        android:id="@+id/star_03"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_03"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_03"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_03"
         app:layout_constraintRight_toRightOf="@+id/gl_v_03"
         app:layout_constraintTop_toTopOf="@+id/gl_h_03"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_03"
+    <ImageView
+        android:id="@+id/monkey_03"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_03"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_03"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_03"
         app:layout_constraintRight_toRightOf="@+id/gl_v_03"
         app:layout_constraintTop_toTopOf="@+id/gl_h_03"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -124,25 +130,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.0885"/>
 
-    <ImageButton
-        android:id="@+id/star_button_04"
+    <ImageView
+        android:id="@+id/star_04"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_04"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_04"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_04"
         app:layout_constraintRight_toRightOf="@+id/gl_v_04"
         app:layout_constraintTop_toTopOf="@+id/gl_h_04"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_04"
+    <ImageView
+        android:id="@+id/monkey_04"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_04"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_04"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_04"
         app:layout_constraintRight_toRightOf="@+id/gl_v_04"
         app:layout_constraintTop_toTopOf="@+id/gl_h_04"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -158,25 +166,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.29375"/>
 
-    <ImageButton
-        android:id="@+id/star_button_05"
+    <ImageView
+        android:id="@+id/star_05"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_05"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_05"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_05"
         app:layout_constraintRight_toRightOf="@+id/gl_v_05"
         app:layout_constraintTop_toTopOf="@+id/gl_h_05"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_05"
+    <ImageView
+        android:id="@+id/monkey_05"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_05"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_05"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_05"
         app:layout_constraintRight_toRightOf="@+id/gl_v_05"
         app:layout_constraintTop_toTopOf="@+id/gl_h_05"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -192,25 +202,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.385"/>
 
-    <ImageButton
-        android:id="@+id/star_button_06"
+    <ImageView
+        android:id="@+id/star_06"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_06"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_06"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_06"
         app:layout_constraintRight_toRightOf="@+id/gl_v_06"
         app:layout_constraintTop_toTopOf="@+id/gl_h_06"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_06"
+    <ImageView
+        android:id="@+id/monkey_06"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_06"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_06"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_06"
         app:layout_constraintRight_toRightOf="@+id/gl_v_06"
         app:layout_constraintTop_toTopOf="@+id/gl_h_06"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -226,25 +238,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.505"/>
 
-    <ImageButton
-        android:id="@+id/star_button_07"
+    <ImageView
+        android:id="@+id/star_07"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_07"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_07"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_07"
         app:layout_constraintRight_toRightOf="@+id/gl_v_07"
         app:layout_constraintTop_toTopOf="@+id/gl_h_07"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_07"
+    <ImageView
+        android:id="@+id/monkey_07"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_07"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_07"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_07"
         app:layout_constraintRight_toRightOf="@+id/gl_v_07"
         app:layout_constraintTop_toTopOf="@+id/gl_h_07"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -260,25 +274,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.6225"/>
 
-    <ImageButton
-        android:id="@+id/star_button_08"
+    <ImageView
+        android:id="@+id/star_08"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_08"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_08"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_08"
         app:layout_constraintRight_toRightOf="@+id/gl_v_08"
         app:layout_constraintTop_toTopOf="@+id/gl_h_08"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_08"
+    <ImageView
+        android:id="@+id/monkey_08"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_08"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_08"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_08"
         app:layout_constraintRight_toRightOf="@+id/gl_v_08"
         app:layout_constraintTop_toTopOf="@+id/gl_h_08"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -294,25 +310,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.7125"/>
 
-    <ImageButton
-        android:id="@+id/star_button_09"
+    <ImageView
+        android:id="@+id/star_09"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_09"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_09"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_09"
         app:layout_constraintRight_toRightOf="@+id/gl_v_09"
         app:layout_constraintTop_toTopOf="@+id/gl_h_09"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_09"
+    <ImageView
+        android:id="@+id/monkey_09"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_09"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_09"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_09"
         app:layout_constraintRight_toRightOf="@+id/gl_v_09"
         app:layout_constraintTop_toTopOf="@+id/gl_h_09"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -328,25 +346,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.8075"/>
 
-    <ImageButton
-        android:id="@+id/star_button_10"
+    <ImageView
+        android:id="@+id/star_10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_10"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_10"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_10"
         app:layout_constraintRight_toRightOf="@+id/gl_v_10"
         app:layout_constraintTop_toTopOf="@+id/gl_h_10"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_10"
+    <ImageView
+        android:id="@+id/monkey_10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_10"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_10"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_10"
         app:layout_constraintRight_toRightOf="@+id/gl_v_10"
         app:layout_constraintTop_toTopOf="@+id/gl_h_10"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -362,25 +382,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.86925"/>
 
-    <ImageButton
-        android:id="@+id/star_button_11"
+    <ImageView
+        android:id="@+id/star_11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_11"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_11"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_11"
         app:layout_constraintRight_toRightOf="@+id/gl_v_11"
         app:layout_constraintTop_toTopOf="@+id/gl_h_11"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_11"
+    <ImageView
+        android:id="@+id/monkey_11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_11"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_11"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_11"
         app:layout_constraintRight_toRightOf="@+id/gl_v_11"
         app:layout_constraintTop_toTopOf="@+id/gl_h_11"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -396,25 +418,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.9225"/>
 
-    <ImageButton
-        android:id="@+id/star_button_12"
+    <ImageView
+        android:id="@+id/star_12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_12"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_12"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_12"
         app:layout_constraintRight_toRightOf="@+id/gl_v_12"
         app:layout_constraintTop_toTopOf="@+id/gl_h_12"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_12"
+    <ImageView
+        android:id="@+id/monkey_12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_12"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_12"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_12"
         app:layout_constraintRight_toRightOf="@+id/gl_v_12"
         app:layout_constraintTop_toTopOf="@+id/gl_h_12"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -430,25 +454,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.85"/>
 
-    <ImageButton
-        android:id="@+id/star_button_13"
+    <ImageView
+        android:id="@+id/star_13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_13"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_13"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_13"
         app:layout_constraintRight_toRightOf="@+id/gl_v_13"
         app:layout_constraintTop_toTopOf="@+id/gl_h_13"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_13"
+    <ImageView
+        android:id="@+id/monkey_13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_13"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_13"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_13"
         app:layout_constraintRight_toRightOf="@+id/gl_v_13"
         app:layout_constraintTop_toTopOf="@+id/gl_h_13"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -464,25 +490,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.665"/>
 
-    <ImageButton
-        android:id="@+id/star_button_14"
+    <ImageView
+        android:id="@+id/star_14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_14"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_14"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_14"
         app:layout_constraintRight_toRightOf="@+id/gl_v_14"
         app:layout_constraintTop_toTopOf="@+id/gl_h_14"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_14"
+    <ImageView
+        android:id="@+id/monkey_14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_14"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_14"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_14"
         app:layout_constraintRight_toRightOf="@+id/gl_v_14"
         app:layout_constraintTop_toTopOf="@+id/gl_h_14"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -498,25 +526,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.705"/>
 
-    <ImageButton
-        android:id="@+id/star_button_15"
+    <ImageView
+        android:id="@+id/star_15"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_15"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_15"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_15"
         app:layout_constraintRight_toRightOf="@+id/gl_v_15"
         app:layout_constraintTop_toTopOf="@+id/gl_h_15"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_15"
+    <ImageView
+        android:id="@+id/monkey_15"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_15"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_15"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_15"
         app:layout_constraintRight_toRightOf="@+id/gl_v_15"
         app:layout_constraintTop_toTopOf="@+id/gl_h_15"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -532,25 +562,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.515"/>
 
-    <ImageButton
-        android:id="@+id/star_button_16"
+    <ImageView
+        android:id="@+id/star_16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_16"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_16"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_16"
         app:layout_constraintRight_toRightOf="@+id/gl_v_16"
         app:layout_constraintTop_toTopOf="@+id/gl_h_16"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_16"
+    <ImageView
+        android:id="@+id/monkey_16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_16"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_16"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_16"
         app:layout_constraintRight_toRightOf="@+id/gl_v_16"
         app:layout_constraintTop_toTopOf="@+id/gl_h_16"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -566,25 +598,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.4625"/>
 
-    <ImageButton
-        android:id="@+id/star_button_17"
+    <ImageView
+        android:id="@+id/star_17"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_17"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_17"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_17"
         app:layout_constraintRight_toRightOf="@+id/gl_v_17"
         app:layout_constraintTop_toTopOf="@+id/gl_h_17"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_17"
+    <ImageView
+        android:id="@+id/monkey_17"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_17"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_17"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_17"
         app:layout_constraintRight_toRightOf="@+id/gl_v_17"
         app:layout_constraintTop_toTopOf="@+id/gl_h_17"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -600,26 +634,28 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.293"/>
 
-    <ImageButton
-        android:id="@+id/star_button_18"
+    <ImageView
+        android:id="@+id/star_18"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_18"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_18"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_18"
         app:layout_constraintRight_toRightOf="@+id/gl_v_18"
         app:layout_constraintTop_toTopOf="@+id/gl_h_18"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
 
-    <ImageButton
-        android:id="@+id/monkey_button_18"
+    <ImageView
+        android:id="@+id/monkey_18"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_18"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_18"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_18"
         app:layout_constraintRight_toRightOf="@+id/gl_v_18"
         app:layout_constraintTop_toTopOf="@+id/gl_h_18"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -635,25 +671,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.165"/>
 
-    <ImageButton
-        android:id="@+id/star_button_19"
+    <ImageView
+        android:id="@+id/star_19"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_19"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_19"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_19"
         app:layout_constraintRight_toRightOf="@+id/gl_v_19"
         app:layout_constraintTop_toTopOf="@+id/gl_h_19"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_19"
+    <ImageView
+        android:id="@+id/monkey_19"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_19"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_19"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_19"
         app:layout_constraintRight_toRightOf="@+id/gl_v_19"
         app:layout_constraintTop_toTopOf="@+id/gl_h_19"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -669,25 +707,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.2415"/>
 
-    <ImageButton
-        android:id="@+id/star_button_20"
+    <ImageView
+        android:id="@+id/star_20"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Star_20"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_20"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_20"
         app:layout_constraintRight_toRightOf="@+id/gl_v_20"
         app:layout_constraintTop_toTopOf="@+id/gl_h_20"
-        android:background="@drawable/blank_star_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
-        android:id="@+id/monkey_button_20"
+    <ImageView
+        android:id="@+id/monkey_20"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Monkey_20"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_20"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_20"
         app:layout_constraintRight_toRightOf="@+id/gl_v_20"
         app:layout_constraintTop_toTopOf="@+id/gl_h_20"
-        android:background="@drawable/star_monkey_face_button"/>
+        android:background="@android:color/transparent"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -703,23 +743,24 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.4475"/>
 
-    <ImageButton
-        android:id="@+id/chapter_book_button"
+    <ImageView
+        android:id="@+id/chapter_book"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Chapter_Select"
         app:layout_constraintBottom_toBottomOf="@+id/gl_h_chapter_book"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_chapter_book"
         app:layout_constraintRight_toRightOf="@+id/gl_v_chapter_book"
         app:layout_constraintTop_toTopOf="@+id/gl_h_chapter_book"
-        android:background="@drawable/book_closed_button"/>
+        android:background="@android:color/transparent"/>
 
     <TextView
         android:id="@+id/chapter_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Chapter 1"
+        android:text="@string/Chapter_1"
         android:textSize="76sp"
-        app:layout_constraintTop_toBottomOf="@+id/chapter_book_button"
+        app:layout_constraintTop_toBottomOf="@+id/chapter_book"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_chapter_book"
         app:layout_constraintRight_toRightOf="@+id/gl_v_chapter_book"/>
 

@@ -6,13 +6,8 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -28,38 +23,41 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
-import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
-import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.WordLetterLayout;
 import classact.com.xprize.view.WriteView;
 
 public class SoundDrillFourteenActivity extends DrillActivity {
-    private ImageView item1;
-    private ImageView item2;
-    private ImageView item3;
-    private ImageView item4;
-    private ImageView item5;
-    private ImageView item6;
-    private ImageView item7;
-    private ImageView item8;
-    private ImageView item9;
-    private ImageView receptable1;
-    private ImageView receptable2;
-    private ImageView receptable3;
-    private ImageView receptable4;
-    private ImageView receptable5;
-    private ImageView receptable6;
-    private ImageView receptable7;
-    private ImageView receptable8;
-    private ImageView receptable9;
-    private LinearLayout writingContainer;
+
+    @BindView(R.id.item1) ImageView item1;
+    @BindView(R.id.item2) ImageView item2;
+    @BindView(R.id.item3) ImageView item3;
+    @BindView(R.id.item4) ImageView item4;
+    @BindView(R.id.item5) ImageView item5;
+    @BindView(R.id.item6) ImageView item6;
+    @BindView(R.id.item7) ImageView item7;
+    @BindView(R.id.item8) ImageView item8;
+    @BindView(R.id.item9) ImageView item9;
+
+    @BindView(R.id.loc1) ImageView receptable1;
+    @BindView(R.id.loc2) ImageView receptable2;
+    @BindView(R.id.loc3) ImageView receptable3;
+    @BindView(R.id.loc4) ImageView receptable4;
+    @BindView(R.id.loc5) ImageView receptable5;
+    @BindView(R.id.loc6) ImageView receptable6;
+    @BindView(R.id.loc7) ImageView receptable7;
+    @BindView(R.id.loc8) ImageView receptable8;
+    @BindView(R.id.loc9) ImageView receptable9;
+
+    @BindView(R.id.writing_canvas_container) LinearLayout writingContainer;
+    @BindView(R.id.layout1) LinearLayout displayContainer;
 
     private RelativeLayout letterContainer;
 
-    private LinearLayout displayContainer;
     private LinearLayout blanksContainer;
     private DrillFourteenWriteView writingView;
     private JSONArray words;
@@ -93,6 +91,7 @@ public class SoundDrillFourteenActivity extends DrillActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_fourteen);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -103,26 +102,6 @@ public class SoundDrillFourteenActivity extends DrillActivity {
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
 
-        item1 = (ImageView) findViewById(R.id.item1);
-        item2 = (ImageView) findViewById(R.id.item2);
-        item3 = (ImageView) findViewById(R.id.item3);
-        item4 = (ImageView) findViewById(R.id.item4);
-        item5 = (ImageView) findViewById(R.id.item5);
-        item6 = (ImageView) findViewById(R.id.item6);
-        item7 = (ImageView) findViewById(R.id.item7);
-        item8 = (ImageView) findViewById(R.id.item8);
-        item9 = (ImageView) findViewById(R.id.item9);
-        receptable1 = (ImageView) findViewById(R.id.loc1);
-        receptable2 = (ImageView) findViewById(R.id.loc2);
-        receptable3 = (ImageView) findViewById(R.id.loc3);
-        receptable4 = (ImageView) findViewById(R.id.loc4);
-        receptable5 = (ImageView) findViewById(R.id.loc5);
-        receptable6 = (ImageView) findViewById(R.id.loc6);
-        receptable7 = (ImageView) findViewById(R.id.loc7);
-        receptable8 = (ImageView) findViewById(R.id.loc8);
-        receptable9 = (ImageView) findViewById(R.id.loc9);
-        writingContainer = (LinearLayout) findViewById(R.id.writing_canvas_container);
-        displayContainer = (LinearLayout)findViewById(R.id.layout1);
         mRootView = (RelativeLayout) displayContainer.getParent();
 
         blanksContainer = (LinearLayout) mRootView.getChildAt(1);

@@ -1,113 +1,224 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_sound_drill_five"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/backgrounddrill5"
     tools:context="classact.com.xprize.activity.drill.sound.SoundDrillFiveActivity">
 
+    <!-- Base Guidelines START -->
 
-    <LinearLayout
-        android:layout_marginLeft="50dip"
-        android:layout_width="250dip"
-        android:id="@+id/container3"
-        android:layout_gravity="center_vertical"
-        android:visibility="visible"
-        android:layout_height="250dip"
-        android:background="@android:color/transparent"
-        android:layout_marginStart="0dp"
-        android:weightSum="1"
-        android:layout_alignTop="@+id/container1"
-        android:layout_alignStart="@+id/container4">
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5"/>
 
-        <ImageView
-            android:visibility="invisible"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/item3"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/cuppic"
-            android:layout_weight="0.95"/>
-    </LinearLayout>
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
 
-    <LinearLayout
-        android:layout_marginLeft="50dp"
-        android:layout_width="250dp"
-        android:id="@+id/container4"
-        android:layout_gravity="center_vertical"
-        android:visibility="visible"
-        android:layout_height="250dp"
-        android:background="@android:color/transparent"
-        android:layout_marginEnd="53dp"
-        android:layout_alignTop="@+id/container2"
-        android:layout_alignParentEnd="true">
+    <!-- Base Guidelines END -->
 
-        <ImageView
-            android:visibility="invisible"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/item4"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/cuppic"/>
-    </LinearLayout>
+    <!-- Background START -->
 
     <ImageView
-        android:layout_marginLeft="10dip"
-        android:id="@+id/item_demo"
-        android:src="@drawable/applepic"
-        android:layout_gravity="center_vertical"
-        android:contentDescription="@string/app_name"
-        android:layout_width="450dip"
-        android:layout_height="450dip"
-        android:layout_marginStart="64dp"
-        android:layout_alignTop="@+id/container1"
-        android:layout_alignParentStart="true"/>
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:contentDescription="@string/Background_Image"
+        android:background="@android:color/transparent" />
 
-    <LinearLayout
-        android:id="@+id/container1"
-        android:layout_marginLeft="00dip"
-        android:layout_width="250dip"
-        android:layout_gravity="center_vertical"
-        android:contentDescription="@string/app_name"
-        android:layout_height="250dip"
-        android:background="@android:color/transparent"
-        android:layout_marginTop="40dp"
-        android:weightSum="1"
-        android:layout_alignParentTop="true"
-        android:layout_alignEnd="@+id/container2"
-        android:layout_marginEnd="0dp">
+    <!-- Background END -->
 
-        <ImageView
-            android:visibility="invisible"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/item1"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/cuppic"
-            android:layout_weight="0.99"/>
-    </LinearLayout>
+    <!-- Target Image START -->
 
-    <LinearLayout
-        android:id="@+id/container2"
-        android:layout_marginLeft="20dp"
-        android:layout_width="250dp"
-        android:layout_gravity="center_vertical"
-        android:visibility="visible"
-        android:layout_height="250dip"
-        android:background="@android:color/transparent"
-        android:layout_marginTop="51dp"
-        android:layout_marginEnd="83dp"
-        android:layout_below="@+id/container1"
-        android:layout_toStartOf="@+id/container4">
+    <!-- Target Image Guidelines START -->
 
-        <ImageView
-            android:visibility="invisible"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/item2"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/cuppic"
-            android:layout_marginTop="0dp"/>
-    </LinearLayout>
-</RelativeLayout>
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_target_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.34"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_target_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.2338"/>
+
+    <!-- Target Image Guidelines END -->
+
+    <!-- Target Image View START -->
+
+    <ImageView
+        android:id="@+id/target_image"
+        android:contentDescription="@string/Image_to_Match"
+        android:layout_width="360dp"
+        android:layout_height="391dp"
+        app:layout_constraintTop_toTopOf="@id/guideline_target_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_target_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_target_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_target_horizontal"/>
+
+    <!-- Target Image View END -->
+
+    <!-- Target Image END -->
+
+    <!-- Images below are 'labelled' using Compass Coordinates -->
+    <!-- They are ordered in top-down, left-right format -->
+
+    <!-- Image NW START -->
+
+    <!-- Image NW Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_NW_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.203"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_NW_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.581"/>
+
+    <!-- Image NW Guidelines END -->
+
+    <!-- Image NW View START -->
+
+    <ImageView
+        android:id="@+id/image_NW"
+        android:contentDescription="@string/Image_01"
+        android:layout_width="234dp"
+        android:layout_height="209dp"
+        app:layout_constraintTop_toTopOf="@id/guideline_NW_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_NW_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_NW_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_NW_horizontal"/>
+
+    <!-- Image NW View END -->
+
+    <!-- Image NW END -->
+
+    <!-- Image NE START -->
+
+    <!-- Image NE Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_NE_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.204"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_NE_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.8525"/>
+
+    <!-- Image NE Guidelines END -->
+
+    <!-- Image NE View START -->
+
+    <ImageView
+        android:id="@+id/image_NE"
+        android:contentDescription="@string/Image_02"
+        android:layout_width="234dp"
+        android:layout_height="206dp"
+        app:layout_constraintTop_toTopOf="@id/guideline_NE_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_NE_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_NE_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_NE_horizontal"/>
+
+    <!-- Image NE View END -->
+
+    <!-- Image NE END -->
+
+    <!-- Image SW START -->
+
+    <!-- Image SW Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_SW_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.565"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_SW_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.581"/>
+
+    <!-- Image SW Guidelines END -->
+
+    <!-- Image SW View START -->
+
+    <ImageView
+        android:id="@+id/image_SW"
+        android:contentDescription="@string/Image_03"
+        android:layout_width="234dp"
+        android:layout_height="209dp"
+        app:layout_constraintTop_toTopOf="@id/guideline_SW_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_SW_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_SW_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_SW_horizontal"/>
+
+    <!-- Image SW View END -->
+
+    <!-- Image SW END -->
+
+    <!-- Image SE START -->
+
+    <!-- Image SE Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_SE_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.567"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_SE_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.8525"/>
+
+    <!-- Image SE Guidelines END -->
+
+    <!-- Image SE View START -->
+
+    <ImageView
+        android:id="@+id/image_SE"
+        android:contentDescription="@string/Image_04"
+        android:layout_width="234dp"
+        android:layout_height="206dp"
+        app:layout_constraintTop_toTopOf="@id/guideline_SE_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_SE_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_SE_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_SE_horizontal"/>
+
+    <!-- Image SE View END -->
+
+    <!-- Image SE END -->
+
+</android.support.constraint.ConstraintLayout>
 

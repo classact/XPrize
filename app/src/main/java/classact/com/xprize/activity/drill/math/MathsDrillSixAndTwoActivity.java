@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 
 import org.json.JSONObject;
 
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
@@ -35,6 +36,7 @@ public class MathsDrillSixAndTwoActivity extends DrillActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_six_and_two);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)

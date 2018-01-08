@@ -11,142 +11,143 @@
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_v1"
+        android:id="@+id/gl_v_01"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.0"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_v2"
+        android:id="@+id/gl_v_02"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.125"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_v3"
+        android:id="@+id/gl_v_03"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.25"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_v4"
+        android:id="@+id/gl_v_04"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.375"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_v5"
+        android:id="@+id/gl_v_05"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_v6"
+        android:id="@+id/gl_v_06"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.625"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_v7"
+        android:id="@+id/gl_v_07"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.75"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_v8"
+        android:id="@+id/gl_v_08"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.875"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_v9"
+        android:id="@+id/gl_v_09"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="1.0"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_h1"
+        android:id="@+id/gl_h_01"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.0"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_h2"
+        android:id="@+id/gl_h_02"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.125"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_h3"
+        android:id="@+id/gl_h_03"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.25"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_h4"
+        android:id="@+id/gl_h_04"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.375"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_h5"
+        android:id="@+id/gl_h_05"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_h6"
+        android:id="@+id/gl_h_06"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.625"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_h7"
+        android:id="@+id/gl_h_07"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.75"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_h8"
+        android:id="@+id/gl_h_08"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.875"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_h9"
+        android:id="@+id/gl_h_09"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="1.0"/>
 
-    <ImageButton
+    <ImageView
         android:id="@+id/singing_monkey"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/volume_button"
+        android:contentDescription="@string/Singing_Monkey"
         app:layout_constraintTop_toBottomOf="@id/gl_h3"
         app:layout_constraintLeft_toRightOf="@id/gl_v5"
         app:layout_constraintRight_toLeftOf="@id/gl_v5"
-        app:layout_constraintBottom_toTopOf="@id/gl_h3"/>
+        app:layout_constraintBottom_toTopOf="@id/gl_h3"
+        android:background="@android:color/transparent" />
 
     <TextView
         android:id="@+id/volume_text"
-        android:text="Volume"
+        android:text="@string/Volume"
         android:textSize="72sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -171,7 +172,7 @@
 
     <TextView
         android:id="@+id/volume_percentage"
-        android:text="0 %"
+        android:text="@string/zero_percent"
         android:textSize="72sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

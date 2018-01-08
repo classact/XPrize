@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Smart Little Monkey</string>
+    <string name="app_name">Clever Little Monkey</string>
     <string name="action_settings">Settings</string>
     <string name="crocodile">Crocodile</string>
     <string name="howtoplay">How To Play</string>
@@ -18,7 +18,84 @@
     <string name="Pause_Button">Pause Button</string>
     <string name="Stop_Button">Stop Button</string>
 
+    <string name="Left_Letter">Left Letter</string>
+    <string name="Right_Letter">Right Letter</string>
+    <string name="Left_Box">Left Box</string>
+    <string name="Right_Box">Right Box</string>
+
+    <string name="Image_to_Match">Image to Match</string>
+    <string name="Image_01">Image 01</string>
+    <string name="Image_02">Image 02</string>
+    <string name="Image_03">Image 03</string>
+    <string name="Image_04">Image 04</string>
+
     <string name="Background_Image">Background Image</string>
+
+    <string name="Clever_Little_Monkey">Clever Little Monkey</string>
+    <string name="Damas_Toy">Dama’s Toy</string>
+
+    <string name="Letter">Letter</string>
+    <string name="Image_Representing_Letter">Image Representing Letter</string>
+
+    <string name="Select_Left_Image">Select Left Image</string>
+    <string name="Select_Right_Image">Select Right Image</string>
+
+    <string name="App_Logo">App Logo</string>
+    <string name="Read_Button">Read Button</string>
+    <string name="Continue_Button">Continue Button</string>
+    <string name="Stars_Button">Stars Button</string>
+    <string name="Help_Button">Help Button</string>
+    <string name="Tutorial_Button">Tutorial Button</string>
+    <string name="Volume_Button">Volume Button</string>
+    <string name="Chapter_1">Chapter 1</string>
+    <string name="Chapter_Select">Chapter Select</string>
+
+    <string name="Singing_Monkey">Singing Monkey</string>
+    <string name="Volume">Volume</string>
+    <string name="Percentage">Percentage</string>
+    <string name="zero_percent">0 %</string>
+
+    <string name="Star_01">Star 01</string>
+    <string name="Star_02">Star 02</string>
+    <string name="Star_03">Star 03</string>
+    <string name="Star_04">Star 04</string>
+    <string name="Star_05">Star 05</string>
+    <string name="Star_06">Star 06</string>
+    <string name="Star_07">Star 07</string>
+    <string name="Star_08">Star 08</string>
+    <string name="Star_09">Star 09</string>
+    <string name="Star_10">Star 10</string>
+    <string name="Star_11">Star 11</string>
+    <string name="Star_12">Star 12</string>
+    <string name="Star_13">Star 13</string>
+    <string name="Star_14">Star 14</string>
+    <string name="Star_15">Star 15</string>
+    <string name="Star_16">Star 16</string>
+    <string name="Star_17">Star 17</string>
+    <string name="Star_18">Star 18</string>
+    <string name="Star_19">Star 19</string>
+    <string name="Star_20">Star 20</string>
+
+    <string name="Monkey_01">Monkey 01</string>
+    <string name="Monkey_02">Monkey 02</string>
+    <string name="Monkey_03">Monkey 03</string>
+    <string name="Monkey_04">Monkey 04</string>
+    <string name="Monkey_05">Monkey 05</string>
+    <string name="Monkey_06">Monkey 06</string>
+    <string name="Monkey_07">Monkey 07</string>
+    <string name="Monkey_08">Monkey 08</string>
+    <string name="Monkey_09">Monkey 09</string>
+    <string name="Monkey_10">Monkey 10</string>
+    <string name="Monkey_11">Monkey 11</string>
+    <string name="Monkey_12">Monkey 12</string>
+    <string name="Monkey_13">Monkey 13</string>
+    <string name="Monkey_14">Monkey 14</string>
+    <string name="Monkey_15">Monkey 15</string>
+    <string name="Monkey_16">Monkey 16</string>
+    <string name="Monkey_17">Monkey 17</string>
+    <string name="Monkey_18">Monkey 18</string>
+    <string name="Monkey_19">Monkey 19</string>
+    <string name="Monkey_20">Monkey 20</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

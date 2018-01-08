@@ -34,18 +34,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="140dp"
+        android:contentDescription="@string/Tutorial_Button"
         app:layout_constraintBottom_toBottomOf="@+id/volume_button"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_mid"
         app:layout_constraintRight_toRightOf="@+id/gl_v_mid"
-        android:background="@drawable/tutorial_button"/>
+        android:background="@android:color/transparent"/>
 
     <ImageButton
         android:id="@+id/volume_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/Volume_Button"
         app:layout_constraintTop_toBottomOf="@+id/gl_h_mid"
         app:layout_constraintLeft_toLeftOf="@+id/gl_v_mid"
         app:layout_constraintRight_toRightOf="@+id/gl_v_mid"
-        android:background="@drawable/volume_button"/>
+        android:background="@android:color/transparent"/>
 
 </android.support.constraint.ConstraintLayout>

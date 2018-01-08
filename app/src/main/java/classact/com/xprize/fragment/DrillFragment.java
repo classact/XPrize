@@ -2,7 +2,6 @@ package classact.com.xprize.fragment;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;

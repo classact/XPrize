@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
@@ -31,14 +33,28 @@ import classact.com.xprize.utils.WordLetterLayout;
 public class SoundDrillSevenActivity extends DrillActivity {
     //private SegmetedWritingView segmentWritingView;
 
-    private LinearLayout writingContainer;
+    @BindView(R.id.activity_sound_drill_seven) LinearLayout rootView;
+
+    @BindView(R.id.writing_container) LinearLayout writingContainer;
+
+    @BindView(R.id.letter_1) ImageView letter1;
+    @BindView(R.id.letter_2) ImageView letter2;
+    @BindView(R.id.letter_3) ImageView letter3;
+    @BindView(R.id.letter_4) ImageView letter4;
+    @BindView(R.id.letter_5) ImageView letter5;
+    @BindView(R.id.letter_6) ImageView letter6;
+    @BindView(R.id.letter_7) ImageView letter7;
+
+    @BindView(R.id.objects_container) LinearLayout objectsContainer;
+
+    @BindView(R.id.item1) ImageView item1;
+    @BindView(R.id.item2) ImageView item2;
+    @BindView(R.id.item3) ImageView item3;
+
     private String[] letterSounds;
     private String mWordSound;
     private String mWordString;
     private int correctItem;
-    private ImageView item1;
-    private ImageView item2;
-    private ImageView item3;
     private ImageView[] items;
     private TextView mFullWordTextView;
     private int currentTripple;
@@ -52,14 +68,13 @@ public class SoundDrillSevenActivity extends DrillActivity {
 
     private LinkedHashMap<ImageView, JSONObject> imagePictures;
 
-    private final Context THIS = this;
-
     private SoundDrill07ViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_seven);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -251,7 +266,7 @@ public class SoundDrillSevenActivity extends DrillActivity {
             float letterScale = 1.f;
 
             letterViews = WordLetterLayout.level(
-                    THIS,
+                    context,
                     letterViews,
                     letterResources,
                     letterWord,
@@ -435,7 +450,7 @@ public class SoundDrillSevenActivity extends DrillActivity {
 
             hideAllLetters();
 
-            mFullWordTextView = new TextView(THIS);
+            mFullWordTextView = new TextView(context);
             mFullWordTextView.setText(mWordString);
             mFullWordTextView.setTextSize(150f);
             mFullWordTextView.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));

@@ -36,8 +36,10 @@ public class StoryListenAndReadViewModel extends DrillViewModel {
     int currentState; // Current drill state
     int currentSlide; // Current slide to show
 
+    private UnitSectionDrillHelper unitSectionDrillHelper;
+
     @Inject
-    public StoryListenAndReadViewModel(Bus bus) {
+    public StoryListenAndReadViewModel(Bus bus, UnitSectionDrillHelper unitSectionDrillHelper) {
         super(bus);
         iColoredSentence = -1;
         iColoredWord = -1;
@@ -45,6 +47,7 @@ public class StoryListenAndReadViewModel extends DrillViewModel {
         isLastPage = false;
         narrationPhase = true;
         selfReadPhase = false;
+        this.unitSectionDrillHelper = unitSectionDrillHelper;
     }
 
     public StoryListenAndReadViewModel register(Lifecycle lifecycle) {
@@ -70,7 +73,7 @@ public class StoryListenAndReadViewModel extends DrillViewModel {
 
             // Get unit section drill
             UnitSectionDrill unitSectionDrill =
-                    UnitSectionDrillHelper.getUnitSectionDrillInProgress(
+                    unitSectionDrillHelper.getUnitSectionDrillInProgress(
                             dbHelper.getReadableDatabase(), 1);
 
             // Get Story Id

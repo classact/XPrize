@@ -14,6 +14,8 @@ import org.json.JSONObject;
 
 import java.util.Random;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
@@ -23,11 +25,14 @@ import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 
 public class MathsDrillSixActivity extends DrillActivity {
-    private RelativeLayout objectsContainer;
-    private ImageView demoShape;
-    private ImageView shape1;
-    private ImageView shape2;
-    private ImageView shape3;
+
+    @BindView(R.id.activity_maths_drill_six) RelativeLayout rootView;
+    @BindView(R.id.demo_shape) ImageView demoShape;
+    @BindView(R.id.objectsContainer) RelativeLayout objectsContainer;
+    @BindView(R.id.shape1) ImageView shape1;
+    @BindView(R.id.shape2) ImageView shape2;
+    @BindView(R.id.shape3) ImageView shape3;
+
     private JSONObject allData;
     private boolean touchEnabled;
     private ImageView[] shapeImageViews;
@@ -38,6 +43,7 @@ public class MathsDrillSixActivity extends DrillActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_six);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -47,13 +53,6 @@ public class MathsDrillSixActivity extends DrillActivity {
 
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
-
-        objectsContainer = (RelativeLayout)findViewById(R.id.objectsContainer);
-        demoShape = (ImageView)findViewById(R.id.demo_shape);
-
-        shape1 = (ImageView)findViewById(R.id.rectangle);
-        shape2 = (ImageView)findViewById(R.id.circle);
-        shape3 = (ImageView)findViewById(R.id.square);
 
         shape1.setImageResource(0);
         shape2.setImageResource(0);

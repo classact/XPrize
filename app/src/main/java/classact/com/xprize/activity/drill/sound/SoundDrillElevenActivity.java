@@ -3,24 +3,11 @@ package classact.com.xprize.activity.drill.sound;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -30,26 +17,27 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.Random;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
-import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
-import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 import classact.com.xprize.utils.TextShrinker;
 
 public class SoundDrillElevenActivity extends DrillActivity {
 
-    private ImageButton ImageButtonWord1;
-    private ImageButton ImageButtonWord2;
-    private ImageButton ImageButtonWord3;
-    private ImageButton ImageButtonWord4;
-    private ImageButton ImageButtonWord5;
-    private ImageButton ImageButtonWord6;
-    private ImageButton ImageButtonWord7;
-    private ImageButton ImageButtonWord8;
-    private ImageButton ImageButtonWord9;
-    private ImageButton ImageButtonWord10;
+    @BindView(R.id.button_word1) ImageButton ImageButtonWord1;
+    @BindView(R.id.button_word2)  ImageButton ImageButtonWord2;
+    @BindView(R.id.button_word3)  ImageButton ImageButtonWord3;
+    @BindView(R.id.button_word4)  ImageButton ImageButtonWord4;
+    @BindView(R.id.button_word5)  ImageButton ImageButtonWord5;
+    @BindView(R.id.button_word6)  ImageButton ImageButtonWord6;
+    @BindView(R.id.button_word7)  ImageButton ImageButtonWord7;
+    @BindView(R.id.button_word8)  ImageButton ImageButtonWord8;
+    @BindView(R.id.button_word9)  ImageButton ImageButtonWord9;
+    @BindView(R.id.button_word10)  ImageButton ImageButtonWord10;
+
     private JSONArray words;
     private int correctSets;
     private int[] assignments;
@@ -61,14 +49,13 @@ public class SoundDrillElevenActivity extends DrillActivity {
 
     private boolean gameStarted;
 
-    private final Context THIS = this;
-
     private SoundDrill11ViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_eleven);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -78,17 +65,6 @@ public class SoundDrillElevenActivity extends DrillActivity {
 
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
-
-        ImageButtonWord1 = (ImageButton)findViewById(R.id.button_word1);
-        ImageButtonWord2 = (ImageButton)findViewById(R.id.button_word2);
-        ImageButtonWord3 = (ImageButton)findViewById(R.id.button_word3);
-        ImageButtonWord4 = (ImageButton)findViewById(R.id.button_word4);
-        ImageButtonWord5 = (ImageButton)findViewById(R.id.button_word5);
-        ImageButtonWord6 = (ImageButton)findViewById(R.id.button_word6);
-        ImageButtonWord7 = (ImageButton)findViewById(R.id.button_word7);
-        ImageButtonWord8 = (ImageButton)findViewById(R.id.button_word8);
-        ImageButtonWord9 = (ImageButton)findViewById(R.id.button_word9);
-        ImageButtonWord10 = (ImageButton)findViewById(R.id.button_word10);
 
         /*
         ImageButtonWord1.setAlpha(0f);
@@ -177,7 +153,7 @@ public class SoundDrillElevenActivity extends DrillActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -188,101 +164,31 @@ public class SoundDrillElevenActivity extends DrillActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     private void initialiseCards(){
         ImageButtonWord1.setImageResource(0);
-        ImageButtonWord1.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(1);
-                    }
-                }
-        );
+        ImageButtonWord1.setOnClickListener((v) -> turnCard(1));
         ImageButtonWord2.setImageResource(0);
-        ImageButtonWord2.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(2);
-                    }
-                }
-        );
+        ImageButtonWord2.setOnClickListener((v) -> turnCard(2));
         ImageButtonWord3.setImageResource(0);
-        ImageButtonWord3.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(3);
-                    }
-                }
-        );
+        ImageButtonWord3.setOnClickListener((v) -> turnCard(3));
         ImageButtonWord4.setImageResource(0);
-        ImageButtonWord4.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(4);
-                    }
-                }
-        );
+        ImageButtonWord4.setOnClickListener((v) -> turnCard(4));
         ImageButtonWord5.setImageResource(0);
-        ImageButtonWord5.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(5);
-                    }
-                }
-        );
+        ImageButtonWord5.setOnClickListener((v) -> turnCard(5));
         ImageButtonWord6.setImageResource(0);
-        ImageButtonWord6.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(6);
-                    }
-                }
-        );
+        ImageButtonWord6.setOnClickListener((v) -> turnCard(6));
         ImageButtonWord7.setImageResource(0);
-        ImageButtonWord7.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(7);
-                    }
-                }
-        );
+        ImageButtonWord7.setOnClickListener((v) -> turnCard(7));
         ImageButtonWord8.setImageResource(0);
-        ImageButtonWord8.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(8);
-                    }
-                }
-        );
+        ImageButtonWord8.setOnClickListener((v) -> turnCard(8));
         ImageButtonWord9.setImageResource(0);
-        ImageButtonWord9.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(9);
-                    }
-                }
-        );
+        ImageButtonWord9.setOnClickListener((v) -> turnCard(9));
         ImageButtonWord10.setImageResource(0);
-        ImageButtonWord10.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(10);
-                    }
-                }
-        );
+        ImageButtonWord10.setOnClickListener((v) -> turnCard(10));
     }
 
     public void enableCards(boolean enable) {
@@ -333,7 +239,7 @@ public class SoundDrillElevenActivity extends DrillActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -383,7 +289,7 @@ public class SoundDrillElevenActivity extends DrillActivity {
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -409,7 +315,7 @@ public class SoundDrillElevenActivity extends DrillActivity {
         }
         catch(Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -487,8 +393,8 @@ public class SoundDrillElevenActivity extends DrillActivity {
         if (assignments[openPair[0] - 1] == assignments[openPair[1] - 1]){
             ImageButton card1 = getCard(openPair[0]);
             ImageButton card2 = getCard(openPair[1]);
-            Globals.playStarWorks(THIS, card1);
-            Globals.playStarWorks(THIS, card2);
+            Globals.playStarWorks(this, card1);
+            Globals.playStarWorks(this, card2);
         }
     }
 

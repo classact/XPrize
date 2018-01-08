@@ -9,7 +9,7 @@
     tools:context="classact.com.xprize.activity.drill.sound.SoundDrillElevenActivity"
     android:gravity="center_vertical">
 
-    <ImageButton
+    <ImageView
         android:layout_width="180dp"
         android:layout_height="300dp"
         android:text="@string/third_word"
@@ -17,13 +17,13 @@
         android:textStyle="bold"
         android:id="@+id/button_word10"
         android:layout_marginStart="10dp"
-        android:background="@drawable/cardsinglesml"
+        android:background="@android:color/transparent"
         android:layout_row="0"
         android:layout_column="4"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="11dp" />
 
-    <ImageButton
+    <ImageView
         android:layout_width="180dp"
         android:layout_height="300dip"
         android:text="@string/third_word"
@@ -31,11 +31,11 @@
         android:textStyle="bold"
         android:id="@+id/button_word4"
         android:layout_marginTop="30dp"
-        android:background="@drawable/cardsinglesml"
+        android:background="@android:color/transparent"
         android:layout_row="0"
         android:layout_column="3" />
 
-    <ImageButton
+    <ImageView
         android:layout_width="180dp"
         android:layout_height="300dip"
         android:text="@string/third_word"
@@ -43,11 +43,11 @@
         android:textStyle="bold"
         android:id="@+id/button_word9"
         android:layout_marginTop="30dp"
-        android:background="@drawable/cardsinglesml"
+        android:background="@android:color/transparent"
         android:layout_row="0"
         android:layout_column="2" />
 
-    <ImageButton
+    <ImageView
         android:layout_width="180dp"
         android:layout_height="300dip"
         android:text="@string/second_word"
@@ -55,25 +55,25 @@
         android:textStyle="bold"
         android:id="@+id/button_word2"
         android:layout_marginStart="5dp"
-        android:background="@drawable/cardsinglesml"
+        android:background="@android:color/transparent"
         android:layout_marginTop="30dp"
         android:layout_row="0"
         android:layout_column="5" />
 
-    <ImageButton
+    <ImageView
         android:layout_width="180dp"
         android:layout_height="300dp"
         android:text="@string/third_word"
         android:textSize="30sp"
         android:textStyle="bold"
         android:id="@+id/button_word5"
-        android:background="@drawable/cardsinglesml"
+        android:background="@android:color/transparent"
         android:layout_marginEnd="50dp"
         android:layout_marginTop="110dp"
         android:layout_row="1"
         android:layout_column="5" />
 
-    <ImageButton
+    <ImageView
         android:layout_width="180dp"
         android:layout_height="300dp"
         android:text="@string/first_word"
@@ -85,22 +85,22 @@
         android:layout_column="0"
         android:layout_marginEnd="50dp"
         android:layout_marginTop="120dp"
-        android:background="@drawable/cardsinglesml" />
+        android:background="@android:color/transparent" />
 
-    <ImageButton
+    <ImageView
         android:layout_width="180dp"
         android:layout_height="300dip"
         android:text="@string/third_word"
         android:id="@+id/button_word3"
         android:textSize="30sp"
         android:textStyle="bold"
-        android:background="@drawable/cardsinglesml"
+        android:background="@android:color/transparent"
         android:layout_row="1"
         android:layout_column="1"
         android:layout_marginTop="110dp"
         android:layout_marginEnd="30dp" />
 
-    <ImageButton
+    <ImageView
         android:layout_width="180dp"
         android:layout_height="300dip"
         android:text="@string/second_word"
@@ -108,13 +108,13 @@
         android:textStyle="bold"
         android:id="@+id/button_word7"
         android:layout_marginStart="10dp"
-        android:background="@drawable/cardsinglesml"
+        android:background="@android:color/transparent"
         android:layout_row="1"
         android:layout_column="2"
         android:layout_marginEnd="27dp"
         android:layout_marginTop="110dp"/>
 
-    <ImageButton
+    <ImageView
         android:layout_width="180dp"
         android:layout_height="300dip"
         android:text="@string/third_word"
@@ -122,24 +122,23 @@
         android:textStyle="bold"
         android:id="@+id/button_word8"
         android:layout_marginStart="10dp"
-        android:background="@drawable/cardsinglesml"
+        android:background="@android:color/transparent"
         android:layout_marginTop="110dp"
         android:layout_marginEnd="10dp"
         android:layout_row="1"
         android:layout_column="3" />
 
-    <ImageButton
+    <ImageView
         android:layout_width="180dp"
         android:layout_height="300dp"
         android:text="@string/first_word"
         android:textSize="30sp"
         android:textStyle="bold"
         android:id="@+id/button_word6"
-        android:background="@drawable/cardsinglesml"
+        android:background="@android:color/transparent"
         android:layout_marginEnd="18dp"
         android:layout_marginTop="125dp"
         android:layout_row="1"
         android:layout_column="4"/>
-
 
 </GridLayout>

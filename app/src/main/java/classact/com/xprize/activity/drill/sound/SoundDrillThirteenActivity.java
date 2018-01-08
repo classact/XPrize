@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
@@ -38,23 +40,25 @@ import classact.com.xprize.utils.WordLetterLayout;
 
 public class SoundDrillThirteenActivity extends DrillActivity {
 
-    private LinearLayout container1;
-    private LinearLayout container2;
-    private LinearLayout container3;
-    private LinearLayout container4;
-    private LinearLayout container5;
-    private LinearLayout container6;
-    private LinearLayout container7;
-    private LinearLayout container8;
+    @BindView(R.id.activity_sound_drill_thirteen) RelativeLayout rootView;
 
-    private ImageView receptacle1;
-    private ImageView receptacle2;
-    private ImageView receptacle3;
-    private ImageView receptacle4;
-    private ImageView receptacle5;
-    private ImageView receptacle6;
-    private ImageView receptacle7;
-    private ImageView receptacle8;
+    @BindView(R.id.container1) LinearLayout container1;
+    @BindView(R.id.container2) LinearLayout container2;
+    @BindView(R.id.container3) LinearLayout container3;
+    @BindView(R.id.container4) LinearLayout container4;
+    @BindView(R.id.container5) LinearLayout container5;
+    @BindView(R.id.container6) LinearLayout container6;
+    @BindView(R.id.container7) LinearLayout container7;
+    @BindView(R.id.container8) LinearLayout container8;
+
+    @BindView(R.id.loc1) ImageView receptacle1;
+    @BindView(R.id.loc2) ImageView receptacle2;
+    @BindView(R.id.loc3) ImageView receptacle3;
+    @BindView(R.id.loc4) ImageView receptacle4;
+    @BindView(R.id.loc5) ImageView receptacle5;
+    @BindView(R.id.loc6) ImageView receptacle6;
+    @BindView(R.id.loc7) ImageView receptacle7;
+    @BindView(R.id.loc8) ImageView receptacle8;
 
     private int currentItem;
     public JSONArray drills;
@@ -88,7 +92,6 @@ public class SoundDrillThirteenActivity extends DrillActivity {
 
     private RelativeLayout mRootView;
     private RelativeLayout mReceptaclesView;
-    private final Context THIS = this;
 
     private LinkedHashMap<String, List<Integer>> letterMap;
 
@@ -98,6 +101,7 @@ public class SoundDrillThirteenActivity extends DrillActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_thirteen);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -107,23 +111,6 @@ public class SoundDrillThirteenActivity extends DrillActivity {
 
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
-
-        container1 = (LinearLayout) findViewById(R.id.container1);
-        container2 = (LinearLayout) findViewById(R.id.container2);
-        container3 = (LinearLayout) findViewById(R.id.container3);
-        container4 = (LinearLayout) findViewById(R.id.container4);
-        container5 = (LinearLayout) findViewById(R.id.container5);
-        container6 = (LinearLayout) findViewById(R.id.container6);
-        container7 = (LinearLayout) findViewById(R.id.container7);
-        container8 = (LinearLayout) findViewById(R.id.container8);
-        receptacle1 = (ImageView)findViewById(R.id.loc1);
-        receptacle2 = (ImageView)findViewById(R.id.loc2);
-        receptacle3 = (ImageView)findViewById(R.id.loc3);
-        receptacle4 = (ImageView)findViewById(R.id.loc4);
-        receptacle5 = (ImageView)findViewById(R.id.loc5);
-        receptacle6 = (ImageView)findViewById(R.id.loc6);
-        receptacle7 = (ImageView)findViewById(R.id.loc7);
-        receptacle8 = (ImageView)findViewById(R.id.loc8);
 
         mRootView = (RelativeLayout) container1.getParent();
 
@@ -277,7 +264,7 @@ public class SoundDrillThirteenActivity extends DrillActivity {
             int ivMargin = (int) (density * 10);
 
             if (mReceptaclesView == null) {
-                mReceptaclesView = new RelativeLayout(THIS);
+                mReceptaclesView = new RelativeLayout(context);
                 RelativeLayout.LayoutParams receptaclesLayout = new RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.MATCH_PARENT,
                         RelativeLayout.LayoutParams.MATCH_PARENT
@@ -309,7 +296,7 @@ public class SoundDrillThirteenActivity extends DrillActivity {
             }
 
             for (int i = 0; i < n; i++) {
-                ImageView iv = new ImageView(THIS);
+                ImageView iv = new ImageView(context);
                 iv.setImageResource(lRVs.get(i));
                 // iv.setBackgroundColor(Color.argb(100, 0, 0, 255));
                 mReceptaclesView.addView(iv);
@@ -382,7 +369,7 @@ public class SoundDrillThirteenActivity extends DrillActivity {
             float letterScale = 1.f;
 
             lVs = WordLetterLayout.level(
-                    THIS,
+                    context,
                     lVs,
                     lRVs,
                     word,
@@ -433,7 +420,7 @@ public class SoundDrillThirteenActivity extends DrillActivity {
 
             } catch (Exception ex) {
                 ex.printStackTrace();
-                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
             return dragItem(v, event);
         }

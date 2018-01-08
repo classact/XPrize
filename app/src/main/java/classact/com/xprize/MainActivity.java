@@ -1,70 +1,37 @@
 package classact.com.xprize;
 
 import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteException;
-import android.media.AudioManager;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.ImageButton;
-
-import java.io.IOException;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import classact.com.xprize.activity.drill.books.StoryActivity;
+import classact.com.xprize.activity.MenuActivity;
 import classact.com.xprize.activity.menu.HelpMenu;
 import classact.com.xprize.activity.menu.StarsMenu;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.controller.DrillFetcher;
-import classact.com.xprize.database.DbHelper;
 import classact.com.xprize.database.model.UnitSectionDrill;
 import classact.com.xprize.locale.Languages;
-import dagger.android.support.DaggerAppCompatActivity;
 
-public class MainActivity extends DaggerAppCompatActivity {
-
-    private final boolean ALLOW_DB_RECOPY = false;
-
-    // Database hack related
-    private final boolean HACK_NEXT_UNIT = false;
-    private final int HACK_UNIT_ID = 1;
-    private final int HACK_UNIT_SUB_ID_IN_PROGRESS = 0;
-    private final int HACK_DRILL_LAST_PLAYED = 0;
-    private final int HACK_UNIT_FIRST_TIME = 0;
-    private final int HACK_UNIT_FIRST_TIME_MOVIE = 0;
-
-    private boolean mInitialized;
-
-    private ConstraintLayout mRootView;
-
-    private boolean mPhonicsStarted;
-    private boolean mWordsStarted;
-    private boolean mBooksStarted;
-    private boolean mMathsStarted;
+public class MainActivity extends MenuActivity {
 
     @BindView(R.id.read_button) ImageButton mReadButton;
     @BindView(R.id.help_button) ImageButton mHelpButton;
     @BindView(R.id.stars_button) ImageButton mStarsButton;
 
-    private AudioManager mAudioManager;
     private boolean mNewActivity;
 
     @Inject DatabaseController mDb;
-    @Inject DbHelper dbHelper;
     @Inject DrillFetcher drillFetcher;
     @Inject Context context;
     @Inject ViewModelProvider.Factory vmFactory;
@@ -75,7 +42,6 @@ public class MainActivity extends DaggerAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        mRootView = (ConstraintLayout) findViewById(R.id.activity_main);
 
         mDb.setLanguage(Languages.ENGLISH);
 
@@ -109,28 +75,21 @@ public class MainActivity extends DaggerAppCompatActivity {
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
 
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        Globals.PLAY_BACKGROUND_MUSIC(this);
-
-        // System.out.println("!!!!!!!!!!!!!!!!!!!! " + Build.VERSION.SECURITY_PATCH + ", " + Build.VERSION.RELEASE);
-
-        mPhonicsStarted = false;
-        mWordsStarted = false;
-        mBooksStarted = false;
-        mMathsStarted = false;
+        Globals.PLAY_BACKGROUND_MUSIC(context);
     }
 
     public void checkReadButton() {
-        // Get current unit section drill in progress
-        UnitSectionDrill currentUnitSectionDrill = mDb.getUnitSectionDrillInProgress();
-
-        // Check if it should display "Read" or "Continue"
-        if (currentUnitSectionDrill.getUnitSectionDrillId() == 1) {
-            mReadButton.setBackgroundResource(R.drawable.read_button);
-        } else {
-            mReadButton.setBackgroundResource(R.drawable.continue_button);
-        }
-
+//        // Get current unit section drill in progress
+//        UnitSectionDrill currentUnitSectionDrill = mDb.getUnitSectionDrillInProgress();
+//
+//        // Check if it should display "Read" or "Continue"
+//        if (currentUnitSectionDrill.getUnitSectionDrillId() == 1) {
+//            mReadButton.setBackgroundColor(Color.TRANSPARENT);
+//            mReadButton.setImageResource(R.drawable.read_button);
+//        } else {
+//            mReadButton.setBackgroundColor(Color.TRANSPARENT);
+//            mReadButton.setImageResource(R.drawable.continue_button);
+//        }
     }
 
     public void playNextDrill() {
@@ -138,19 +97,17 @@ public class MainActivity extends DaggerAppCompatActivity {
         UnitSectionDrill unitSectionDrill = mDb.getUnitSectionDrillInProgress();
 
         try {
-            if (dbOpen(false)) {
-                System.out.println("About to play: " + unitSectionDrill.getUnitSectionDrillId());
-                Object[] objectArray = new Object[2];
-                drillFetcher.fetch(objectArray, context, dbHelper, Languages.ENGLISH, unitSectionDrill);
-                dbClose();
-                Intent intent = (Intent) objectArray[0];
-                int resultCode = (int) objectArray[1];
+            System.out.println("About to play: " + unitSectionDrill.getUnitSectionDrillId());
+            Object[] objectArray = new Object[2];
+            drillFetcher.fetch(objectArray, Languages.ENGLISH, unitSectionDrill);
 
-                Globals.STOP_BACKGROUND_MUSIC(context);
+            Intent intent = (Intent) objectArray[0];
+            int resultCode = (int) objectArray[1];
 
-                startActivityForResult(intent, resultCode);
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
+            Globals.STOP_BACKGROUND_MUSIC(context);
+
+            startActivityForResult(intent, resultCode);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
             ex.printStackTrace();
@@ -162,19 +119,15 @@ public class MainActivity extends DaggerAppCompatActivity {
         UnitSectionDrill nextUnitSectionDrill = mDb.moveToNextUnitSectionDrill();
 
         try {
-            if (dbOpen(false)) {
-                Object[] objectArray = new Object[2];
-                drillFetcher.fetch(objectArray, context, dbHelper, Languages.ENGLISH, nextUnitSectionDrill);
-                dbClose();
-                Intent intent = (Intent) objectArray[0];
-                int resultCode = (int) objectArray[1];
+            Object[] objectArray = new Object[2];
+            drillFetcher.fetch(objectArray, Languages.ENGLISH, nextUnitSectionDrill);
+            Intent intent = (Intent) objectArray[0];
+            int resultCode = (int) objectArray[1];
 
+            Globals.STOP_BACKGROUND_MUSIC(context);
 
-                Globals.STOP_BACKGROUND_MUSIC(context);
-
-                startActivityForResult(intent, resultCode);
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
+            startActivityForResult(intent, resultCode);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
             ex.printStackTrace();
@@ -224,7 +177,8 @@ public class MainActivity extends DaggerAppCompatActivity {
         switch (code) {
             case Code.FINALE:
                 mDb.moveToNextUnitSectionDrill();
-                mReadButton.setBackgroundResource(R.drawable.read_button);
+                mReadButton.setBackgroundColor(Color.TRANSPARENT);
+                mReadButton.setImageResource(R.drawable.read_button);
                 System.out.println("FINALE!!!!");
                 break;
             case Code.DRILL_SPLASH:
@@ -232,19 +186,15 @@ public class MainActivity extends DaggerAppCompatActivity {
                 UnitSectionDrill nextUnitSectionDrill = mDb.getUnitSectionDrillInProgress();
 
                 try {
-                    System.out.println("!!!!! DRILL SPLASH !!!!!!!");
-                    if (dbOpen(false)) {
-                        Object[] objectArray = new Object[2];
-                        drillFetcher.fetch(objectArray, context, dbHelper, Languages.ENGLISH, nextUnitSectionDrill);
-                        dbClose();
-                        Intent intent = (Intent) objectArray[0];
-                        int resultCode = (int) objectArray[1];
+                    Object[] objectArray = new Object[2];
+                    drillFetcher.fetch(objectArray, Languages.ENGLISH, nextUnitSectionDrill);
+                    Intent intent = (Intent) objectArray[0];
+                    int resultCode = (int) objectArray[1];
 
-                        Globals.STOP_BACKGROUND_MUSIC(context);
+                    Globals.STOP_BACKGROUND_MUSIC(context);
 
-                        startActivityForResult(intent, resultCode);
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                    }
+                    startActivityForResult(intent, resultCode);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 } catch (Exception ex) {
                     System.err.println(ex.getMessage());
                     ex.printStackTrace();
@@ -273,33 +223,6 @@ public class MainActivity extends DaggerAppCompatActivity {
             default:
                 System.out.println("!!!!! DEFAULT !!!!!!!");
                 break;
-        }
-    }
-
-    /**
-     * Establish db connection
-     * @return Returns true/false if db connection has been established
-     */
-    protected boolean dbOpen(boolean recopy) {
-        try {
-            // Test opening database
-            dbHelper.openDatabase();
-
-            // All good
-            return true;
-
-            // Otherwise
-        } catch (SQLiteException sqlex) {
-            System.err.println("MainActivity.dbEstablish > SQLiteException: " + sqlex.getMessage());
-        } catch (Exception ex) {
-            System.err.println("MainActivity.dbEstablish > Exception: " + ex.getMessage());
-        }
-        return false;
-    }
-
-    protected void dbClose() {
-        if (dbHelper != null) {
-            dbHelper.close();
         }
     }
 
@@ -344,27 +267,18 @@ public class MainActivity extends DaggerAppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Hey, Smart Little Monkey!");
         builder.setMessage("Want to stop reading?");
-        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Globals.STOP_BACKGROUND_MUSIC(context);
-                finishAndRemoveTask();
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
+        builder.setPositiveButton(android.R.string.yes, (dialog, which) -> {
+            Globals.STOP_BACKGROUND_MUSIC(context);
+            finishAndRemoveTask();
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
-        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
+        builder.setNegativeButton(android.R.string.no, (dialog, which) -> {
+            dialog.cancel();
         });
         final AlertDialog alertDialog = builder.create();
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(android.R.color.holo_blue_light, null));
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(android.R.color.holo_blue_light, null));
-            }
+        alertDialog.setOnShowListener((dialog) -> {
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(android.R.color.holo_blue_light, null));
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(android.R.color.holo_blue_light, null));
         });
         alertDialog.show();
     }

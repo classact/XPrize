@@ -1,53 +1,157 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/backgroundalphabet"
+    android:id="@+id/activity_sound_drill_three"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/backgroundalphabet"
     tools:context="classact.com.xprize.activity.drill.sound.SoundDrillThreeActivity">
 
-    <ImageView
-        android:id="@+id/item_demo"
-        android:layout_width="380dip"
-        android:layout_height="380dip"
-        android:layout_gravity="center"
-        android:layout_marginStart="410dp"
-        android:layout_marginTop="50dip"
-        android:background="#FFFFFF"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/applepic"/>
+    <!-- Base Guidelines START -->
 
-    <LinearLayout
-        android:background="@drawable/background_choosetheletter"
-        android:id="@+id/items"
-        android:layout_width="match_parent"
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="visible"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <!-- Base Guidelines END -->
+
+    <!-- Background START -->
+
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:scaleType="fitXY"
+        android:contentDescription="@string/Background_Image"
+        tools:ignore="MissingConstraints"/>
 
-        <ImageView
-            android:id="@+id/item1"
-            android:layout_width="380dip"
-            android:layout_height="380dip"
-            android:layout_gravity="center_vertical"
-            android:layout_marginBottom="150dp"
-            android:layout_marginLeft="150dp"
-            android:background="#FFFFFF"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/mugpic"/>
+    <!-- Background END -->
 
-        <ImageView
-            android:id="@+id/item2"
-            android:layout_width="380dip"
-            android:layout_height="380dip"
-            android:layout_gravity="center_vertical"
-            android:layout_marginBottom="150dp"
-            android:layout_marginLeft="250dp"
-            android:background="#FFFFFF"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/mugpic"/>
-    </LinearLayout>
-</RelativeLayout>
+    <!-- Target Letter START -->
 
+    <!-- Target Letter Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_target_letter_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.3215"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_target_letter_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.4985"/>
+
+    <!-- Target Letter Guidelines END -->
+
+    <!-- Target Letter Text START -->
+
+    <TextView
+        android:id="@+id/target_letter"
+        android:textSize="320sp"
+        android:textColor="@android:color/black"
+        android:layout_width="534dp"
+        android:layout_height="444dp"
+        android:gravity="center"
+        android:contentDescription="@string/Letter"
+        app:layout_constraintTop_toTopOf="@id/guideline_target_letter_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_target_letter_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_target_letter_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_target_letter_horizontal"/>
+
+    <!-- Target Letter Text END -->
+
+    <!-- Target Letter END -->
+
+    <!-- Left Letter START -->
+
+    <!-- Left Letter Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_left_letter_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.3215"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_left_letter_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.2638"/>
+
+    <!-- Left Letter Guidelines END -->
+
+    <!-- Left Letter Text START -->
+
+    <TextView
+        android:id="@+id/left_letter"
+        android:textSize="320sp"
+        android:textColor="@android:color/black"
+        android:layout_width="534dp"
+        android:layout_height="444dp"
+        android:gravity="center"
+        android:contentDescription="@string/Letter"
+        app:layout_constraintTop_toTopOf="@id/guideline_left_letter_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_left_letter_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_left_letter_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_left_letter_horizontal"/>
+
+    <!-- Left Letter Text END -->
+
+    <!-- Left Letter END -->
+
+    <!-- Right Letter START -->
+
+    <!-- Right Letter Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_right_letter_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.3215"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_right_letter_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.7425"/>
+
+    <!-- Right Letter Guidelines END -->
+
+    <!-- Right Letter Text START -->
+
+    <TextView
+        android:id="@+id/right_letter"
+        android:textSize="320sp"
+        android:textColor="@android:color/black"
+        android:layout_width="534dp"
+        android:layout_height="444dp"
+        android:gravity="center"
+        android:contentDescription="@string/Letter"
+        app:layout_constraintTop_toTopOf="@id/guideline_right_letter_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_right_letter_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_right_letter_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_right_letter_horizontal"/>
+
+    <!-- Right Letter Text END -->
+
+    <!-- Right Letter END -->
+
+</android.support.constraint.ConstraintLayout>

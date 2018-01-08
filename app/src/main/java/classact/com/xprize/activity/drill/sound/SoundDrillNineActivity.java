@@ -17,12 +17,17 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.view.WriteView;
 
 public class SoundDrillNineActivity extends DrillActivity {
+
+    @BindView(R.id.activity_sound_drill_nine) RelativeLayout rootView;
+
     CustomWriteView view;
     private RelativeLayout writingContainer;
     private JSONObject params;
@@ -50,6 +55,7 @@ public class SoundDrillNineActivity extends DrillActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_nine);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)

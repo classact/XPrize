@@ -1,181 +1,310 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_sound_drill_six"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:src="@drawable/backgroundcapitalletterbox"
+    android:background="@android:color/white"
     tools:context="classact.com.xprize.activity.drill.sound.SoundDrillSixActivity">
 
-    <RelativeLayout
-        android:visibility="invisible"
-        android:layout_width="match_parent"
-        android:id="@+id/recetacles"
-        android:background="@drawable/background_boxesdrill"
-        android:layout_height="500dp"
-        android:layout_toStartOf="@+id/linearLayout"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true">
-        <ImageView
-            android:layout_width="200dip"
-            android:id="@+id/receptacle1_label"
-            android:src="@drawable/alower_black"
-            android:contentDescription="@string/app_name"
-            android:layout_height="200dip"
-            android:layout_marginTop="420dip"
-            android:layout_alignParentTop="false"
-            android:layout_alignParentStart="false"
-            android:layout_marginLeft="270dp"/>
-        <ImageView
-            android:layout_width="200dip"
-            android:id="@+id/receptacle2_label"
-            android:src="@drawable/alower_black"
-            android:contentDescription="@string/app_name"
-            android:layout_height="200dip"
-            android:layout_marginTop="420dip"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="300dp"/>
-    </RelativeLayout>
+    <!-- Base Guidelines START -->
 
-    <RelativeLayout
-        android:background="@android:color/transparent"
-        android:id="@+id/items"
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_horizontal"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_height="450dip"
-        android:layout_alignParentTop="true"
-        android:visibility="invisible"
-        android:layout_alignParentStart="true">
+        app:layout_constraintGuide_percent="0.5"/>
 
-        <ImageView
-            android:layout_marginLeft="600dip"
-            android:layout_marginTop="10dp"
-            android:layout_width="200dip"
-            android:id="@+id/item7"
-            android:src="@drawable/alower_black"
-            android:contentDescription="@string/app_name"
-            android:layout_height="200dip" />
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
 
-        <ImageView
-            android:layout_marginLeft="50dip"
-            android:layout_width="200dip"
-            android:id="@+id/item2"
-            android:src="@drawable/alower_black"
-            android:contentDescription="@string/app_name"
-            android:layout_height="200dip"
-            android:layout_marginTop="250dp" />
+    <!-- Base Guidelines END -->
 
-        <ImageView
-            android:layout_marginLeft="350dip"
-            android:layout_width="200dip"
-            android:id="@+id/item3"
-            android:src="@drawable/alower_black"
-            android:contentDescription="@string/app_name"
-            android:layout_height="200dip"
-            android:layout_alignTop="@+id/item7"
-            android:layout_toEndOf="@+id/item1"
-            android:layout_marginStart="17dp" />
+    <!-- Background START -->
 
-        <ImageView
-            android:layout_marginLeft="50dip"
-            android:layout_width="200dip"
-            android:id="@+id/item1"
-            android:src="@drawable/alower_black"
-            android:contentDescription="@string/app_name"
-            android:layout_height="200dip"
-            android:layout_marginStart="58dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
-
-        <ImageView
-            android:layout_marginLeft="20dip"
-            android:layout_width="200dip"
-            android:id="@+id/item5"
-            android:src="@drawable/alower_black"
-            android:contentDescription="@string/app_name"
-            android:layout_height="200dip"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/item8" />
-
-        <ImageView
-            android:layout_marginLeft="500dip"
-            android:layout_width="200dip"
-            android:id="@+id/item4"
-            android:src="@drawable/alower_black"
-            android:contentDescription="@string/app_name"
-            android:layout_height="200dip"
-            android:layout_below="@+id/item1"
-            android:layout_alignStart="@+id/item3"
-            android:layout_marginStart="124dp" />
-
-        <ImageView
-            android:layout_marginLeft="20dip"
-            android:layout_width="200dip"
-            android:id="@+id/item8"
-            android:src="@drawable/alower_black"
-            android:contentDescription="@string/app_name"
-            android:layout_marginStart="133dp"
-            android:layout_height="200dip"
-            android:layout_below="@+id/item7"
-            android:layout_alignStart="@+id/item7"
-            android:layout_marginTop="18dp" />
-
-        <ImageView
-            android:layout_marginLeft="1000dip"
-            android:layout_width="200dip"
-            android:id="@+id/item6"
-            android:src="@drawable/alower_black"
-            android:contentDescription="@string/app_name"
-            android:layout_height="200dip"
-            android:layout_below="@+id/item5"
-            android:layout_alignParentEnd="true" />
-    </RelativeLayout>
-    <LinearLayout
+    <ImageView
+        android:id="@+id/background"
         android:layout_width="match_parent"
-        android:background="@drawable/backgroundcapitalletterbox"
-        android:id="@+id/lonely_letter_container"
-        android:visibility="invisible"
-        android:layout_height="match_parent">
-        <ImageView
-            android:layout_marginStart="450dip"
-            android:layout_width="500dip"
-            android:layout_marginTop="00dip"
-            android:id="@+id/lonely_letter"
-            android:src="@drawable/applepic"
-            android:layout_gravity="center"
-            android:contentDescription="@string/app_name"
-            android:layout_height="500dip"
-            android:layout_marginBottom="100dp"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:background="@drawable/backgroundtwoletterbox"
-        android:id="@+id/demo_letters"
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:visibility="visible"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        >
-        <ImageView
-            android:background="@android:color/transparent"
-            android:layout_marginLeft="150dip"
-            android:layout_width="430dip"
-            android:id="@+id/demo_letter_one"
-            android:src="@drawable/mugpic"
-            android:layout_gravity="center_vertical"
-            android:contentDescription="@string/app_name"
-            android:layout_height="430dip"
-            android:layout_marginBottom="80dp"/>
+        android:scaleType="fitXY"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/Background_Image"/>
 
-        <ImageView
-            android:background="@android:color/transparent"
-            android:layout_marginLeft="150dip"
-            android:layout_width="430dip"
-            android:id="@+id/demo_letter_two"
-            android:src="@drawable/mugpic"
-            android:layout_gravity="center_vertical"
-            android:contentDescription="@string/app_name"
-            android:layout_height="430dip"
-            android:layout_marginBottom="80dp"/>
-    </LinearLayout>
-</RelativeLayout>
+    <!-- Background END -->
+
+    <!-- Left Letter START -->
+
+    <!-- Left Letter Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_left_letter_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.419"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_left_letter_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.3425"/>
+
+    <!-- Left Letter Guidelines END  -->
+
+    <!-- Left Letter Text START -->
+
+    <TextView
+        android:id="@+id/left_letter"
+        android:contentDescription="@string/Left_Letter"
+        android:textSize="310sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_width="418dp"
+        android:layout_height="390dp"
+        app:layout_constraintTop_toTopOf="@id/guideline_left_letter_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_left_letter_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_left_letter_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_left_letter_horizontal"/>
+
+    <!-- Left Letter Text END -->
+
+    <!-- Left Letter END -->
+
+    <!-- Right Letter START -->
+
+    <!-- Right Letter Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_right_letter_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.419"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_right_letter_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.768"/>
+
+    <!-- Right Letter Guidelines END  -->
+
+    <!-- Right Letter Text START -->
+
+    <TextView
+        android:id="@+id/right_letter"
+        android:contentDescription="@string/Right_Letter"
+        android:textSize="310sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_width="408dp"
+        android:layout_height="390dp"
+        app:layout_constraintTop_toTopOf="@id/guideline_right_letter_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_right_letter_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_right_letter_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_right_letter_horizontal"/>
+
+    <!-- Right Letter Text END -->
+
+    <!-- Right Letter END -->
+
+    <!-- Isolated Letter START -->
+
+    <!-- Isolated Letter Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_isolated_letter_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.424"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_isolated_letter_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.584"/>
+
+    <!-- Isolated Letter Guidelines END -->
+
+    <!-- Isolated Letter Text START -->
+
+    <TextView
+        android:id="@+id/isolated_letter"
+        android:contentDescription="@string/Letter"
+        android:textSize="424sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_width="570dp"
+        android:layout_height="550dp"
+        app:layout_constraintTop_toTopOf="@id/guideline_isolated_letter_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_isolated_letter_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_isolated_letter_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_isolated_letter_horizontal"/>
+
+    <!-- Isolated Letter Text END -->
+
+    <!-- Isolated Letter END -->
+
+    <!-- Left Box START -->
+
+    <!-- Left Box Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_left_box_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.285"/>
+
+    <!-- Left Box Guidelines END -->
+
+    <!-- Left Box Letter START -->
+
+    <!-- Left Box Letter Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_left_box_letter_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.668"/>
+
+    <!-- Left Box Letter Guidelines END -->
+
+    <!-- Left Box Letter Text START -->
+
+    <TextView
+        android:id="@+id/left_box_letter"
+        android:contentDescription="@string/Left_Letter"
+        android:textSize="310sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_width="280dp"
+        android:layout_height="250dp"
+        app:layout_constraintTop_toTopOf="@id/guideline_left_box_letter_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_left_box_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_left_box_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_left_box_letter_horizontal"/>
+
+    <!-- Left Box Letter Text END -->
+
+    <!-- Left Box Letter END -->
+
+    <!-- Left Box Drop Zone START -->
+
+    <!-- Left Box Drop Zone Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_left_box_drop_zone_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.648"/>
+
+    <!-- Left Box Drop Zone Guidelines END -->
+
+    <!-- Left Box Drop Zone View START -->
+
+    <ImageView
+        android:id="@+id/left_box_drop_zone"
+        android:contentDescription="@string/Left_Box"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        app:layout_constraintTop_toTopOf="@id/guideline_left_box_drop_zone_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_left_box_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_left_box_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_left_box_drop_zone_horizontal"/>
+
+    <!-- Left Box Drop Zone View END -->
+
+    <!-- Left Box Drop Zone END -->
+
+    <!-- Left Box END -->
+
+    <!-- Right Box START -->
+
+    <!-- Right Box Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_right_box_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.683"/>
+
+    <!-- Right Box Guidelines END -->
+
+    <!-- Right Box Letter START -->
+
+    <!-- Right Box Letter Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_right_box_letter_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.674"/>
+
+    <!-- Right Box Letter Guidelines END -->
+
+    <!-- Right Box Letter Text START -->
+
+    <TextView
+        android:id="@+id/right_box_letter"
+        android:contentDescription="@string/Right_Letter"
+        android:textSize="310sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_width="280dp"
+        android:layout_height="250dp"
+        app:layout_constraintTop_toTopOf="@id/guideline_right_box_letter_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_right_box_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_right_box_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_right_box_letter_horizontal"/>
+
+    <!-- Right Box Letter Text END -->
+
+    <!-- Right Box Letter END -->
+
+    <!-- Right Box Drop Zone START -->
+
+    <!-- Right Box Drop Zone Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_right_box_drop_zone_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.655"/>
+
+    <!-- Right Box Drop Zone Guidelines END -->
+
+    <!-- Right Box Drop Zone View START -->
+
+    <ImageView
+        android:id="@+id/right_box_drop_zone"
+        android:contentDescription="@string/Right_Box"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        app:layout_constraintTop_toTopOf="@id/guideline_right_box_drop_zone_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_right_box_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_right_box_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_right_box_drop_zone_horizontal"/>
+
+    <!-- Right Box Drop Zone View END -->
+
+    <!-- Right Box Drop Zone END -->
+
+    <!-- Right Box END -->
+
+</android.support.constraint.ConstraintLayout>

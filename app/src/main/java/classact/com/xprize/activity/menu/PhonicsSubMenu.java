@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.support.constraint.ConstraintLayout;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -206,9 +207,10 @@ public class PhonicsSubMenu extends DaggerAppCompatActivity {
         // Get letter map and selected sub id
         LinkedHashMap<Integer, String> subIdLetterMap = new LinkedHashMap<>();
         mSelectedSubId = 1;
-        LinkedHashMap<Integer, UnitSection> unitSectionMap = mDb.getUnitSections(mSelectedChapter, mSelectedSection);
-        for (Map.Entry<Integer, UnitSection> entry : unitSectionMap.entrySet()) {
-            UnitSection unitSection = entry.getValue();
+        SparseArray<UnitSection> unitSectionMap = mDb.getUnitSections(mSelectedChapter, mSelectedSection);
+        for (int i = 0; i < unitSectionMap.size(); i++) {
+            int key = unitSectionMap.keyAt(i);
+            UnitSection unitSection = unitSectionMap.get(key);
             int subId = unitSection.getSectionSubId();
             String subject = unitSection.getSectionSubject();
             subIdLetterMap.put(subId, subject);

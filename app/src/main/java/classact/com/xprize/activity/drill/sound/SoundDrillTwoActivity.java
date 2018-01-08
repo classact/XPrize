@@ -2,6 +2,7 @@ package classact.com.xprize.activity.drill.sound;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -18,8 +19,13 @@ import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillTwoActivity extends DrillActivity {
-    @BindView(R.id.item1) ImageView item1;
-    @BindView(R.id.item2) ImageView item2;
+
+    @BindView(R.id.activity_sound_drill_two) ConstraintLayout rootView;
+    @BindView(R.id.background) ImageView background;
+
+    @BindView(R.id.left_image) ImageView leftImage;
+    @BindView(R.id.right_image) ImageView rightImage;
+
     private int currentPair;
     private int correctItem;
     private String drillData;
@@ -48,12 +54,11 @@ public class SoundDrillTwoActivity extends DrillActivity {
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
 
-        // item1.setBackgroundColor(Color.argb(100, 255, 0, 0));
-        // item2.setBackgroundColor(Color.argb(100, 0, 255, 0));
-
         itemsEnabled = false;
-        item1.setOnClickListener((v) -> clickedItem(1));
-        item2.setOnClickListener((v) -> clickedItem(2));
+
+        leftImage.setOnClickListener((v) -> clickedItem(1));
+        rightImage.setOnClickListener((v) -> clickedItem(2));
+
         // setItemsEnabled(false);
         drillData = getIntent().getExtras().getString("data");
         currentPair = 1;
@@ -77,8 +82,8 @@ public class SoundDrillTwoActivity extends DrillActivity {
     public void showPair(){
         try {
             play_mode = 1;
-            item1.setVisibility(View.INVISIBLE);
-            item2.setVisibility(View.INVISIBLE);
+            leftImage.setVisibility(View.INVISIBLE);
+            rightImage.setVisibility(View.INVISIBLE);
 
             int correctImage = pairs.getJSONObject(currentPair - 1).getInt("correctimage");
             int wrongImage = pairs.getJSONObject(currentPair - 1).getInt("wrongimage");
@@ -86,12 +91,12 @@ public class SoundDrillTwoActivity extends DrillActivity {
             correctItem = rand.nextInt(2);
             if (correctItem < 1) {
                 correctItem = 1;
-                item1.setImageResource(correctImage);
-                item2.setImageResource(wrongImage);
+                leftImage.setImageResource(correctImage);
+                rightImage.setImageResource(wrongImage);
             } else {
                 correctItem = 2;
-                item1.setImageResource(wrongImage);
-                item2.setImageResource(correctImage);
+                leftImage.setImageResource(wrongImage);
+                rightImage.setImageResource(correctImage);
             }
             showFirstItem();
         }
@@ -102,7 +107,7 @@ public class SoundDrillTwoActivity extends DrillActivity {
 
     private void showFirstItem(){
         try {
-            item1.setVisibility(View.VISIBLE);
+            leftImage.setVisibility(View.VISIBLE);
             String sound = data.getString("this_is_a");
             playSound(sound, this::playFirstSound);
         }
@@ -127,7 +132,7 @@ public class SoundDrillTwoActivity extends DrillActivity {
 
     private void startSecondItem(){
         try {
-            item2.setVisibility(View.VISIBLE);
+            rightImage.setVisibility(View.VISIBLE);
             String sound = data.getString("this_is_a");
             playSound(sound, this::playSecondSound);
         }
@@ -193,9 +198,9 @@ public class SoundDrillTwoActivity extends DrillActivity {
 
                         ImageView iv = null;
                         if (item == 1) {
-                            iv = item1;
+                            iv = leftImage;
                         } else if (item == 2) {
-                            iv = item2;
+                            iv = rightImage;
                         }
                         Globals.playStarWorks(this, iv, 15, 12, 9);
 
@@ -222,7 +227,7 @@ public class SoundDrillTwoActivity extends DrillActivity {
     }
 
     private void setItemsEnabled(boolean enable) {
-        item1.setEnabled(enable);
-        item2.setEnabled(enable);
+        leftImage.setEnabled(enable);
+        rightImage.setEnabled(enable);
     }
 }

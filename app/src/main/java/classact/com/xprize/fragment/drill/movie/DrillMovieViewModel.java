@@ -2,7 +2,6 @@ package classact.com.xprize.fragment.drill.movie;
 
 import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
-import android.util.Log;
 
 import javax.inject.Inject;
 
@@ -22,12 +21,14 @@ public class DrillMovieViewModel extends DrillViewModel {
 
     private String background;
     private Movie movie;
+    private UnitSectionDrillHelper unitSectionDrillHelper;
 
     @Inject
-    public DrillMovieViewModel(Bus bus) {
+    public DrillMovieViewModel(Bus bus, UnitSectionDrillHelper unitSectionDrillHelper) {
         super(bus);
         background = "";
         movie = null;
+        this.unitSectionDrillHelper = unitSectionDrillHelper;
     }
 
     @Override
@@ -51,7 +52,7 @@ public class DrillMovieViewModel extends DrillViewModel {
 
             // Get unit section drill
             UnitSectionDrill unitSectionDrill =
-                    UnitSectionDrillHelper.getUnitSectionDrillInProgress(
+                    unitSectionDrillHelper.getUnitSectionDrillInProgress(
                             dbHelper.getReadableDatabase(), 1);
 
             // Get Movie Id

@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.utils.FetchResource;
@@ -26,17 +28,22 @@ import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.RandomExcluding;
 
 public class MathsDrillSevenAndOneActivity extends DrillActivity implements View.OnTouchListener, View.OnDragListener {
-    private RelativeLayout itemsReceptacle;
-    private ImageView filler1;
-    private ImageView filler2;
-    private ImageView filler3;
-    private ImageView item1;
-    private ImageView item2;
-    private ImageView item3;
-    private ImageView itemToFill;
-    private ImageView item4;
-    private ImageView item5;
-    private ImageView item6;
+
+    @BindView(R.id.activity_maths_drill_seven_and_one) RelativeLayout rootView;
+
+    @BindView(R.id.itemsReceptacle) RelativeLayout itemsReceptacle;
+
+    @BindView(R.id.numeral_1) ImageView filler1;
+    @BindView(R.id.numeral_2) ImageView filler2;
+    @BindView(R.id.numeral_3) ImageView filler3;
+
+    @BindView(R.id.item_one) ImageView item1;
+    @BindView(R.id.item_two) ImageView item2;
+    @BindView(R.id.item_three) ImageView item3;
+    @BindView(R.id.item_four) ImageView item4;
+    @BindView(R.id.item_five) ImageView item5;
+    @BindView(R.id.item_six) ImageView item6;
+
     private JSONObject allData;
 
     private int missingValue;
@@ -58,6 +65,7 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_seven_and_one);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -100,13 +108,6 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
 
     private void initialiseObjects(){
         try {
-            item1 = (ImageView)findViewById(R.id.item_one);
-            item2 = (ImageView)findViewById(R.id.item_two);
-            item3 = (ImageView)findViewById(R.id.item_three);
-            item4 = (ImageView)findViewById(R.id.item_four);
-            item5 = (ImageView)findViewById(R.id.item_five);
-            item6 = (ImageView)findViewById(R.id.item_six);
-
             item1.setPadding(40, 40, 40, 40);
             RelativeLayout.LayoutParams item1LP = (RelativeLayout.LayoutParams) item1.getLayoutParams();
             item1LP.width = 230;
@@ -225,10 +226,6 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
             possibleNumbers.add(missingValue);
 
             draggableViewValues = new LinkedHashMap<>();
-
-            filler1 = (ImageView)findViewById(R.id.numeral_1);
-            filler2 = (ImageView)findViewById(R.id.numeral_2);
-            filler3 = (ImageView)findViewById(R.id.numeral_3);
 
             ImageView[] fillerViews = {filler1, filler2, filler3};
 

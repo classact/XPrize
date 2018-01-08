@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import classact.com.xprize.activity.drill.sound.SoundDrillEightActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillFiveActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillFourActivity;
@@ -37,14 +39,21 @@ import classact.com.xprize.utils.FisherYates;
 
 public class PhonicsDrills {
 
-    public static Intent D1(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
+    private LetterHelper letterHelper;
+
+    @Inject
+    public PhonicsDrills(LetterHelper letterHelper) {
+        this.letterHelper = letterHelper;
+    }
+
+    public Intent D1(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
                             int subId, int letterId, int limit, int wordType
     ) throws SQLiteException, Exception {
         Intent intent;
 
         try {
             DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-            Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+            Letter letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
             int letterType = letter.getIsLetter();
 
@@ -78,14 +87,14 @@ public class PhonicsDrills {
         return intent;
     }
 
-    public static Intent D2(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
+    public Intent D2(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
                             int subId, int letterId, int limit, int wordType
     ) throws SQLiteException, Exception {
         Intent intent;
 
         try {
             DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-            Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+            Letter letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
             ArrayList<Integer> rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
             ArrayList<Integer> wrongDrillWordIDs = DrillWordHelper.getWrongDrillWordsByLetter(dbHelper.getReadableDatabase(), languageId, wordType, letter.getLetterName(), limit);
             ArrayList<RightWrongPair> pairs = new ArrayList<>();
@@ -116,7 +125,7 @@ public class PhonicsDrills {
         return intent;
     }
 
-    public static Intent D3(Context context, DbHelper dbHelper, int unitId, int subId, int drillId, int languageId,
+    public Intent D3(Context context, DbHelper dbHelper, int unitId, int subId, int drillId, int languageId,
                             int letterId, int limit
     ) throws SQLiteException, Exception {
         Intent intent;
@@ -128,12 +137,12 @@ public class PhonicsDrills {
             List<Letter> correctLetters = new ArrayList<>();
             List<SoundDrillThreeObject> sets = new ArrayList<>();
 
-            Letter primaryLetter = LetterHelper.getLetter(
+            Letter primaryLetter = letterHelper.getLetter(
                     dbHelper.getReadableDatabase(), languageId, letterId);
             excludedLetterIds.add(primaryLetter.getLetterId());
             System.out.println("Primary Letter: " + primaryLetter.getLetterName());
 
-            List<Letter> secondaryLetters = LetterHelper.getLettersBelow(
+            List<Letter> secondaryLetters = letterHelper.getLettersBelow(
                     dbHelper.getReadableDatabase(), languageId, unitId, subId, 2);
             for (int i = 0; i < secondaryLetters.size(); i++) {
                 Letter secondaryLetter = secondaryLetters.get(i);
@@ -142,7 +151,7 @@ public class PhonicsDrills {
                 System.out.println("Secondary Letter: "+ secondaryLetter.getLetterName());
             }
 
-            List<Letter> wrongLetters = LetterHelper.getLettersExcludingIds(
+            List<Letter> wrongLetters = letterHelper.getLettersExcludingIds(
                     dbHelper.getReadableDatabase(), excludedLetterIds, languageId, 5);
             for (int i = 0; i < wrongLetters.size(); i++) {
                 Letter wrongLetter = wrongLetters.get(i);
@@ -196,7 +205,7 @@ public class PhonicsDrills {
         return intent;
     }
 
-    public static Intent D4(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
+    public Intent D4(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
                             int subId, int letterId, int rightlimit, int wronglimit, int wordType
     ) throws SQLiteException, Exception {
         Intent intent;
@@ -206,7 +215,7 @@ public class PhonicsDrills {
             ArrayList<DraggableImage<ObjectAndSound>> images = new ArrayList<>();
 
 
-            Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+            Letter letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
 
             ArrayList<Integer> rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, rightlimit);
@@ -248,7 +257,7 @@ public class PhonicsDrills {
         return intent;
     }
 
-    public static Intent D5(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
+    public Intent D5(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
                             int subId, int letterId, int rightlimit, int wronglimit, int wordType
     ) throws SQLiteException, Exception {
 
@@ -263,7 +272,7 @@ public class PhonicsDrills {
 
             System.out.println("===== B =====");
             DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-            Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+            Letter letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
 
             System.out.println("===== C =====");
             ArrayList<Integer> rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, rightlimit);
@@ -337,7 +346,7 @@ public class PhonicsDrills {
         return intent;
     }
 
-    public static Intent D6(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
+    public Intent D6(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
                             Letter letter, String drillSound1, String drillSound2,
                             String drillSound3, String drillSound4, String drillSound5
     ) throws SQLiteException, Exception {
@@ -359,7 +368,7 @@ public class PhonicsDrills {
         return intent;
     }
 
-    public static Intent D7(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
+    public Intent D7(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
                             Letter letter, List<Word> rightDrillWords, List<Word> wrongDrillWords,
                             String drillSound1
     ) throws SQLiteException, Exception {
@@ -395,7 +404,7 @@ public class PhonicsDrills {
 
                 String wordName = rightWord.getWordName();
                 for (int j = 0; j < wordName.length(); j++) {
-                    Letter thisLetter = LetterHelper.getLetterByName(dbHelper.getReadableDatabase(), languageId, Character.toString(rightWord.getWordName().charAt(j)));
+                    Letter thisLetter = letterHelper.getLetterByName(dbHelper.getReadableDatabase(), languageId, Character.toString(rightWord.getWordName().charAt(j)));
                     if (j > 0)
                         sb.append(",");
                     sb.append(thisLetter.getLetterPictureLowerCaseBlackURI());
@@ -441,13 +450,13 @@ public class PhonicsDrills {
         return intent;
     }
 
-    public static Intent D8(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
+    public Intent D8(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
                             int letterId
     ) throws SQLiteException, Exception {
         Intent intent = null;
 
         try {
-            Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
+            Letter letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
             DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
             String drillData = SoundDrillJsonBuilder.getSoundDrillEightJson(context,
                     letter.getLetterLowerPath(),
@@ -471,7 +480,7 @@ public class PhonicsDrills {
         return intent;
     }
 
-    public static Intent D9(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
+    public Intent D9(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
                             Letter letter, String drillSound1, String drillSound2, String drillSound3
     ) throws SQLiteException, Exception {
         Intent intent = null;
@@ -493,7 +502,7 @@ public class PhonicsDrills {
         return intent;
     }
 
-    private static RightWrongWordSet getRightWrongWordSet(Word rightWord, ArrayList<Word> wrongWords) throws Exception {
+    private RightWrongWordSet getRightWrongWordSet(Word rightWord, ArrayList<Word> wrongWords) throws Exception {
 
         try {
             // Get shuffled indexes

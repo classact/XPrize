@@ -17,6 +17,8 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrill15ViewModel;
@@ -25,6 +27,9 @@ import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 
 public class MathsDrillOneActivity extends DrillActivity {
+
+    @BindView(R.id.activity_maths_unit_one) RelativeLayout rootView;
+
     private JSONObject allData;
     private JSONArray numbers;
     private int currentNumber;
@@ -40,6 +45,7 @@ public class MathsDrillOneActivity extends DrillActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_one);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)

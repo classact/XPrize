@@ -5,17 +5,22 @@ import android.content.ClipData;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+
 import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.Random;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
@@ -23,6 +28,17 @@ import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillSixActivity extends DrillActivity {
+
+    @BindView(R.id.activity_sound_drill_six) ConstraintLayout rootView;
+    @BindView(R.id.background) ImageView background;
+    @BindView(R.id.left_letter) TextView leftLetter;
+    @BindView(R.id.right_letter) TextView rightLetter;
+    @BindView(R.id.isolated_letter) TextView isolatedLetter;
+    @BindView(R.id.left_box_letter) TextView leftBoxLetter;
+    @BindView(R.id.right_box_letter) TextView rightBoxLetter;
+    @BindView(R.id.left_box_drop_zone) TextView leftBoxDropZone;
+    @BindView(R.id.right_box_drop_zone) TextView rightBoxDropZone;
+
     private ImageView item1;
     private ImageView item2;
     private ImageView item3;
@@ -63,6 +79,7 @@ public class SoundDrillSixActivity extends DrillActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_six);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -82,15 +99,7 @@ public class SoundDrillSixActivity extends DrillActivity {
         item6 = (ImageView)findViewById(R.id.item6);
         item7 = (ImageView)findViewById(R.id.item7);
         item8 = (ImageView)findViewById(R.id.item8);
-        demo_Item = (ImageView)findViewById(R.id.lonely_letter);
-        demoItemContainer = (LinearLayout) findViewById(R.id.lonely_letter_container);
-        items = (RelativeLayout)findViewById(R.id.items);
-        demo_Item_one = (ImageView)findViewById(R.id.demo_letter_one);
-        demo_Item_two = (ImageView)findViewById(R.id.demo_letter_two);
-        demo_letters = (LinearLayout) findViewById(R.id.demo_letters);
-        receptacleBox1 = (ImageView)findViewById(R.id.receptacle1_label);
-        receptacleBox2 = (ImageView)findViewById(R.id.receptacle2_label);
-        receptacles= (RelativeLayout)findViewById(R.id.recetacles);
+
         drillData = getIntent().getExtras().getString("data");
         initialiseData();
 
@@ -226,8 +235,6 @@ public class SoundDrillSixActivity extends DrillActivity {
                 image2 = data.getInt("small_letter");
                 image1 = data.getInt("big_letter");
             }
-            ((ImageView)findViewById(R.id.receptacle1_label)).setImageResource(image1);
-            ((ImageView)findViewById(R.id.receptacle2_label)).setImageResource(image2);
             demo_Item_one.setImageResource(data.getInt("small_letter"));
             demo_Item_two.setImageResource(data.getInt("big_letter"));
             positions = new int[8];

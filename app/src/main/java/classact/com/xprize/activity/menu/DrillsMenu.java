@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteException;
 import android.support.constraint.ConstraintLayout;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -72,7 +73,7 @@ public class DrillsMenu extends DaggerAppCompatActivity {
     private LinkedHashMap<ImageButton, ImageButton> mButtonMonkeyMap;
     private LinkedHashMap<ImageButton, Integer> mButtonDrillMap;
 
-    private LinkedHashMap<Integer, UnitSectionDrill> mUnitSectionDrillMap;
+    private SparseArray<UnitSectionDrill> mUnitSectionDrillMap;
     private LinkedHashMap<Integer, UnitSectionDrill> mUnitSectionDrillByDrillNumberMap;
 
     private Intent mIntent;
@@ -86,7 +87,6 @@ public class DrillsMenu extends DaggerAppCompatActivity {
 
     @Inject Context context;
     @Inject DatabaseController mDb;
-    @Inject DbHelper dbHelper;
     @Inject DrillFetcher drillFetcher;
 
     @Override
@@ -219,8 +219,9 @@ public class DrillsMenu extends DaggerAppCompatActivity {
         int numberOfUnlockedDrills = 0;
         int currentDrillInProgress = 1;
         boolean currentDrillInProgressFound = false;
-        for (Map.Entry<Integer, UnitSectionDrill> entry : mUnitSectionDrillMap.entrySet()) {
-            UnitSectionDrill unitSectionDrill = entry.getValue();
+        for (int i = 0; i < mUnitSectionDrillMap.size(); i++) {
+            int key = mUnitSectionDrillMap.keyAt(i);
+            UnitSectionDrill unitSectionDrill = mUnitSectionDrillMap.get(key);
             if (unitSectionDrill.getUnlocked() == 1) {
                 numberOfUnlockedDrills++;
                 if (unitSectionDrill.getInProgress() == 1) {
@@ -245,8 +246,9 @@ public class DrillsMenu extends DaggerAppCompatActivity {
         switch (mSelectedSection) {
             case DatabaseController.STORY_SECTION:
                 UnitSectionDrill unitSectionDrill = null;
-                for (Map.Entry<Integer, UnitSectionDrill> entry : mUnitSectionDrillMap.entrySet()) {
-                    unitSectionDrill = entry.getValue();
+                for (int i = 0; i < mUnitSectionDrillMap.size(); i++) {
+                    int key = mUnitSectionDrillMap.keyAt(i);
+                    unitSectionDrill = mUnitSectionDrillMap.get(key);
                     int unitSectionId = unitSectionDrill.getUnitSectionId();
                     UnitSection unitSection = mDb.getUnitSection(unitSectionId);
                     int sectionId = unitSection.getSectionId();
@@ -266,19 +268,17 @@ public class DrillsMenu extends DaggerAppCompatActivity {
                     }
                     mDb.playUnitSectionDrill(unitSectionDrill.getUnitSectionDrillId());
 
-                    if (dbOpen()) {
-                        Object[] objectArray = new Object[2];
-                        drillFetcher.fetch(objectArray, context, dbHelper, Languages.ENGLISH, unitSectionDrill);
-                        dbClose();
-                        Intent intent = (Intent) objectArray[0];
-                        int resultCode = (int) objectArray[1];
+                    Object[] objectArray = new Object[2];
+                    drillFetcher.fetch(objectArray, Languages.ENGLISH, unitSectionDrill);
 
-                        mFinishActivity = true;
-                        Globals.STOP_BACKGROUND_MUSIC(context);
+                    Intent intent = (Intent) objectArray[0];
+                    int resultCode = (int) objectArray[1];
 
-                        startActivityForResult(intent, resultCode);
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                    }
+                    mFinishActivity = true;
+                    Globals.STOP_BACKGROUND_MUSIC(context);
+
+                    startActivityForResult(intent, resultCode);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 } catch (Exception ex) {
                     System.err.println(ex.getMessage());
                     ex.printStackTrace();
@@ -289,9 +289,10 @@ public class DrillsMenu extends DaggerAppCompatActivity {
                 mSelectedSubId = mIntent.getIntExtra("selected_sub_id", 1);
 
                 LinkedHashMap<Integer, String> subIdLetterMap = new LinkedHashMap<>();
-                LinkedHashMap<Integer, UnitSection> unitSectionMap = mDb.getUnitSections(mSelectedChapter, mSelectedSection);
-                for (Map.Entry<Integer, UnitSection> entry : unitSectionMap.entrySet()) {
-                    UnitSection unitSection = entry.getValue();
+                SparseArray<UnitSection> unitSectionMap = mDb.getUnitSections(mSelectedChapter, mSelectedSection);
+                for (int i = 0; i < unitSectionMap.size(); i++) {
+                    int key = unitSectionMap.keyAt(i);
+                    UnitSection unitSection = unitSectionMap.get(key);
                     int subId = unitSection.getSectionSubId();
                     String subject = unitSection.getSectionSubject();
                     subIdLetterMap.put(subId, subject);
@@ -379,19 +380,17 @@ public class DrillsMenu extends DaggerAppCompatActivity {
                     mDb.playUnitSectionDrill(unitSectionDrill.getUnitSectionDrillId());
 
                     try {
-                        if (dbOpen()) {
-                            Object[] objectArray = new Object[2];
-                            drillFetcher.fetch(objectArray, context, dbHelper, Languages.ENGLISH, unitSectionDrill);
-                            dbClose();
-                            Intent intent = (Intent) objectArray[0];
-                            int resultCode = (int) objectArray[1];
+                        Object[] objectArray = new Object[2];
+                        drillFetcher.fetch(objectArray, Languages.ENGLISH, unitSectionDrill);
 
-                            mFinishActivity = true;
-                            Globals.STOP_BACKGROUND_MUSIC(context);
+                        Intent intent = (Intent) objectArray[0];
+                        int resultCode = (int) objectArray[1];
 
-                            startActivityForResult(intent, resultCode);
-                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                        }
+                        mFinishActivity = true;
+                        Globals.STOP_BACKGROUND_MUSIC(context);
+
+                        startActivityForResult(intent, resultCode);
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     } catch (Exception ex) {
                         System.err.println(ex.getMessage());
                         ex.printStackTrace();
@@ -421,28 +420,6 @@ public class DrillsMenu extends DaggerAppCompatActivity {
             });
         } else {
             button.setEnabled(false);
-        }
-    }
-
-    private boolean dbOpen() {
-        try {
-            // Open database
-            dbHelper.openDatabase();
-            // All good
-            return true;
-
-            // Otherwise
-        } catch (SQLiteException sqlex) {
-            System.err.println("DatabaseController.dbEstablish > SQLiteException: " + sqlex.getMessage());
-        } catch (Exception ex) {
-            System.err.println("DatabaseController.dbEstablish > Exception: " + ex.getMessage());
-        }
-        return false;
-    }
-
-    private void dbClose() {
-        if (dbHelper != null) {
-            dbHelper.close();
         }
     }
 

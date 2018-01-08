@@ -18,6 +18,29 @@ public class UnitSectionDrill {
     private String unlockedDate;
     private int inProgress;
 
+    public UnitSectionDrill() {}
+
+    public UnitSectionDrill(
+            int unitSectionDrillId, int unitSectionId,
+            int drillId, int drillSubId,
+            int languageId,
+            int drillOrder,
+            int drillScore, int drillScoreMax,
+            int unlocked, String unlockedDate,
+            int inProgress) {
+        this.unitSectionDrillId = unitSectionDrillId;
+        this.unitSectionId = unitSectionId;
+        this.drillId = drillId;
+        this.drillSubId = drillSubId;
+        this.languageId = languageId;
+        this.drillOrder = drillOrder;
+        this.drillScore = drillScore;
+        this.drillScoreMax = drillScoreMax;
+        this.unlocked = unlocked;
+        this.unlockedDate = unlockedDate;
+        this.inProgress = inProgress;
+    }
+
     public int getUnitSectionDrillId() {
         return unitSectionDrillId;
     }

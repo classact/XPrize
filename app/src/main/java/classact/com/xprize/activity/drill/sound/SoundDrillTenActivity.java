@@ -3,14 +3,10 @@ package classact.com.xprize.activity.drill.sound;
 import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
@@ -19,15 +15,25 @@ import org.json.JSONObject;
 
 import java.util.Random;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
-import classact.com.xprize.common.Code;
-import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillTenActivity extends DrillActivity {
+
+    @BindView(R.id.activity_sound_drill_ten) RelativeLayout rootView;
+
+    @BindView(R.id.button_word1) ImageView buttonWord1;
+    @BindView(R.id.button_word2) ImageView buttonWord2;
+    @BindView(R.id.button_word3) ImageView buttonWord3;
+    @BindView(R.id.button_word4) ImageView buttonWord4;
+    @BindView(R.id.button_word5) ImageView buttonWord5;
+
+    @BindView(R.id.flash_word) ImageView flashButton;
 
     private final int FLASH_LEFT_MARGIN = 130;
     private final int FLASH_TOP_MARGIN = 675;
@@ -39,12 +45,6 @@ public class SoundDrillTenActivity extends DrillActivity {
     private final int CENTER_MARGIN_LEFT = 1108;
     private final int BOTTOM_LINE_LEFT_OFFSET = 0;
 
-    private ImageButton buttonWord1;
-    private ImageButton buttonWord2;
-    private ImageButton buttonWord3;
-    private ImageButton buttonWord4;
-    private ImageButton buttonWord5;
-    private ImageButton flashButton;
     private JSONArray words;
     private int currentWord;
     private int mode;
@@ -58,6 +58,7 @@ public class SoundDrillTenActivity extends DrillActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_ten);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -69,12 +70,6 @@ public class SoundDrillTenActivity extends DrillActivity {
         mediaPlayer = vm.getMediaPlayer();
 
         buttonsEnabled = false;
-        buttonWord1 = (ImageButton)findViewById(R.id.button_word1);
-        buttonWord2 = (ImageButton)findViewById(R.id.button_word2);
-        buttonWord3 = (ImageButton)findViewById(R.id.button_word3);
-        buttonWord4 = (ImageButton)findViewById(R.id.button_word4);
-        buttonWord5 = (ImageButton)findViewById(R.id.button_word5);
-        flashButton = (ImageButton)findViewById(R.id.flash_word);
 
         LayoutParams flashButtonLP = (LayoutParams) flashButton.getLayoutParams();
         flashButtonLP.removeRule(RelativeLayout.TEXT_ALIGNMENT_GRAVITY);

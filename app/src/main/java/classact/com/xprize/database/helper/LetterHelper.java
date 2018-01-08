@@ -2,38 +2,47 @@ package classact.com.xprize.database.helper;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import classact.com.xprize.database.model.Letter;
-import classact.com.xprize.database.model.UnitSection;
 
 /**
  * Created by Tseliso on 5/10/2016.
+ * Helper for {@link Letter}
  */
+
 public class LetterHelper {
-    public static ArrayList<Letter> getLetters(SQLiteDatabase db, int languageId, int letterId){
-        ArrayList<Letter> letters = new ArrayList<>();
+
+    @Inject
+    public LetterHelper() {
+
+    }
+
+    public List<Letter> getLetters(SQLiteDatabase db, int languageId, int letterId){
+        List<Letter> letters = null;
         String[] columns = new String[] {"_id","LanguageID","letterName"};
         String OrderBy = "_id asc";
         Cursor cursor = db.query("tbl_letter", columns, "_id=? and LanguageID=?", new String[]{String.valueOf(letterId),String.valueOf(languageId)}, null, null, OrderBy);
-        Letter letter = null;
-        if (cursor.moveToFirst()) {
-            do {
-                letter = new Letter();
+        if (cursor.getCount() > 0) {
+            letters = new ArrayList<>();
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                Letter letter = new Letter();
                 letter.setLetterId(cursor.getInt(0));
                 letter.setLanguageId(cursor.getInt(1));
                 letter.setLetterName(cursor.getString(2));
                 letter.setIsLetter(cursor.getInt(3));
                 letters.add(letter);
-            } while (cursor.moveToNext());
+            }
         }
         cursor.close();
         return letters;
     }
 
-    public static Letter getLetter(SQLiteDatabase db,int languageId, int letterId){
+    public Letter getLetter(SQLiteDatabase db,int languageId, int letterId){
         String[] columns = new String[] {"_id","LanguageID","LetterName","LetterPictureLowerCaseBlack",
                 "LetterPictureLowerCaseBlue","LetterPictureUpperCaseBlack","LetterPictureUpperCaseRed",
                 "LetterPictureUpperCaseDots","LetterPictureLowerCaseDots","LetterSound", "PhonicSound", "LetterLowerPath", "LetterUpperPath", "IsLetter"};
@@ -61,7 +70,7 @@ public class LetterHelper {
         return letter;
     }
 
-    public static Letter getLetterByName(SQLiteDatabase db,int languageId, String letterName){
+    public Letter getLetterByName(SQLiteDatabase db,int languageId, String letterName){
         String[] columns = new String[] {"_id","LanguageID","LetterName","LetterPictureLowerCaseBlack",
                 "LetterPictureLowerCaseBlue","LetterPictureUpperCaseBlack","LetterPictureUpperCaseRed",
                 "LetterPictureUpperCaseDots","LetterPictureLowerCaseDots","LetterSound", "PhonicSound", "LetterLowerPath", "LetterUpperPath"};
@@ -88,28 +97,23 @@ public class LetterHelper {
         return letter;
     }
 
-    public static ArrayList getWrongLetters(SQLiteDatabase db, int languageID, int letterID, int limit){
-        ArrayList letters = new ArrayList();
+    public List<Integer> getWrongLetters(SQLiteDatabase db, int languageID, int letterID, int limit){
+        List<Integer> letters = null;
         Cursor cursor = db.rawQuery("SELECT _id FROM tbl_Letter where LanguageID = "+languageID+" and _id <> " + letterID + " ORDER BY RANDOM() LIMIT " + limit +";", null);
-        int letter=0;
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    //drillWord = new DrillWords();
-                    letter = cursor.getInt(0);
-                    letters.add(letter);
-                } while (cursor.moveToNext());
+
+        if (cursor.getCount() > 0) {
+            letters = new ArrayList<>();
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                int letter = cursor.getInt(0);
+                letters.add(letter);
             }
-            return letters;
-        }finally {
-            cursor.close();
         }
+        cursor.close();
+        return letters;
     }
 
-    public static List<Letter> getLettersBelow(SQLiteDatabase db, int languageId, int unitId, int subId, int limit) {
-
-        List<Letter> letters = new ArrayList<>();
-
+    public List<Letter> getLettersBelow(SQLiteDatabase db, int languageId, int unitId, int subId, int limit) {
+        List<Letter> letters = null;
         Cursor cursor = db.rawQuery("" +
                 "SELECT DISTINCT " +
                 "l._id, l.LanguageID, l.LetterName, " +
@@ -127,6 +131,7 @@ public class LetterHelper {
                 "ORDER BY RANDOM() LIMIT " + limit + ";", null);
 
         if (cursor.getCount() > 0) {
+            letters = new ArrayList<>();
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 Letter letter = new Letter();
                 letter.setLetterId(cursor.getInt(cursor.getColumnIndex("_id")));
@@ -145,18 +150,18 @@ public class LetterHelper {
                 letter.setIsLetter(cursor.getInt(cursor.getColumnIndex("IsLetter")));
                 letters.add(letter);
             }
-            cursor.close();
         }
+        cursor.close();
         return letters;
     }
 
-    public static List<Letter> getLettersExcludingIds(SQLiteDatabase db, List<Integer> excludedLetterIds, int languageId, int limit) {
+    public List<Letter> getLettersExcludingIds(SQLiteDatabase db, List<Integer> excludedLetterIds, int languageId, int limit) {
 
-        List<Letter> letters = new ArrayList<>();
+        List<Letter> letters = null;
 
         String excludedString = "";
         if (excludedLetterIds.size() == 0) {
-            return letters;
+            return null;
         }
 
         int numberOfExcludedLetterIds = excludedLetterIds.size();
@@ -185,6 +190,8 @@ public class LetterHelper {
                 "ORDER BY RANDOM() LIMIT " + limit + ";", null);
 
         if (cursor.getCount() > 0) {
+            letters = new ArrayList<>();
+
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 Letter letter = new Letter();
                 letter.setLetterId(cursor.getInt(cursor.getColumnIndex("_id")));
@@ -208,13 +215,13 @@ public class LetterHelper {
         return letters;
     }
 
-    public static List<Letter> getLettersExcludingLetterNames(SQLiteDatabase db, List<String> excludedLetterNames, int languageId, int limit) {
+    public List<Letter> getLettersExcludingLetterNames(SQLiteDatabase db, List<String> excludedLetterNames, int languageId, int limit) {
 
-        List<Letter> letters = new ArrayList<>();
+        List<Letter> letters = null;
 
         String excludedString = "";
         if (excludedLetterNames.size() == 0) {
-            return letters;
+            return null;
         }
 
         int numberOfExcludedLetterNames = excludedLetterNames.size();
@@ -242,6 +249,7 @@ public class LetterHelper {
                 "ORDER BY RANDOM() LIMIT " + limit + ";", null);
 
         if (cursor.getCount() > 0) {
+            letters = new ArrayList<>();
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 Letter letter = new Letter();
                 letter.setLetterId(cursor.getInt(cursor.getColumnIndex("_id")));
@@ -260,31 +268,28 @@ public class LetterHelper {
                 letter.setIsLetter(cursor.getInt(cursor.getColumnIndex("IsLetter")));
                 letters.add(letter);
             }
-            cursor.close();
         }
+        cursor.close();
         return letters;
     }
 
-    public static ArrayList<Integer> getWrongSingleLetters(SQLiteDatabase db, int languageID, int letterID, int limit){
-        ArrayList<Integer> letters = new ArrayList<>();
+    public List<Integer> getWrongSingleLetters(SQLiteDatabase db, int languageID, int letterID, int limit){
+        List<Integer> letters = null;
         Cursor cursor = db.rawQuery("" +
                 "SELECT _id FROM tbl_Letter " +
                 "where LanguageID = "+languageID+" " +
                 "and _id <> " + letterID + " " +
                 "and length(letterName) = 1 " +
                 "ORDER BY RANDOM() LIMIT " + limit +";", null);
-        int letter=0;
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    //drillWord = new DrillWords();
-                    letter = cursor.getInt(0);
-                    letters.add(letter);
-                } while (cursor.moveToNext());
+
+        if (cursor.getCount() > 0) {
+            letters = new ArrayList<>();
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                int letter = cursor.getInt(0);
+                letters.add(letter);
             }
-            return letters;
-        }finally {
-            cursor.close();
         }
+        cursor.close();
+        return letters;
     }
 }

@@ -2,16 +2,9 @@ package classact.com.xprize.activity.drill.math;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -20,20 +13,24 @@ import android.widget.RelativeLayout;
 
 import org.json.JSONObject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
-import classact.com.xprize.common.Code;
-import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.Square;
 import classact.com.xprize.utils.SquarePacker;
 
 public class MathsDrillThreeActivity extends DrillActivity {
+
+    @BindView(R.id.activity_maths_drill_three) RelativeLayout rootView;
+
+    @BindView(R.id.itemsReceptacle) RelativeLayout itemsReceptacle;
+    @BindView(R.id.itemsContainer) RelativeLayout itemsContainer;
+
     private JSONObject allData;
     private int segment = 1;
-    private RelativeLayout itemsContainer;
     private int draggedItems = 0;
-    private RelativeLayout itemsReceptacle;
     private int targetItems = 0;
     private int itemResId;
     private boolean isInReceptacle;
@@ -47,6 +44,7 @@ public class MathsDrillThreeActivity extends DrillActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_three);
+        ButterKnife.bind(this);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -57,8 +55,6 @@ public class MathsDrillThreeActivity extends DrillActivity {
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
 
-        itemsContainer = (RelativeLayout) findViewById(R.id.itemsContainer);
-        itemsReceptacle = (RelativeLayout)findViewById(R.id.itemsReceptacle);
         itemsReceptacle.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
@@ -232,7 +228,7 @@ public class MathsDrillThreeActivity extends DrillActivity {
             int n = allData.getInt("total_items");
             int w = itemsLayout.width;
             int h = itemsLayout.height;
-            int imageId = FetchResource.imageId(this, allData, "item");
+            int imageId = FetchResource.imageId(context, allData, "item");
             itemResId = imageId;
 
             SquarePacker squarePacker = new SquarePacker(w, h);
@@ -276,7 +272,7 @@ public class MathsDrillThreeActivity extends DrillActivity {
             }
 
             /*
-            itemResId = FetchResource.imageId(this, allData, "item");
+            itemResId = FetchResource.imageId(context, allData, "item");
             ImageView item;
             for(int i=0; i < totalItems;i++){
                 item = (ImageView)itemsContainer.getChildAt(i);
