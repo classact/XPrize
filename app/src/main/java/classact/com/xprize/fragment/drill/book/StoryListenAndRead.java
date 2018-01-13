@@ -1,8 +1,11 @@
 package classact.com.xprize.fragment.drill.book;
 
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,6 +41,7 @@ import classact.com.xprize.event.PauseEvent;
 import classact.com.xprize.event.ResumeEvent;
 import classact.com.xprize.fragment.DrillFragment;
 import classact.com.xprize.utils.FetchResource;
+import classact.com.xprize.utils.LiveObjectAnimator;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,6 +53,9 @@ public class StoryListenAndRead extends DrillFragment {
     private LinearLayout sentenceLines;
     private ImageButton leftArrow, rightArrow;
     private ImageButton pauseButton;
+
+    private ImageView continueMonkey;
+    private boolean continueMonkeyAnimationCancelled;
 
     final float WORD_HEIGHT = 85f;
     final float LEFT_SCREEN_MARGIN = 100f;
@@ -146,6 +153,35 @@ public class StoryListenAndRead extends DrillFragment {
         container.addView(horizontalStart);
         container.addView(horizontalEnd);
 
+        /* Continue Monkey */
+
+        continueMonkey = new ImageView(context);
+        Drawable monkeyDrawable = getResources().getDrawable(R.drawable.monkey_jumpsout12pic, null);
+        ConstraintLayout.LayoutParams monkeyLayoutParams = new ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+        );
+        monkeyLayoutParams.width = (int) (0.75f * monkeyDrawable.getIntrinsicWidth());
+        monkeyLayoutParams.height = (int) (0.75f * monkeyDrawable.getIntrinsicHeight());
+        monkeyLayoutParams.rightToLeft = verticalEnd.getId();
+        monkeyLayoutParams.bottomToTop = horizontalEnd.getId();
+        monkeyLayoutParams.rightMargin = (int) (90f * screenDensity);
+        monkeyLayoutParams.bottomMargin = (int) (55f * screenDensity);
+        continueMonkey.setLayoutParams(monkeyLayoutParams);
+        loadImage("monkey_jumpsout12pic", continueMonkey);
+        setTouchListener(continueMonkey, Color.argb(50, 255, 255, 225), PorterDuff.Mode.SRC_ATOP);
+
+        continueMonkey.setAlpha(0f);
+        continueMonkey.setEnabled(false);
+
+        container.addView(continueMonkey);
+
+        // Add Continue monkey listener
+        continueMonkey.setOnClickListener((v) -> {
+            getActivity().finish();
+            getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
+
         // ARROW
         Drawable arrowDrawable = context.getDrawable(R.drawable.simple_story_next);
 
@@ -200,9 +236,7 @@ public class StoryListenAndRead extends DrillFragment {
 
         // ADD ON CLICK LISTENERS TO ARROWS
         rightArrow.setOnClickListener((v) -> readNext());
-
         leftArrow.setOnClickListener((v) -> readPrevious());
-        leftArrow.setVisibility(View.INVISIBLE);
 
         /* SENTENCE LINES */
 
@@ -772,17 +806,62 @@ public class StoryListenAndRead extends DrillFragment {
             ez.hide(leftArrow, rightArrow);
         } else if (vm.isSelfReadPhase()) {
             // If it's self read phase, check if it's first, last or 'in-between' page
+            ez.show(rightArrow);
+
             if (vm.isFirstPage()) {
                 // Can go forward only
                 ez.hide(leftArrow);
-                ez.show(rightArrow);
+                ez.clickable(rightArrow);
+
+                // Hide continue monkey
+                ez.fadeHide(getLifecycle(), 1000, continueMonkey);
             } else if (vm.isLastPage()) {
                 // Can go backward only
                 ez.show(leftArrow);
+                ez.unclickable(rightArrow);
                 ez.hide(rightArrow);
+
+                // Show continue monkey
+                continueMonkeyAnimationCancelled = false;
+                LiveObjectAnimator animator = ez.fadeShow(getLifecycle(), 1000, continueMonkey);
+                if (animator != null) {
+                    animator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            ez.clickable(continueMonkey);
+                        }
+                    }).start();
+                }
+
             } else {
                 // Can go both ways
-                ez.show(leftArrow, rightArrow);
+                ez.show(leftArrow);
+                ez.show(rightArrow);
+                ez.clickable(rightArrow);
+
+                // Hide continue monkey
+                ez.unclickable(continueMonkey);
+                continueMonkeyAnimationCancelled = false;
+                LiveObjectAnimator animator = ez.fadeHide(getLifecycle(), 500, continueMonkey);
+                if (animator != null) {
+                    animator.addListener(new AnimatorListenerAdapter() {
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            super.onAnimationCancel(animation);
+                            continueMonkeyAnimationCancelled = true;
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            if (!continueMonkeyAnimationCancelled) {
+                                ez.hide(continueMonkey);
+                            }
+                        }
+                    }).start();
+                }
             }
         }
 

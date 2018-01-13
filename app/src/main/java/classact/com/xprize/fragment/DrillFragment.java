@@ -2,18 +2,21 @@ package classact.com.xprize.fragment;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,6 +123,45 @@ public abstract class DrillFragment extends DaggerFragment {
             Log.e("Drill Fragment", "playSound(sound, action)");
             ex.printStackTrace();
         }
+    }
+
+    protected void loadImage(ImageView iv, int placeholderResId, int newResId) {
+        RequestOptions requestOptions = new RequestOptions().placeholder(placeholderResId);
+        Glide.with(this).setDefaultRequestOptions(requestOptions).load(newResId).into(iv);
+    }
+
+    protected void setTouchListener(ImageView iv, int color, PorterDuff.Mode porterDuffMode) {
+        iv.setOnTouchListener((v, event) -> {
+            int action = event.getAction();
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    iv.setColorFilter(color, porterDuffMode);
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    iv.setColorFilter(null);
+                    iv.performClick();
+                    return true;
+                default:
+                    return false;
+            }
+        });
+    }
+
+    protected void setTouchListener(ImageView iv, int upResId, int downResId) {
+        iv.setOnTouchListener((v, event) -> {
+            int action = event.getAction();
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    loadImage(iv, upResId, downResId);
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    loadImage(iv, downResId, upResId);
+                    iv.performClick();
+                    return true;
+                default:
+                    return false;
+            }
+        });
     }
 
     protected void subscribeToBus() {

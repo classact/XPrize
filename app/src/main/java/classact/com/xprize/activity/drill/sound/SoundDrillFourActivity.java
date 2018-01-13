@@ -66,6 +66,8 @@ public class SoundDrillFourActivity extends DrillActivity {
                 .register(getLifecycle())
                 .prepare(context);
 
+        loadImage(toyBox, R.drawable.receptacletoybox);
+
         // setItemsEnabled(false);
         itemsEnabled = false;
 
@@ -403,7 +405,7 @@ public class SoundDrillFourActivity extends DrillActivity {
             } else if (event.getAction() == DragEvent.ACTION_DROP && entered) {
                 int right = images.getJSONObject(currentItem).getInt("right");
                 if (right == 1) {
-                    Globals.playStarWorks(context, toyBox);
+                    Globals.playStarWorks(this, toyBox);
                     playRewardSound(true);
                 } else {
                     playRewardSound(false);

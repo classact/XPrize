@@ -53,6 +53,7 @@ public class SoundDrillFourteenActivity extends DrillActivity {
     @BindView(R.id.loc8) ImageView receptable8;
     @BindView(R.id.loc9) ImageView receptable9;
 
+    @BindView(R.id.activity_sound_drill_fourteen) RelativeLayout rootView;
     @BindView(R.id.writing_canvas_container) LinearLayout writingContainer;
     @BindView(R.id.layout1) LinearLayout displayContainer;
 
@@ -73,7 +74,6 @@ public class SoundDrillFourteenActivity extends DrillActivity {
     private TextView mTimer;
     private int mTimerCounter;
     private boolean mTimerReset;
-    private RelativeLayout mRootView;
     private LinearLayout mItemsParent;
     private LinearLayout mReceptaclesParent;
 
@@ -102,9 +102,17 @@ public class SoundDrillFourteenActivity extends DrillActivity {
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
 
-        mRootView = (RelativeLayout) displayContainer.getParent();
+        loadImage(receptable1, R.drawable.line);
+        loadImage(receptable2, R.drawable.line);
+        loadImage(receptable3, R.drawable.line);
+        loadImage(receptable4, R.drawable.line);
+        loadImage(receptable5, R.drawable.line);
+        loadImage(receptable6, R.drawable.line);
+        loadImage(receptable7, R.drawable.line);
+        loadImage(receptable8, R.drawable.line);
+        loadImage(receptable9, R.drawable.line);
 
-        blanksContainer = (LinearLayout) mRootView.getChildAt(1);
+        blanksContainer = (LinearLayout) rootView.getChildAt(1);
 
         mItemsParent = (LinearLayout) item1.getParent();
         mReceptaclesParent = (LinearLayout) receptable1.getParent();
@@ -119,7 +127,7 @@ public class SoundDrillFourteenActivity extends DrillActivity {
         timerClock.setScaleY(0.75f);
         timerClock.setX(1775f);
         timerClock.setY(125f);
-        mRootView.addView(timerClock);
+        rootView.addView(timerClock);
 
         mTimer = new TextView(getApplicationContext());
         mTimer.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()), Typeface.BOLD);
@@ -135,7 +143,7 @@ public class SoundDrillFourteenActivity extends DrillActivity {
         // timer.setBackgroundColor(Color.argb(100, 255, 0, 0));
         mTimer.setX(TIMER_MID_X);
         mTimer.setY(TIMER_MID_Y);
-        mRootView.addView(mTimer);
+        rootView.addView(mTimer);
 
         Point textSize = Globals.TEXT_MEASURED_SIZE(mTimer, String.valueOf(mTimerCounter));
         mTimer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));

@@ -3,6 +3,7 @@ package classact.com.xprize.di;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.media.AudioManager;
+import android.util.Log;
 
 import javax.inject.Singleton;
 

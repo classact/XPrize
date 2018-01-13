@@ -3,8 +3,10 @@ package classact.com.xprize.activity.drill.sound;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.view.DragEvent;
 import android.view.MotionEvent;
@@ -13,6 +15,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import org.json.JSONObject;
 
@@ -31,31 +38,23 @@ public class SoundDrillSixActivity extends DrillActivity {
 
     @BindView(R.id.activity_sound_drill_six) ConstraintLayout rootView;
     @BindView(R.id.background) ImageView background;
-    @BindView(R.id.left_letter) TextView leftLetter;
-    @BindView(R.id.right_letter) TextView rightLetter;
-    @BindView(R.id.isolated_letter) TextView isolatedLetter;
-    @BindView(R.id.left_box_letter) TextView leftBoxLetter;
-    @BindView(R.id.right_box_letter) TextView rightBoxLetter;
-    @BindView(R.id.left_box_drop_zone) TextView leftBoxDropZone;
-    @BindView(R.id.right_box_drop_zone) TextView rightBoxDropZone;
+    @BindView(R.id.left_letter) ImageView leftLetter;
+    @BindView(R.id.right_letter) ImageView rightLetter;
+    @BindView(R.id.isolated_letter) ImageView isolatedLetter;
+    @BindView(R.id.left_box_letter) ImageView leftBoxLetter;
+    @BindView(R.id.right_box_letter) ImageView rightBoxLetter;
+    @BindView(R.id.left_box_drop_zone) ImageView leftBoxDropZone;
+    @BindView(R.id.right_box_drop_zone) ImageView rightBoxDropZone;
 
-    private ImageView item1;
-    private ImageView item2;
-    private ImageView item3;
-    private ImageView item4;
-    private ImageView item5;
-    private ImageView item6;
-    private ImageView item7;
-    private ImageView item8;
-    private ImageView receptacleBox1;
-    private ImageView receptacleBox2;
-    private ImageView demo_Item;
-    private LinearLayout demoItemContainer;
-    private ImageView demo_Item_one;
-    private ImageView demo_Item_two;
-    private RelativeLayout receptacles;
-    private RelativeLayout items;
-    private LinearLayout demo_letters;
+    @BindView(R.id.letter_01) ImageView item1;
+    @BindView(R.id.letter_02) ImageView item2;
+    @BindView(R.id.letter_03) ImageView item3;
+    @BindView(R.id.letter_04) ImageView item4;
+    @BindView(R.id.letter_05) ImageView item5;
+    @BindView(R.id.letter_06) ImageView item6;
+    @BindView(R.id.letter_07) ImageView item7;
+    @BindView(R.id.letter_08) ImageView item8;
+
     private int currentItem;
     private String drillData;
     public float x;
@@ -71,8 +70,6 @@ public class SoundDrillSixActivity extends DrillActivity {
     private boolean itemsEnabled;
     private Runnable mRunnable;
 
-    private final Context THIS = this;
-
     private SoundDrill06ViewModel vm;
 
     @Override
@@ -80,6 +77,11 @@ public class SoundDrillSixActivity extends DrillActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_six);
         ButterKnife.bind(this);
+
+        preloadImage(
+                R.drawable.backgroundcapitalletterbox,
+                R.drawable.background_boxesdrill
+        );
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -91,17 +93,6 @@ public class SoundDrillSixActivity extends DrillActivity {
         mediaPlayer = vm.getMediaPlayer();
 
         itemsEnabled = false;
-        item1 = (ImageView)findViewById(R.id.item1);
-        item2 = (ImageView)findViewById(R.id.item2);
-        item3 = (ImageView)findViewById(R.id.item3);
-        item4 = (ImageView)findViewById(R.id.item4);
-        item5 = (ImageView)findViewById(R.id.item5);
-        item6 = (ImageView)findViewById(R.id.item6);
-        item7 = (ImageView)findViewById(R.id.item7);
-        item8 = (ImageView)findViewById(R.id.item8);
-
-        drillData = getIntent().getExtras().getString("data");
-        initialiseData();
 
         item1.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -164,7 +155,7 @@ public class SoundDrillSixActivity extends DrillActivity {
             }
         });
 
-        receptacleBox1.setOnDragListener((v, event) -> {
+        leftBoxDropZone.setOnDragListener((v, event) -> {
                 try {
                     int action = event.getAction();
                     if (action == DragEvent.ACTION_DRAG_ENTERED) {
@@ -173,7 +164,7 @@ public class SoundDrillSixActivity extends DrillActivity {
                         isInReceptacle1 = false;
                     } else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle1) {
                         if ( positions[currentItem] == image1) {
-                            Globals.playStarWorks(THIS, receptacleBox1);
+                            Globals.playStarWorks(this, leftBoxDropZone);
                             reward();
                         }
                     } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle1) {
@@ -191,34 +182,34 @@ public class SoundDrillSixActivity extends DrillActivity {
             }
         );
 
-        receptacleBox2.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                try {
-                    int action = event.getAction();
-                    if (action == DragEvent.ACTION_DRAG_ENTERED) {
-                        isInReceptacle2 = true;
-                    } else if (action == DragEvent.ACTION_DRAG_EXITED) {
-                        isInReceptacle2 = false;
-                    } else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle2 ) {
-                        if ( positions[currentItem] == image2) {
-                            Globals.playStarWorks(THIS, receptacleBox2);
-                            reward();
-                        }
-                    } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle2) {
-                        if ( positions[currentItem] != image2) {
-                            playSound(ResourceSelector.getNegativeAffirmationSound(context), null);
-                        } else {
-                            ImageView view = (ImageView) event.getLocalState();
-                            view.setVisibility(View.INVISIBLE);
-                        }
+        rightBoxDropZone.setOnDragListener((v, event) -> {
+            try {
+                int action = event.getAction();
+                if (action == DragEvent.ACTION_DRAG_ENTERED) {
+                    isInReceptacle2 = true;
+                } else if (action == DragEvent.ACTION_DRAG_EXITED) {
+                    isInReceptacle2 = false;
+                } else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle2 ) {
+                    if ( positions[currentItem] == image2) {
+                        Globals.playStarWorks(this, rightBoxDropZone);
+                        reward();
                     }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle2) {
+                    if ( positions[currentItem] != image2) {
+                        playSound(ResourceSelector.getNegativeAffirmationSound(context), null);
+                    } else {
+                        ImageView view = (ImageView) event.getLocalState();
+                        view.setVisibility(View.INVISIBLE);
+                    }
                 }
-                return true;
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
+            return true;
         });
+
+        drillData = getIntent().getExtras().getString("data");
+        initialiseData();
         playWeCanWriteTheLetter();
     }
 
@@ -235,8 +226,9 @@ public class SoundDrillSixActivity extends DrillActivity {
                 image2 = data.getInt("small_letter");
                 image1 = data.getInt("big_letter");
             }
-            demo_Item_one.setImageResource(data.getInt("small_letter"));
-            demo_Item_two.setImageResource(data.getInt("big_letter"));
+            leftLetter.setImageResource(data.getInt("small_letter"));
+            rightLetter.setImageResource(data.getInt("big_letter"));
+
             positions = new int[8];
             Arrays.fill(positions,0);
             int countOne = 0;
@@ -298,15 +290,6 @@ public class SoundDrillSixActivity extends DrillActivity {
         }
     }
 
-    private void playDrillLetter(){
-        try {
-            playSound(drillSound, () -> handler.delayed(this::playInTwoWays, 350));
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
-    }
-
     public void playInTwoWays(){
         try {
             String sound = data.getString("in_two_ways");
@@ -322,13 +305,25 @@ public class SoundDrillSixActivity extends DrillActivity {
             // Play upper case
             mRunnable = null;
             mRunnable = () -> handler.delayed(this::playUpperCase, 650);
-
-            demoItemContainer.setVisibility(View.VISIBLE);
-            demo_letters.setVisibility(View.GONE);
-            demo_Item.setImageResource(data.getInt("small_letter"));
-
+            int imageId = data.getInt("small_letter");;
             String sound = data.getString("this_is_the_lower_case");
-            playSound(sound, () -> playDrillLetterAndRunnableAfterCompletion(mRunnable));
+
+            loadImage(background, R.drawable.backgroundcapitalletterbox,
+                    new RequestListener() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
+                    ez.hide(leftLetter, rightLetter);
+                    loadImage(isolatedLetter, imageId);
+                    rootView.setBackgroundColor(Color.WHITE);
+                    playSound(sound, () -> playDrillLetterAndRunnableAfterCompletion(mRunnable));
+                    return false;
+                }
+            });
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -341,7 +336,7 @@ public class SoundDrillSixActivity extends DrillActivity {
             mRunnable = null;
             mRunnable = () -> handler.delayed(this::playDragTheLetters, 610);
 
-            demo_Item.setImageResource(data.getInt("big_letter"));
+            loadImage(isolatedLetter, data.getInt("small_letter"), data.getInt("big_letter"));
             String sound = data.getString("this_is_the_upper_case");
             playSound(sound, () -> playDrillLetterAndRunnableAfterCompletion(mRunnable));
         }
@@ -352,9 +347,22 @@ public class SoundDrillSixActivity extends DrillActivity {
 
     private void playDragTheLetters(){
         try {
-            demoItemContainer.setVisibility(View.GONE);
-            receptacles.setVisibility(View.VISIBLE);
-            items.setVisibility(View.VISIBLE);
+
+            loadImage(background, R.drawable.backgroundcapitalletterbox, R.drawable.background_boxesdrill, new RequestListener() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
+                    ez.hide(isolatedLetter);
+                    loadImage(leftBoxLetter, image1);
+                    loadImage(rightBoxLetter, image2);
+                    return false;
+                }
+            });
+
             String sound = data.getString("drag_the_letters");
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             mediaPlayer.reset();

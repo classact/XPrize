@@ -4,10 +4,12 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.KeyEvent;
-import android.widget.ImageButton;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import javax.inject.Inject;
 
@@ -25,16 +27,19 @@ import classact.com.xprize.locale.Languages;
 
 public class MainActivity extends MenuActivity {
 
-    @BindView(R.id.read_button) ImageButton mReadButton;
-    @BindView(R.id.help_button) ImageButton mHelpButton;
-    @BindView(R.id.stars_button) ImageButton mStarsButton;
+    @BindView(R.id.app_emblem) ImageView appEmblem;
+    @BindView(R.id.read_button) ImageView readButton;
+    @BindView(R.id.stars_button) ImageView starsButton;
+    @BindView(R.id.help_button) ImageView helpButton;
+
+    private final int READ_BUTTON = 0;
+    private final int STARS_BUTTON = 1;
+    private final int HELP_BUTTON = 2;
 
     private boolean mNewActivity;
 
     @Inject DatabaseController mDb;
     @Inject DrillFetcher drillFetcher;
-    @Inject Context context;
-    @Inject ViewModelProvider.Factory vmFactory;
     MainActivityViewModel vm;
 
     @Override
@@ -47,49 +52,83 @@ public class MainActivity extends MenuActivity {
 
 //        vm = ViewModelProviders.of(this, vmFactory).get(MainActivityViewModel.class);
 
-        // Check read button
-        checkReadButton();
-
         mNewActivity = false;
 
+        setupGraphics();
+        setupButtons();
+        // preloadImages();
+        addListeners();
+
+        Globals.PLAY_BACKGROUND_MUSIC(context);
+    }
+
+    public void setupGraphics() {
+
+        readButton.setScaleType(ImageView.ScaleType.FIT_XY);
+        starsButton.setScaleType(ImageView.ScaleType.FIT_XY);
+        helpButton.setScaleType(ImageView.ScaleType.FIT_XY);
+
+        // App emblem
+        loadImage(appEmblem, R.drawable.app_emblem);
+
+        // Buttons
+        loadAndLayoutImage(readButton, R.drawable.read_button_up);
+        loadAndLayoutImage(starsButton, R.drawable.stars_button_up);
+        loadAndLayoutImage(helpButton, R.drawable.help_button_up);
+    }
+
+    public void setupButtons() {
+        setTouchListener(readButton, R.drawable.read_button_up, R.drawable.read_button_down);
+        setTouchListener(starsButton, R.drawable.stars_button_up, R.drawable.stars_button_down);
+        setTouchListener(helpButton, R.drawable.help_button_up, R.drawable.help_button_down);
+    }
+
+    public void preloadImages() {
+        preloadImage(
+                R.drawable.star_blue_01,
+                R.drawable.star_blue_02,
+                R.drawable.star_blue_03,
+                R.drawable.star_blue_04,
+                R.drawable.star_blue_05,
+                R.drawable.star_blue_06,
+                R.drawable.star_blue_07,
+                R.drawable.star_blue_08,
+                R.drawable.star_blue_09,
+                R.drawable.star_blue_10,
+                R.drawable.star_blue_11,
+                R.drawable.star_blue_12,
+                R.drawable.star_blue_13,
+                R.drawable.star_blue_14,
+                R.drawable.star_blue_15,
+                R.drawable.star_blue_16,
+                R.drawable.star_blue_17,
+                R.drawable.star_blue_18,
+                R.drawable.star_blue_19,
+                R.drawable.star_blue_20
+        );
+    }
+
+    public void addListeners() {
         // Read Button
-        mReadButton.setOnClickListener((v) -> {
-            mReadButton.setOnClickListener(null);
+        readButton.setOnClickListener((v) -> {
             playNextDrill();
         });
 
-        // Help Button
-        mHelpButton.setOnClickListener((v) -> {
-            mNewActivity = true;
-//          Intent intent = new Intent(THIS, StoryActivity.class);
-            Intent intent = new Intent(context, HelpMenu.class);
-            startActivityForResult(intent, 0);
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        });
-
         // Stars Button
-        mStarsButton.setOnClickListener((v) -> {
+        starsButton.setOnClickListener((v) -> {
             mNewActivity = true;
             Intent intent = new Intent(context, StarsMenu.class);
             startActivityForResult(intent, 0);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
 
-        Globals.PLAY_BACKGROUND_MUSIC(context);
-    }
-
-    public void checkReadButton() {
-//        // Get current unit section drill in progress
-//        UnitSectionDrill currentUnitSectionDrill = mDb.getUnitSectionDrillInProgress();
-//
-//        // Check if it should display "Read" or "Continue"
-//        if (currentUnitSectionDrill.getUnitSectionDrillId() == 1) {
-//            mReadButton.setBackgroundColor(Color.TRANSPARENT);
-//            mReadButton.setImageResource(R.drawable.read_button);
-//        } else {
-//            mReadButton.setBackgroundColor(Color.TRANSPARENT);
-//            mReadButton.setImageResource(R.drawable.continue_button);
-//        }
+        // Help Button
+        helpButton.setOnClickListener((v) -> {
+            mNewActivity = true;
+            Intent intent = new Intent(context, HelpMenu.class);
+            startActivityForResult(intent, 0);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
     }
 
     public void playNextDrill() {
@@ -177,8 +216,8 @@ public class MainActivity extends MenuActivity {
         switch (code) {
             case Code.FINALE:
                 mDb.moveToNextUnitSectionDrill();
-                mReadButton.setBackgroundColor(Color.TRANSPARENT);
-                mReadButton.setImageResource(R.drawable.read_button);
+                readButton.setBackgroundColor(Color.TRANSPARENT);
+                readButton.setImageResource(R.drawable.read_button);
                 System.out.println("FINALE!!!!");
                 break;
             case Code.DRILL_SPLASH:
@@ -232,7 +271,6 @@ public class MainActivity extends MenuActivity {
         if (!mNewActivity) {
             Globals.RESUME_BACKGROUND_MUSIC(context);
         } else {
-            checkReadButton();
             mNewActivity = false;
         }
     }

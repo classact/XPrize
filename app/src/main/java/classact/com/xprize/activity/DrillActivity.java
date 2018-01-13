@@ -5,15 +5,21 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
 
 import javax.inject.Inject;
 
@@ -223,6 +229,52 @@ public abstract class DrillActivity extends DaggerAppCompatActivity {
         }
     }
 
+    protected void loadImage(ImageView iv, int resId) {
+        Glide.with(this).load(resId).into(iv);
+    }
+
+    protected void loadImage(ImageView iv, int resId, RequestListener requestListener) {
+        Glide.with(this).load(resId).listener(requestListener).into(iv);
+    }
+
+    protected void loadAndLayoutImage(ImageView iv, int resId) {
+        Drawable d = context.getResources().getDrawable(resId, null);
+        ViewGroup.MarginLayoutParams ivLayoutParams = (ViewGroup.MarginLayoutParams) iv.getLayoutParams();
+        ivLayoutParams.width = d.getIntrinsicWidth();
+        ivLayoutParams.height = d.getIntrinsicHeight();
+        iv.setLayoutParams(ivLayoutParams);
+        Glide.with(this).load(resId).into(iv);
+    }
+
+    protected void loadFadeImage(ImageView iv, int resId, int duration) {
+        Glide.with(this).load(resId).transition(DrawableTransitionOptions.withCrossFade(duration)).into(iv);
+    }
+
+    protected void loadImage(ImageView iv, int placeholderResId, int newResId) {
+        RequestOptions requestOptions = new RequestOptions().placeholder(placeholderResId);
+        Glide.with(this).setDefaultRequestOptions(requestOptions).load(newResId).into(iv);
+    }
+
+    protected void loadImage(ImageView iv, int placeholderResId, int newResId, RequestListener requestListener) {
+        RequestOptions requestOptions = new RequestOptions().placeholder(placeholderResId);
+        Glide.with(this).setDefaultRequestOptions(requestOptions).load(newResId).listener(requestListener).into(iv);
+    }
+
+    protected void loadImage(ImageView iv, int placeholderResId, int newResId, int width, int height, RequestListener requestListener) {
+        RequestOptions requestOptions = new RequestOptions().placeholder(placeholderResId).override(width, height).dontAnimate();
+        Glide.with(this).setDefaultRequestOptions(requestOptions).load(newResId).listener(requestListener).into(iv);
+    }
+
+    protected void preloadImage(int... resIds) {
+        RequestBuilder<Drawable> requestBuilder = Glide.with(this).load(resIds[0]);
+        if (resIds.length > 1) {
+            for (int i = 1; i < resIds.length; i++) {
+                requestBuilder = requestBuilder.load(resIds[i]);
+            }
+        }
+        requestBuilder.preload();
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         int action = event.getAction();
@@ -237,10 +289,6 @@ public abstract class DrillActivity extends DaggerAppCompatActivity {
             }
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-    public void loadImage(ImageView iv, int resId) {
-        Glide.with(this).load(resId).into(iv);
     }
 
     @Override

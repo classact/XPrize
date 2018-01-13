@@ -4,8 +4,7 @@
     android:id="@+id/activity_sound_drill_six"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:src="@drawable/backgroundcapitalletterbox"
-    android:background="@android:color/white"
+    android:background="@drawable/backgroundletterbox"
     tools:context="classact.com.xprize.activity.drill.sound.SoundDrillSixActivity">
 
     <!-- Base Guidelines START -->
@@ -60,7 +59,7 @@
 
     <!-- Left Letter Text START -->
 
-    <TextView
+    <ImageView
         android:id="@+id/left_letter"
         android:contentDescription="@string/Left_Letter"
         android:textSize="310sp"
@@ -99,7 +98,7 @@
 
     <!-- Right Letter Text START -->
 
-    <TextView
+    <ImageView
         android:id="@+id/right_letter"
         android:contentDescription="@string/Right_Letter"
         android:textSize="310sp"
@@ -138,7 +137,7 @@
 
     <!-- Isolated Letter Text START -->
 
-    <TextView
+    <ImageView
         android:id="@+id/isolated_letter"
         android:contentDescription="@string/Letter"
         android:textSize="424sp"
@@ -154,6 +153,80 @@
     <!-- Isolated Letter Text END -->
 
     <!-- Isolated Letter END -->
+
+    <!-- Drop Letters -->
+
+    <ImageView
+        android:id="@+id/letter_01"
+        android:contentDescription="@string/Letter"
+        android:textSize="200sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_width="168dp"
+        android:layout_height="150dp"/>
+
+    <ImageView
+        android:id="@+id/letter_02"
+        android:contentDescription="@string/Letter"
+        android:textSize="200sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_width="168dp"
+        android:layout_height="150dp"/>
+
+    <ImageView
+        android:id="@+id/letter_03"
+        android:contentDescription="@string/Letter"
+        android:textSize="200sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_width="168dp"
+        android:layout_height="150dp"/>
+
+    <ImageView
+        android:id="@+id/letter_04"
+        android:contentDescription="@string/Letter"
+        android:textSize="200sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_width="168dp"
+        android:layout_height="150dp"/>
+
+    <ImageView
+        android:id="@+id/letter_05"
+        android:contentDescription="@string/Letter"
+        android:textSize="200sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_width="168dp"
+        android:layout_height="150dp"/>
+
+    <ImageView
+        android:id="@+id/letter_06"
+        android:contentDescription="@string/Letter"
+        android:textSize="200sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_width="168dp"
+        android:layout_height="150dp"/>
+
+    <ImageView
+        android:id="@+id/letter_07"
+        android:contentDescription="@string/Letter"
+        android:textSize="200sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_width="168dp"
+        android:layout_height="150dp"/>
+
+    <ImageView
+        android:id="@+id/letter_08"
+        android:contentDescription="@string/Letter"
+        android:textSize="200sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_width="168dp"
+        android:layout_height="150dp"/>
 
     <!-- Left Box START -->
 
@@ -183,7 +256,7 @@
 
     <!-- Left Box Letter Text START -->
 
-    <TextView
+    <ImageView
         android:id="@+id/left_box_letter"
         android:contentDescription="@string/Left_Letter"
         android:textSize="310sp"
@@ -259,7 +332,7 @@
 
     <!-- Right Box Letter Text START -->
 
-    <TextView
+    <ImageView
         android:id="@+id/right_box_letter"
         android:contentDescription="@string/Right_Letter"
         android:textSize="310sp"

@@ -7,6 +7,7 @@ import android.support.constraint.ConstraintLayout;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -22,6 +23,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.MenuActivity;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
@@ -32,7 +34,7 @@ import classact.com.xprize.database.model.UnitSectionDrill;
 import classact.com.xprize.locale.Languages;
 import dagger.android.support.DaggerAppCompatActivity;
 
-public class DrillsMenu extends DaggerAppCompatActivity {
+public class DrillsMenu extends MenuActivity {
 
     private TextView mChapterTitle;
     private TextView mChapterNumber;
@@ -85,7 +87,6 @@ public class DrillsMenu extends DaggerAppCompatActivity {
     private ConstraintLayout mRootView;
     private boolean mFinishActivity;
 
-    @Inject Context context;
     @Inject DatabaseController mDb;
     @Inject DrillFetcher drillFetcher;
 

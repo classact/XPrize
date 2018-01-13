@@ -19,13 +19,14 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.MenuActivity;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.database.model.UnitSection;
 import dagger.android.support.DaggerAppCompatActivity;
 
-public class PhonicsSubMenu extends DaggerAppCompatActivity {
+public class PhonicsSubMenu extends MenuActivity {
 
     private TextView mChapterTitle;
     private TextView mChapterNumber;
@@ -52,7 +53,6 @@ public class PhonicsSubMenu extends DaggerAppCompatActivity {
     private boolean mFinishActivity;
 
     @Inject DatabaseController mDb;
-    @Inject Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

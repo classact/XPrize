@@ -144,15 +144,20 @@ public class PhonicsDrills {
 
             List<Letter> secondaryLetters = letterHelper.getLettersBelow(
                     dbHelper.getReadableDatabase(), languageId, unitId, subId, 2);
-            for (int i = 0; i < secondaryLetters.size(); i++) {
-                Letter secondaryLetter = secondaryLetters.get(i);
-                excludedLetterIds.add(secondaryLetter.getLetterId());
-                correctLetters.add(secondaryLetter);
-                System.out.println("Secondary Letter: "+ secondaryLetter.getLetterName());
+            if (secondaryLetters != null) {
+                for (int i = 0; i < secondaryLetters.size(); i++) {
+                    Letter secondaryLetter = secondaryLetters.get(i);
+                    excludedLetterIds.add(secondaryLetter.getLetterId());
+                    correctLetters.add(secondaryLetter);
+                    System.out.println("Secondary Letter: " + secondaryLetter.getLetterName());
+                }
             }
 
+            int wrongLettersLimit = (secondaryLetters == null) ? 0 : secondaryLetters.size();
+            int excludedLettersLimit = 3 + wrongLettersLimit;
+
             List<Letter> wrongLetters = letterHelper.getLettersExcludingIds(
-                    dbHelper.getReadableDatabase(), excludedLetterIds, languageId, 5);
+                    dbHelper.getReadableDatabase(), excludedLetterIds, languageId, excludedLettersLimit);
             for (int i = 0; i < wrongLetters.size(); i++) {
                 Letter wrongLetter = wrongLetters.get(i);
                 System.out.println("Wrong Letter: " + wrongLetter.getLetterName());

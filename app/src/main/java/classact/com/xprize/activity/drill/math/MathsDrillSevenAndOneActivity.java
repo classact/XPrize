@@ -1,8 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.ClipData;
-import android.content.ClipDescription;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.DragEvent;
@@ -31,6 +29,8 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
 
     @BindView(R.id.activity_maths_drill_seven_and_one) RelativeLayout rootView;
 
+    @BindView(R.id.beads) ImageView beads;
+
     @BindView(R.id.itemsReceptacle) RelativeLayout itemsReceptacle;
 
     @BindView(R.id.numeral_1) ImageView filler1;
@@ -57,8 +57,6 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
     private boolean dragEnabled;
     private boolean isDragging;
 
-    private RelativeLayout parentView;
-
     private MathDrill07BViewModel vm;
 
     @Override
@@ -73,12 +71,12 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
                 .register(getLifecycle())
                 .prepare(context);
 
+        beads.setY(320f);
+        beads.setX(-30f);
+        loadImage(beads, R.drawable.counting_beads);
+
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
-
-        parentView = (RelativeLayout) findViewById(R.id.activity_maths_drill_seven);
-
-        itemsReceptacle = (RelativeLayout)findViewById(R.id.itemsReceptacle);
         initialiseData();
     }
 

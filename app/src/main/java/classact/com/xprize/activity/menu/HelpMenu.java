@@ -12,10 +12,11 @@ import android.widget.ImageButton;
 import javax.inject.Inject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.MenuActivity;
 import classact.com.xprize.common.Globals;
 import dagger.android.support.DaggerAppCompatActivity;
 
-public class HelpMenu extends DaggerAppCompatActivity {
+public class HelpMenu extends MenuActivity {
 
     private ConstraintLayout mRootView;
 
@@ -25,8 +26,6 @@ public class HelpMenu extends DaggerAppCompatActivity {
     private Handler mHandler;
     private Intent mIntent;
     private boolean mFinishActivity;
-
-    @Inject Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

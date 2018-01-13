@@ -29,16 +29,11 @@ public class SoundDrillFiveActivity extends DrillActivity {
 
     @BindView(R.id.background) ImageView background;
     @BindView(R.id.target_image) ImageView targetImage;
-    @BindView(R.id.image_NW) ImageView imageNW;
-    @BindView(R.id.image_NE) ImageView imageNE;
-    @BindView(R.id.image_SW) ImageView imageSW;
-    @BindView(R.id.image_SE) ImageView imageSE;
-
-    private ImageView demoItem;
-    private ImageView item1;
-    private ImageView item2;
-    private ImageView item3;
-    private ImageView item4;
+    @BindView(R.id.image_NW) ImageView image1;
+    @BindView(R.id.image_NE) ImageView image2;
+    @BindView(R.id.image_SW) ImageView image3;
+    @BindView(R.id.image_SE) ImageView image4;
+    
     private String drillData;
     private JSONArray sets;
     JSONArray images;
@@ -74,7 +69,7 @@ public class SoundDrillFiveActivity extends DrillActivity {
         mediaPlayer = vm.getMediaPlayer();
         itemsEnabled = false;
 
-        item1.setOnClickListener(
+        image1.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
@@ -82,7 +77,7 @@ public class SoundDrillFiveActivity extends DrillActivity {
                     }
                 }
         );
-        item2.setOnClickListener(
+        image2.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
@@ -90,7 +85,7 @@ public class SoundDrillFiveActivity extends DrillActivity {
                     }
                 }
         );
-        item3.setOnClickListener(
+        image3.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
@@ -98,7 +93,7 @@ public class SoundDrillFiveActivity extends DrillActivity {
                     }
                 }
         );
-        item4.setOnClickListener(
+        image4.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
@@ -108,10 +103,10 @@ public class SoundDrillFiveActivity extends DrillActivity {
         );
 
         items = new ImageView[4];
-        items[0] = item1;
-        items[1] = item2;
-        items[2] = item3;
-        items[3] = item4;
+        items[0] = image1;
+        items[1] = image2;
+        items[2] = image3;
+        items[3] = image4;
 
         toggleItemsVisibility(false);
 
@@ -137,14 +132,14 @@ public class SoundDrillFiveActivity extends DrillActivity {
         try{
             JSONObject setData = sets.getJSONObject(currentSet);
 
-            demoItem.setImageResource(setData.getInt("demoimage"));
-            demoItem.setVisibility(View.VISIBLE);
+            loadImage(targetImage, setData.getInt("demoimage"));
+            targetImage.setVisibility(View.VISIBLE);
 
             currentItemName = setData.getString("demosound");
             currentSound = setData.getString("sound");
             images = setData.getJSONArray("images");
 
-            ImageView[] items = {item1, item2, item3, item4};
+            ImageView[] items = {image1, image2, image3, image4};
             int numberOfImages = images.length();
             int numberOfItems = items.length;
             orderedImages = new JSONObject[numberOfImages];
@@ -169,7 +164,7 @@ public class SoundDrillFiveActivity extends DrillActivity {
 
                 System.out.println("::: Selected image #" + randomizedIndex + ": " + imageResourceId);
 
-                items[randomizedIndex].setImageResource(imageResourceId);
+                loadImage(items[randomizedIndex], imageResourceId);
                 orderedImages[randomizedIndex] = item;
 
                 if (item.getInt("correct") == 1) {

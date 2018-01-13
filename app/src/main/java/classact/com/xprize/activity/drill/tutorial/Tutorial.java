@@ -1080,9 +1080,6 @@ public class Tutorial extends DrillActivity {
         overridePendingTransition(0, android.R.anim.fade_out);
         */
 
-        // Release media player
-        mediaPlayer.reset();
-        mediaPlayer.release();
         finish();
         overridePendingTransition(0, android.R.anim.fade_out);
     }

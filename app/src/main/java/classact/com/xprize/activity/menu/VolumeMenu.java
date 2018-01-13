@@ -12,10 +12,11 @@ import android.widget.TextView;
 import javax.inject.Inject;
 
 import classact.com.xprize.R;
+import classact.com.xprize.activity.MenuActivity;
 import classact.com.xprize.common.Globals;
 import dagger.android.support.DaggerAppCompatActivity;
 
-public class VolumeMenu extends DaggerAppCompatActivity {
+public class VolumeMenu extends MenuActivity {
 
     private ConstraintLayout mRootView;
 
@@ -26,8 +27,6 @@ public class VolumeMenu extends DaggerAppCompatActivity {
     private Intent mIntent;
     private int mSelectedLanguage;
     private boolean mFinishActivity;
-
-    @Inject Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

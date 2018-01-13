@@ -82,7 +82,6 @@ public class SectionsMenu extends MenuActivity {
     private boolean mFinishActivity;
 
     @Inject DatabaseController mDb;
-    @Inject Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

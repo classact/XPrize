@@ -1,5 +1,9 @@
 package classact.com.xprize.utils;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -106,6 +110,67 @@ public class EZ {
         }
     }
 
+    public LiveObjectAnimator fadeShow(Lifecycle lifecycle, long millis, View view) {
+        if (view.getAlpha() != 1f) {
+            show(view);
+            ObjectAnimator animator = ObjectAnimator.ofFloat(view, "alpha", 1f);
+            animator.setAutoCancel(true);
+            return new LiveObjectAnimator(lifecycle, animator)
+                    .setDuration((long) (millis * (1f - view.getAlpha())));
+        }
+        return null;
+    }
+
+    public LiveObjectAnimator fadeHide(Lifecycle lifecycle, long millis, View view) {
+        if (view.getAlpha() != 0f) {
+            ObjectAnimator animator = ObjectAnimator.ofFloat(view, "alpha", 0f);
+            animator.setAutoCancel(true);
+            return new LiveObjectAnimator(lifecycle, animator)
+                    .setDuration((long) (millis * view.getAlpha()));
+        }
+        return null;
+    }
+
+    public LiveObjectAnimator fadeShow(LiveObjectAnimator animator, Lifecycle lifecycle, long millis, View view) {
+        if (view.getAlpha() != 1f) {
+            show(view);
+            if (animator != null) {
+                animator.get().cancel();
+            }
+            animator = new LiveObjectAnimator(lifecycle, ObjectAnimator.ofFloat(view, "alpha", 1f))
+                    .setDuration((long) (millis * (1f - view.getAlpha())))
+                    .addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            Log.d("TEST", "Fade Show ended");
+                        }
+                    })
+                    .start();
+        }
+        return animator;
+    }
+
+    public LiveObjectAnimator fadeHide(LiveObjectAnimator animator, Lifecycle lifecycle, long millis, View view) {
+        if (animator != null) {
+            animator.get().cancel();
+        }
+        if (view.getAlpha() != 0f) {
+            animator = new LiveObjectAnimator(lifecycle, ObjectAnimator.ofFloat(view, "alpha", 0f))
+                    .setDuration((long) (millis * view.getAlpha()))
+                    .addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            hide(view);
+                            Log.d("TEST", "Fade Hide ended");
+                        }
+                    })
+                    .start();
+        }
+        return animator;
+    }
+
     /**
      * Visibility function
      * @param views views to show
@@ -119,11 +184,15 @@ public class EZ {
     public void clickable(View... views) {
         for (View view : views) {
             view.setClickable(true);
+            view.setFocusable(true);
+            view.setEnabled(true);
         }
     }
 
     public void unclickable(View... views) {
         for (View view : views) {
+            view.setEnabled(false);
+            view.setFocusable(false);
             view.setClickable(false);
         }
     }

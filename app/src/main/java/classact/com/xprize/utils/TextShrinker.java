@@ -20,9 +20,9 @@ public class TextShrinker {
             float percentage,
             Resources resources) {
 
-        Drawable newDrawawble = shrinkDrawable(imageView.getDrawable(), width, percentage, resources);
+        Drawable newDrawable = shrinkDrawable(imageView.getDrawable(), width, percentage, resources);
         imageView.setImageResource(0);
-        imageView.setImageDrawable(newDrawawble);
+        imageView.setImageDrawable(newDrawable);
         return imageView;
     }
 
@@ -32,9 +32,9 @@ public class TextShrinker {
             float percentage,
             Resources resources) {
 
-        Drawable newDrawawble = shrinkDrawable(imageButton.getDrawable(), width, percentage, resources);
+        Drawable newDrawable = shrinkDrawable(imageButton.getDrawable(), width, percentage, resources);
         imageButton.setImageResource(0);
-        imageButton.setImageDrawable(newDrawawble);
+        imageButton.setImageDrawable(newDrawable);
         return imageButton;
     }
 

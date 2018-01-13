@@ -59,7 +59,7 @@
 
     <!-- Target Letter Text START -->
 
-    <TextView
+    <ImageView
         android:id="@+id/target_letter"
         android:textSize="320sp"
         android:textColor="@android:color/black"
@@ -98,7 +98,7 @@
 
     <!-- Left Letter Text START -->
 
-    <TextView
+    <ImageView
         android:id="@+id/left_letter"
         android:textSize="320sp"
         android:textColor="@android:color/black"
@@ -137,7 +137,7 @@
 
     <!-- Right Letter Text START -->
 
-    <TextView
+    <ImageView
         android:id="@+id/right_letter"
         android:textSize="320sp"
         android:textColor="@android:color/black"

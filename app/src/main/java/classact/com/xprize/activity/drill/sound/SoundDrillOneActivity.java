@@ -4,8 +4,8 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -44,15 +44,13 @@ public class SoundDrillOneActivity extends DrillActivity {
                 .register(getLifecycle())
                 .prepare(context);
 
+        ViewGroup.MarginLayoutParams letterLayoutParams = (ViewGroup.MarginLayoutParams) letter.getLayoutParams();
+        letterLayoutParams.height = (int) (400f * getResources().getDisplayMetrics().density);
+        letterLayoutParams.width = ViewGroup.MarginLayoutParams.WRAP_CONTENT;
+        letter.setLayoutParams(letterLayoutParams);
+
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
-
-        letter = (ImageView)findViewById(R.id.item1);
-        // letter.setBackgroundColor(Color.argb(100, 255, 0, 0));
-        RelativeLayout.LayoutParams letterLP = (RelativeLayout.LayoutParams) letter.getLayoutParams();
-        letterLP.removeRule(RelativeLayout.CENTER_HORIZONTAL);
-        letterLP.leftMargin = 765;
-        letter.setLayoutParams(letterLP);
 
         String drillData = getIntent().getExtras().getString("data");
         initialiseData(drillData);
@@ -61,23 +59,10 @@ public class SoundDrillOneActivity extends DrillActivity {
         pauseScreen = ez.frameFull();
         pauseScreen.setClickable(true);
         pauseScreen.setFocusable(true);
-        pauseScreen.setBackgroundColor(Color.argb(100, 255, 0, 0));
         ez.gray(pauseScreen);
         rootView.addView(pauseScreen);
 
         playIntro();
-    }
-
-    public void stage1() {
-        // This is the letter
-        // "M"
-        // It makes the sound "mmm"
-        // Now you try
-    }
-
-    public void stage2() {
-        // "M" mushroom
-
     }
 
     //
@@ -178,7 +163,7 @@ public class SoundDrillOneActivity extends DrillActivity {
         String sound;
         try {
             int image = objects.getJSONObject(currentObject).getInt("object");
-            letter.setImageResource(image);
+            loadImage(letter, image);
             if (letterType == 1) {
                 // sound = drillData.getString("letter_sound");
                 sound = drillData.getString("letter_phonic_sound");

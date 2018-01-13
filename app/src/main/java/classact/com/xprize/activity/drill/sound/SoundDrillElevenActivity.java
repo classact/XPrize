@@ -8,7 +8,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -27,16 +27,16 @@ import classact.com.xprize.utils.TextShrinker;
 
 public class SoundDrillElevenActivity extends DrillActivity {
 
-    @BindView(R.id.button_word1) ImageButton ImageButtonWord1;
-    @BindView(R.id.button_word2)  ImageButton ImageButtonWord2;
-    @BindView(R.id.button_word3)  ImageButton ImageButtonWord3;
-    @BindView(R.id.button_word4)  ImageButton ImageButtonWord4;
-    @BindView(R.id.button_word5)  ImageButton ImageButtonWord5;
-    @BindView(R.id.button_word6)  ImageButton ImageButtonWord6;
-    @BindView(R.id.button_word7)  ImageButton ImageButtonWord7;
-    @BindView(R.id.button_word8)  ImageButton ImageButtonWord8;
-    @BindView(R.id.button_word9)  ImageButton ImageButtonWord9;
-    @BindView(R.id.button_word10)  ImageButton ImageButtonWord10;
+    @BindView(R.id.button_word1) ImageView wordImage1;
+    @BindView(R.id.button_word2)  ImageView wordImage2;
+    @BindView(R.id.button_word3)  ImageView wordImage3;
+    @BindView(R.id.button_word4)  ImageView wordImage4;
+    @BindView(R.id.button_word5)  ImageView wordImage5;
+    @BindView(R.id.button_word6)  ImageView wordImage6;
+    @BindView(R.id.button_word7)  ImageView wordImage7;
+    @BindView(R.id.button_word8)  ImageView wordImage8;
+    @BindView(R.id.button_word9)  ImageView wordImage9;
+    @BindView(R.id.button_word10)  ImageView wordImage10;
 
     private JSONArray words;
     private int correctSets;
@@ -66,18 +66,16 @@ public class SoundDrillElevenActivity extends DrillActivity {
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
 
-        /*
-        ImageButtonWord1.setAlpha(0f);
-        ImageButtonWord2.setAlpha(0f);
-        ImageButtonWord3.setAlpha(0f);
-        ImageButtonWord4.setAlpha(0f);
-        ImageButtonWord5.setAlpha(0f);
-        ImageButtonWord6.setAlpha(0f);
-        ImageButtonWord7.setAlpha(0f);
-        ImageButtonWord8.setAlpha(0f);
-        ImageButtonWord9.setAlpha(0f);
-        ImageButtonWord10.setAlpha(0f);
-        */
+        wordImage1.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage2.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage3.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage4.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage5.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage6.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage7.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage8.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage9.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage10.setBackgroundResource(R.drawable.cardsinglesml);
 
         gameStarted = false;
 
@@ -136,16 +134,16 @@ public class SoundDrillElevenActivity extends DrillActivity {
             animation9.setFillAfter(true);
             animation10.setFillAfter(true);
 
-            ImageButtonWord1.startAnimation(animation1);
-            ImageButtonWord2.startAnimation(animation2);
-            ImageButtonWord3.startAnimation(animation3);
-            ImageButtonWord4.startAnimation(animation4);
-            ImageButtonWord5.startAnimation(animation5);
-            ImageButtonWord6.startAnimation(animation6);
-            ImageButtonWord7.startAnimation(animation7);
-            ImageButtonWord8.startAnimation(animation8);
-            ImageButtonWord9.startAnimation(animation9);
-            ImageButtonWord10.startAnimation(animation10);
+            wordImage1.startAnimation(animation1);
+            wordImage2.startAnimation(animation2);
+            wordImage3.startAnimation(animation3);
+            wordImage4.startAnimation(animation4);
+            wordImage5.startAnimation(animation5);
+            wordImage6.startAnimation(animation6);
+            wordImage7.startAnimation(animation7);
+            wordImage8.startAnimation(animation8);
+            wordImage9.startAnimation(animation9);
+            wordImage10.startAnimation(animation10);
 
             handler.delayed(() -> enableCards(true), 500);
 
@@ -169,39 +167,39 @@ public class SoundDrillElevenActivity extends DrillActivity {
     }
 
     private void initialiseCards(){
-        ImageButtonWord1.setImageResource(0);
-        ImageButtonWord1.setOnClickListener((v) -> turnCard(1));
-        ImageButtonWord2.setImageResource(0);
-        ImageButtonWord2.setOnClickListener((v) -> turnCard(2));
-        ImageButtonWord3.setImageResource(0);
-        ImageButtonWord3.setOnClickListener((v) -> turnCard(3));
-        ImageButtonWord4.setImageResource(0);
-        ImageButtonWord4.setOnClickListener((v) -> turnCard(4));
-        ImageButtonWord5.setImageResource(0);
-        ImageButtonWord5.setOnClickListener((v) -> turnCard(5));
-        ImageButtonWord6.setImageResource(0);
-        ImageButtonWord6.setOnClickListener((v) -> turnCard(6));
-        ImageButtonWord7.setImageResource(0);
-        ImageButtonWord7.setOnClickListener((v) -> turnCard(7));
-        ImageButtonWord8.setImageResource(0);
-        ImageButtonWord8.setOnClickListener((v) -> turnCard(8));
-        ImageButtonWord9.setImageResource(0);
-        ImageButtonWord9.setOnClickListener((v) -> turnCard(9));
-        ImageButtonWord10.setImageResource(0);
-        ImageButtonWord10.setOnClickListener((v) -> turnCard(10));
+        wordImage1.setImageResource(0);
+        wordImage1.setOnClickListener((v) -> turnCard(1));
+        wordImage2.setImageResource(0);
+        wordImage2.setOnClickListener((v) -> turnCard(2));
+        wordImage3.setImageResource(0);
+        wordImage3.setOnClickListener((v) -> turnCard(3));
+        wordImage4.setImageResource(0);
+        wordImage4.setOnClickListener((v) -> turnCard(4));
+        wordImage5.setImageResource(0);
+        wordImage5.setOnClickListener((v) -> turnCard(5));
+        wordImage6.setImageResource(0);
+        wordImage6.setOnClickListener((v) -> turnCard(6));
+        wordImage7.setImageResource(0);
+        wordImage7.setOnClickListener((v) -> turnCard(7));
+        wordImage8.setImageResource(0);
+        wordImage8.setOnClickListener((v) -> turnCard(8));
+        wordImage9.setImageResource(0);
+        wordImage9.setOnClickListener((v) -> turnCard(9));
+        wordImage10.setImageResource(0);
+        wordImage10.setOnClickListener((v) -> turnCard(10));
     }
 
     public void enableCards(boolean enable) {
-        ImageButtonWord1.setEnabled(enable);
-        ImageButtonWord2.setEnabled(enable);
-        ImageButtonWord3.setEnabled(enable);
-        ImageButtonWord4.setEnabled(enable);
-        ImageButtonWord5.setEnabled(enable);
-        ImageButtonWord6.setEnabled(enable);
-        ImageButtonWord7.setEnabled(enable);
-        ImageButtonWord8.setEnabled(enable);
-        ImageButtonWord9.setEnabled(enable);
-        ImageButtonWord10.setEnabled(enable);
+        wordImage1.setEnabled(enable);
+        wordImage2.setEnabled(enable);
+        wordImage3.setEnabled(enable);
+        wordImage4.setEnabled(enable);
+        wordImage5.setEnabled(enable);
+        wordImage6.setEnabled(enable);
+        wordImage7.setEnabled(enable);
+        wordImage8.setEnabled(enable);
+        wordImage9.setEnabled(enable);
+        wordImage10.setEnabled(enable);
     }
 
     private void initialiseData(String drillData){
@@ -243,49 +241,49 @@ public class SoundDrillElevenActivity extends DrillActivity {
         }
     }
 
-    private ImageButton getCard(int card){
-        ImageButton ImageButton = null;
+    private ImageView getCard(int card){
+        ImageView ImageView = null;
         switch (card){
             case 1:
-                ImageButton = ImageButtonWord1;
+                ImageView = wordImage1;
                 break;
             case 2:
-                ImageButton = ImageButtonWord2;
+                ImageView = wordImage2;
                 break;
             case 3:
-                ImageButton = ImageButtonWord3;
+                ImageView = wordImage3;
                 break;
             case 4:
-                ImageButton = ImageButtonWord4;
+                ImageView = wordImage4;
                 break;
             case 5:
-                ImageButton = ImageButtonWord5;
+                ImageView = wordImage5;
                 break;
             case 6:
-                ImageButton = ImageButtonWord6;
+                ImageView = wordImage6;
                 break;
             case 7:
-                ImageButton = ImageButtonWord7;
+                ImageView = wordImage7;
                 break;
             case 8:
-                ImageButton = ImageButtonWord8;
+                ImageView = wordImage8;
                 break;
             case 9:
-                ImageButton = ImageButtonWord9;
+                ImageView = wordImage9;
                 break;
             case 10:
-                ImageButton = ImageButtonWord10;
+                ImageView = wordImage10;
                 break;
         }
-        return ImageButton;
+        return ImageView;
     }
 
     private void turnCard(int card){
         if (gameStarted) {
             try {
                 if (!cardState[card - 1]) {
-                    ImageButton ImageButton = getCard(card);
-                    processCard(card, ImageButton);
+                    ImageView ImageView = getCard(card);
+                    processCard(card, ImageView);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -294,21 +292,20 @@ public class SoundDrillElevenActivity extends DrillActivity {
         }
     }
 
-    private void processCard(int card, ImageButton button ){
+    private void processCard(int index, ImageView card ){
         try {
             if (startPair < 2) {
-                cardState[card - 1] = true;
-                openPair[startPair] = card;
+                cardState[index - 1] = true;
+                openPair[startPair] = index;
                 startPair++;
-                String sound = words.getJSONObject(assignments[card - 1]).getString("sound");
-                int image = words.getJSONObject(assignments[card - 1]).getInt("image");
-                button.setBackgroundResource(R.drawable.cardsinglesmlback_empty);
-                button.setImageResource(image);
+                String sound = words.getJSONObject(assignments[index - 1]).getString("sound");
+                int image = words.getJSONObject(assignments[index - 1]).getInt("image");
+                card.setBackgroundResource(R.drawable.cardsinglesmlback_empty);
+                card.setImageResource(image);
 
                 int cardWidth = 180;
                 float percentage = 0.9f;
-                DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-                button = TextShrinker.shrink(button, cardWidth, percentage, getResources());
+                card = TextShrinker.shrink(card, cardWidth, percentage, getResources());
 
                 playThisSound(sound);
             }
@@ -347,12 +344,12 @@ public class SoundDrillElevenActivity extends DrillActivity {
             ex.printStackTrace();
         }
     }
-    private void resetCard(ImageButton card){
+    private void resetCard(ImageView card){
         card.setBackgroundResource(R.drawable.cardsinglesml);
         card.setImageResource(0);
     }
 
-    private void hideCard(final ImageButton card){
+    private void hideCard(final ImageView card){
         card.setEnabled(false);
         card.animate()
                 .alpha(0f)
@@ -391,8 +388,8 @@ public class SoundDrillElevenActivity extends DrillActivity {
 
     public void playStarWorksIfCorrect() {
         if (assignments[openPair[0] - 1] == assignments[openPair[1] - 1]){
-            ImageButton card1 = getCard(openPair[0]);
-            ImageButton card2 = getCard(openPair[1]);
+            ImageView card1 = getCard(openPair[0]);
+            ImageView card2 = getCard(openPair[1]);
             Globals.playStarWorks(this, card1);
             Globals.playStarWorks(this, card2);
         }
@@ -402,8 +399,8 @@ public class SoundDrillElevenActivity extends DrillActivity {
         @Override
         public void run() {
             if (assignments[openPair[0] - 1] == assignments[openPair[1] - 1]){
-                ImageButton card1 = getCard(openPair[0]);
-                ImageButton card2 = getCard(openPair[1]);
+                ImageView card1 = getCard(openPair[0]);
+                ImageView card2 = getCard(openPair[1]);
                 hideCard(card1);;
                 hideCard(card2);
                 correctSets ++;
@@ -414,7 +411,7 @@ public class SoundDrillElevenActivity extends DrillActivity {
                     playSoundAndEnd(ResourceSelector.getPositiveAffirmationSound(context));
             }
             else{
-                ImageButton card = getCard(openPair[0]);
+                ImageView card = getCard(openPair[0]);
                 resetCard(card);
                 card = getCard(openPair[1]);
                 resetCard(card);
