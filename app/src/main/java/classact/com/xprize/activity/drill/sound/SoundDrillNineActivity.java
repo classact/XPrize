@@ -47,8 +47,6 @@ public class SoundDrillNineActivity extends DrillActivity {
     private final float TIMER_MID_X = 2065f;
     private final float TIMER_MID_Y = 425f;
 
-    private final Context THIS = this;
-
     private SoundDrill09ViewModel vm;
 
     @Override
@@ -75,7 +73,7 @@ public class SoundDrillNineActivity extends DrillActivity {
         writingContainer = (RelativeLayout)findViewById(R.id.activity_sound_drill_nine);
         writingContainer.addView(view);
 
-        ImageView timerClock = new ImageView(THIS);
+        ImageView timerClock = new ImageView(context);
         timerClock.setImageResource(R.drawable.timer_clock_001);
         timerClock.setScaleX(0.75f);
         timerClock.setScaleY(0.75f);
@@ -117,7 +115,7 @@ public class SoundDrillNineActivity extends DrillActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -140,7 +138,7 @@ public class SoundDrillNineActivity extends DrillActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -157,7 +155,7 @@ public class SoundDrillNineActivity extends DrillActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             handler.delayed(new Runnable() {
                 @Override
                 public void run() {
@@ -184,7 +182,7 @@ public class SoundDrillNineActivity extends DrillActivity {
             }
             catch (Exception ex){
                 ex.printStackTrace();
-                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     };

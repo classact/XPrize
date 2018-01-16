@@ -194,7 +194,7 @@ public class StarsMenu extends MenuActivity {
 
         mStarsExist = true;
         mChapterBookButton.setAlpha(0f);
-        loadAndLayoutImage(mChapterBookButton, R.drawable.book_closed);
+        loadAndLayoutImage(mChapterBookButton, R.drawable.book_closed, .9f);
         mChapterBookButton.setEnabled(false);
         mChapterText.setAlpha(0f);
 

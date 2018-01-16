@@ -1,4 +1,5 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_sound_drill_four"
@@ -7,87 +8,223 @@
     android:background="@drawable/backgroundtoybox1"
     tools:context="classact.com.xprize.activity.drill.sound.SoundDrillFourActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_below="@+id/layout1"
-        android:layout_height="530dp">
+    <!-- General Start -->
 
-        <ImageView
-            android:id="@+id/item1"
-            android:layout_width="200dip"
-            android:layout_height="200dip"
-            android:contentDescription="@string/Damas_Toy"
-            android:layout_marginStart="80dip"
-            android:layout_marginTop="50dp"
-            android:background="@android:color/transparent" />
-
-        <ImageView
-            android:id="@+id/item6"
-            android:layout_width="200dip"
-            android:layout_height="200dp"
-            android:contentDescription="@string/Damas_Toy"
-            android:layout_marginStart="100dip"
-            android:layout_marginTop="50dp"
-            android:background="@android:color/transparent" />
-
-        <ImageView
-            android:id="@+id/toybox"
-            android:layout_width="531dp"
-            android:layout_height="394dp"
-            android:layout_marginStart="100dp"
-            android:contentDescription="@string/receptacle"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_weight="0.01"
-            android:background="@android:color/transparent" />
-
-        <!-- receptacletoyboxold -->
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layout1"
-        android:layout_width="match_parent"
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_height="400dip"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:id="@+id/mid_g_h"
+        app:layout_constraintGuide_percent="0.5"/>
 
-        <ImageView
-            android:id="@+id/item2"
-            android:layout_width="250dip"
-            android:layout_height="250dip"
-            android:contentDescription="@string/Damas_Toy"
-            android:layout_marginStart="40dip"
-            android:layout_marginTop="100dp"
-            android:background="@android:color/transparent" />
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/mid_g_v"
+        app:layout_constraintGuide_percent="0.5"/>
 
-        <ImageView
-            android:id="@+id/item3"
-            android:layout_width="250dip"
-            android:layout_height="250dip"
-            android:contentDescription="@string/Damas_Toy"
-            android:layout_marginStart="70dip"
-            android:layout_marginTop="50dp"
-            android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:contentDescription="@string/Background_Image"/>
 
-        <ImageView
-            android:id="@+id/item4"
-            android:layout_width="200dip"
-            android:layout_height="200dip"
-            android:contentDescription="@string/Damas_Toy"
-            android:layout_marginStart="80dip"
-            android:layout_marginTop="50dp"
-            android:background="@android:color/transparent"/>
+    <!-- General End -->
+    <!-- Toybox start -->
+    
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/toybox_g_h"
+        app:layout_constraintGuide_percent="1.0"/>
+    
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/toybox_g_v"
+        app:layout_constraintGuide_percent="1.0"/>
+    
+    <ImageView
+        android:id="@+id/toybox"
+        android:layout_width="531dp"
+        android:layout_height="394dp"
+        android:contentDescription="@string/receptacle"
+        android:background="@android:color/transparent"
+        app:layout_constraintRight_toLeftOf="@id/toybox_g_v"
+        app:layout_constraintBottom_toTopOf="@id/toybox_g_h"/>
 
-        <ImageView
-            android:id="@+id/item5"
-            android:layout_width="200dip"
-            android:layout_height="250dip"
-            android:contentDescription="@string/Damas_Toy"
-            android:layout_marginStart="100dip"
-            android:layout_marginTop="100dp"
-            android:background="@android:color/transparent" />
-    </LinearLayout>
+    <!-- Toybox end -->
+    <!-- Item 1 start -->
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/item1_g_h"
+        app:layout_constraintGuide_percent="0.225"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/item1_g_v"
+        app:layout_constraintGuide_percent="0.125"/>
+    
+    <ImageView
+        android:id="@+id/item1"
+        android:layout_width="200dip"
+        android:layout_height="200dip"
+        android:contentDescription="@string/Damas_Toy"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/item1_g_h"
+        app:layout_constraintLeft_toLeftOf="@id/item1_g_v"
+        app:layout_constraintRight_toRightOf="@id/item1_g_v"
+        app:layout_constraintBottom_toBottomOf="@id/item1_g_h"/>
+
+    <!-- Item 1 end -->
+    <!-- Item 2 start -->
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/item2_g_h"
+        app:layout_constraintGuide_percent="0.125"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/item2_g_v"
+        app:layout_constraintGuide_percent="0.375"/>
+    
+    <ImageView
+        android:id="@+id/item2"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:contentDescription="@string/Damas_Toy"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/item2_g_h"
+        app:layout_constraintLeft_toLeftOf="@id/item2_g_v"
+        app:layout_constraintRight_toRightOf="@id/item2_g_v"
+        app:layout_constraintBottom_toBottomOf="@id/item2_g_h"/>
+
+    <!-- Item 2 end -->
+    <!-- Item 3 start -->
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/item3_g_h"
+        app:layout_constraintGuide_percent="0.375"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/item3_g_v"
+        app:layout_constraintGuide_percent="0.25"/>
+    
+    <ImageView
+        android:id="@+id/item3"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:contentDescription="@string/Damas_Toy"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/item3_g_h"
+        app:layout_constraintLeft_toLeftOf="@id/item3_g_v"
+        app:layout_constraintRight_toRightOf="@id/item3_g_v"
+        app:layout_constraintBottom_toBottomOf="@id/item3_g_h"/>
+
+    <!-- Item 3 end -->
+    <!-- Item 4 start -->
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/item4_g_h"
+        app:layout_constraintGuide_percent="0.125"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/item4_g_v"
+        app:layout_constraintGuide_percent="0.625"/>
+    
+    <ImageView
+        android:id="@+id/item4"
+        android:layout_width="200dip"
+        android:layout_height="200dip"
+        android:contentDescription="@string/Damas_Toy"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/item4_g_h"
+        app:layout_constraintLeft_toLeftOf="@id/item4_g_v"
+        app:layout_constraintRight_toRightOf="@id/item4_g_v"
+        app:layout_constraintBottom_toBottomOf="@id/item4_g_h"/>
+
+    <!-- Item 4 end -->
+    <!-- Item 5 start -->
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/item5_g_h"
+        app:layout_constraintGuide_percent="0.225"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/item5_g_v"
+        app:layout_constraintGuide_percent="0.875"/>
+    
+    <ImageView
+        android:id="@+id/item5"
+        android:layout_width="200dip"
+        android:layout_height="250dp"
+        android:contentDescription="@string/Damas_Toy"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/item5_g_h"
+        app:layout_constraintLeft_toLeftOf="@id/item5_g_v"
+        app:layout_constraintRight_toRightOf="@id/item5_g_v"
+        app:layout_constraintBottom_toBottomOf="@id/item5_g_h"/>
+
+    <!-- Item 5 end -->
+    <!-- Item 6 start -->
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/item6_g_h"
+        app:layout_constraintGuide_percent="0.375"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/item6_g_v"
+        app:layout_constraintGuide_percent="0.75"/>
+    
+    <ImageView
+        android:id="@+id/item6"
+        android:layout_width="200dip"
+        android:layout_height="200dp"
+        android:contentDescription="@string/Damas_Toy"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/item6_g_h"
+        app:layout_constraintLeft_toLeftOf="@id/item6_g_v"
+        app:layout_constraintRight_toRightOf="@id/item6_g_v"
+        app:layout_constraintBottom_toBottomOf="@id/item6_g_h"/>
+
+    <!-- Item 6 end -->
 
 </android.support.constraint.ConstraintLayout>

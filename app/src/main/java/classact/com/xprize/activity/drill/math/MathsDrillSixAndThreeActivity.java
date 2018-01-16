@@ -374,11 +374,8 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
         try {
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
-                    String tag = (String) v.getTag();
-                    ClipData.Item item = new ClipData.Item(tag);
-                    ClipData dragData = new ClipData(tag, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
                     View.DragShadowBuilder dragShadow = new View.DragShadowBuilder(v);
-                    v.startDragAndDrop(dragData, dragShadow, v, 0);
+                    v.startDragAndDrop(null, dragShadow, v, 0);
                     v.setVisibility(View.INVISIBLE);
                     return true;
                 default:
@@ -397,10 +394,7 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
         try {
             switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
-                    if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
-                        return true;
-                    }
-                    return false;
+                    return true;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     return true;
                 case DragEvent.ACTION_DRAG_LOCATION:

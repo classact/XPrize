@@ -1,14 +1,13 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.Guideline;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,15 +24,32 @@ import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillTenActivity extends DrillActivity {
 
-    @BindView(R.id.activity_sound_drill_ten) RelativeLayout rootView;
+    @BindView(R.id.activity_sound_drill_ten) ConstraintLayout rootView;
 
-    @BindView(R.id.button_word1) ImageView buttonWord1;
-    @BindView(R.id.button_word2) ImageView buttonWord2;
-    @BindView(R.id.button_word3) ImageView buttonWord3;
-    @BindView(R.id.button_word4) ImageView buttonWord4;
-    @BindView(R.id.button_word5) ImageView buttonWord5;
+    @BindView(R.id.word_01) ImageView buttonWord1;
+    @BindView(R.id.word_02) ImageView buttonWord2;
+    @BindView(R.id.word_03) ImageView buttonWord3;
+    @BindView(R.id.word_04) ImageView buttonWord4;
+    @BindView(R.id.word_05) ImageView buttonWord5;
+
+    @BindView(R.id.word_01_g_h) Guideline word01GH;
+    @BindView(R.id.word_02_g_h) Guideline word02GH;
+    @BindView(R.id.word_03_g_h) Guideline word03GH;
+    @BindView(R.id.word_04_g_h) Guideline word04GH;
+    @BindView(R.id.word_05_g_h) Guideline word05GH;
+
+    @BindView(R.id.word_01_g_v) Guideline word01GV;
+    @BindView(R.id.word_02_g_v) Guideline word02GV;
+    @BindView(R.id.word_03_g_v) Guideline word03GV;
+    @BindView(R.id.word_04_g_v) Guideline word04GV;
+    @BindView(R.id.word_05_g_v) Guideline word05GV;
 
     @BindView(R.id.flash_word) ImageView flashButton;
+
+    @BindView(R.id.flash_word_g_h) Guideline flashWordGH;
+    @BindView(R.id.flash_word_g_v) Guideline flashWordGV;
+
+    private ImageView lastWrongWord;
 
     private final int FLASH_LEFT_MARGIN = 130;
     private final int FLASH_TOP_MARGIN = 675;
@@ -69,48 +85,43 @@ public class SoundDrillTenActivity extends DrillActivity {
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
 
+        ez.guide.setPercentage(word01GH, 0.25f);
+        ez.guide.setPercentage(word01GV, 0.25f);
+
+        ez.guide.setPercentage(word02GH, 0.25f);
+        ez.guide.setPercentage(word02GV, 0.45f);
+
+        ez.guide.setPercentage(word03GH, 0.25f);
+        ez.guide.setPercentage(word03GV, 0.65f);
+
+        ez.guide.setPercentage(word04GH, 0.75f);
+        ez.guide.setPercentage(word04GV, 0.375f);
+
+        ez.guide.setPercentage(word05GH, 0.75f);
+        ez.guide.setPercentage(word05GV, 0.575f);
+
+        ez.guide.setPercentage(flashWordGH, 0.5f);
+        ez.guide.setPercentage(flashWordGV, 0.455f);
+
         buttonsEnabled = false;
 
-        LayoutParams flashButtonLP = (LayoutParams) flashButton.getLayoutParams();
-        flashButtonLP.removeRule(RelativeLayout.TEXT_ALIGNMENT_GRAVITY);
-        flashButtonLP.removeRule(RelativeLayout.ALIGN_START);
-        flashButtonLP.leftMargin = FLASH_LEFT_MARGIN;
-        flashButtonLP.topMargin = FLASH_TOP_MARGIN;
-        flashButton.setLayoutParams(flashButtonLP);
+        ConstraintLayout.LayoutParams button1LP = (ConstraintLayout.LayoutParams) buttonWord1.getLayoutParams();
+        ConstraintLayout.LayoutParams button2LP = (ConstraintLayout.LayoutParams) buttonWord2.getLayoutParams();
+        ConstraintLayout.LayoutParams button3LP = (ConstraintLayout.LayoutParams) buttonWord3.getLayoutParams();
+        ConstraintLayout.LayoutParams button4LP = (ConstraintLayout.LayoutParams) buttonWord4.getLayoutParams();
+        ConstraintLayout.LayoutParams button5LP = (ConstraintLayout.LayoutParams) buttonWord5.getLayoutParams();
 
-        LayoutParams button1LP = (LayoutParams) buttonWord1.getLayoutParams();
-        LayoutParams button2LP = (LayoutParams) buttonWord2.getLayoutParams();
-        LayoutParams button3LP = (LayoutParams) buttonWord3.getLayoutParams();
-        LayoutParams button4LP = (LayoutParams) buttonWord4.getLayoutParams();
-        LayoutParams button5LP = (LayoutParams) buttonWord5.getLayoutParams();
+        button1LP.width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+        button2LP.width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+        button3LP.width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+        button4LP.width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+        button5LP.width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
 
-        button1LP.removeRule(RelativeLayout.BELOW);
-        button2LP.removeRule(RelativeLayout.BELOW);
-        button3LP.removeRule(RelativeLayout.BELOW);
-        button4LP.removeRule(RelativeLayout.BELOW);
-        button5LP.removeRule(RelativeLayout.BELOW);
-
-        button2LP.addRule(RelativeLayout.RIGHT_OF, R.id.button_word1);
-        button3LP.addRule(RelativeLayout.RIGHT_OF, R.id.button_word2);
-        button5LP.addRule(RelativeLayout.RIGHT_OF, R.id.button_word4);
-
-        button1LP.setMargins(620, TOP_LINE_START, 0, 0);
-        button2LP.setMargins(WORD_GAP, TOP_LINE_START, 0, 0);
-        button3LP.setMargins(WORD_GAP, TOP_LINE_START, 0, 0);
-        button4LP.setMargins(850, BOTTOM_LINE_START, 0, 0);
-        button5LP.setMargins(WORD_GAP, BOTTOM_LINE_START, 0, 0);
-
-        button1LP.width = LayoutParams.WRAP_CONTENT;
-        button2LP.width = LayoutParams.WRAP_CONTENT;
-        button3LP.width = LayoutParams.WRAP_CONTENT;
-        button4LP.width = LayoutParams.WRAP_CONTENT;
-        button5LP.width = LayoutParams.WRAP_CONTENT;
-
-        button1LP.height = LayoutParams.WRAP_CONTENT;
-        button2LP.height = LayoutParams.WRAP_CONTENT;
-        button3LP.height = LayoutParams.WRAP_CONTENT;
-        button4LP.height = LayoutParams.WRAP_CONTENT;
-        button5LP.height = LayoutParams.WRAP_CONTENT;
+        button1LP.height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+        button2LP.height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+        button3LP.height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+        button4LP.height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+        button5LP.height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
 
         buttonWord1.setLayoutParams(button1LP);
         buttonWord2.setLayoutParams(button2LP);
@@ -157,7 +168,7 @@ public class SoundDrillTenActivity extends DrillActivity {
                     @Override
                     public void onClick(View v) {
                         if(mode == 2)
-                            checkIfWordCorrect(0);
+                            checkIfWordCorrect(v, 0);
                     }
                 }
         );
@@ -166,7 +177,7 @@ public class SoundDrillTenActivity extends DrillActivity {
                     @Override
                     public void onClick(View v) {
                         if(mode == 2)
-                            checkIfWordCorrect(1);
+                            checkIfWordCorrect(v, 1);
                     }
                 }
         );
@@ -175,7 +186,7 @@ public class SoundDrillTenActivity extends DrillActivity {
                     @Override
                     public void onClick(View v) {
                         if(mode == 2)
-                            checkIfWordCorrect(2);
+                            checkIfWordCorrect(v, 2);
                     }
                 }
         );
@@ -184,7 +195,7 @@ public class SoundDrillTenActivity extends DrillActivity {
                     @Override
                     public void onClick(View v) {
                         if(mode == 2)
-                            checkIfWordCorrect(3);
+                            checkIfWordCorrect(v, 3);
                     }
                 }
         );
@@ -193,7 +204,7 @@ public class SoundDrillTenActivity extends DrillActivity {
                     @Override
                     public void onClick(View v) {
                         if(mode == 2)
-                            checkIfWordCorrect(4);
+                            checkIfWordCorrect(v, 4);
                     }
                 }
         );
@@ -211,7 +222,7 @@ public class SoundDrillTenActivity extends DrillActivity {
             // Debug
             System.out.println("SoundDrillTenActivity.showWord > Debug: word is " + name);
 
-            flashButton.setImageResource(image);
+            loadAndLayoutImage(flashButton, image);
             String sound = words.getJSONObject(currentWord).getString("sound");
             playSoundAndShowNext(sound);
 
@@ -348,55 +359,25 @@ public class SoundDrillTenActivity extends DrillActivity {
                         // Update button backgrounds accordingly
                         switch (i) {
                             case 0:
-                                buttonWord1.setImageResource(wordImage);
+                                loadAndLayoutImage(buttonWord1, wordImage);
                                 break;
                             case 1:
-                                buttonWord2.setImageResource(wordImage);
+                                loadAndLayoutImage(buttonWord2, wordImage);
                                 break;
                             case 2:
-                                buttonWord3.setImageResource(wordImage);
+                                loadAndLayoutImage(buttonWord3, wordImage);
                                 break;
                             case 3:
-                                buttonWord4.setImageResource(wordImage);
+                                loadAndLayoutImage(buttonWord4, wordImage);
                                 break;
                             case 4:
-                                buttonWord5.setImageResource(wordImage);
+                                loadAndLayoutImage(buttonWord5, wordImage);
                                 break;
                             default:
                                 break;
                         }
                     }
                 }
-
-                BitmapDrawable bd1 = (BitmapDrawable) buttonWord1.getDrawable();
-                BitmapDrawable bd2 = (BitmapDrawable) buttonWord2.getDrawable();
-                BitmapDrawable bd3 = (BitmapDrawable) buttonWord3.getDrawable();
-                BitmapDrawable bd4 = (BitmapDrawable) buttonWord4.getDrawable();
-                BitmapDrawable bd5 = (BitmapDrawable) buttonWord5.getDrawable();
-
-                Bitmap b1 = bd1.getBitmap();
-                Bitmap b2 = bd2.getBitmap();
-                Bitmap b3 = bd3.getBitmap();
-                Bitmap b4 = bd4.getBitmap();
-                Bitmap b5 = bd5.getBitmap();
-
-                int b1Width = b1.getWidth();
-                int b2Width = b2.getWidth();
-                int b3Width = b3.getWidth();
-                int b4Width = b4.getWidth();
-                int b5Width = b5.getWidth();
-
-                int topWidth = b1Width + WORD_GAP + b2Width + WORD_GAP + b3Width;
-                int bottomWidth = b4Width + WORD_GAP + b5Width;
-
-                LayoutParams button1LP = (LayoutParams) buttonWord1.getLayoutParams();
-                LayoutParams button4LP = (LayoutParams) buttonWord4.getLayoutParams();
-
-                button1LP.setMargins(CENTER_MARGIN_LEFT - (topWidth / 2), TOP_LINE_START, 0, 0);
-                button4LP.setMargins(CENTER_MARGIN_LEFT - (bottomWidth / 2) + BOTTOM_LINE_LEFT_OFFSET, BOTTOM_LINE_START, 0, 0);
-
-                buttonWord1.setLayoutParams(button1LP);
-                buttonWord4.setLayoutParams(button4LP);
 
                 // Show all button words
                 buttonWord1.setVisibility(View.VISIBLE);
@@ -425,23 +406,23 @@ public class SoundDrillTenActivity extends DrillActivity {
 
         switch (currentWord){
             case 0:
-                buttonWord1.setVisibility(View.INVISIBLE);
+//                buttonWord1.setVisibility(View.INVISIBLE);
                 objects[currentWord] = null;
                 break;
             case 1:
-                buttonWord2.setVisibility(View.INVISIBLE);
+//                buttonWord2.setVisibility(View.INVISIBLE);
                 objects[currentWord] = null;
                 break;
             case 2:
-                buttonWord3.setVisibility(View.INVISIBLE);
+//                buttonWord3.setVisibility(View.INVISIBLE);
                 objects[currentWord] = null;
                 break;
             case 3:
-                buttonWord4.setVisibility(View.INVISIBLE);
+//                buttonWord4.setVisibility(View.INVISIBLE);
                 objects[currentWord] = null;
                 break;
             case 4:
-                buttonWord5.setVisibility(View.INVISIBLE);
+//                buttonWord5.setVisibility(View.INVISIBLE);
                 objects[currentWord] = null;
                 break;
             default:
@@ -450,9 +431,10 @@ public class SoundDrillTenActivity extends DrillActivity {
         }
     }
 
-    private void playThisSound(int soundId){
+    private void playThisSound(View view, int soundId){
         
         try {
+            ((ImageView) view).setColorFilter(Color.parseColor("#33ccff"));
             playSound(soundId, () -> {
                 Random rand = new Random();
                 currentWord = rand.nextInt(5);
@@ -475,6 +457,7 @@ public class SoundDrillTenActivity extends DrillActivity {
                         }
                     }
                 }
+                ((ImageView) view).setColorFilter(Color.parseColor("#777777"));
                 if (currentWord > -1) {
                     // Say the word
                     sayTouchWord();
@@ -491,17 +474,27 @@ public class SoundDrillTenActivity extends DrillActivity {
         }
     }
 
-    public void checkIfWordCorrect(int word){
+    public void checkIfWordCorrect(View view, int word){
         
         if (buttonsEnabled) {
+            if (lastWrongWord != null) {
+                lastWrongWord.setColorFilter(null);
+            }
             if (word == currentWord) {
+                view.setEnabled(false);
+                lastWrongWord = null;
                 buttonsEnabled = false;
                 reward(word);
-                playThisSound(ResourceSelector.getPositiveAffirmationSound(context));
+                int soundId = ResourceSelector.getPositiveAffirmationSound(context);
+                playThisSound(view, soundId);
+                starWorks.play(this, view);
                 currentWord++;
             } else {
+                lastWrongWord = (ImageView) view;
                 int soundId = ResourceSelector.getNegativeAffirmationSound(context);
-                playSound(soundId, null);
+                playSound(soundId,
+                        () -> ((ImageView) view).setColorFilter(Color.RED),
+                        () -> ((ImageView) view).setColorFilter(null));
             }
         }
     }

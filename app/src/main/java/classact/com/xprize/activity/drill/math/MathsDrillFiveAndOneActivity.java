@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
@@ -57,8 +58,8 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
     private ImageView equationNumberOne;
     private ImageView equationNumberTwo;
     private ImageView equationAnswer;
-    private ImageView equationSign;
-    private ImageView equationEqualsSign;
+    @BindView(R.id.equation_sign) ImageView equationSign;
+    @BindView(R.id.equation_equals) ImageView equationEqualsSign;
 
     private boolean dragEnabled;
     private boolean touchNumbersEnabled;
@@ -87,8 +88,7 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
         equationNumberOne.setColorFilter(Color.argb(255, 255, 255, 255));
         equationNumberOne.setVisibility(View.VISIBLE);
 
-        equationSign = (ImageView)findViewById(R.id.equation_sign);
-        // equationSign.setBackgroundColor(Color.argb(100, 0, 0, 255));
+        loadImage(equationSign, R.drawable.w_plus);
         equationSign.setVisibility(View.VISIBLE);
 
         equationNumberTwo = (ImageView)findViewById(R.id.equation_two);
@@ -96,8 +96,7 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
         equationNumberTwo.setColorFilter(Color.argb(255, 255, 255, 255));
         equationNumberTwo.setVisibility(View.VISIBLE);
 
-        equationEqualsSign = (ImageView)findViewById(R.id.equation_equals);
-        // equationEqualsSign.setBackgroundColor(Color.argb(100, 0, 0, 255));
+        loadImage(equationEqualsSign, R.drawable.w_equals);
         equationEqualsSign.setVisibility(View.VISIBLE);
 
         equationAnswer = (ImageView)findViewById(R.id.equation_answer);

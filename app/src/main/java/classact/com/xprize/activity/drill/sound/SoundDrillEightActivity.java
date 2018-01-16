@@ -128,7 +128,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
             int item = drillData.getInt("big_letter");
             if (repeat == 2)
                 item = drillData.getInt("small_letter");
-            letter.setImageResource(item);
+            loadImage(letter, item);
             getPathData();
             String sound = "";
             if (repeat == 1) {
@@ -236,7 +236,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
         // Add draw timer
         drawArea.removeView(mTimer);
         mTimer = new TextView(getApplicationContext());
-        mTimer.setBackgroundResource(android.R.color.transparent);
+        mTimer.setBackgroundColor(Color.TRANSPARENT);
         mTimerCounter = TIMER_MAX;
 
         mTimer.setText(String.valueOf(mTimerCounter));

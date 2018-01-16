@@ -84,6 +84,14 @@ public abstract class DrillActivity extends DaggerAppCompatActivity {
         playSound(soundId, action, 0);
     }
 
+    protected void playSound(String sound, Runnable startAction, Runnable completeAction) {
+        playSound(sound, startAction, 0, completeAction, 0);
+    }
+
+    protected void playSound(int soundId, Runnable startAction, Runnable completeAction) {
+        playSound(soundId, startAction, 0, completeAction, 0);
+    }
+
     protected void playSound(String sound, Runnable action, long delayMillis) {
         try {
             String soundPath = fetch.raw(sound);

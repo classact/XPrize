@@ -29,7 +29,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
 
-    <ImageButton
+    <ImageView
         android:id="@+id/tutorial_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
         app:layout_constraintRight_toRightOf="@+id/gl_v_mid"
         android:background="@android:color/transparent"/>
 
-    <ImageButton
+    <ImageView
         android:id="@+id/volume_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -226,8 +226,8 @@ public class SoundDrillSixActivity extends DrillActivity {
                 image2 = data.getInt("small_letter");
                 image1 = data.getInt("big_letter");
             }
-            leftLetter.setImageResource(data.getInt("small_letter"));
-            rightLetter.setImageResource(data.getInt("big_letter"));
+            loadImage(leftLetter, data.getInt("small_letter"));
+            loadImage(rightLetter, data.getInt("big_letter"));
 
             positions = new int[8];
             Arrays.fill(positions,0);
@@ -251,15 +251,14 @@ public class SoundDrillSixActivity extends DrillActivity {
                         assigned = true;
                 }
             }
-            item1.setImageResource(positions[0]);
-            item2.setImageResource(positions[1]);
-            item3.setImageResource(positions[2]);
-            item4.setImageResource(positions[3]);
-            item5.setImageResource(positions[4]);
-            item6.setImageResource(positions[5]);
-            item7.setImageResource(positions[6]);
-            item8.setImageResource(positions[7]);
-
+            loadImage(item1, positions[0]);
+            loadImage(item2, positions[1]);
+            loadImage(item3, positions[2]);
+            loadImage(item4, positions[3]);
+            loadImage(item5, positions[4]);
+            loadImage(item6, positions[5]);
+            loadImage(item7, positions[6]);
+            loadImage(item8, positions[7]);
         }
         catch (Exception ex){
             ex.printStackTrace();

@@ -8,177 +8,123 @@
     android:background="@drawable/bg_blue"
     tools:context="classact.com.xprize.activity.menu.VolumeMenu">
 
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_v_01"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.0"/>
+    <!-- Base Guidelines START -->
 
     <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_v_02"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.125"/>
-
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_v_03"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.25"/>
-
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_v_04"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.375"/>
-
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_v_05"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5"/>
-
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_v_06"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.625"/>
-
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_v_07"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.75"/>
-
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_v_08"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.875"/>
-
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_v_09"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="1.0"/>
-
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_h_01"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.0"/>
-
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_h_02"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.125"/>
-
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_h_03"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.25"/>
-
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_h_04"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.375"/>
-
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_h_05"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5"/>
 
     <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gl_h_06"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.625"/>
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
 
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_h_07"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.75"/>
+    <!-- Base Guidelines END -->
 
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_h_08"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.875"/>
-
-    <android.support.constraint.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/gl_h_09"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="1.0"/>
+    <!-- Background START -->
 
     <ImageView
-        android:id="@+id/singing_monkey"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/Singing_Monkey"
-        app:layout_constraintTop_toBottomOf="@id/gl_h3"
-        app:layout_constraintLeft_toRightOf="@id/gl_v5"
-        app:layout_constraintRight_toLeftOf="@id/gl_v5"
-        app:layout_constraintBottom_toTopOf="@id/gl_h3"
-        android:background="@android:color/transparent" />
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/Background_Image"/>
 
-    <TextView
-        android:id="@+id/volume_text"
-        android:text="@string/Volume"
-        android:textSize="72sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/gl_h5"
-        app:layout_constraintLeft_toRightOf="@id/gl_v2"
-        app:layout_constraintRight_toLeftOf="@id/gl_v2"
-        app:layout_constraintBottom_toTopOf="@id/gl_h5"/>
+    <!-- Background END -->
 
-    <SeekBar
-        android:id="@+id/volume_seekbar"
-        android:layout_width="625dp"
-        android:layout_height="wrap_content"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp"
-        android:thumbOffset="0dp"
-        android:max="15"
-        android:thumb="@drawable/star_seekbar_thumb"
-        app:layout_constraintTop_toBottomOf="@id/gl_h5"
-        app:layout_constraintLeft_toRightOf="@id/gl_v4"
-        app:layout_constraintRight_toLeftOf="@id/gl_v6"
-        app:layout_constraintBottom_toTopOf="@id/gl_h5"/>
+    <!-- Volume Menu Content START -->
 
-    <TextView
-        android:id="@+id/volume_percentage"
-        android:text="@string/zero_percent"
-        android:textSize="72sp"
-        android:layout_width="wrap_content"
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/gl_h5"
-        app:layout_constraintLeft_toRightOf="@id/gl_v8"
-        app:layout_constraintRight_toLeftOf="@id/gl_v8"
-        app:layout_constraintBottom_toTopOf="@id/gl_h5"/>
+        app:layout_constraintTop_toTopOf="@+id/guideline_mid_horizontal"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline_mid_vertical"
+        app:layout_constraintRight_toLeftOf="@+id/guideline_mid_vertical"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_mid_horizontal">
+
+        <!-- Volume Menu Content Guidelines START -->
+
+        <android.support.constraint.Guideline
+            android:id="@+id/menu_guideline_mid_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5"/>
+
+        <!-- Volume Menu Content Guidelines END -->
+
+        <!-- Heading START -->
+
+        <ImageView
+            android:id="@+id/heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/Volume"
+            app:layout_constraintLeft_toLeftOf="@id/menu_guideline_mid_vertical"
+            app:layout_constraintRight_toRightOf="@id/menu_guideline_mid_vertical"
+            android:background="@android:color/transparent"/>
+
+        <!-- Heading END -->
+
+        <!-- Volume Controls START -->
+
+        <!-- SeekBar START -->
+
+        <SeekBar
+            android:id="@+id/seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="200dp"
+            android:layout_marginEnd="200dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:thumbOffset="0dp"
+            android:max="15"
+            android:thumb="@drawable/star_seekbar_thumb"
+            android:layout_marginTop="200dp"
+            app:layout_constraintTop_toTopOf="@+id/heading"
+            app:layout_constraintLeft_toLeftOf="@+id/menu_guideline_mid_vertical"
+            app:layout_constraintRight_toLeftOf="@+id/menu_guideline_mid_vertical" />
+
+        <!-- SeekBar END -->
+
+        <!-- Volume Percentage START -->
+
+        <TextView
+            android:id="@+id/volume"
+            android:text="@string/zero_numeric"
+            android:textSize="72sp"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="130dp"
+            app:layout_constraintTop_toTopOf="@+id/seek_bar"
+            app:layout_constraintRight_toLeftOf="@+id/menu_guideline_mid_vertical"
+            app:layout_constraintLeft_toLeftOf="@+id/menu_guideline_mid_vertical" />
+
+        <TextView
+            android:id="@+id/percentage_sign"
+            android:text="@string/percentage_sign"
+            android:textSize="72sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintTop_toTopOf="@+id/volume"
+            app:layout_constraintLeft_toRightOf="@+id/volume"
+            app:layout_constraintBottom_toBottomOf="@+id/volume"/>
+
+        <!-- Volume Percentage END -->
+
+        <!-- Volume Controls END -->
+
+    </android.support.constraint.ConstraintLayout>
+
+    <!-- Volume Menu Content END -->
 
 </android.support.constraint.ConstraintLayout>

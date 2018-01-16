@@ -9,6 +9,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -76,7 +77,7 @@ public class MathsDrillSixActivity extends DrillActivity {
             int screenH = displayMetrics.heightPixels;
             float density = displayMetrics.density;
 
-            Drawable demoDrawable = demoShape.getDrawable();
+            Drawable demoDrawable = getResources().getDrawable(objectImageId, null);
             int demoW = demoDrawable.getIntrinsicWidth();
             int demoH = demoDrawable.getIntrinsicHeight();
 
@@ -152,7 +153,8 @@ public class MathsDrillSixActivity extends DrillActivity {
 
                 final String shapeName = shapes[i];
                 int imageId = FetchResource.imageId(context, shapeName);
-                loadImage(iv, imageId);
+                // loadImage(iv, imageId);
+                iv.setImageResource(imageId);
 
                 // Now here is where shape sound is used / passed in as a comparator
                 final String shapeSound = shape_sounds[i];
@@ -165,75 +167,84 @@ public class MathsDrillSixActivity extends DrillActivity {
                 });
             }
 
-            /*shape1.setBackgroundColor(Color.argb(100, 255, 0, 0));
-            shape2.setBackgroundColor(Color.argb(100, 0, 255, 0));
-            shape3.setBackgroundColor(Color.argb(100, 0, 0, 255));*/
+            setupShapes(density);
+            startDrill();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
 
-            Drawable s1d = shape1.getDrawable();
-            Drawable s2d = shape2.getDrawable();
-            Drawable s3d = shape3.getDrawable();
+    private void setupShapes(float density) {
 
-            int s1IW = s1d.getIntrinsicWidth();
-            int s2IW = s2d.getIntrinsicWidth();
-            int s3IW = s3d.getIntrinsicWidth();
+        Drawable s1d = shape1.getDrawable();
+        Drawable s2d = shape2.getDrawable();
+        Drawable s3d = shape3.getDrawable();
 
-            int s1IH = s1d.getIntrinsicHeight();
-            int s2IH = s2d.getIntrinsicHeight();
-            int s3IH = s3d.getIntrinsicHeight();
+        int s1IW = s1d.getIntrinsicWidth();
+        int s2IW = s2d.getIntrinsicWidth();
+        int s3IW = s3d.getIntrinsicWidth();
 
-            int s1SW = (int) ((float) s1IW / density);
-            int s2SW = (int) ((float) s2IW / density);
-            int s3SW = (int) ((float) s3IW / density);
+        int s1IH = s1d.getIntrinsicHeight();
+        int s2IH = s2d.getIntrinsicHeight();
+        int s3IH = s3d.getIntrinsicHeight();
 
-            int s1SH = (int) ((float) s1IH / density);
-            int s2SH = (int) ((float) s2IH / density);
-            int s3SH = (int) ((float) s3IH / density);
+        int s1SW = (int) ((float) s1IW / density);
+        int s2SW = (int) ((float) s2IW / density);
+        int s3SW = (int) ((float) s3IW / density);
 
-            int s1Max = Math.max(s1SW, s1SH);
-            int s2Max = Math.max(s2SW, s2SH);
-            int s3Max = Math.max(s3SW, s3SH);
+        int s1SH = (int) ((float) s1IH / density);
+        int s2SH = (int) ((float) s2IH / density);
+        int s3SH = (int) ((float) s3IH / density);
 
-            double s1Ratio = (double) 250 / s1Max;
-            double s2Ratio = (double) 250 / s2Max;
-            double s3Ratio = (double) 250 / s3Max;
+        int s1Max = Math.max(s1SW, s1SH);
+        int s2Max = Math.max(s2SW, s2SH);
+        int s3Max = Math.max(s3SW, s3SH);
 
-            int s1RSW = (int) ((double) s1SW * s1Ratio);
-            int s2RSW = (int) ((double) s2SW * s2Ratio);
-            int s3RSW = (int) ((double) s3SW * s3Ratio);
+        double s1Ratio = (double) 250 / s1Max;
+        double s2Ratio = (double) 250 / s2Max;
+        double s3Ratio = (double) 250 / s3Max;
 
-            int s1RSH = (int) ((double) s1SH * s1Ratio);
-            int s2RSH = (int) ((double) s2SH * s2Ratio);
-            int s3RSH = (int) ((double) s3SH * s3Ratio);
+        int s1RSW = (int) ((double) s1SW * s1Ratio);
+        int s2RSW = (int) ((double) s2SW * s2Ratio);
+        int s3RSW = (int) ((double) s3SW * s3Ratio);
 
-            int s1PW = 100 + 250 - (int) (((double) 250 - (double) s1RSW)/2);
-            int s2PW = 100 + 250 + (int) (((double) 250 - (double) s2RSW)/2);
-            System.out.println("S1PW: " + s1PW + ", S2PW: " + s2PW);
+        int s1RSH = (int) ((double) s1SH * s1Ratio);
+        int s2RSH = (int) ((double) s2SH * s2Ratio);
+        int s3RSH = (int) ((double) s3SH * s3Ratio);
 
-            System.out.println("S1 - sw: " + s1RSW + ", sh: " + s1RSH);
-            System.out.println("S2 - sw: " + s2RSW + ", sh: " + s2RSH);
-            System.out.println("S3 - sw: " + s3RSW + ", sh: " + s3RSH);
+        int s1PW = 100 + 250 - (int) (((double) 250 - (double) s1RSW)/2);
+        int s2PW = 100 + 250 + (int) (((double) 250 - (double) s2RSW)/2);
+        System.out.println("S1PW: " + s1PW + ", S2PW: " + s2PW);
 
-            int s2s1DB = s2PW - s1PW;
-            System.out.println("Distance between: " + s2s1DB);
+        System.out.println("S1 - sw: " + s1RSW + ", sh: " + s1RSH);
+        System.out.println("S2 - sw: " + s2RSW + ", sh: " + s2RSH);
+        System.out.println("S3 - sw: " + s3RSW + ", sh: " + s3RSH);
 
-            RelativeLayout.LayoutParams shape1Layout = (RelativeLayout.LayoutParams) shape1.getLayoutParams();
-            RelativeLayout.LayoutParams shape2Layout = (RelativeLayout.LayoutParams) shape2.getLayoutParams();
-            RelativeLayout.LayoutParams shape3Layout = (RelativeLayout.LayoutParams) shape3.getLayoutParams();
+        int s2s1DB = s2PW - s1PW;
+        System.out.println("Distance between: " + s2s1DB);
 
-            shape1Layout.topMargin = 160;
-            shape2Layout.topMargin = 60;
+        RelativeLayout.LayoutParams shape1Layout = (RelativeLayout.LayoutParams) shape1.getLayoutParams();
+        RelativeLayout.LayoutParams shape2Layout = (RelativeLayout.LayoutParams) shape2.getLayoutParams();
+        RelativeLayout.LayoutParams shape3Layout = (RelativeLayout.LayoutParams) shape3.getLayoutParams();
 
-            if (s2s1DB < 54) {
-                shape2Layout.leftMargin += (int) ((float) (54 - s2s1DB));
-            }
+        shape1Layout.topMargin = 160;
+        shape2Layout.topMargin = 60;
 
-            // shape2Layout.leftMargin = (int) ((float) 110 / density);
-            shape3Layout.topMargin = 30;
+        if (s2s1DB < 54) {
+            shape2Layout.leftMargin += (int) ((float) (54 - s2s1DB));
+        }
 
-            shape1.setLayoutParams(shape1Layout);
-            shape2.setLayoutParams(shape2Layout);
-            shape3.setLayoutParams(shape3Layout);
+        // shape2Layout.leftMargin = (int) ((float) 110 / density);
+        shape3Layout.topMargin = 30;
 
+        shape1.setLayoutParams(shape1Layout);
+        shape2.setLayoutParams(shape2Layout);
+        shape3.setLayoutParams(shape3Layout);
+    }
+
+    private void startDrill() {
+        try {
             String sound = allData.getString("lets_look_at_shapes");
             playSound(sound, new Runnable() {
                 @Override
@@ -241,9 +252,9 @@ public class MathsDrillSixActivity extends DrillActivity {
                     sayThisIsA();
                 }
             });
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 

@@ -8,9 +8,12 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.MenuActivity;
 import classact.com.xprize.common.Globals;
@@ -18,10 +21,10 @@ import dagger.android.support.DaggerAppCompatActivity;
 
 public class HelpMenu extends MenuActivity {
 
-    private ConstraintLayout mRootView;
+    @BindView(R.id.activity_help_menu) ConstraintLayout mRootView;
 
-    private ImageButton mTutorialButton;
-    private ImageButton mVolumeButton;
+    @BindView(R.id.tutorial_button) ImageView mTutorialButton;
+    @BindView(R.id.volume_button) ImageView mVolumeButton;
 
     private Handler mHandler;
     private Intent mIntent;
@@ -31,14 +34,21 @@ public class HelpMenu extends MenuActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help_menu);
-        mRootView = (ConstraintLayout) findViewById(R.id.activity_help_menu);
+        ButterKnife.bind(this);
 
         mHandler = new Handler();
         mIntent = getIntent();
         mFinishActivity = false;
 
+        preloadImage(R.drawable.tutorial_button_down, R.drawable.volume_button_down);
+
+        loadAndLayoutImage(mTutorialButton, R.drawable.tutorial_button_up);
+        loadAndLayoutImage(mVolumeButton, R.drawable.volume_button_up);
+
+        setTouchListener(mTutorialButton, R.drawable.tutorial_button_up, R.drawable.tutorial_button_down);
+        setTouchListener(mVolumeButton, R.drawable.volume_button_up, R.drawable.volume_button_down);
+
         // Tutorial Button
-        mTutorialButton = (ImageButton) findViewById(R.id.tutorial_button);
         mTutorialButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,7 +63,6 @@ public class HelpMenu extends MenuActivity {
         });
 
         // Volume Button
-        mVolumeButton = (ImageButton) findViewById(R.id.volume_button);
         mVolumeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

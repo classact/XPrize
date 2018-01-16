@@ -39,6 +39,15 @@ public abstract class MenuActivity extends DaggerAppCompatActivity {
         Glide.with(this).load(resId).into(iv);
     }
 
+    protected void loadAndLayoutImage(ImageView iv, int resId, float percentageScale) {
+        Drawable d = context.getResources().getDrawable(resId, null);
+        ViewGroup.MarginLayoutParams ivLayoutParams = (ViewGroup.MarginLayoutParams) iv.getLayoutParams();
+        ivLayoutParams.width = (int) (percentageScale * d.getIntrinsicWidth());
+        ivLayoutParams.height = (int) (percentageScale * d.getIntrinsicHeight());
+        iv.setLayoutParams(ivLayoutParams);
+        Glide.with(this).load(resId).into(iv);
+    }
+
     protected void loadFadeImage(ImageView iv, int resId, int duration) {
         Glide.with(this).load(resId).transition(DrawableTransitionOptions.withCrossFade(duration)).into(iv);
     }

@@ -6,9 +6,11 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.constraint.Guideline;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -35,8 +37,6 @@ public class SoundDrillFourActivity extends DrillActivity {
     @BindView(R.id.item5) ImageView item5;
     @BindView(R.id.item6) ImageView item6;
     @BindView(R.id.toybox) ImageView toyBox;
-
-    @BindView(R.id.layout1) LinearLayout linearLayout;
 
     private int currentItem;
     private int current_reward = 0;
@@ -116,6 +116,20 @@ public class SoundDrillFourActivity extends DrillActivity {
             }
         });
 
+        /*  */
+
+        Guideline botRightHoz = ez.guide.create(true, 1f);
+        Guideline botRightVert = ez.guide.create(false, 1f);
+        rootView.addView(botRightHoz);
+        rootView.addView(botRightVert);
+
+        ConstraintLayout.LayoutParams toyBoxLayoutParams = (ConstraintLayout.LayoutParams) toyBox.getLayoutParams();
+        toyBoxLayoutParams.bottomToTop = botRightHoz.getId();
+        toyBoxLayoutParams.rightToLeft = botRightVert.getId();
+        toyBox.setLayoutParams(toyBoxLayoutParams);
+
+        /*  */
+
         toyBox.setOnDragListener(onItemDraggedIntoToyboxListener);
 
         drillData = getIntent().getExtras().getString("data");
@@ -127,12 +141,12 @@ public class SoundDrillFourActivity extends DrillActivity {
         try {
             params = new JSONObject(data);
             images = params.getJSONArray("images");
-            item1.setImageResource(images.getJSONObject(0).getInt("image"));
-            item2.setImageResource(images.getJSONObject(1).getInt("image"));
-            item3.setImageResource(images.getJSONObject(2).getInt("image"));
-            item4.setImageResource(images.getJSONObject(3).getInt("image"));
-            item5.setImageResource(images.getJSONObject(4).getInt("image"));
-            item6.setImageResource(images.getJSONObject(5).getInt("image"));
+            loadImage(item1, images.getJSONObject(0).getInt("image"));
+            loadImage(item2, images.getJSONObject(1).getInt("image"));
+            loadImage(item3, images.getJSONObject(2).getInt("image"));
+            loadImage(item4, images.getJSONObject(3).getInt("image"));
+            loadImage(item5, images.getJSONObject(4).getInt("image"));
+            loadImage(item6, images.getJSONObject(5).getInt("image"));
             drillSound = params.getString("drillsound");
         }
         catch (Exception ex){

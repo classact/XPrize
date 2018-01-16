@@ -301,11 +301,11 @@ public class SoundDrillElevenActivity extends DrillActivity {
                 String sound = words.getJSONObject(assignments[index - 1]).getString("sound");
                 int image = words.getJSONObject(assignments[index - 1]).getInt("image");
                 card.setBackgroundResource(R.drawable.cardsinglesmlback_empty);
-                card.setImageResource(image);
+                // loadImage(card, image);
 
                 int cardWidth = 180;
                 float percentage = 0.9f;
-                card = TextShrinker.shrink(card, cardWidth, percentage, getResources());
+                TextShrinker.shrink(card, cardWidth, percentage, image, getResources());
 
                 playThisSound(sound);
             }

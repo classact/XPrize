@@ -180,7 +180,7 @@ public class SoundDrillSevenActivity extends DrillActivity {
                     totalWidth += marginLeft;
                 }
 
-                iv.setImageResource(pictureObject.getInt("picture"));
+                loadImage(iv, pictureObject.getInt("picture"));
                 final int index = i;
                 iv.setOnClickListener(
                         new View.OnClickListener() {
@@ -230,7 +230,7 @@ public class SoundDrillSevenActivity extends DrillActivity {
                 shuffledArrayIndexes = FisherYates.shuffle(items.length);
                 correctItem = shuffledArrayIndexes[0];
                 ImageView iv = items[correctItem];
-                iv.setImageResource(correctObject.getInt("picture"));
+                loadImage(iv, correctObject.getInt("picture"));
                 imagePictures.put(iv, correctObject);
             }
 
@@ -254,7 +254,7 @@ public class SoundDrillSevenActivity extends DrillActivity {
                 String letter = currentWord.get(i).getString("letter");
                 int imageId = currentWord.get(i).getInt("black");
                 ImageView iv = (ImageView) writingContainer.getChildAt(i);
-                iv.setImageResource(imageId);
+                loadImage(iv, imageId);
                 letterViews.add(iv);
                 letterResources.add(imageId);
                 letterWord += letter;
@@ -404,7 +404,7 @@ public class SoundDrillSevenActivity extends DrillActivity {
                 JSONObject letterOfCurrentWord = currentWord.get(i);
 
                 writingContainer.getChildAt(i).setVisibility(View.VISIBLE);
-                ((ImageView) writingContainer.getChildAt(i)).setImageResource(letterOfCurrentWord.getInt("black"));
+                loadImage((ImageView) writingContainer.getChildAt(i), letterOfCurrentWord.getInt("black"));
 
                 String sound = letterSounds[i];
                 playSound(sound, () -> {
