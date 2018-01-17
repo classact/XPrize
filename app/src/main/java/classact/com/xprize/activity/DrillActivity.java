@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -74,6 +75,30 @@ public abstract class DrillActivity extends DaggerAppCompatActivity {
                         onStopEvent();
                     }
                 }));
+    }
+
+    protected void unHighlight(View view) {
+        if (view instanceof ImageView) {
+            ((ImageView) view).setColorFilter(null);
+        } else if (view instanceof TextView) {
+            ((TextView) view).setTextColor(Color.BLACK);
+        }
+    }
+
+    protected void highlightWrong(View view) {
+        if (view instanceof ImageView) {
+            ((ImageView) view).setColorFilter(Color.RED);
+        } else if (view instanceof TextView) {
+            ((TextView) view).setTextColor(Color.RED);
+        }
+    }
+
+    protected void highlightCorrect(View view) {
+        if (view instanceof ImageView) {
+            ((ImageView) view).setColorFilter(Color.parseColor("#33ccff"));
+        } else if (view instanceof TextView) {
+            ((TextView) view).setTextColor(Color.parseColor("#33ccff"));
+        }
     }
 
     protected void playSound(String sound, Runnable action) {

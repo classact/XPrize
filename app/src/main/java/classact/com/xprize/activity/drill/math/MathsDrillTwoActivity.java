@@ -2,6 +2,7 @@ package classact.com.xprize.activity.drill.math;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -12,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,6 +51,8 @@ public class MathsDrillTwoActivity extends DrillActivity {
     private final int NUMBERS_FRAME_HEIGHT = 955;
 
     private MathDrill02ViewModel vm;
+
+    private View lastWrongNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,7 +211,7 @@ public class MathsDrillTwoActivity extends DrillActivity {
                     iv.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            numberClicked(numberIndex);
+                            numberClicked(v, numberIndex);
                         }
                     });
 
@@ -252,26 +256,39 @@ public class MathsDrillTwoActivity extends DrillActivity {
         }
     }
 
-    public void numberClicked(int position){
+    public void numberClicked(View view, int position){
         if (touchEnabled) {
+
+            // Uncolor last wrong number
+            if (lastWrongNumber != null && view != lastWrongNumber) {
+                unHighlight(lastWrongNumber);
+            }
+
             try {
                 int correct = numbers.getJSONObject(position).getInt("right");
                 String sound = numbers.getJSONObject(position).getString("sound");
                 if (correct == 0) {
-                    playSound(sound, new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                playSound(FetchResource.negativeAffirmation(context), null);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                    });
+
+                    lastWrongNumber = view;
+
+                    // Color number
+                    highlightWrong(view);
+
+                    playSound(sound, () ->
+                        playSound(FetchResource.negativeAffirmation(context), () -> {
+
+                            // Uncolor number
+                            unHighlight(view);
+                        }));
+
                 } else {
                     touchEnabled = false;
                     ImageView iv = mNumberNumberMap.get(position);
                     Globals.playStarWorks(this, iv);
+
+                    // Color number
+                    highlightCorrect(view);
+
                     playSound(sound, () -> {
                         try {
                             handler.delayed(() -> {

@@ -2,8 +2,11 @@ package classact.com.xprize.activity.drill.math;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,6 +21,7 @@ import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.utils.FetchResource;
+import classact.com.xprize.utils.LiveObjectAnimator;
 import classact.com.xprize.utils.Square;
 import classact.com.xprize.utils.SquarePacker;
 
@@ -38,6 +42,9 @@ public class MathsDrillThreeActivity extends DrillActivity {
     private boolean drillComplete;
     private boolean endDrill;
 
+    private float itemWidth, itemHeight;
+    private float ix = -1, iy = -1, nx = -1, ny = -1;
+
     private MathDrill03ViewModel vm;
 
     @Override
@@ -54,6 +61,8 @@ public class MathsDrillThreeActivity extends DrillActivity {
 
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
+
+        // itemsReceptacle.setBackgroundColor(Color.argb(100, 255, 0, 0));
 
         itemsReceptacle.setOnDragListener(new View.OnDragListener() {
             @Override
@@ -167,32 +176,67 @@ public class MathsDrillThreeActivity extends DrillActivity {
     private void placeOnTable(){
         ImageView item = (ImageView)itemsReceptacle.getChildAt(draggedItems - 1);
         loadImage(item, itemResId);
+
+        float halfWidth = itemWidth * 0.8f / 2;
+        float halfHeight = itemHeight * 0.8f / 2;
+
+        if (ix == -1) {
+            ix = item.getX() + halfWidth;
+            iy = item.getY() + halfHeight;
+            nx = item.getX() + halfWidth;
+            ny = item.getY() + halfHeight;
+        } else {
+            if (item.getX() + halfWidth > nx) {
+                nx = item.getX() + halfWidth;
+            }
+            if (item.getY() + halfHeight > ny) {
+                ny = item.getY() + halfHeight;
+            }
+        }
+
         item.setVisibility(View.VISIBLE);
-        playSound(getNumberSound(), placementRunnable);
         if (draggedItems == targetItems){
             drillComplete = true;
             dragEnabled = false;
-        }
-    }
 
-    private Runnable placementRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (drillComplete && !endDrill) {
-                endDrill = true;
-                handler.delayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        playSound(FetchResource.positiveAffirmation(context), placementRunnable);
-                    }
-                }, 300);
-            } else if (endDrill) {
-                handler.removeCallbacks(placementRunnable);
-                finish();
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            for (int i = 0; i < itemsContainer.getChildCount(); i++) {
+                LiveObjectAnimator fadeView = ez.fadeHide(getLifecycle(), 500, itemsContainer.getChildAt(i));
+                if (fadeView != null) {
+                    fadeView.start();
+                }
             }
         }
-    };
+        playSound(getNumberSound(), this::completeDrill);
+    }
+
+    private void completeDrill() {
+        if (drillComplete) {
+            handler.delayed(() -> {
+                playSound(FetchResource.positiveAffirmation(context),
+                    () -> {
+                        float x = ((nx - ix) / 2) + ix;
+                        float y = ((ny - iy) / 2) + iy;
+
+                        ImageView dummyView = new ImageView(context);
+                        MarginLayoutParams dummyViewLayoutParmas = new MarginLayoutParams(
+                                MarginLayoutParams.WRAP_CONTENT,
+                                MarginLayoutParams.WRAP_CONTENT
+                        );
+                        dummyView.setLayoutParams(dummyViewLayoutParmas);
+                        dummyView.setX(x);
+                        dummyView.setY(y);
+
+                        itemsReceptacle.addView(dummyView);
+                        starWorks.play(this, dummyView);
+                    },
+                    () -> {
+                        finish();
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    }
+                );
+            }, 300);
+        }
+    }
 
     public boolean dragItem(View view, MotionEvent motionEvent){
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
@@ -261,6 +305,9 @@ public class MathsDrillThreeActivity extends DrillActivity {
                 // Set coordinates
                 iv.setX((float) square.x);
                 iv.setY((float) square.y);
+
+                itemWidth = square.w;
+                itemHeight = square.w;
 
                 iv.setVisibility(View.VISIBLE);
                 iv.setOnTouchListener(new View.OnTouchListener() {

@@ -76,7 +76,6 @@ public class MathsDrillOneActivity extends DrillActivity {
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
             numbers = allData.getJSONArray("numerals");
-            System.out.println("::: NUMBER OF NUMBERS = " + numbers.length());
             positionAndShowNumbers();
             String sound = allData.getString("its_time_to_count");
             playSound(sound, () -> {
