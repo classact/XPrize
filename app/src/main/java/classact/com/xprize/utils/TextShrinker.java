@@ -59,13 +59,19 @@ public class TextShrinker {
             float drawableWidth = initialDrawable.getIntrinsicWidth(); // Inner drawable width
             float drawableHeight = initialDrawable.getIntrinsicHeight(); // Inner drawable height
 
-            Log.d("TEST", "" + drawableWidth + ", " + drawableHeight);
+            float maxWidth = percentage * containerWidth;
+
+            if (drawableWidth > maxWidth) {
+                float resizePercentage = maxWidth / drawableWidth;
+                drawableWidth = drawableWidth * resizePercentage;
+                drawableHeight = drawableHeight * resizePercentage;
+            }
 
             Bitmap bitmap = ((BitmapDrawable) initialDrawable).getBitmap();
             newDrawable = new BitmapDrawable(resources, Bitmap.createScaledBitmap(
                     bitmap,
-                    (int) (drawableWidth * percentage),
-                    (int) (drawableHeight * percentage),
+                    (int) (drawableWidth),
+                    (int) (drawableHeight),
                     true));
 
             Log.d("New drawable", "" + newDrawable.getIntrinsicWidth() + ", " + newDrawable.getIntrinsicHeight());
