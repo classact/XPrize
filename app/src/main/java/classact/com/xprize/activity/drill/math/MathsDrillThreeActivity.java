@@ -234,7 +234,7 @@ public class MathsDrillThreeActivity extends DrillActivity {
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     }
                 );
-            }, 300);
+            }, 75);
         }
     }
 

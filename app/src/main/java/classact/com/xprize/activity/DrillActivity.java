@@ -77,6 +77,24 @@ public abstract class DrillActivity extends DaggerAppCompatActivity {
                 }));
     }
 
+    protected void disable(View... views) {
+        for (View view : views) {
+            view.setEnabled(false);
+            view.setFocusable(false);
+            view.setClickable(false);
+            view.setAlpha(0.2f);
+        }
+    }
+
+    protected void enable(View... views) {
+        for (View view : views) {
+            view.setEnabled(true);
+            view.setFocusable(true);
+            view.setClickable(true);
+            view.setAlpha(1f);
+        }
+    }
+
     protected void unHighlight(View view) {
         if (view instanceof ImageView) {
             ((ImageView) view).setColorFilter(null);

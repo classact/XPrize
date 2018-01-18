@@ -1,12 +1,7 @@
 package classact.com.xprize.activity.drill.math;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -16,8 +11,6 @@ import org.json.JSONObject;
 import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
-import classact.com.xprize.common.Code;
-import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.SquarePacker;
 
@@ -33,6 +26,8 @@ public class MathsDrillFourActivity extends DrillActivity {
 
     private final int CONTAINER_WIDTH = 750;
     private final int CONTAINER_HEIGHT = 730;
+
+    private View lastWrongView;
 
     private MathDrill04ViewModel vm;
 
@@ -69,7 +64,7 @@ public class MathsDrillFourActivity extends DrillActivity {
         leftNumber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clicked(true);
+                clicked(view, true);
             }
         });
 
@@ -93,7 +88,7 @@ public class MathsDrillFourActivity extends DrillActivity {
         rightNumber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clicked(false);
+                clicked(view, false);
             }
         });
 
@@ -107,6 +102,7 @@ public class MathsDrillFourActivity extends DrillActivity {
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
             setupItems();
+            disable(leftNumber, rightNumber);
             String sound = allData.getString("monkey_has");
             playSound(sound, new Runnable() {
                 @Override
@@ -120,9 +116,11 @@ public class MathsDrillFourActivity extends DrillActivity {
         }
     }
 
-    private void clicked(boolean left){
+    private void clicked(View view, boolean left){
         if (touchEnabled && !drillComplete) {
             try {
+                unHighlight(lastWrongView);
+
                 ImageView iv = null;
 
                 String checkBigger = allData.getString("check_bigger");
@@ -157,12 +155,18 @@ public class MathsDrillFourActivity extends DrillActivity {
                         starWorks.play(this, iv);
                     }
 
-                    playSound(FetchResource.positiveAffirmation(context), () -> {
-                        finish();
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                    });
+                    playSound(FetchResource.positiveAffirmation(context),
+                            () -> highlightCorrect(view),
+                            () -> {
+                                finish();
+                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                            }
+                        );
                 } else {
-                    playSound(FetchResource.negativeAffirmation(context), null);
+                    lastWrongView = view;
+                    playSound(FetchResource.negativeAffirmation(context),
+                            () -> highlightWrong(view),
+                            () -> unHighlight(view));
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -311,11 +315,9 @@ public class MathsDrillFourActivity extends DrillActivity {
         try {
             segment = 2;
             String sound = allData.getString("touch_the_number");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    touchEnabled = true;
-                }
+            playSound(sound, () -> {
+                touchEnabled = true;
+                enable(leftNumber, rightNumber);
             });
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -56,6 +56,9 @@ public class MathsDrillFiveActivity extends DrillActivity {
     boolean drillComplete;
     boolean endDrill;
 
+    private float itemWidth, itemHeight;
+    private float ix = -1, iy = -1, nx = -1, ny = -1;
+
     private MathDrill05AViewModel vm;
 
     @Override
@@ -154,16 +157,46 @@ public class MathsDrillFiveActivity extends DrillActivity {
         try {
             ImageView destination = (ImageView) itemsReceptacle.getChildAt(draggedItems - 1);
             loadImage(destination, itemResId);
+
+            float halfWidth = itemWidth * 0.8f / 2;
+            float halfHeight = itemHeight * 0.8f / 2;
+
+            if (ix == -1) {
+                ix = destination.getX() + halfWidth;
+                iy = destination.getY() + halfHeight;
+                nx = destination.getX() + halfWidth;
+                ny = destination.getY() + halfHeight;
+            } else {
+                if (destination.getX() + halfWidth > nx) {
+                    nx = destination.getX() + halfWidth;
+                }
+                if (destination.getY() + halfHeight > ny) {
+                    ny = destination.getY() + halfHeight;
+                }
+            }
+
             destination.setVisibility(View.VISIBLE);
             playSound(getNumberSound(), placementRunnable);
             if (draggedItems == targetItems) {
                 dragEnabled = false;
                 drillComplete = true;
-                /*new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    public void run() {
-                        playTouch();
-                    }
-                }, 1000);*/
+
+                handler.delayed(() -> {
+                    float x = ((nx - ix) / 2) + ix;
+                    float y = ((ny - iy) / 2) + iy;
+
+                    ImageView dummyView = new ImageView(context);
+                    MarginLayoutParams dummyViewLayoutParmas = new MarginLayoutParams(
+                            MarginLayoutParams.WRAP_CONTENT,
+                            MarginLayoutParams.WRAP_CONTENT
+                    );
+                    dummyView.setLayoutParams(dummyViewLayoutParmas);
+                    dummyView.setX(x);
+                    dummyView.setY(y);
+
+                    itemsReceptacle.addView(dummyView);
+                    starWorks.play(this, dummyView);
+                }, 100);
             }
         }
         catch(Exception ex){
@@ -298,18 +331,19 @@ public class MathsDrillFiveActivity extends DrillActivity {
                     ivParams.topMargin = 0;
                     ivParams.width = square.w;
                     ivParams.height = square.w;
+
+                    itemWidth = square.w;
+                    itemHeight = square.w;
+
                     iv.setLayoutParams(ivParams);
                     // Set coordinates
                     iv.setX((float) square.x);
                     iv.setY((float) square.y);
                     // Set image
                     iv.setVisibility(View.VISIBLE);
-                    iv.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            itemResId = imageId;
-                            return dragItem(v,event);
-                        }
+                    iv.setOnTouchListener((v, event) -> {
+                        itemResId = imageId;
+                        return dragItem(v,event);
                     });
                 }
             }
@@ -320,23 +354,17 @@ public class MathsDrillFiveActivity extends DrillActivity {
         }
     }
 
-    private Runnable placementRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (drillComplete && !endDrill) {
-                endDrill = true;
-                handler.delayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        playSound(FetchResource.positiveAffirmation(context), placementRunnable);
-                    }
-                }, 500);
-            } else if (endDrill) {
-                finish();
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
+    private Runnable placementRunnable = () -> {
+        if (drillComplete && !endDrill) {
+            endDrill = true;
+            handler.delayed(() -> playSound(FetchResource.positiveAffirmation(context), this::endDrill), 0);
         }
     };
+
+    private void endDrill() {
+        finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
 
     private void setupNumbers(){
         try {
@@ -411,12 +439,7 @@ public class MathsDrillFiveActivity extends DrillActivity {
     private void dragItems(){
         try{
             String sound = allData.getString("drag_items_onto_shelf");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    dragEnabled = true;
-                }
-            });
+            playSound(sound, () -> dragEnabled = true);
         }
         catch (Exception ex){
             ex.printStackTrace();
