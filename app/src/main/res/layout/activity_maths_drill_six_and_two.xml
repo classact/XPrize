@@ -17,7 +17,7 @@
         android:layout_marginLeft="10dip"
         android:layout_marginTop="40dip"
         android:id="@+id/big_shape_one"
-        android:src="@drawable/rectangular_cake" />
+        android:background="@android:color/transparent" />
     <ImageView
         android:layout_width="200dip"
         android:layout_height="200dip"
@@ -26,7 +26,7 @@
         android:layout_marginTop="150dip"
         android:layout_marginLeft="100dip"
         android:id="@+id/small_shape_one"
-        android:src="@drawable/rectangular_cake" />
+        android:background="@android:color/transparent" />
     <ImageView
         android:layout_width="320dip"
         android:layout_height="320dip"
@@ -34,7 +34,7 @@
         android:layout_marginLeft="10dip"
         android:layout_below="@id/big_shape_one"
         android:id="@+id/big_shape_two"
-        android:src="@drawable/rectangular_cake" />
+        android:background="@android:color/transparent" />
     <ImageView
         android:layout_width="200dip"
         android:layout_height="200dip"
@@ -44,5 +44,5 @@
         android:layout_marginLeft="100dip"
         android:layout_marginTop="120dip"
         android:id="@+id/small_shape_two"
-        android:src="@drawable/rectangular_cake" />
+        android:background="@android:color/transparent" />
 </RelativeLayout>

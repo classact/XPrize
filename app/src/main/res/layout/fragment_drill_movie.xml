@@ -1,0 +1,87 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/fragment_container"
+    tools:context="classact.com.xprize.fragment.drill.movie.DrillMovieFragment">
+
+    <!-- Base Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <!-- Base Guidelines END -->
+
+    <!-- Background START -->
+
+    <ImageView
+        android:id="@+id/fragment_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:contentDescription="@string/Background_Image"/>
+
+    <!-- Background END -->
+
+    <!-- Movie START -->
+
+    <!-- Movie Guideline END -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_movie_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="75dp"/>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/guideline_subtitle_mid"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="715dp"/>
+
+    <!-- Movie Guideline END -->
+
+    <!-- Movie Surface View START -->
+
+    <SurfaceView
+        android:id="@+id/movie_surface"
+        android:layout_width="928dp"
+        android:layout_height="522dp"
+        app:layout_constraintTop_toBottomOf="@id/guideline_movie_top"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_mid_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_mid_vertical" />
+
+    <!-- Movie Surface View END -->
+
+    <!-- Movie Subtitle START -->
+
+    <TextView
+        android:id="@+id/movie_subtitle"
+        android:textSize="54sp"
+        android:layout_width="960dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="@id/guideline_subtitle_mid"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_mid_vertical"
+        app:layout_constraintRight_toLeftOf="@id/guideline_mid_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_subtitle_mid" />
+
+    <!-- Movie Subtitle END -->
+
+    <!-- Movie END -->
+
+</android.support.constraint.ConstraintLayout>

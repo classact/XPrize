@@ -10,18 +10,20 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/background_monkey_wants_to_eat"
     tools:context="classact.com.xprize.activity.drill.math.MathsDrillThreeActivity">
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_marginTop="450dip"
         android:id="@+id/itemsReceptacle"
         android:layout_height="wrap_content">
+
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/item_one"
             android:visibility="invisible"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -29,7 +31,7 @@
             android:id="@+id/item_two"
             android:visibility="invisible"
             android:layout_toRightOf="@+id/item_one"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -37,7 +39,7 @@
             android:id="@+id/item_three"
             android:visibility="invisible"
             android:layout_toRightOf="@+id/item_two"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -45,7 +47,7 @@
             android:id="@+id/item_four"
             android:visibility="invisible"
             android:layout_toRightOf="@+id/item_three"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -53,7 +55,7 @@
             android:id="@+id/item_five"
             android:visibility="invisible"
             android:layout_toRightOf="@+id/item_four"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -61,7 +63,7 @@
             android:visibility="invisible"
             android:contentDescription="@string/app_name"
             android:id="@+id/item_six"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -70,7 +72,7 @@
             android:id="@+id/item_seven"
             android:layout_below="@+id/item_two"
             android:visibility="invisible"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -79,7 +81,7 @@
             android:layout_below="@+id/item_three"
             android:visibility="invisible"
             android:layout_toRightOf="@id/item_seven"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -88,7 +90,7 @@
             android:layout_below="@+id/item_four"
             android:visibility="invisible"
             android:layout_toRightOf="@id/item_eight"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -97,7 +99,7 @@
             android:layout_below="@+id/item_five"
             android:visibility="invisible"
             android:layout_toRightOf="@id/item_nine"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -110,7 +112,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/item1"
             android:visibility="invisible"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -118,7 +120,7 @@
             android:id="@+id/item2"
             android:layout_below="@+id/item1"
             android:visibility="invisible"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -126,7 +128,7 @@
             android:id="@+id/item3"
             android:layout_below="@+id/item2"
             android:visibility="invisible"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -134,7 +136,7 @@
             android:id="@+id/item4"
             android:layout_below="@+id/item3"
             android:visibility="invisible"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -142,7 +144,7 @@
             android:id="@+id/item5"
             android:layout_below="@+id/item4"
             android:visibility="invisible"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -150,7 +152,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/item6"
             android:visibility="invisible"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -159,7 +161,7 @@
             android:id="@+id/item7"
             android:visibility="invisible"
             android:layout_below="@+id/item6"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -168,7 +170,7 @@
             android:id="@+id/item8"
             android:layout_below="@+id/item7"
             android:layout_toRightOf="@id/item1"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -177,7 +179,7 @@
             android:id="@+id/item9"
             android:layout_below="@+id/item8"
             android:layout_toRightOf="@id/item1"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="145dip"
             android:layout_height="145dip"
@@ -186,6 +188,6 @@
             android:layout_below="@+id/item9"
             android:visibility="invisible"
             android:layout_toRightOf="@id/item1"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
     </RelativeLayout>
 </RelativeLayout>

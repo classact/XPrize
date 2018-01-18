@@ -4,18 +4,25 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.util.SparseArray;
 
-import java.util.LinkedHashMap;
+import javax.inject.Inject;
 
 import classact.com.xprize.database.model.UnitSection;
 
 /**
  * Created by hcdjeong on 2017/07/24.
+ * Helper for {@link UnitSection}
  */
 
 public class UnitSectionHelper {
 
-    public static void clearInProgress(SQLiteDatabase db) throws SQLiteException {
+    @Inject
+    public UnitSectionHelper() {
+
+    }
+
+    public void clearInProgress(SQLiteDatabase db) throws SQLiteException {
         Cursor cursor = db.rawQuery(
                 "UPDATE tbl_UnitSection " +
                         "SET InProgress = 0 " +
@@ -24,7 +31,7 @@ public class UnitSectionHelper {
         cursor.close();
     }
 
-    public static int update(SQLiteDatabase db, UnitSection unitSection) throws SQLiteException {
+    public int update(SQLiteDatabase db, UnitSection unitSection) throws SQLiteException {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put("UnitId", unitSection.getUnitId());
@@ -36,12 +43,13 @@ public class UnitSectionHelper {
         contentValues.put("Unlocked", unitSection.getUnlocked());
         contentValues.put("UnlockedDate", unitSection.getUnlockedDate());
         contentValues.put("InProgress", unitSection.getInProgress());
-        int id = db.update("tbl_UnitSection", contentValues, "_id = ? ",
+        int numOfUpdatedRows = db.update("tbl_UnitSection", contentValues, "_id = ? ",
                 new String[] { Integer.toString(unitSection.getUnitSectionId()) });
-        return id;
+        contentValues.clear();
+        return numOfUpdatedRows;
     }
 
-    public static UnitSection getUnitSection(SQLiteDatabase db, int id) throws SQLiteException {
+    public UnitSection getUnitSection(SQLiteDatabase db, int id) throws SQLiteException {
 
         Cursor cursor = db.rawQuery(
                 "SELECT " +
@@ -71,12 +79,12 @@ public class UnitSectionHelper {
             unitSection.setUnlocked(cursor.getInt(cursor.getColumnIndex("Unlocked")));
             unitSection.setUnlockedDate(cursor.getString(cursor.getColumnIndex("UnlockedDate")));
             unitSection.setInProgress(cursor.getInt(cursor.getColumnIndex("InProgress")));
-            cursor.close();
         }
+        cursor.close();
         return unitSection;
     }
 
-    public static UnitSection getUnitSection(SQLiteDatabase db, int unitId, int sectionId, int sectionSubId) throws SQLiteException {
+    public UnitSection getUnitSection(SQLiteDatabase db, int unitId, int sectionId, int sectionSubId) throws SQLiteException {
 
         Cursor cursor = db.rawQuery(
                 "SELECT " +
@@ -110,12 +118,12 @@ public class UnitSectionHelper {
             unitSection.setUnlocked(cursor.getInt(cursor.getColumnIndex("Unlocked")));
             unitSection.setUnlockedDate(cursor.getString(cursor.getColumnIndex("UnlockedDate")));
             unitSection.setInProgress(cursor.getInt(cursor.getColumnIndex("InProgress")));
-            cursor.close();
         }
+        cursor.close();
         return unitSection;
     }
 
-    public static UnitSection getUnitSectionInProgress(SQLiteDatabase db, int languageId) throws SQLiteException {
+    public UnitSection getUnitSectionInProgress(SQLiteDatabase db, int languageId) throws SQLiteException {
 
         Cursor cursor = db.rawQuery(
                 "SELECT " +
@@ -150,17 +158,17 @@ public class UnitSectionHelper {
             unitSection.setUnlocked(cursor.getInt(cursor.getColumnIndex("Unlocked")));
             unitSection.setUnlockedDate(cursor.getString(cursor.getColumnIndex("UnlockedDate")));
             unitSection.setInProgress(cursor.getInt(cursor.getColumnIndex("InProgress")));
-            cursor.close();
         }
+        cursor.close();
         return unitSection;
     }
 
-    public static LinkedHashMap<Integer, UnitSection> getUnitSections(
+    public SparseArray<UnitSection> getUnitSections(
             SQLiteDatabase db,
             int languageId,
             int unitId) throws SQLiteException {
 
-        LinkedHashMap<Integer, UnitSection> unitSections = null;
+        SparseArray<UnitSection> unitSections = null;
 
         Cursor cursor = db.rawQuery(
                 "SELECT " +
@@ -180,7 +188,7 @@ public class UnitSectionHelper {
                         "ORDER BY SectionOrder ASC", null);
 
         if (cursor.getCount() > 0) {
-            unitSections = new LinkedHashMap<>();
+            unitSections = new SparseArray<>();
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 UnitSection unitSection = new UnitSection();
                 unitSection.setUnitSectionId(cursor.getInt(cursor.getColumnIndex("_id")));
@@ -195,14 +203,14 @@ public class UnitSectionHelper {
                 unitSection.setInProgress(cursor.getInt(cursor.getColumnIndex("InProgress")));
                 unitSections.put(unitSection.getUnitSectionId(), unitSection);
             }
-            cursor.close();
         }
+        cursor.close();
         return unitSections;
     }
 
-    public static LinkedHashMap<Integer, UnitSection> getUnitSections(SQLiteDatabase db, int languageId, int unitId, int sectionId) throws SQLiteException {
+    public SparseArray<UnitSection> getUnitSections(SQLiteDatabase db, int languageId, int unitId, int sectionId) throws SQLiteException {
 
-        LinkedHashMap<Integer, UnitSection> unitSections = null;
+        SparseArray<UnitSection> unitSections = null;
 
         Cursor cursor = db.rawQuery(
                 "SELECT " +
@@ -223,7 +231,7 @@ public class UnitSectionHelper {
                         "ORDER BY SectionOrder ASC", null);
 
         if (cursor.getCount() > 0) {
-            unitSections = new LinkedHashMap<>();
+            unitSections = new SparseArray<>();
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 UnitSection unitSection = new UnitSection();
                 unitSection.setUnitSectionId(cursor.getInt(cursor.getColumnIndex("_id")));
@@ -238,8 +246,8 @@ public class UnitSectionHelper {
                 unitSection.setInProgress(cursor.getInt(cursor.getColumnIndex("InProgress")));
                 unitSections.put(unitSection.getUnitSectionId(), unitSection);
             }
-            cursor.close();
         }
+        cursor.close();
         return unitSections;
     }
 }

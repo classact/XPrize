@@ -3,6 +3,8 @@ package classact.com.xprize.activity.drill.tutorial;
 import android.os.Handler;
 import android.os.Message;
 
+import classact.com.xprize.utils.LiveHandler;
+
 /**
  * Created by hyunchanjeong on 2017/01/13.
  */
@@ -16,13 +18,13 @@ public class TutorialController extends Handler {
     private final String SPLASH_VISIBLE = "_SPLASH_VISIBLE";
     private final String ACTIVITY_TRANSITION = "_ACTIVITY_TRANSITION";
 
-    private static class DelayHandler extends Handler {}
-    private final DelayHandler delayHandler = new DelayHandler();
+    private LiveHandler handler;
 
     private final Tutorial t;
 
-    public TutorialController(Tutorial a) {
+    public TutorialController(Tutorial a, LiveHandler handler) {
         t = a;
+        this.handler = handler;
     }
 
     @Override
@@ -468,7 +470,7 @@ public class TutorialController extends Handler {
              * Run start demo
              */
             case TutorialStates.TUT_R02_START_INTRO + READY:
-                delayHandler.postDelayed(new Runnable() {
+                handler.delayed(new Runnable() {
                     @Override
                     public void run() {
                         t.play(TutorialStates.TUT_R02_START_DEMO);
@@ -519,7 +521,7 @@ public class TutorialController extends Handler {
              * Run play demo
              */
             case TutorialStates.TUT_R02_PLAY_INTRO + READY:
-                delayHandler.postDelayed(new Runnable() {
+                handler.delayed(new Runnable() {
                     @Override
                     public void run() {
                         t.play(TutorialStates.TUT_R02_PLAY_DEMO);
@@ -570,7 +572,7 @@ public class TutorialController extends Handler {
              * Run play demo
              */
             case TutorialStates.TUT_R02_STOP_INTRO + READY:
-                delayHandler.postDelayed(new Runnable() {
+                handler.delayed(new Runnable() {
                     @Override
                     public void run() {
                         t.play(TutorialStates.TUT_R02_STOP_DEMO);
@@ -621,7 +623,7 @@ public class TutorialController extends Handler {
              * Run touch demo
              */
             case TutorialStates.TUT_R02_TOUCH_INTRO + READY:
-                delayHandler.postDelayed(new Runnable() {
+                handler.delayed(new Runnable() {
                     @Override
                     public void run() {
                             t.play(TutorialStates.TUT_R02_TOUCH_DEMO);
@@ -672,7 +674,7 @@ public class TutorialController extends Handler {
              * Run drag demo
              */
             case TutorialStates.TUT_R02_DRAG_INTRO + READY:
-                delayHandler.postDelayed(new Runnable() {
+                handler.delayed(new Runnable() {
                     @Override
                     public void run() {
                         t.play(TutorialStates.TUT_R02_DRAG_DEMO);
@@ -723,7 +725,7 @@ public class TutorialController extends Handler {
              * Run draw demo
              */
             case TutorialStates.TUT_R02_DRAW_INTRO + READY:
-                delayHandler.postDelayed(new Runnable() {
+                handler.delayed(new Runnable() {
                     @Override
                     public void run() {
                         t.play(TutorialStates.TUT_R02_DRAW_DEMO);
@@ -774,7 +776,7 @@ public class TutorialController extends Handler {
              * Run pause demo
              */
             case TutorialStates.TUT_R02_PAUSE_INTRO + READY:
-                delayHandler.postDelayed(new Runnable() {
+                handler.delayed(new Runnable() {
                     @Override
                     public void run() {
                         t.play(TutorialStates.TUT_R02_PAUSE_DEMO);
@@ -822,7 +824,7 @@ public class TutorialController extends Handler {
             case TutorialStates.TUT_END + READY:
                 // Play tutorial ending audio
                 t.play(TutorialStates.TUT_END);
-                delayHandler.postDelayed(new Runnable() {
+                handler.delayed(new Runnable() {
                     @Override
                     public void run() {
                         // Show chapter 01 splash screen

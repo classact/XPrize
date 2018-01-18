@@ -1,148 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_sound_drill_fourteen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="classact.com.xprize.activity.drill.sound.SoundDrillFourteenActivity">
+
     <LinearLayout
         android:id="@+id/layout1"
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:layout_height="wrap_content">
+
         <ImageView
-            android:layout_marginLeft="5dip"
+            android:layout_marginStart="5dip"
             android:layout_width="180dip"
-            android:src="@drawable/alower_black"
+            android:background="@android:color/transparent"
             android:id="@+id/item1"
             android:contentDescription="@string/app_name"
             android:layout_height="180dip" />
+
         <ImageView
-            android:layout_marginLeft="5dip"
+            android:layout_marginStart="5dip"
             android:layout_width="180dip"
-            android:src="@drawable/alower_black"
+            android:background="@android:color/transparent"
             android:id="@+id/item2"
             android:contentDescription="@string/app_name"
             android:layout_height="180dip" />
+
         <ImageView
-            android:layout_marginLeft="5dip"
+            android:layout_marginStart="5dip"
             android:layout_width="180dip"
-            android:src="@drawable/alower_black"
+            android:background="@android:color/transparent"
             android:id="@+id/item3"
             android:contentDescription="@string/app_name"
             android:layout_height="180dip" />
+
         <ImageView
-            android:layout_marginLeft="5dip"
-            android:src="@drawable/alower_black"
+            android:layout_marginStart="5dip"
+            android:background="@android:color/transparent"
             android:layout_width="180dip"
             android:id="@+id/item4"
             android:contentDescription="@string/app_name"
             android:layout_height="180dip" />
+
         <ImageView
-            android:layout_marginLeft="5dip"
-            android:src="@drawable/alower_black"
+            android:layout_marginStart="5dip"
+            android:background="@android:color/transparent"
             android:layout_width="180dip"
             android:id="@+id/item5"
             android:contentDescription="@string/app_name"
             android:layout_height="180dip" />
+
         <ImageView
-            android:layout_marginLeft="5dip"
-            android:src="@drawable/alower_black"
+            android:layout_marginStart="5dip"
+            android:background="@android:color/transparent"
             android:layout_width="180dip"
             android:id="@+id/item6"
             android:contentDescription="@string/app_name"
             android:layout_height="180dip" />
+
         <ImageView
-            android:layout_marginLeft="5dip"
+            android:layout_marginStart="5dip"
             android:layout_width="180dip"
-            android:src="@drawable/alower_black"
+            android:background="@android:color/transparent"
             android:id="@+id/item7"
             android:contentDescription="@string/app_name"
             android:layout_height="180dip" />
+
         <ImageView
-            android:layout_marginLeft="5dip"
+            android:layout_marginStart="5dip"
             android:layout_width="180dip"
-            android:src="@drawable/alower_black"
+            android:background="@android:color/transparent"
             android:id="@+id/item8"
             android:contentDescription="@string/app_name"
             android:layout_height="180dip" />
+
         <ImageView
-            android:layout_marginLeft="5dip"
+            android:layout_marginStart="5dip"
             android:layout_width="180dip"
-            android:src="@drawable/alower_black"
+            android:background="@android:color/transparent"
             android:id="@+id/item9"
             android:contentDescription="@string/app_name"
             android:layout_height="180dip" />
+
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_below="@+id/layout1"
         android:layout_marginTop="300dp"
         android:orientation="horizontal"
         android:layout_height="wrap_content">
+
         <ImageView
-            android:layout_marginLeft="50dip"
+            android:layout_marginStart="50dip"
             android:layout_width="120dip"
             android:id="@+id/loc1"
-            android:src="@drawable/line"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
             android:layout_height="120dip" />
+
         <ImageView
-            android:layout_marginLeft="30dip"
+            android:layout_marginStart="30dip"
             android:layout_width="120dip"
             android:id="@+id/loc2"
-            android:src="@drawable/line"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
             android:layout_height="120dip" />
+
         <ImageView
-            android:layout_marginLeft="30dip"
+            android:layout_marginStart="30dip"
             android:layout_width="120dip"
             android:id="@+id/loc3"
-            android:src="@drawable/line"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
             android:layout_height="120dip" />
+
         <ImageView
-            android:layout_marginLeft="30dip"
+            android:layout_marginStart="30dip"
             android:layout_width="120dip"
             android:id="@+id/loc4"
-            android:src="@drawable/line"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
             android:layout_height="120dip" />
+
         <ImageView
-            android:layout_marginLeft="30dip"
+            android:layout_marginStart="30dip"
             android:layout_width="120dip"
             android:id="@+id/loc5"
-            android:src="@drawable/line"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
             android:layout_height="120dip" />
+
         <ImageView
-            android:layout_marginLeft="30dip"
+            android:layout_marginStart="30dip"
             android:layout_width="120dip"
             android:id="@+id/loc6"
-            android:src="@drawable/line"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
             android:layout_height="120dip" />
+
         <ImageView
-            android:layout_marginLeft="30dip"
+            android:layout_marginStart="30dip"
             android:layout_width="120dip"
             android:id="@+id/loc7"
-            android:src="@drawable/line"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
             android:layout_height="120dip" />
+
         <ImageView
-            android:layout_marginLeft="30dip"
+            android:layout_marginStart="30dip"
             android:layout_width="120dip"
             android:id="@+id/loc8"
-            android:src="@drawable/line"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
             android:layout_height="120dp" />
+
         <ImageView
-            android:layout_marginLeft="30dip"
+            android:layout_marginStart="30dip"
             android:layout_width="120dip"
             android:id="@+id/loc9"
-            android:src="@drawable/line"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
             android:layout_height="120dp" />
+
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/writing_canvas_container"
         android:layout_width="match_parent"
@@ -151,4 +175,5 @@
         android:alpha="0.6"
         android:textColor="#FFFFFF" >
     </LinearLayout>
+
 </RelativeLayout>

@@ -1,30 +1,25 @@
 package classact.com.xprize.activity.drill.math;
 
-import android.content.Context;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import org.json.JSONObject;
 
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
-import classact.com.xprize.common.Code;
-import classact.com.xprize.common.Globals;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.SquarePacker;
 
-public class MathsDrillFourActivity extends AppCompatActivity {
+public class MathsDrillFourActivity extends DrillActivity {
     private RelativeLayout rightContainer;
     private RelativeLayout leftContainer;
     private ImageView leftNumber;
     private ImageView rightNumber;
     private JSONObject allData;
-    private MediaPlayer mp;
     private int segment = 1;
     private boolean touchEnabled;
     private boolean drillComplete;
@@ -32,12 +27,25 @@ public class MathsDrillFourActivity extends AppCompatActivity {
     private final int CONTAINER_WIDTH = 750;
     private final int CONTAINER_HEIGHT = 730;
 
-    private final Context THIS = this;
+    private View lastWrongView;
+
+    private MathDrill04ViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_four);
+        ButterKnife.bind(this);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill04ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         leftContainer = (RelativeLayout)findViewById(R.id.left_container);
         // leftContainer.setBackgroundColor(Color.argb(150, 255, 0, 0));
         RelativeLayout.LayoutParams lcParams = (RelativeLayout.LayoutParams) leftContainer.getLayoutParams();
@@ -56,7 +64,7 @@ public class MathsDrillFourActivity extends AppCompatActivity {
         leftNumber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clicked(true);
+                clicked(view, true);
             }
         });
 
@@ -80,7 +88,7 @@ public class MathsDrillFourActivity extends AppCompatActivity {
         rightNumber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clicked(false);
+                clicked(view, false);
             }
         });
 
@@ -89,45 +97,12 @@ public class MathsDrillFourActivity extends AppCompatActivity {
         initialise();
     }
 
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
-    }
-
     private void initialise(){
         try{
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
             setupItems();
+            disable(leftNumber, rightNumber);
             String sound = allData.getString("monkey_has");
             playSound(sound, new Runnable() {
                 @Override
@@ -141,38 +116,57 @@ public class MathsDrillFourActivity extends AppCompatActivity {
         }
     }
 
-    private void clicked(boolean left){
+    private void clicked(View view, boolean left){
         if (touchEnabled && !drillComplete) {
             try {
+                unHighlight(lastWrongView);
+
+                ImageView iv = null;
+
                 String checkBigger = allData.getString("check_bigger");
                 int leftItems = allData.getInt("number_of_left_items");
                 int rightItems = allData.getInt("number_of_right_items");
+
                 boolean isRight = false;
+
                 if (checkBigger.equalsIgnoreCase("yes")) {
-                    if (left && leftItems >= rightItems)
+                    if (left && leftItems >= rightItems) {
                         isRight = true;
-                    else if (!left && rightItems >= leftItems)
+                        iv = leftNumber;
+                    } else if (!left && rightItems >= leftItems) {
                         isRight = true;
+                        iv = rightNumber;
+                    }
                 } else {
-                    if (left && leftItems <= rightItems)
+                    if (left && leftItems <= rightItems) {
                         isRight = true;
-                    else if (!left && rightItems <= leftItems)
+                        iv = leftNumber;
+                    } else if (!left && rightItems <= leftItems) {
                         isRight = true;
+                        iv = rightNumber;
+                    }
                 }
+
                 if (isRight) {
                     touchEnabled = false;
                     drillComplete = true;
-                    playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mp != null) {
-                                mp.release();
+
+                    if (iv != null) {
+                        starWorks.play(this, iv);
+                    }
+
+                    playSound(FetchResource.positiveAffirmation(context),
+                            () -> highlightCorrect(view),
+                            () -> {
+                                finish();
+                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                             }
-                            finish();
-                        }
-                    });
+                        );
                 } else {
-                    playSound(FetchResource.negativeAffirmation(THIS), null);
+                    lastWrongView = view;
+                    playSound(FetchResource.negativeAffirmation(context),
+                            () -> highlightWrong(view),
+                            () -> unHighlight(view));
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -202,14 +196,14 @@ public class MathsDrillFourActivity extends AppCompatActivity {
 
             // Left objects
             // Set number
-            numberId = FetchResource.imageId(THIS, allData, "left_number_image");
-            leftNumber.setImageResource(numberId);
+            numberId = FetchResource.imageId(context, allData, "left_number_image");
+            loadImage(leftNumber, numberId);
 
             // Set data
             n = allData.getInt("number_of_left_items");
             w = CONTAINER_WIDTH;
             h = CONTAINER_HEIGHT;
-            imageId = FetchResource.imageId(THIS, allData, "left_items_item");
+            imageId = FetchResource.imageId(context, allData, "left_items_item");
 
             // Pack squares
             SquarePacker.generate(this, leftContainer, n, w, h, imageId);
@@ -232,14 +226,14 @@ public class MathsDrillFourActivity extends AppCompatActivity {
 
             // Right objects
             // Set number
-            numberId = FetchResource.imageId(THIS, allData, "right_number_image");
-            rightNumber.setImageResource(numberId);
+            numberId = FetchResource.imageId(context, allData, "right_number_image");
+            loadImage(rightNumber, numberId);
 
             // Set data
             n = allData.getInt("number_of_right_items");
             w = CONTAINER_WIDTH;
             h = CONTAINER_HEIGHT;
-            imageId = FetchResource.imageId(THIS, allData, "right_items_item");
+            imageId = FetchResource.imageId(context, allData, "right_items_item");
 
             // Pack squares
             SquarePacker.generate(this, rightContainer, n, w, h, imageId);
@@ -321,40 +315,12 @@ public class MathsDrillFourActivity extends AppCompatActivity {
         try {
             segment = 2;
             String sound = allData.getString("touch_the_number");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    touchEnabled = true;
-                }
+            playSound(sound, () -> {
+                touchEnabled = true;
+                enable(leftNumber, rightNumber);
             });
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

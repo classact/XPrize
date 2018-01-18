@@ -1,48 +1,116 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="horizontal"
     android:layout_height="match_parent"
+    android:id="@+id/activity_sound_drill_two"
     android:background="@drawable/background_twoframedrill1"
     tools:context="classact.com.xprize.activity.drill.sound.SoundDrillTwoActivity">
 
-    <LinearLayout
-        android:layout_width="0dip"
+    <!-- Base Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_weight="5"
-        android:background="@android:color/transparent"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <!-- Base Guidelines END -->
+
+    <!-- Background START -->
+
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="50dip">
+        android:scaleType="fitXY"
+        android:contentDescription="@string/Background_Image"
+        android:background="@android:color/transparent" />
 
-        <ImageView
-            android:id="@+id/item1"
-            android:layout_width="390dip"
-            android:layout_height="390dip"
-            android:layout_gravity="center"
-            android:layout_marginStart="82dip"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/applepic"
-            android:visibility="invisible"/>
-    </LinearLayout>
+    <!-- Background END -->
 
-    <LinearLayout
-        android:layout_width="0dip"
-        android:layout_margin="50dip"
+    <!-- Left Image START -->
+
+    <!-- Left Image Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_left_image_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_weight="5"
-        android:background="@android:color/transparent"
-        android:layout_height="match_parent">
+        app:layout_constraintGuide_percent="0.5125"/>
 
-        <ImageView
-            android:id="@+id/item2"
-            android:layout_width="390dip"
-            android:layout_height="390dip"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:layout_marginStart="48dip"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/mugpic"
-            android:visibility="invisible"/>
-    </LinearLayout>
-</LinearLayout>
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_left_image_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25625"/>
+
+    <!-- Left Image Guidelines END -->
+
+    <!-- Left Image Button START -->
+
+    <ImageView
+        android:id="@+id/left_image"
+        android:layout_width="wrap_content"
+        android:layout_height="376dp"
+        android:contentDescription="@string/Select_Left_Image"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/guideline_left_image_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_left_image_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_left_image_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_left_image_horizontal"/>
+
+    <!-- Left Image Button END -->
+
+    <!-- Left Image END -->
+
+    <!-- Right Image START -->
+
+    <!-- Right Image Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_right_image_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5125"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_right_image_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.73"/>
+
+    <!-- Right Image Guidelines END -->
+
+    <!-- Right Image Button START -->
+
+    <ImageView
+        android:id="@+id/right_image"
+        android:contentDescription="@string/Select_Right_Image"
+        android:layout_width="wrap_content"
+        android:layout_height="376dp"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/guideline_right_image_horizontal"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_right_image_vertical"
+        app:layout_constraintRight_toRightOf="@id/guideline_right_image_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_right_image_horizontal"/>
+
+    <!-- Right Image Button END -->
+
+    <!-- Right Image END -->
+
+</android.support.constraint.ConstraintLayout>

@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -24,13 +26,15 @@ import org.json.JSONObject;
 
 import java.util.LinkedHashMap;
 
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 
-public class MathsDrillSevenActivity extends AppCompatActivity implements View.OnTouchListener, View.OnDragListener {
+public class MathsDrillSevenActivity extends DrillActivity implements View.OnTouchListener, View.OnDragListener {
     private LinearLayout itemsContainer;
     private ImageView filler1;
     private ImageView filler2;
@@ -38,16 +42,16 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
     private ImageView filler4;
     private ImageView filler5;
     private ImageView itemToFill;
-    private MediaPlayer mp;
     private JSONObject allData;
     private boolean isInReceptacle;
     private int draggedItemIndex;
     private int currentItem = 0;
     private ImageView pattern;
-    private Handler handler;
     private boolean endDrill;
     private ImageView[] fillerViews;
     private ImageView[] visibleFillerViews;
+
+    private ImageView itemToFillSub;
 
     private LinkedHashMap<ImageView, Integer> draggableViewIndexes;
 
@@ -56,21 +60,35 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
     private final int DRAG_TAG = 0;
 
     private RelativeLayout parentView;
-    private final Context THIS = this;
+
+    private MathDrill07AViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_seven);
+        ButterKnife.bind(this);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill07AViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         parentView = (RelativeLayout) findViewById(R.id.activity_maths_drill_seven);
 
         itemsContainer = (LinearLayout)findViewById(R.id.itemsContainer);
+        // itemsContainer.setBackgroundColor(Color.argb(100, 0, 255, 0));
         itemsContainer.setOnDragListener(this);
         itemToFill = (ImageView)findViewById(R.id.missing);
 
         RelativeLayout.LayoutParams itemsContainerLayout = (RelativeLayout.LayoutParams) itemsContainer.getLayoutParams();
         itemsContainerLayout.leftMargin += 70;
         itemsContainer.setLayoutParams(itemsContainerLayout);
+        itemsContainer.setPadding(0, 0, 0, 0);
 
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         float density = displayMetrics.density;
@@ -81,6 +99,18 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         itemFillLayout.width = itemFillWidth;
         itemFillLayout.height = itemFillWidth;
         itemToFill.setLayoutParams(itemFillLayout);
+
+        int ivFillWidth = (int) ((float) 175 * density);
+
+        itemToFillSub = new ImageView(context);
+        parentView.addView(itemToFillSub);
+        ViewGroup.MarginLayoutParams itemToFillSubLP = (ViewGroup.MarginLayoutParams) itemToFillSub.getLayoutParams();
+        itemToFillSubLP.width = ivFillWidth;
+        itemToFillSubLP.height = ivFillWidth;
+        itemToFillSub.setLayoutParams(itemToFillSubLP);
+        // itemToFillSub.setBackgroundColor(Color.argb(100, 255, 0, 0));
+        itemToFillSub.setX(1670f);
+        itemToFillSub.setY(430f);
 
         pattern = (ImageView)findViewById(R.id.pattern);
 
@@ -99,7 +129,6 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
 
         visibleFillerViews = new ImageView[fillerViews.length];
 
-        handler = new Handler();
         dragEnabled = false;
         endDrill = false;
         resetFillers();
@@ -111,8 +140,8 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
             String patternImage = allData.getString("demo_pattern");
-            int patternImageId = FetchResource.imageId(THIS, patternImage);
-            pattern.setImageResource(patternImageId);
+            int patternImageId = FetchResource.imageId(context, patternImage);
+            loadImage(pattern, patternImageId);
 
             dragEnabled = false;
 
@@ -125,7 +154,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -141,7 +170,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -158,7 +187,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -174,7 +203,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -190,7 +219,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -199,11 +228,12 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         try{
             JSONObject item = allData.getJSONArray("completion_pieces").getJSONObject(draggedItemIndex);
             String image = item.getString("image");
-            int imageId = FetchResource.imageId(THIS, image);
-            itemToFill.setImageResource(imageId);
+            int imageId = FetchResource.imageId(context, image);
+            itemToFill.setImageResource(0);
+            loadImage(itemToFillSub, imageId);
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -216,7 +246,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
                 isCorrectItem = true;
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
         return isCorrectItem;
@@ -243,11 +273,11 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
             for (int i = 0; i < numberOfItems; i++) {
                 JSONObject obj = fillers.getJSONObject(i);
                 String objImage = obj.getString("image");
-                int objImageId = FetchResource.imageId(THIS, objImage);
+                int objImageId = FetchResource.imageId(context, objImage);
 
                 int si = s[i];
                 ImageView fillerView = fillerViews[si];
-                fillerView.setImageResource(objImageId);
+                loadImage(fillerView, objImageId);
                 draggableViewIndexes.put(fillerView, i);
                 fillerView.setOnTouchListener(this);
                 fillerView.setVisibility(View.VISIBLE);
@@ -256,7 +286,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
             respaceFillers();
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -308,18 +338,15 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
                     draggedItemIndex = draggableViewIndexes.get(v);
-                    String tag = (String) v.getTag();
-                    ClipData.Item item = new ClipData.Item(tag);
-                    ClipData dragData = new ClipData(tag, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
                     View.DragShadowBuilder dragShadow = new View.DragShadowBuilder(v);
-                    v.startDragAndDrop(dragData, dragShadow, v, 0);
+                    v.startDragAndDrop(null, dragShadow, v, 0);
                     v.setVisibility(View.INVISIBLE);
                     return true;
                 default:
                     break;
             }
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
         return false;
@@ -331,10 +358,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
         try {
             switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
-                    if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
-                        return true;
-                    }
-                    return false;
+                    return true;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     return true;
                 case DragEvent.ACTION_DRAG_LOCATION:
@@ -344,7 +368,7 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
                 case DragEvent.ACTION_DROP:
                     if (dragEnabled) {
                         if (!isCorrectItem()) {
-                            playSound(FetchResource.negativeAffirmation(THIS), null);
+                            playSound(FetchResource.negativeAffirmation(context), null);
                             return false;
                         }
                         return true;
@@ -357,13 +381,11 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
                         ImageView view = (ImageView) event.getLocalState();
                         view.setVisibility(View.INVISIBLE);
                         dragEnabled = false;
-                        playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                        playSound(FetchResource.positiveAffirmation(context), new Runnable() {
                             @Override
                             public void run() {
-                                if (mp != null) {
-                                    mp.release();
-                                }
                                 finish();
+                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                             }
                         });
                     } else {
@@ -375,69 +397,9 @@ public class MathsDrillSevenActivity extends AppCompatActivity implements View.O
                     break;
             }
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
         return false;
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

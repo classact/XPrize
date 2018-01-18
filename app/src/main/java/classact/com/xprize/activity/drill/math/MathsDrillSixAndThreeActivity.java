@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
@@ -23,15 +24,15 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.Random;
 
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 
-public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements View.OnTouchListener, View.OnDragListener {
+public class MathsDrillSixAndThreeActivity extends DrillActivity implements View.OnTouchListener, View.OnDragListener {
     private JSONObject allData;
-    private MediaPlayer mp;
-    private Handler handler;
     private ImageView numberOne;
     private ImageView numberTwo;
     private ImageView numberThree;
@@ -47,12 +48,23 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
     private boolean dragEnabled;
     private boolean touchEnabled;
 
-    private final Context THIS = this;
+    private MathDrill06DViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_six_and_three);
+        ButterKnife.bind(this);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill06DViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         objectsContainer = (RelativeLayout)findViewById(R.id.itemsContainer);
         numberOne = (ImageView)findViewById(R.id.numeral_1);
         numberOne.setOnClickListener(new View.OnClickListener() {
@@ -102,7 +114,7 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -113,16 +125,16 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
             draggedItems = 0;
             int count = allData.getInt("number_of_objects");
             String res = allData.getString("objects_image");
-            int resId = FetchResource.imageId(THIS, res);
+            int resId = FetchResource.imageId(context, res);
             for(int i = 0; i < count;i++){
                 ImageView image = (ImageView) objectsContainer.getChildAt(i);
-                image.setImageResource(resId);
+                loadImage(image, resId);
                 image.setVisibility(View.VISIBLE);
                 image.setOnTouchListener(this);
             }
         }
         catch(Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -151,8 +163,8 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
                         JSONObject number = numbers.getJSONObject(i);
                         String imageName = number.getString("image");
                         int value = number.getInt("value");
-                        int imageId = FetchResource.imageId(THIS, imageName);
-                        numberOne.setImageResource(imageId);
+                        int imageId = FetchResource.imageId(context, imageName);
+                        loadImage(numberOne, imageId);
                         numberOne.setTag(String.valueOf(value));
                         numberOne.setAlpha(0.2f);
                         break;
@@ -160,8 +172,8 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
                         number = numbers.getJSONObject(i);
                         imageName = number.getString("image");
                         value = number.getInt("value");
-                        imageId = FetchResource.imageId(THIS, imageName);
-                        numberTwo.setImageResource(imageId);
+                        imageId = FetchResource.imageId(context, imageName);
+                        loadImage(numberTwo, imageId);
                         numberTwo.setTag(String.valueOf(value));
                         numberTwo.setAlpha(0.2f);
                         break;
@@ -169,8 +181,8 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
                         number = numbers.getJSONObject(i);
                         imageName = number.getString("image");
                         value = number.getInt("value");
-                        imageId = FetchResource.imageId(THIS, imageName);
-                        numberThree.setImageResource(imageId);
+                        imageId = FetchResource.imageId(context, imageName);
+                        loadImage(numberThree, imageId);
                         numberThree.setTag(String.valueOf(value));
                         numberThree.setAlpha(0.2f);
                         break;
@@ -180,7 +192,7 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
             }
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -197,7 +209,7 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
                 numberObjects.put(value, new NumberObject(image, sound, value));
             }
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -221,12 +233,12 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
                     playSound(numberSound, new Runnable() {
                         @Override
                         public void run() {
-                            playSound(FetchResource.negativeAffirmation(THIS), null);
+                            playSound(FetchResource.negativeAffirmation(context), null);
                         }
                     });
                 }
             } catch (Exception ex) {
-                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
             }
         }
@@ -243,7 +255,7 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -259,7 +271,7 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -276,7 +288,7 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -292,7 +304,7 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -308,21 +320,21 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
 
     private void nextSequence() {
         try {
-            playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+            playSound(FetchResource.positiveAffirmation(context), new Runnable() {
                 @Override
                 public void run() {
                     sayTouch();
                 }
             });
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -341,19 +353,17 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
             });
         }
         catch (Exception ex){
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
 
     private void end() {
-        playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+        playSound(FetchResource.positiveAffirmation(context), new Runnable() {
             @Override
             public void run() {
-                if (mp != null) {
-                    mp.release();
-                }
                 finish();
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         });
     }
@@ -364,18 +374,15 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
         try {
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
-                    String tag = (String) v.getTag();
-                    ClipData.Item item = new ClipData.Item(tag);
-                    ClipData dragData = new ClipData(tag, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
                     View.DragShadowBuilder dragShadow = new View.DragShadowBuilder(v);
-                    v.startDragAndDrop(dragData, dragShadow, v, 0);
+                    v.startDragAndDrop(null, dragShadow, v, 0);
                     v.setVisibility(View.INVISIBLE);
                     return true;
                 default:
                     break;
             }
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
         return false;
@@ -387,10 +394,7 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
         try {
             switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
-                    if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
-                        return true;
-                    }
-                    return false;
+                    return true;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     return true;
                 case DragEvent.ACTION_DRAG_LOCATION:
@@ -434,7 +438,7 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
                     break;
             }
         } catch (Exception ex) {
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
         return false;
@@ -462,73 +466,5 @@ public class MathsDrillSixAndThreeActivity extends AppCompatActivity implements 
         public int getValue() {
             return value;
         }
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if (mp != null){
-            mp.release();
-        }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

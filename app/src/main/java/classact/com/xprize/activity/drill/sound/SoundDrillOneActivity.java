@@ -1,47 +1,67 @@
 package classact.com.xprize.activity.drill.sound;
 
-import android.content.Intent;
-import android.media.MediaPlayer;
-import android.net.Uri;
+import android.arch.lifecycle.ViewModelProviders;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
-import android.view.View;
+import android.support.constraint.ConstraintLayout;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
-import classact.com.xprize.activity.menu.LanguageSelect;
-import classact.com.xprize.common.Code;
-import classact.com.xprize.common.Globals;
-import classact.com.xprize.utils.FetchResource;
-import classact.com.xprize.utils.SoundPrescence;
+import classact.com.xprize.activity.DrillActivity;
 
-public class SoundDrillOneActivity extends AppCompatActivity implements SoundPrescence.SoundPresenceListener {
+public class SoundDrillOneActivity extends DrillActivity {
+
+    @BindView(R.id.activity_sound_drill_one) ConstraintLayout rootView;
+    @BindView(R.id.background) ImageView background;
+    @BindView(R.id.letter) ImageView letter;
+    @BindView(R.id.image) ImageView image;
+
     private JSONObject drillData;
-    private ImageView letter;
     private JSONArray objects;
-    private int letterSound;
-    private MediaPlayer mp;
-    private Handler handler;
-    SoundPrescence soundPrescence;
     private int currentObject;
+    private int letterType;
+
+    private int mStage;
+
+    private SoundDrill01ViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_one);
-        letter = (ImageView)findViewById(R.id.item1);
+        ButterKnife.bind(this);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill01ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        ViewGroup.MarginLayoutParams letterLayoutParams = (ViewGroup.MarginLayoutParams) letter.getLayoutParams();
+        letterLayoutParams.height = (int) (400f * getResources().getDisplayMetrics().density);
+        letterLayoutParams.width = ViewGroup.MarginLayoutParams.WRAP_CONTENT;
+        letter.setLayoutParams(letterLayoutParams);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         String drillData = getIntent().getExtras().getString("data");
         initialiseData(drillData);
-        soundPrescence = new SoundPrescence(this);
-        handler = new Handler(Looper.getMainLooper());
         //this letter is a small
+
+        pauseScreen = ez.frameFull();
+        pauseScreen.setClickable(true);
+        pauseScreen.setFocusable(true);
+        ez.gray(pauseScreen);
+        rootView.addView(pauseScreen);
+
         playIntro();
     }
 
@@ -52,15 +72,13 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
         try {
             drillData = new JSONObject(data);
             int item = drillData.getInt("letter");
+            letterType = drillData.getInt("letter_type");
             letter.setImageResource(item);
             objects = drillData.getJSONArray("objects");
         }
         catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -68,370 +86,115 @@ public class SoundDrillOneActivity extends AppCompatActivity implements SoundPre
     // Play the introduction sound.  This is the letter
     //
     private void playIntro(){
-        String sound = "";
+        String sound;
         try {
             sound = drillData.getString("intro");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    //mp.release();
-                    mp.reset();
-                    playNormalLetterSound();
-                }
-            });
-            mp.prepare();
+            playSound(sound, this::playNormalLetterSound);
         }
         catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playNormalLetterSound();
-                }
-            }, 800);
         }
     }
 
     public void playNormalLetterSound(){
-        String sound = "";
+        String sound;
         try {
-            sound = drillData.getString("letter_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
+            if (letterType == 1) {
+                sound = drillData.getString("letter_sound");
+            } else {
+                sound = drillData.getString("letter_phonic_sound");
             }
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    playPhonicSoundIntro();
-                }
-            });
-            mp.prepare();
+            playSound(sound, this::playPhonicSoundIntro);
         }
         catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playPhonicSoundIntro();
-                }
-            }, 800);
         }
     }
 
-    public Runnable playPhonicSoundIntroRunnable = new Runnable(){
-        @Override
-        public void run() {
-            playPhonicSoundIntro();
-        }
-    };
-
     public void playPhonicSoundIntro(){
-        String sound = "";
+        String sound;
         try {
-            sound = drillData.getString("it_makes_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
+            if (letterType == 1) {
+                sound = drillData.getString("it_makes_sound");
+            } else {
+                sound = "m_phrase26";
             }
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    playletterSound();
-                }
-            });
-            mp.prepare();
+            playSound(sound, this::playletterSound);
         }
-        catch (Exception ex){
+        catch (Exception ex) {
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playletterSound();
-                }
-            }, 800);
         }
     }
 
     public void playletterSound(){
-        String sound = "";
+        String sound;
         try {
             sound = drillData.getString("letter_phonic_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    nowYouTry();
-                }
-            });
-            mp.prepare();
+            playSound(sound, this::nowYouTry);
         }
         catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    nowYouTry();
-                }
-            }, 800);
         }
     }
 
-    public Runnable nowYouTryRunnable = new Runnable(){
-        @Override
-        public void run() {
-            nowYouTry();
-        }
-    };
-
     private void nowYouTry(){
-        String sound = "";
+        String sound;
         try {
             sound = drillData.getString("now_you_try");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    intiatePrescence();
-                }
-            });
-            mp.prepare();
+            playSound(sound, this::intiatePrescence);
         }
         catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    intiatePrescence();
-                }
-            }, 800);
         }
     }
 
     public void intiatePrescence(){
-        //soundPrescence = new SoundPrescence(this);
-        //soundPrescence.listen();
         currentObject = 0;
-        handler.postDelayed(soundAndObjectRunnable,1000);
+        handler.delayed(this::soundAndObject,1000);
 
     }
-
-    @Override
-    public void heard(boolean heard) {
-        if (heard){
-            //playObjets();
-        }
-        else{
-            playIntro();
-        }
-    }
-
-
-    public Runnable soundAndObjectRunnable = new Runnable(){
-        @Override
-        public void run() {
-            soundAndObject();
-        }
-    };
 
     private void soundAndObject(){
-        String sound = "";
+        String sound;
         try {
             int image = objects.getJSONObject(currentObject).getInt("object");
-            letter.setImageResource(image);
-            sound = drillData.getString("letter_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
+            loadImage(letter, image);
+            if (letterType == 1) {
+                // sound = drillData.getString("letter_sound");
+                sound = drillData.getString("letter_phonic_sound");
+            } else {
+                sound = drillData.getString("letter_phonic_sound");
             }
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    playObject();
-                }
-            });
-            mp.prepare();
+            playSound(sound, this::playObject);
         }
-        catch (Exception ex){
+        catch (Exception ex) {
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playObject();
-                }
-            }, 800);
         }
     }
-
-
-    public Runnable objectRunnable = new Runnable(){
-        @Override
-        public void run() {
-            playObject();
-        }
-    };
 
     private void playObject(){
-        String sound = "";
+        String sound;
         try {
             sound = objects.getJSONObject(currentObject).getString("object_sound");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
+            playSound(sound, () -> {
+                currentObject ++;
+                if (currentObject < 3){
+                    handler.delayed(this::soundAndObject,1000);
+                } else {
+                    finish();
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
             });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    currentObject ++;
-                    if (currentObject < 3){
-                        handler.postDelayed(soundAndObjectRunnable,1000);
-                    } else {
-                        mp.release();
-                        finish();
-                    }
-                }
-            });
-            mp.prepare();
         }
         catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            mp = null;
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    currentObject ++;
-                    if (currentObject < 3){
-                        handler.postDelayed(soundAndObjectRunnable,1000);
-                    } else {
-                        finish();
-                    }
-                }
-            }, 800);
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.stop();
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

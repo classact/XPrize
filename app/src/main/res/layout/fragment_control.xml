@@ -1,0 +1,90 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/drill_control_container"
+    tools:context=".fragment.control.ControlFragment">
+
+    <!-- Base Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_start_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.0"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_end_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="1.0"/>
+
+    <!-- Base Guidelines END -->
+
+    <!-- Controls START -->
+
+    <!-- Controls Background START -->
+
+    <ImageView
+        android:id="@+id/bookmark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/Bookmark"
+        android:scaleType="fitXY"/>
+
+    <!-- Controls Background END -->
+
+    <!-- Pause Button START -->
+
+    <ImageButton
+        android:id="@+id/pause_button"
+        android:contentDescription="@string/Pause_Button"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_marginStart="280dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/pause_button"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/guideline_mid_horizontal"
+        app:layout_constraintLeft_toRightOf="@id/guideline_start_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_mid_horizontal"/>
+
+    <!-- Pause Button END -->
+
+    <!-- Stop Button START -->
+
+    <ImageButton
+        android:id="@+id/stop_button"
+        android:contentDescription="@string/Stop_Button"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_marginStart="20dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/stop_button"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/guideline_mid_horizontal"
+        app:layout_constraintLeft_toRightOf="@id/pause_button"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_mid_horizontal" />
+
+    <!-- Stop Button END -->
+
+    <!-- Controls END -->
+
+</android.support.constraint.ConstraintLayout>

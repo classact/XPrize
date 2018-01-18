@@ -21,7 +21,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/item_one"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" />
         <ImageView
@@ -30,7 +30,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/item_two"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/item_one" />
         <ImageView
@@ -39,7 +39,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/item_three"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/item_two" />
         <ImageView
@@ -48,7 +48,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/item_four"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/item_three" />
         <ImageView
@@ -57,7 +57,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/item_five"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_toEndOf="@+id/item_four"/>
         <ImageView
             android:layout_width="60dip"
@@ -65,7 +65,7 @@
             android:visibility="invisible"
             android:contentDescription="@string/app_name"
             android:id="@+id/item_six"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_below="@id/item_one"/>
         <ImageView
             android:layout_width="60dip"
@@ -73,7 +73,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/item_seven"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_below="@id/item_one"
             android:layout_toEndOf="@+id/item_six"/>
         <ImageView
@@ -84,14 +84,14 @@
             android:visibility="invisible"
             android:layout_below="@id/item_one"
             android:layout_toRightOf="@id/item_seven"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="60dip"
             android:layout_height="60dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/item_nine"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_below="@id/item_one"
             android:layout_toEndOf="@+id/item_eight" />
         <ImageView
@@ -102,7 +102,7 @@
             android:visibility="invisible"
             android:layout_below="@id/item_one"
             android:layout_toEndOf="@+id/item_nine"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="60dip"
             android:layout_height="60dip"
@@ -110,14 +110,14 @@
             android:id="@+id/item_eleven"
             android:visibility="invisible"
             android:layout_below="@id/item_six"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="60dip"
             android:layout_height="60dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/item_twelve"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_toEndOf="@+id/item_eleven"
             android:layout_below="@id/item_six"
              />
@@ -127,7 +127,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/item_thirteen"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_toEndOf="@+id/item_twelve"
             android:layout_below="@id/item_six" />
         <ImageView
@@ -136,7 +136,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/item_fourteen"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_toEndOf="@+id/item_thirteen"
             android:layout_below="@id/item_six"/>
         <ImageView
@@ -145,7 +145,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/item_fifteen"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_below="@id/item_six"
             android:layout_toEndOf="@+id/item_fourteen" />
     </RelativeLayout>
@@ -163,35 +163,35 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/equation_one"
             android:visibility="invisible"
-            android:src="@drawable/numeral_0" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="50dip"
             android:layout_height="50dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/equation_sign"
             android:visibility="invisible"
-            android:src="@drawable/minus" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="50dip"
             android:layout_height="50dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/equation_two"
             android:visibility="invisible"
-            android:src="@drawable/numeral_0" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="50dip"
             android:layout_height="50dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/equation_equals"
             android:visibility="invisible"
-            android:src="@drawable/equals" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="50dip"
             android:layout_height="50dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/equation_answer"
             android:visibility="invisible"
-            android:src="@drawable/w_0" />
+            android:background="@android:color/transparent" />
     </LinearLayout>
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -206,7 +206,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/space_one"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" />
         <ImageView
@@ -215,7 +215,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/space_two"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/space_one" />
         <ImageView
@@ -224,7 +224,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/space_three"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/space_two" />
         <ImageView
@@ -233,7 +233,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/space_four"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/space_three" />
         <ImageView
@@ -242,7 +242,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/space_five"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_toEndOf="@+id/space_four"/>
         <ImageView
             android:layout_width="60dip"
@@ -250,7 +250,7 @@
             android:visibility="invisible"
             android:contentDescription="@string/app_name"
             android:id="@+id/space_six"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_below="@id/space_one"/>
         <ImageView
             android:layout_width="60dip"
@@ -258,7 +258,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/space_seven"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_below="@id/space_one"
             android:layout_toEndOf="@+id/space_six"/>
         <ImageView
@@ -269,14 +269,14 @@
             android:visibility="invisible"
             android:layout_below="@id/space_one"
             android:layout_toRightOf="@id/space_seven"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="60dip"
             android:layout_height="60dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/space_nine"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_below="@id/space_one"
             android:layout_toEndOf="@+id/space_eight" />
         <ImageView
@@ -287,7 +287,7 @@
             android:visibility="invisible"
             android:layout_below="@id/space_one"
             android:layout_toEndOf="@+id/space_nine"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="60dip"
             android:layout_height="60dip"
@@ -295,14 +295,14 @@
             android:id="@+id/space_eleven"
             android:visibility="invisible"
             android:layout_below="@id/space_six"
-            android:src="@drawable/cupcake" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="60dip"
             android:layout_height="60dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/space_twelve"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_toEndOf="@+id/space_eleven"
             android:layout_below="@id/space_six"
             />
@@ -312,7 +312,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/space_thirteen"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_toEndOf="@+id/space_twelve"
             android:layout_below="@id/space_six" />
         <ImageView
@@ -321,7 +321,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/space_fourteen"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_toEndOf="@+id/space_thirteen"
             android:layout_below="@id/space_six"/>
         <ImageView
@@ -330,7 +330,7 @@
             android:contentDescription="@string/app_name"
             android:id="@+id/space_fifteen"
             android:visibility="invisible"
-            android:src="@drawable/cupcake"
+            android:background="@android:color/transparent"
             android:layout_below="@id/space_six"
             android:layout_toEndOf="@+id/space_fourteen" />
     </RelativeLayout>
@@ -348,13 +348,13 @@
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/numeral_1"
-            android:src="@drawable/numeral_0" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="100dip"
             android:layout_height="100dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/numeral_2"
-            android:src="@drawable/numeral_0"
+            android:background="@android:color/transparent"
             android:layout_gravity="center_vertical"
             android:layout_below="@+id/numeral_1"
             android:layout_marginTop="20dp"/>
@@ -364,7 +364,7 @@
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/numeral_3"
-            android:src="@drawable/numeral_0"
+            android:background="@android:color/transparent"
             android:layout_below="@+id/numeral_2"/>
     </RelativeLayout>
 </RelativeLayout>

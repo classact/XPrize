@@ -5,13 +5,15 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.SparseArray;
+import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
@@ -19,77 +21,84 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
-import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
+import classact.com.xprize.activity.MenuActivity;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.database.model.Unit;
-import classact.com.xprize.locale.Languages;
 
-public class StarsMenu extends AppCompatActivity {
+public class StarsMenu extends MenuActivity {
 
-    private ConstraintLayout mRootView;
+    @BindView(R.id.activity_stars_menu) ConstraintLayout mRootView;
 
-    private ImageButton mMonkeyButton01;
-    private ImageButton mMonkeyButton02;
-    private ImageButton mMonkeyButton03;
-    private ImageButton mMonkeyButton04;
-    private ImageButton mMonkeyButton05;
-    private ImageButton mMonkeyButton06;
-    private ImageButton mMonkeyButton07;
-    private ImageButton mMonkeyButton08;
-    private ImageButton mMonkeyButton09;
-    private ImageButton mMonkeyButton10;
-    private ImageButton mMonkeyButton11;
-    private ImageButton mMonkeyButton12;
-    private ImageButton mMonkeyButton13;
-    private ImageButton mMonkeyButton14;
-    private ImageButton mMonkeyButton15;
-    private ImageButton mMonkeyButton16;
-    private ImageButton mMonkeyButton17;
-    private ImageButton mMonkeyButton18;
-    private ImageButton mMonkeyButton19;
-    private ImageButton mMonkeyButton20;
+    @BindView(R.id.monkey_01) ImageView monkey01;
+    @BindView(R.id.monkey_02) ImageView monkey02;
+    @BindView(R.id.monkey_03) ImageView monkey03;
+    @BindView(R.id.monkey_04) ImageView monkey04;
+    @BindView(R.id.monkey_05) ImageView monkey05;
+    @BindView(R.id.monkey_06) ImageView monkey06;
+    @BindView(R.id.monkey_07) ImageView monkey07;
+    @BindView(R.id.monkey_08) ImageView monkey08;
+    @BindView(R.id.monkey_09) ImageView monkey09;
+    @BindView(R.id.monkey_10) ImageView monkey10;
+    @BindView(R.id.monkey_11) ImageView monkey11;
+    @BindView(R.id.monkey_12) ImageView monkey12;
+    @BindView(R.id.monkey_13) ImageView monkey13;
+    @BindView(R.id.monkey_14) ImageView monkey14;
+    @BindView(R.id.monkey_15) ImageView monkey15;
+    @BindView(R.id.monkey_16) ImageView monkey16;
+    @BindView(R.id.monkey_17) ImageView monkey17;
+    @BindView(R.id.monkey_18) ImageView monkey18;
+    @BindView(R.id.monkey_19) ImageView monkey19;
+    @BindView(R.id.monkey_20) ImageView monkey20;
 
-    private ImageButton mStarButton01;
-    private ImageButton mStarButton02;
-    private ImageButton mStarButton03;
-    private ImageButton mStarButton04;
-    private ImageButton mStarButton05;
-    private ImageButton mStarButton06;
-    private ImageButton mStarButton07;
-    private ImageButton mStarButton08;
-    private ImageButton mStarButton09;
-    private ImageButton mStarButton10;
-    private ImageButton mStarButton11;
-    private ImageButton mStarButton12;
-    private ImageButton mStarButton13;
-    private ImageButton mStarButton14;
-    private ImageButton mStarButton15;
-    private ImageButton mStarButton16;
-    private ImageButton mStarButton17;
-    private ImageButton mStarButton18;
-    private ImageButton mStarButton19;
-    private ImageButton mStarButton20;
+    @BindView(R.id.star_01) ImageView star01;
+    @BindView(R.id.star_02) ImageView star02;
+    @BindView(R.id.star_03) ImageView star03;
+    @BindView(R.id.star_04) ImageView star04;
+    @BindView(R.id.star_05) ImageView star05;
+    @BindView(R.id.star_06) ImageView star06;
+    @BindView(R.id.star_07) ImageView star07;
+    @BindView(R.id.star_08) ImageView star08;
+    @BindView(R.id.star_09) ImageView star09;
+    @BindView(R.id.star_10) ImageView star10;
+    @BindView(R.id.star_11) ImageView star11;
+    @BindView(R.id.star_12) ImageView star12;
+    @BindView(R.id.star_13) ImageView star13;
+    @BindView(R.id.star_14) ImageView star14;
+    @BindView(R.id.star_15) ImageView star15;
+    @BindView(R.id.star_16) ImageView star16;
+    @BindView(R.id.star_17) ImageView star17;
+    @BindView(R.id.star_18) ImageView star18;
+    @BindView(R.id.star_19) ImageView star19;
+    @BindView(R.id.star_20) ImageView star20;
 
-    private ImageButton mChapterBookButton;
-    private TextView mChapterText;
+    @BindView(R.id.chapter_book) ImageView mChapterBookButton;
+    @BindView(R.id.chapter_text) TextView mChapterText;
 
-    private List<ImageButton> mMonkeyButtons;
-    private List<ImageButton> mStarButtons;
+    private List<ImageView> monkeys;
+    private List<ImageView> stars;
     private int mMaxStars;
     private int mCurrentStarLimit;
     private int mCurrentStar;
 
-    private SparseArray<Integer> mStarLevelBackgrounds;
+    private SparseIntArray mStarLevelBackgrounds;
 
     Animation mBookAnimation;
 
@@ -97,144 +106,79 @@ public class StarsMenu extends AppCompatActivity {
     private boolean mStarsExist;
     private boolean mViewVisible;
     private boolean mFirstMonkeyPlaced;
-
-    private DatabaseController mDb;
+    
     private Handler mHandler;
     private Intent mIntent;
     private boolean mFinishActivity;
-    private final Context THIS = this;
+    
+    @Inject DatabaseController mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stars_menu);
-        mRootView = (ConstraintLayout) findViewById(R.id.activity_stars_menu);
+        ButterKnife.bind(this);
+
+        setupStarGraphics();
+        setupStarColours();
 
         mHandler = new Handler();
         mIntent = getIntent();
         mFinishActivity = false;
 
-        mMonkeyButtons = new ArrayList<>();
-        mStarButtons = new ArrayList<>();
-        mStarLevelBackgrounds = new SparseArray<>();
+        monkeys = new ArrayList<>();
+        stars = new ArrayList<>();
+        mStarLevelBackgrounds = new SparseIntArray();
 
-        mChapterBookButton = (ImageButton) findViewById(R.id.chapter_book_button);
-
-        mChapterText = (TextView) findViewById(R.id.chapter_text);
         mChapterText.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
         mChapterText.setTextColor(Color.argb(255, 255, 205, 0));
 
-        mMonkeyButton01 = (ImageButton) findViewById(R.id.monkey_button_01);
-        mMonkeyButton02 = (ImageButton) findViewById(R.id.monkey_button_02);
-        mMonkeyButton03 = (ImageButton) findViewById(R.id.monkey_button_03);
-        mMonkeyButton04 = (ImageButton) findViewById(R.id.monkey_button_04);
-        mMonkeyButton05 = (ImageButton) findViewById(R.id.monkey_button_05);
-        mMonkeyButton06 = (ImageButton) findViewById(R.id.monkey_button_06);
-        mMonkeyButton07 = (ImageButton) findViewById(R.id.monkey_button_07);
-        mMonkeyButton08 = (ImageButton) findViewById(R.id.monkey_button_08);
-        mMonkeyButton09 = (ImageButton) findViewById(R.id.monkey_button_09);
-        mMonkeyButton10 = (ImageButton) findViewById(R.id.monkey_button_10);
-        mMonkeyButton11 = (ImageButton) findViewById(R.id.monkey_button_11);
-        mMonkeyButton12 = (ImageButton) findViewById(R.id.monkey_button_12);
-        mMonkeyButton13 = (ImageButton) findViewById(R.id.monkey_button_13);
-        mMonkeyButton14 = (ImageButton) findViewById(R.id.monkey_button_14);
-        mMonkeyButton15 = (ImageButton) findViewById(R.id.monkey_button_15);
-        mMonkeyButton16 = (ImageButton) findViewById(R.id.monkey_button_16);
-        mMonkeyButton17 = (ImageButton) findViewById(R.id.monkey_button_17);
-        mMonkeyButton18 = (ImageButton) findViewById(R.id.monkey_button_18);
-        mMonkeyButton19 = (ImageButton) findViewById(R.id.monkey_button_19);
-        mMonkeyButton20 = (ImageButton) findViewById(R.id.monkey_button_20);
+        monkeys.add(monkey01);
+        monkeys.add(monkey02);
+        monkeys.add(monkey03);
+        monkeys.add(monkey04);
+        monkeys.add(monkey05);
+        monkeys.add(monkey06);
+        monkeys.add(monkey07);
+        monkeys.add(monkey08);
+        monkeys.add(monkey09);
+        monkeys.add(monkey10);
+        monkeys.add(monkey11);
+        monkeys.add(monkey12);
+        monkeys.add(monkey13);
+        monkeys.add(monkey14);
+        monkeys.add(monkey15);
+        monkeys.add(monkey16);
+        monkeys.add(monkey17);
+        monkeys.add(monkey18);
+        monkeys.add(monkey19);
+        monkeys.add(monkey20);
 
-        mStarButton01 = (ImageButton) findViewById(R.id.star_button_01);
-        mStarButton02 = (ImageButton) findViewById(R.id.star_button_02);
-        mStarButton03 = (ImageButton) findViewById(R.id.star_button_03);
-        mStarButton04 = (ImageButton) findViewById(R.id.star_button_04);
-        mStarButton05 = (ImageButton) findViewById(R.id.star_button_05);
-        mStarButton06 = (ImageButton) findViewById(R.id.star_button_06);
-        mStarButton07 = (ImageButton) findViewById(R.id.star_button_07);
-        mStarButton08 = (ImageButton) findViewById(R.id.star_button_08);
-        mStarButton09 = (ImageButton) findViewById(R.id.star_button_09);
-        mStarButton10 = (ImageButton) findViewById(R.id.star_button_10);
-        mStarButton11 = (ImageButton) findViewById(R.id.star_button_11);
-        mStarButton12 = (ImageButton) findViewById(R.id.star_button_12);
-        mStarButton13 = (ImageButton) findViewById(R.id.star_button_13);
-        mStarButton14 = (ImageButton) findViewById(R.id.star_button_14);
-        mStarButton15 = (ImageButton) findViewById(R.id.star_button_15);
-        mStarButton16 = (ImageButton) findViewById(R.id.star_button_16);
-        mStarButton17 = (ImageButton) findViewById(R.id.star_button_17);
-        mStarButton18 = (ImageButton) findViewById(R.id.star_button_18);
-        mStarButton19 = (ImageButton) findViewById(R.id.star_button_19);
-        mStarButton20 = (ImageButton) findViewById(R.id.star_button_20);
-
-        mMonkeyButtons.add(mMonkeyButton01);
-        mMonkeyButtons.add(mMonkeyButton02);
-        mMonkeyButtons.add(mMonkeyButton03);
-        mMonkeyButtons.add(mMonkeyButton04);
-        mMonkeyButtons.add(mMonkeyButton05);
-        mMonkeyButtons.add(mMonkeyButton06);
-        mMonkeyButtons.add(mMonkeyButton07);
-        mMonkeyButtons.add(mMonkeyButton08);
-        mMonkeyButtons.add(mMonkeyButton09);
-        mMonkeyButtons.add(mMonkeyButton10);
-        mMonkeyButtons.add(mMonkeyButton11);
-        mMonkeyButtons.add(mMonkeyButton12);
-        mMonkeyButtons.add(mMonkeyButton13);
-        mMonkeyButtons.add(mMonkeyButton14);
-        mMonkeyButtons.add(mMonkeyButton15);
-        mMonkeyButtons.add(mMonkeyButton16);
-        mMonkeyButtons.add(mMonkeyButton17);
-        mMonkeyButtons.add(mMonkeyButton18);
-        mMonkeyButtons.add(mMonkeyButton19);
-        mMonkeyButtons.add(mMonkeyButton20);
-
-        mStarButtons.add(mStarButton01);
-        mStarButtons.add(mStarButton02);
-        mStarButtons.add(mStarButton03);
-        mStarButtons.add(mStarButton04);
-        mStarButtons.add(mStarButton05);
-        mStarButtons.add(mStarButton06);
-        mStarButtons.add(mStarButton07);
-        mStarButtons.add(mStarButton08);
-        mStarButtons.add(mStarButton09);
-        mStarButtons.add(mStarButton10);
-        mStarButtons.add(mStarButton11);
-        mStarButtons.add(mStarButton12);
-        mStarButtons.add(mStarButton13);
-        mStarButtons.add(mStarButton14);
-        mStarButtons.add(mStarButton15);
-        mStarButtons.add(mStarButton16);
-        mStarButtons.add(mStarButton17);
-        mStarButtons.add(mStarButton18);
-        mStarButtons.add(mStarButton19);
-        mStarButtons.add(mStarButton20);
-
-        mStarLevelBackgrounds.put(0, R.drawable.star_level_0);
-        mStarLevelBackgrounds.put(1, R.drawable.star_level_1);
-        mStarLevelBackgrounds.put(2, R.drawable.star_level_2);
-        mStarLevelBackgrounds.put(3, R.drawable.star_level_3);
-        mStarLevelBackgrounds.put(4, R.drawable.star_level_4);
-        mStarLevelBackgrounds.put(5, R.drawable.star_level_5);
-        mStarLevelBackgrounds.put(6, R.drawable.star_level_6);
-        mStarLevelBackgrounds.put(7, R.drawable.star_level_7);
-        mStarLevelBackgrounds.put(8, R.drawable.star_level_8);
-        mStarLevelBackgrounds.put(9, R.drawable.star_level_9);
-        mStarLevelBackgrounds.put(10, R.drawable.star_level_10);
-        mStarLevelBackgrounds.put(11, R.drawable.star_level_11);
-        mStarLevelBackgrounds.put(12, R.drawable.star_level_12);
-        mStarLevelBackgrounds.put(13, R.drawable.star_level_13);
-        mStarLevelBackgrounds.put(14, R.drawable.star_level_14);
-        mStarLevelBackgrounds.put(15, R.drawable.star_level_15);
-        mStarLevelBackgrounds.put(16, R.drawable.star_level_16);
-        mStarLevelBackgrounds.put(17, R.drawable.star_level_17);
-        mStarLevelBackgrounds.put(18, R.drawable.star_level_18);
-        mStarLevelBackgrounds.put(19, R.drawable.star_level_19);
-        mStarLevelBackgrounds.put(20, R.drawable.star_level_20);
-
-        mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
+        stars.add(star01);
+        stars.add(star02);
+        stars.add(star03);
+        stars.add(star04);
+        stars.add(star05);
+        stars.add(star06);
+        stars.add(star07);
+        stars.add(star08);
+        stars.add(star09);
+        stars.add(star10);
+        stars.add(star11);
+        stars.add(star12);
+        stars.add(star13);
+        stars.add(star14);
+        stars.add(star15);
+        stars.add(star16);
+        stars.add(star17);
+        stars.add(star18);
+        stars.add(star19);
+        stars.add(star20);
 
         LinkedHashMap<Integer, Unit> units = mDb.getUnits();
         int numberOfUnlockedChapters = 0;
         int currentChapterInProgress = 0;
+        Log.d("TEST", "Size is " + ((units == null) ? "null" : units.size()));
         for (Map.Entry<Integer, Unit> unitEntry : units.entrySet()) {
             Unit unit = unitEntry.getValue();
             int unitId = unit.getUnitId();
@@ -250,33 +194,32 @@ public class StarsMenu extends AppCompatActivity {
 
         mStarsExist = true;
         mChapterBookButton.setAlpha(0f);
+        loadAndLayoutImage(mChapterBookButton, R.drawable.book_closed, .9f);
         mChapterBookButton.setEnabled(false);
         mChapterText.setAlpha(0f);
 
         mMaxStars = 20;
         for (int i = 0; i < mMaxStars; i++) {
-            ImageButton monkeyButton = mMonkeyButtons.get(i);
+            ImageView monkeyButton = monkeys.get(i);
             monkeyButton.setAlpha(0f);
+            loadAndLayoutImage(monkeyButton, R.drawable.star_monkey_face_button_up);
+            setTouchListener(monkeyButton, R.drawable.star_monkey_face_button_up, R.drawable.star_monkey_face_button_down);
             monkeyButton.setVisibility(View.INVISIBLE);
         }
 
         mCurrentStarLimit = Math.min(numberOfUnlockedChapters, mMaxStars);
         mCurrentStar = Math.min(currentChapterInProgress, mCurrentStarLimit);
-        mRootView.setBackgroundResource(mStarLevelBackgrounds.get(mCurrentStarLimit));
 
         String chapterText = "Chapter " + mCurrentStar;
         mChapterText.setText(chapterText);
 
         for (int i = 0; i < mCurrentStarLimit; i++) {
-            ImageButton starButton = mStarButtons.get(i);
+            ImageView starButton = stars.get(i);
             final int chapter = i + 1;
-            starButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String chapterText = "Chapter " + chapter;
-                    mChapterText.setText(chapterText);
+            starButton.setOnClickListener((v) -> {
+                    String text = "Chapter " + chapter;
+                    mChapterText.setText(text);
                     placeMonkey(chapter);
-                }
             });
         }
 
@@ -284,7 +227,7 @@ public class StarsMenu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mFinishActivity = true;
-                Intent intent = new Intent(THIS, SectionsMenu.class);
+                Intent intent = new Intent(context, SectionsMenu.class);
                 intent.putExtra("selected_chapter", mCurrentStar);
                 startActivityForResult(intent, 0);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -319,8 +262,191 @@ public class StarsMenu extends AppCompatActivity {
                         }, 150);
                     }
                 }
+                mRootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
+    }
+
+    public void setupStarGraphics() {
+
+        preloadImage(
+                R.drawable.star_blue_01,
+                R.drawable.star_blue_02,
+                R.drawable.star_blue_03,
+                R.drawable.star_blue_04,
+                R.drawable.star_blue_05,
+                R.drawable.star_blue_06,
+                R.drawable.star_blue_07,
+                R.drawable.star_blue_08,
+                R.drawable.star_blue_09,
+                R.drawable.star_blue_10,
+                R.drawable.star_blue_11,
+                R.drawable.star_blue_12,
+                R.drawable.star_blue_13,
+                R.drawable.star_blue_14,
+                R.drawable.star_blue_15,
+                R.drawable.star_blue_16,
+                R.drawable.star_blue_17,
+                R.drawable.star_blue_18,
+                R.drawable.star_blue_19,
+                R.drawable.star_blue_20,
+                R.drawable.star_gold_01,
+                R.drawable.star_gold_02,
+                R.drawable.star_gold_03,
+                R.drawable.star_gold_04,
+                R.drawable.star_gold_05,
+                R.drawable.star_gold_06,
+                R.drawable.star_gold_07,
+                R.drawable.star_gold_08,
+                R.drawable.star_gold_09,
+                R.drawable.star_gold_10,
+                R.drawable.star_gold_11,
+                R.drawable.star_gold_12,
+                R.drawable.star_gold_13,
+                R.drawable.star_gold_14,
+                R.drawable.star_gold_15,
+                R.drawable.star_gold_16,
+                R.drawable.star_gold_17,
+                R.drawable.star_gold_18,
+                R.drawable.star_gold_19,
+                R.drawable.star_gold_20,
+                R.drawable.book_closed,
+                R.drawable.star_monkey_face_button_up,
+                R.drawable.star_monkey_face_button_down
+        );
+
+        // Get drawables
+        Drawable star01Drawable = getResources().getDrawable(R.drawable.star_gold_01, null);
+        Drawable star02Drawable = getResources().getDrawable(R.drawable.star_gold_02, null);
+        Drawable star03Drawable = getResources().getDrawable(R.drawable.star_gold_03, null);
+        Drawable star04Drawable = getResources().getDrawable(R.drawable.star_gold_04, null);
+        Drawable star05Drawable = getResources().getDrawable(R.drawable.star_gold_05, null);
+        Drawable star06Drawable = getResources().getDrawable(R.drawable.star_gold_06, null);
+        Drawable star07Drawable = getResources().getDrawable(R.drawable.star_gold_07, null);
+        Drawable star08Drawable = getResources().getDrawable(R.drawable.star_gold_08, null);
+        Drawable star09Drawable = getResources().getDrawable(R.drawable.star_gold_09, null);
+        Drawable star10Drawable = getResources().getDrawable(R.drawable.star_gold_10, null);
+        Drawable star11Drawable = getResources().getDrawable(R.drawable.star_gold_11, null);
+        Drawable star12Drawable = getResources().getDrawable(R.drawable.star_gold_12, null);
+        Drawable star13Drawable = getResources().getDrawable(R.drawable.star_gold_13, null);
+        Drawable star14Drawable = getResources().getDrawable(R.drawable.star_gold_14, null);
+        Drawable star15Drawable = getResources().getDrawable(R.drawable.star_gold_15, null);
+        Drawable star16Drawable = getResources().getDrawable(R.drawable.star_gold_16, null);
+        Drawable star17Drawable = getResources().getDrawable(R.drawable.star_gold_17, null);
+        Drawable star18Drawable = getResources().getDrawable(R.drawable.star_gold_18, null);
+        Drawable star19Drawable = getResources().getDrawable(R.drawable.star_gold_19, null);
+        Drawable star20Drawable = getResources().getDrawable(R.drawable.star_gold_20, null);
+
+        // Get layout params
+        ViewGroup.MarginLayoutParams star01LayoutParams = (ViewGroup.MarginLayoutParams) star01.getLayoutParams();
+        ViewGroup.MarginLayoutParams star02LayoutParams = (ViewGroup.MarginLayoutParams) star02.getLayoutParams();
+        ViewGroup.MarginLayoutParams star03LayoutParams = (ViewGroup.MarginLayoutParams) star03.getLayoutParams();
+        ViewGroup.MarginLayoutParams star04LayoutParams = (ViewGroup.MarginLayoutParams) star04.getLayoutParams();
+        ViewGroup.MarginLayoutParams star05LayoutParams = (ViewGroup.MarginLayoutParams) star05.getLayoutParams();
+        ViewGroup.MarginLayoutParams star06LayoutParams = (ViewGroup.MarginLayoutParams) star06.getLayoutParams();
+        ViewGroup.MarginLayoutParams star07LayoutParams = (ViewGroup.MarginLayoutParams) star07.getLayoutParams();
+        ViewGroup.MarginLayoutParams star08LayoutParams = (ViewGroup.MarginLayoutParams) star08.getLayoutParams();
+        ViewGroup.MarginLayoutParams star09LayoutParams = (ViewGroup.MarginLayoutParams) star09.getLayoutParams();
+        ViewGroup.MarginLayoutParams star10LayoutParams = (ViewGroup.MarginLayoutParams) star10.getLayoutParams();
+        ViewGroup.MarginLayoutParams star11LayoutParams = (ViewGroup.MarginLayoutParams) star11.getLayoutParams();
+        ViewGroup.MarginLayoutParams star12LayoutParams = (ViewGroup.MarginLayoutParams) star12.getLayoutParams();
+        ViewGroup.MarginLayoutParams star13LayoutParams = (ViewGroup.MarginLayoutParams) star13.getLayoutParams();
+        ViewGroup.MarginLayoutParams star14LayoutParams = (ViewGroup.MarginLayoutParams) star14.getLayoutParams();
+        ViewGroup.MarginLayoutParams star15LayoutParams = (ViewGroup.MarginLayoutParams) star15.getLayoutParams();
+        ViewGroup.MarginLayoutParams star16LayoutParams = (ViewGroup.MarginLayoutParams) star16.getLayoutParams();
+        ViewGroup.MarginLayoutParams star17LayoutParams = (ViewGroup.MarginLayoutParams) star17.getLayoutParams();
+        ViewGroup.MarginLayoutParams star18LayoutParams = (ViewGroup.MarginLayoutParams) star18.getLayoutParams();
+        ViewGroup.MarginLayoutParams star19LayoutParams = (ViewGroup.MarginLayoutParams) star19.getLayoutParams();
+        ViewGroup.MarginLayoutParams star20LayoutParams = (ViewGroup.MarginLayoutParams) star20.getLayoutParams();
+
+        // Set widths
+        star01LayoutParams.width = (int) (star01Drawable.getIntrinsicWidth() * 0.8);
+        star02LayoutParams.width = (int) (star02Drawable.getIntrinsicWidth() * 0.8);
+        star03LayoutParams.width = (int) (star03Drawable.getIntrinsicWidth() * 0.8);
+        star04LayoutParams.width = (int) (star04Drawable.getIntrinsicWidth() * 0.8);
+        star05LayoutParams.width = (int) (star05Drawable.getIntrinsicWidth() * 0.8);
+        star06LayoutParams.width = (int) (star06Drawable.getIntrinsicWidth() * 0.8);
+        star07LayoutParams.width = (int) (star07Drawable.getIntrinsicWidth() * 0.8);
+        star08LayoutParams.width = (int) (star08Drawable.getIntrinsicWidth() * 0.8);
+        star09LayoutParams.width = (int) (star09Drawable.getIntrinsicWidth() * 0.8);
+        star10LayoutParams.width = (int) (star10Drawable.getIntrinsicWidth() * 0.8);
+        star11LayoutParams.width = (int) (star11Drawable.getIntrinsicWidth() * 0.8);
+        star12LayoutParams.width = (int) (star12Drawable.getIntrinsicWidth() * 0.8);
+        star13LayoutParams.width = (int) (star13Drawable.getIntrinsicWidth() * 0.8);
+        star14LayoutParams.width = (int) (star14Drawable.getIntrinsicWidth() * 0.8);
+        star15LayoutParams.width = (int) (star15Drawable.getIntrinsicWidth() * 0.8);
+        star16LayoutParams.width = (int) (star16Drawable.getIntrinsicWidth() * 0.8);
+        star17LayoutParams.width = (int) (star17Drawable.getIntrinsicWidth() * 0.8);
+        star18LayoutParams.width = (int) (star18Drawable.getIntrinsicWidth() * 0.8);
+        star19LayoutParams.width = (int) (star19Drawable.getIntrinsicWidth() * 0.8);
+        star20LayoutParams.width = (int) (star20Drawable.getIntrinsicWidth() * 0.8);
+
+        // Set heights
+        star01LayoutParams.height = (int) (star01Drawable.getIntrinsicHeight() * 0.8);
+        star02LayoutParams.height = (int) (star02Drawable.getIntrinsicHeight() * 0.8);
+        star03LayoutParams.height = (int) (star03Drawable.getIntrinsicHeight() * 0.8);
+        star04LayoutParams.height = (int) (star04Drawable.getIntrinsicHeight() * 0.8);
+        star05LayoutParams.height = (int) (star05Drawable.getIntrinsicHeight() * 0.8);
+        star06LayoutParams.height = (int) (star06Drawable.getIntrinsicHeight() * 0.8);
+        star07LayoutParams.height = (int) (star07Drawable.getIntrinsicHeight() * 0.8);
+        star08LayoutParams.height = (int) (star08Drawable.getIntrinsicHeight() * 0.8);
+        star09LayoutParams.height = (int) (star09Drawable.getIntrinsicHeight() * 0.8);
+        star10LayoutParams.height = (int) (star10Drawable.getIntrinsicHeight() * 0.8);
+        star11LayoutParams.height = (int) (star11Drawable.getIntrinsicHeight() * 0.8);
+        star12LayoutParams.height = (int) (star12Drawable.getIntrinsicHeight() * 0.8);
+        star13LayoutParams.height = (int) (star13Drawable.getIntrinsicHeight() * 0.8);
+        star14LayoutParams.height = (int) (star14Drawable.getIntrinsicHeight() * 0.8);
+        star15LayoutParams.height = (int) (star15Drawable.getIntrinsicHeight() * 0.8);
+        star16LayoutParams.height = (int) (star16Drawable.getIntrinsicHeight() * 0.8);
+        star17LayoutParams.height = (int) (star17Drawable.getIntrinsicHeight() * 0.8);
+        star18LayoutParams.height = (int) (star18Drawable.getIntrinsicHeight() * 0.8);
+        star19LayoutParams.height = (int) (star19Drawable.getIntrinsicHeight() * 0.8);
+        star20LayoutParams.height = (int) (star20Drawable.getIntrinsicHeight() * 0.8);
+
+        // Set layout params
+        star01.setLayoutParams(star01LayoutParams);
+        star02.setLayoutParams(star02LayoutParams);
+        star03.setLayoutParams(star03LayoutParams);
+        star04.setLayoutParams(star04LayoutParams);
+        star05.setLayoutParams(star05LayoutParams);
+        star06.setLayoutParams(star06LayoutParams);
+        star07.setLayoutParams(star07LayoutParams);
+        star08.setLayoutParams(star08LayoutParams);
+        star09.setLayoutParams(star09LayoutParams);
+        star10.setLayoutParams(star10LayoutParams);
+        star11.setLayoutParams(star11LayoutParams);
+        star12.setLayoutParams(star12LayoutParams);
+        star13.setLayoutParams(star13LayoutParams);
+        star14.setLayoutParams(star14LayoutParams);
+        star15.setLayoutParams(star15LayoutParams);
+        star16.setLayoutParams(star16LayoutParams);
+        star17.setLayoutParams(star17LayoutParams);
+        star18.setLayoutParams(star18LayoutParams);
+        star19.setLayoutParams(star19LayoutParams);
+        star20.setLayoutParams(star20LayoutParams);
+    }
+
+    public void setupStarColours() {
+        loadFadeImage(star01, R.drawable.star_gold_01, (int) (Math.random() * 1500));
+        loadFadeImage(star02, R.drawable.star_gold_02, (int) (Math.random() * 1500));
+        loadFadeImage(star03, R.drawable.star_gold_03, (int) (Math.random() * 1500));
+        loadFadeImage(star04, R.drawable.star_gold_04, (int) (Math.random() * 1500));
+        loadFadeImage(star05, R.drawable.star_gold_05, (int) (Math.random() * 1500));
+        loadFadeImage(star06, R.drawable.star_gold_06, (int) (Math.random() * 1500));
+        loadFadeImage(star07, R.drawable.star_blue_07, (int) (Math.random() * 1500));
+        loadFadeImage(star08, R.drawable.star_blue_08, (int) (Math.random() * 1500));
+        loadFadeImage(star09, R.drawable.star_blue_09, (int) (Math.random() * 1500));
+        loadFadeImage(star10, R.drawable.star_blue_10, (int) (Math.random() * 1500));
+        loadFadeImage(star11, R.drawable.star_blue_11, (int) (Math.random() * 1500));
+        loadFadeImage(star12, R.drawable.star_blue_12, (int) (Math.random() * 1500));
+        loadFadeImage(star13, R.drawable.star_blue_13, (int) (Math.random() * 1500));
+        loadFadeImage(star14, R.drawable.star_blue_14, (int) (Math.random() * 1500));
+        loadFadeImage(star15, R.drawable.star_blue_15, (int) (Math.random() * 1500));
+        loadFadeImage(star16, R.drawable.star_blue_16, (int) (Math.random() * 1500));
+        loadFadeImage(star17, R.drawable.star_blue_17, (int) (Math.random() * 1500));
+        loadFadeImage(star18, R.drawable.star_blue_18, (int) (Math.random() * 1500));
+        loadFadeImage(star19, R.drawable.star_blue_19, (int) (Math.random() * 1500));
+        loadFadeImage(star20, R.drawable.star_blue_20, (int) (Math.random() * 1500));
     }
 
     public void placeMonkey(int chapter) {
@@ -328,7 +454,7 @@ public class StarsMenu extends AppCompatActivity {
         if (!mFirstMonkeyPlaced) {
             mFirstMonkeyPlaced = true;
 
-            final ImageButton firstMonkey = mMonkeyButtons.get(chapter-1);
+            final ImageView firstMonkey = monkeys.get(chapter-1);
             firstMonkey.setVisibility(View.VISIBLE);
             firstMonkey.animate()
                     .alpha(1)
@@ -342,15 +468,15 @@ public class StarsMenu extends AppCompatActivity {
                         }
                     });
 
-            ImageButton newStar = mStarButtons.get(chapter-1);
-            Globals.playStarWorks(THIS, newStar);
+            ImageView newStar = stars.get(chapter-1);
+            Globals.playStarWorks(this, newStar);
 
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mChapterBookButton.animate()
                             .alpha(1f)
-                            .setDuration(1000)
+                            .setDuration(1500)
                             .setInterpolator(new LinearInterpolator())
                             .setListener(new AnimatorListenerAdapter() {
                                 @Override
@@ -363,7 +489,7 @@ public class StarsMenu extends AppCompatActivity {
                             });
                     mChapterText.animate()
                             .alpha(1f)
-                            .setDuration(1000)
+                            .setDuration(1500)
                             .setInterpolator(new LinearInterpolator())
                             .setListener(new AnimatorListenerAdapter() {
                                 @Override
@@ -373,13 +499,13 @@ public class StarsMenu extends AppCompatActivity {
                                 }
                             });
                 }
-            }, 1000);
+            }, 1500);
 
             mCurrentStar = chapter;
 
-        } else if (chapter != mCurrentStar && chapter <= mMonkeyButtons.size()) {
+        } else if (chapter != mCurrentStar && chapter <= monkeys.size()) {
 
-            final ImageButton currentMonkey = mMonkeyButtons.get(mCurrentStar-1);
+            final ImageView currentMonkey = monkeys.get(mCurrentStar-1);
             currentMonkey.animate()
                     .alpha(0)
                     .setDuration(250)
@@ -393,7 +519,7 @@ public class StarsMenu extends AppCompatActivity {
                         }
                     });
 
-            final ImageButton newMonkey = mMonkeyButtons.get(chapter-1);
+            final ImageView newMonkey = monkeys.get(chapter-1);
             newMonkey.setVisibility(View.VISIBLE);
             newMonkey.animate()
                     .alpha(1)
@@ -407,8 +533,8 @@ public class StarsMenu extends AppCompatActivity {
                         }
                     });
 
-            ImageButton newStar = mStarButtons.get(chapter-1);
-            Globals.playStarWorks(THIS, newStar);
+            ImageView newStar = stars.get(chapter-1);
+            Globals.playStarWorks(this, newStar);
             // Globals.playStarWorks(THIS, mChapterText, 0, 360);
             mCurrentStar = chapter;
         }
@@ -420,9 +546,7 @@ public class StarsMenu extends AppCompatActivity {
         switch (resultCode) {
             case Globals.TO_MAIN:
                 setResult(Globals.TO_MAIN);
-                mFinishActivity = true;
-                finish();
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                finishActivity();
                 break;
             case Code.DRILL_SPLASH:
             case Code.INTRO:
@@ -432,9 +556,7 @@ public class StarsMenu extends AppCompatActivity {
             case Code.CHAPTER_END:
             case Code.FINALE:
                 setResult(resultCode);
-                mFinishActivity = true;
-                finish();
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                finishActivity();
                 break;
             default:
                 break;
@@ -446,7 +568,7 @@ public class StarsMenu extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         if (!mFinishActivity) {
-            Globals.RESUME_BACKGROUND_MUSIC(THIS);
+            Globals.RESUME_BACKGROUND_MUSIC(context);
         } else {
             mFinishActivity = false;
         }
@@ -456,7 +578,7 @@ public class StarsMenu extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         if (!mFinishActivity) {
-            Globals.PAUSE_BACKGROUND_MUSIC(THIS);
+            Globals.PAUSE_BACKGROUND_MUSIC(context);
         }
     }
 
@@ -477,6 +599,10 @@ public class StarsMenu extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        finishActivity();
+    }
+
+    public void finishActivity() {
         mFinishActivity = true;
         finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

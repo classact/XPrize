@@ -4,51 +4,57 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
+import classact.com.xprize.activity.MenuActivity;
 import classact.com.xprize.common.Globals;
+import dagger.android.support.DaggerAppCompatActivity;
 
-public class VolumeMenu extends AppCompatActivity {
+public class VolumeMenu extends MenuActivity {
 
-    private ConstraintLayout mRootView;
+    @BindView(R.id.activity_volume_menu) ConstraintLayout mRootView;
 
-    private TextView mVolumeText;
-    private SeekBar mVolumeSeekbar;
-    private TextView mVolumePercentage;
+    @BindView(R.id.heading) ImageView mVolumeHeading;
+    @BindView(R.id.seek_bar) SeekBar mVolumeSeekbar;
+    @BindView(R.id.volume) TextView mVolumePercentage;
+    @BindView(R.id.percentage_sign) TextView percentageSign;
+
     private AudioManager mAudioManager;
     private Intent mIntent;
     private int mSelectedLanguage;
     private boolean mFinishActivity;
-    private final Context THIS = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_volume_menu);
-        mRootView = (ConstraintLayout) findViewById(R.id.activity_volume_menu);
+        ButterKnife.bind(this);
+
+        preloadImage(R.drawable.volume_button_down);
+        loadAndLayoutImage(mVolumeHeading, R.drawable.volume_button_up);
+        setTouchListener(mVolumeHeading, R.drawable.volume_button_up, R.drawable.volume_button_down);
 
         mIntent = getIntent();
         mSelectedLanguage = mIntent.getIntExtra("selected_language", 1);
         mFinishActivity = false;
 
-        mVolumeText = (TextView) findViewById(R.id.volume_text);
-        mVolumeSeekbar = (SeekBar) findViewById(R.id.volume_seekbar);
-        mVolumePercentage = (TextView) findViewById(R.id.volume_percentage);
-
-        mVolumeText.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
         mVolumePercentage.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
-
+        percentageSign.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
         mVolumeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int volume = (int) (((float) progress) / 15f * 100f);
-                mVolumePercentage.setText("" + volume + " %");
-                Globals.SET_VOLUME(THIS, progress);
+                String volume = "" + (int) (((float) progress) / 15f * 100f);
+                mVolumePercentage.setText(volume);
+                Globals.SET_VOLUME(context, progress);
             }
 
             @Override
@@ -83,7 +89,7 @@ public class VolumeMenu extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         if (!mFinishActivity) {
-            Globals.RESUME_BACKGROUND_MUSIC(THIS);
+            Globals.RESUME_BACKGROUND_MUSIC(context);
             mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             mVolumeSeekbar.setProgress(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
         } else {
@@ -95,7 +101,7 @@ public class VolumeMenu extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         if (!mFinishActivity) {
-            Globals.PAUSE_BACKGROUND_MUSIC(THIS);
+            Globals.PAUSE_BACKGROUND_MUSIC(context);
         }
     }
 

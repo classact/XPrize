@@ -4,18 +4,18 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-
-import java.util.LinkedHashMap;
+import android.util.SparseArray;
 
 import classact.com.xprize.database.model.UnitSectionDrill;
 
 /**
  * Created by hcdjeong on 2017/07/24.
+ * Helper for {@link UnitSectionDrill}
  */
 
 public class UnitSectionDrillHelper {
 
-    public static void clearInProgress(SQLiteDatabase db) throws SQLiteException {
+    public void clearInProgress(SQLiteDatabase db) throws SQLiteException {
         Cursor cursor = db.rawQuery(
                 "UPDATE tbl_UnitSectionDrill " +
                         "SET InProgress = 0 " +
@@ -24,7 +24,7 @@ public class UnitSectionDrillHelper {
         cursor.close();
     }
 
-    public static int update(SQLiteDatabase db, UnitSectionDrill unitSectionDrill) throws SQLiteException {
+    public int update(SQLiteDatabase db, UnitSectionDrill unitSectionDrill) throws SQLiteException {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put("UnitSectionId", unitSectionDrill.getUnitSectionId());
@@ -37,11 +37,13 @@ public class UnitSectionDrillHelper {
         contentValues.put("Unlocked", unitSectionDrill.getUnlocked());
         contentValues.put("UnlockedDate", unitSectionDrill.getUnlockedDate());
         contentValues.put("InProgress", unitSectionDrill.getInProgress());
-        int id = db.update("tbl_UnitSectionDrill", contentValues, "_id = ? ",
+        int numOfUpdatedRows = db.update("tbl_UnitSectionDrill", contentValues, "_id = ? ",
                 new String[] { Integer.toString(unitSectionDrill.getUnitSectionDrillId()) });
-        return id;
+        contentValues.clear();
+        return numOfUpdatedRows;
     }
-    public static UnitSectionDrill getUnitSectionDrill(SQLiteDatabase db, int id) throws SQLiteException {
+
+    public UnitSectionDrill getUnitSectionDrill(SQLiteDatabase db, int id) throws SQLiteException {
 
         Cursor cursor = db.rawQuery(
                 "SELECT " +
@@ -73,12 +75,12 @@ public class UnitSectionDrillHelper {
             unitSectionDrill.setUnlocked(cursor.getInt(cursor.getColumnIndex("Unlocked")));
             unitSectionDrill.setUnlockedDate(cursor.getString(cursor.getColumnIndex("UnlockedDate")));
             unitSectionDrill.setInProgress(cursor.getInt(cursor.getColumnIndex("InProgress")));
-            cursor.close();
         }
+        cursor.close();
         return unitSectionDrill;
     }
 
-    public static UnitSectionDrill getFirstUnitSectionDrill(SQLiteDatabase db) throws SQLiteException {
+    public UnitSectionDrill getFirstUnitSectionDrill(SQLiteDatabase db) throws SQLiteException {
 
         Cursor cursor = db.rawQuery(
                 "SELECT " +
@@ -112,12 +114,12 @@ public class UnitSectionDrillHelper {
             unitSectionDrill.setUnlocked(cursor.getInt(cursor.getColumnIndex("Unlocked")));
             unitSectionDrill.setUnlockedDate(cursor.getString(cursor.getColumnIndex("UnlockedDate")));
             unitSectionDrill.setInProgress(cursor.getInt(cursor.getColumnIndex("InProgress")));
-            cursor.close();
         }
+        cursor.close();
         return unitSectionDrill;
     }
 
-    public static UnitSectionDrill getUnitSectionDrillInProgress(SQLiteDatabase db, int languageId) throws SQLiteException {
+    public UnitSectionDrill getUnitSectionDrillInProgress(SQLiteDatabase db, int languageId) throws SQLiteException {
 
         Cursor cursor = db.rawQuery(
                 "SELECT " +
@@ -153,17 +155,17 @@ public class UnitSectionDrillHelper {
             unitSectionDrill.setUnlocked(cursor.getInt(cursor.getColumnIndex("Unlocked")));
             unitSectionDrill.setUnlockedDate(cursor.getString(cursor.getColumnIndex("UnlockedDate")));
             unitSectionDrill.setInProgress(cursor.getInt(cursor.getColumnIndex("InProgress")));
-            cursor.close();
         }
+        cursor.close();
         return unitSectionDrill;
     }
 
-    public static LinkedHashMap<Integer, UnitSectionDrill> getUnitSectionDrills(
+    public SparseArray<UnitSectionDrill> getUnitSectionDrills(
             SQLiteDatabase db,
             int languageId,
             int unitSectionId) throws SQLiteException {
 
-        LinkedHashMap<Integer, UnitSectionDrill> unitSectionDrills = null;
+        SparseArray<UnitSectionDrill> unitSectionDrills = null;
 
         Cursor cursor = db.rawQuery(
                 "SELECT " +
@@ -184,7 +186,7 @@ public class UnitSectionDrillHelper {
                         "ORDER BY DrillOrder ASC", null);
 
         if (cursor.getCount() > 0) {
-            unitSectionDrills = new LinkedHashMap<>();
+            unitSectionDrills = new SparseArray<>();
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 UnitSectionDrill unitSectionDrill = new UnitSectionDrill();
                 unitSectionDrill.setUnitSectionDrillId(cursor.getInt(cursor.getColumnIndex("_id")));
@@ -200,16 +202,16 @@ public class UnitSectionDrillHelper {
                 unitSectionDrill.setInProgress(cursor.getInt(cursor.getColumnIndex("InProgress")));
                 unitSectionDrills.put(unitSectionDrill.getUnitSectionDrillId(), unitSectionDrill);
             }
-            cursor.close();
         }
+        cursor.close();
         return unitSectionDrills;
     }
 
-    public static LinkedHashMap<Integer, UnitSectionDrill> getUnitSectionDrills(
+    public SparseArray<UnitSectionDrill> getUnitSectionDrills(
             SQLiteDatabase db,
             int languageId) throws SQLiteException {
 
-        LinkedHashMap<Integer, UnitSectionDrill> unitSectionDrills = null;
+        SparseArray<UnitSectionDrill> unitSectionDrills = null;
 
         Cursor cursor = db.rawQuery(
                 "SELECT " +
@@ -229,7 +231,7 @@ public class UnitSectionDrillHelper {
                         "ORDER BY _id ASC", null);
 
         if (cursor.getCount() > 0) {
-            unitSectionDrills = new LinkedHashMap<>();
+            unitSectionDrills = new SparseArray<>();
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 UnitSectionDrill unitSectionDrill = new UnitSectionDrill();
                 unitSectionDrill.setUnitSectionDrillId(cursor.getInt(cursor.getColumnIndex("_id")));
@@ -245,8 +247,8 @@ public class UnitSectionDrillHelper {
                 unitSectionDrill.setInProgress(cursor.getInt(cursor.getColumnIndex("InProgress")));
                 unitSectionDrills.put(unitSectionDrill.getUnitSectionDrillId(), unitSectionDrill);
             }
-            cursor.close();
         }
+        cursor.close();
         return unitSectionDrills;
     }
 }

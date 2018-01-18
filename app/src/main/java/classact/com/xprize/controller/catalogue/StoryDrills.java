@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteException;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import classact.com.xprize.activity.drill.sound.SimpleStoryActivity;
 import classact.com.xprize.control.ComprehensionQuestion;
 import classact.com.xprize.control.DraggableImage;
@@ -26,7 +28,12 @@ import classact.com.xprize.database.model.SimpleStoryWord;
 
 public class StoryDrills {
 
-    public static Intent D1(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId) throws SQLiteException, Exception  {
+    @Inject
+    public StoryDrills() {
+
+    }
+
+    public Intent D1(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId) throws SQLiteException, Exception  {
         Intent intent;
 
         System.out.println("-- StoryDrills.D1 > Debug: unitId " + unitId + ", drillId " + drillId + ", languageId " + languageId);

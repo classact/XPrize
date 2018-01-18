@@ -10,13 +10,15 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="classact.com.xprize.activity.drill.math.MathsDrillTwoActivity">
+
     <RelativeLayout
         android:layout_height="wrap_content"
         android:id="@+id/objects_container"
         android:visibility="visible"
         android:layout_marginTop="155dip"
-        android:layout_marginLeft="80dip"
+        android:layout_marginStart="80dip"
         android:layout_width="wrap_content">
+
         <ImageView
             android:layout_width="75dip"
             android:layout_height="75dip"
@@ -24,43 +26,48 @@
             android:layout_gravity="center_vertical"
             android:id="@+id/object1"
             android:layout_marginTop="20dp"
-            android:src="@drawable/cuppic" />
+            android:background="@android:color/transparent" />
+
         <ImageView
             android:layout_width="75dip"
             android:layout_height="75dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/object2"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_gravity="center_vertical"
             android:layout_toRightOf="@+id/object1"
             android:layout_marginTop="20dp"/>
+
         <ImageView
             android:layout_width="75dip"
             android:layout_height="75dip"
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/object3"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_toRightOf="@+id/object2"
             android:layout_marginTop="20dp"/>
+
         <ImageView
             android:layout_width="75dip"
             android:layout_height="75dip"
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/object4"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_toRightOf="@+id/object3"
             android:layout_marginTop="20dp"/>
+
         <ImageView
             android:layout_width="75dip"
             android:layout_height="75dip"
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/object5"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_toRightOf="@+id/object4"
             android:layout_marginTop="20dp"/>
+
         <ImageView
             android:layout_width="75dip"
             android:layout_height="75dip"
@@ -69,47 +76,52 @@
             android:layout_below="@+id/object1"
             android:id="@+id/object6"
             android:layout_marginTop="20dp"
-            android:src="@drawable/cuppic" />
+            android:background="@android:color/transparent" />
+
         <ImageView
             android:layout_width="75dip"
             android:layout_height="75dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/object7"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_gravity="center_vertical"
             android:layout_toRightOf="@+id/object6"
             android:layout_below="@+id/object2"
             android:layout_marginTop="20dp"/>
+
         <ImageView
             android:layout_width="75dip"
             android:layout_height="75dip"
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/object8"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_toRightOf="@+id/object7"
             android:layout_below="@+id/object3"
             android:layout_marginTop="20dp"/>
+
         <ImageView
             android:layout_width="75dip"
             android:layout_height="75dip"
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/object9"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_toRightOf="@+id/object8"
             android:layout_below="@+id/object4"
             android:layout_marginTop="20dp"/>
+
         <ImageView
             android:layout_width="75dip"
             android:layout_height="75dip"
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/object10"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_toRightOf="@+id/object9"
             android:layout_below="@+id/object5"
             android:layout_marginTop="20dp"/>
+
         <ImageView
             android:layout_width="75dip"
             android:layout_height="75dip"
@@ -118,13 +130,14 @@
             android:id="@+id/object11"
             android:layout_below="@+id/object6"
             android:layout_marginTop="20dp"
-            android:src="@drawable/cuppic" />
+            android:background="@android:color/transparent" />
+
         <ImageView
             android:layout_width="75dip"
             android:layout_height="75dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/object12"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_gravity="center_vertical"
             android:layout_toRightOf="@+id/object11"
             android:layout_below="@+id/object7"
@@ -135,7 +148,7 @@
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/object13"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_toRightOf="@+id/object12"
             android:layout_below="@+id/object8"
             android:layout_marginTop="20dp"/>
@@ -145,7 +158,7 @@
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/object14"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_toRightOf="@+id/object13"
             android:layout_below="@+id/object9"
             android:layout_marginTop="20dp"/>
@@ -155,7 +168,7 @@
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/object15"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_toRightOf="@+id/object14"
             android:layout_below="@+id/object10"
             android:layout_marginTop="20dp"/>
@@ -167,13 +180,13 @@
             android:layout_below="@+id/object11"
             android:id="@+id/object16"
             android:layout_marginTop="20dp"
-            android:src="@drawable/cuppic" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="75dip"
             android:layout_height="75dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/object17"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_gravity="center_vertical"
             android:layout_toRightOf="@+id/object16"
             android:layout_below="@+id/object12"
@@ -184,7 +197,7 @@
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/object18"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_toRightOf="@+id/object17"
             android:layout_below="@+id/object13"
             android:layout_marginTop="20dp"/>
@@ -194,7 +207,7 @@
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/object19"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_toRightOf="@+id/object18"
             android:layout_below="@+id/object14"
             android:layout_marginTop="20dp"/>
@@ -204,7 +217,7 @@
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/object20"
-            android:src="@drawable/cuppic"
+            android:background="@android:color/transparent"
             android:layout_toRightOf="@+id/object19"
             android:layout_below="@+id/object15"
             android:layout_marginTop="20dp"/>
@@ -214,7 +227,7 @@
         android:id="@+id/numbers_container"
         android:layout_toRightOf="@+id/objects_container"
         android:layout_marginTop="170dip"
-        android:layout_marginLeft="250dip"
+        android:layout_marginStart="250dip"
         android:visibility="visible"
         android:layout_width="wrap_content">
         <ImageView
@@ -223,13 +236,13 @@
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/cakedemo_obect"
-            android:src="@drawable/numeral_0" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:layout_width="200dip"
             android:layout_height="200dip"
             android:contentDescription="@string/app_name"
             android:id="@+id/numeral_2"
-            android:src="@drawable/numeral_0"
+            android:background="@android:color/transparent"
             android:layout_gravity="center_vertical"
             android:layout_toRightOf="@+id/cakedemo_obect"
             android:layout_marginTop="20dp"/>
@@ -239,9 +252,9 @@
             android:contentDescription="@string/app_name"
             android:layout_gravity="center_vertical"
             android:id="@+id/numeral_3"
-            android:src="@drawable/numeral_0"
+            android:background="@android:color/transparent"
             android:layout_below ="@+id/cakedemo_obect"
-            android:layout_marginLeft="60dip"
+            android:layout_marginStart="60dip"
             android:layout_marginTop="20dp"/>
     </RelativeLayout>
 </RelativeLayout>

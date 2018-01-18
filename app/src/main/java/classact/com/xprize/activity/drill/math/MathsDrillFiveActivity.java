@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -27,7 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
@@ -35,10 +38,8 @@ import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.Square;
 import classact.com.xprize.utils.SquarePacker;
 
-public class MathsDrillFiveActivity extends AppCompatActivity {
+public class MathsDrillFiveActivity extends DrillActivity {
     private JSONObject allData;
-    private MediaPlayer mp;
-    private Handler handler;
     private ImageView numberOne;
     private ImageView numberTwo;
     private ImageView numberThree;
@@ -55,35 +56,34 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
     boolean drillComplete;
     boolean endDrill;
 
-    private final Context THIS = this;
+    private float itemWidth, itemHeight;
+    private float ix = -1, iy = -1, nx = -1, ny = -1;
+
+    private MathDrill05AViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_five);
+        ButterKnife.bind(this);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill05AViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         objectsContainer = (RelativeLayout)findViewById(R.id.itemsContainer);
         numbersContainer = (RelativeLayout)findViewById(R.id.numbers_container);
         numberOne = (ImageView)findViewById(R.id.cakedemo_obect);
-        numberOne.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                numberClicked(1);
-            }
-        });
+        numberOne.setOnClickListener((v) -> numberClicked(1));
         numberTwo = (ImageView)findViewById(R.id.numeral_2);
-        numberTwo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                numberClicked(2);
-            }
-        });
+        numberTwo.setOnClickListener((v) -> numberClicked(2));
         numberThree = (ImageView)findViewById(R.id.numeral_3);
-        numberThree.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                numberClicked(3);
-            }
-        });
+        numberThree.setOnClickListener((v) -> numberClicked(3));
         itemsReceptacle = (RelativeLayout)findViewById(R.id.itemsReceptacle);
         itemsReceptacle.setOnDragListener(new View.OnDragListener() {
             @Override
@@ -106,17 +106,13 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
-                            if (mp != null) {
-                                mp.release();
-                            }
-                            finish();
                         }
                     }
                 } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle) {
                     try {
                         if (draggedItems > targetItems) {
                             if (dragEnabled && !drillComplete) {
-                                playSound(FetchResource.negativeAffirmation(THIS), placementRunnable);
+                                playSound(FetchResource.negativeAffirmation(context), placementRunnable);
                             }
                         } else {
                             ImageView view = (ImageView) event.getLocalState();
@@ -124,55 +120,16 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        if (mp != null) {
-                            mp.release();
-                        }
-                        finish();
                     }
                 }
                 return true;
             }
         });
-        handler = new Handler();
         dragEnabled = false;
         drillComplete = false;
         endDrill = false;
 
         initialise();
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
     }
 
     private void initialise(){
@@ -182,20 +139,12 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
             setupObjects();
             numbers = allData.getJSONArray("numerals");
             setupNumbers();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        String sound = allData.getString("help_monkey_pack");
-                        playSound(sound, new Runnable() {
-                            @Override
-                            public void run() {
-                                dragItems();
-                            }
-                        });
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+            handler.delayed(() -> {
+                try {
+                    String sound = allData.getString("help_monkey_pack");
+                    playSound(sound, this::dragItems);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }, 500);
         }
@@ -207,25 +156,51 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
     private void placeOnShelf(View view){
         try {
             ImageView destination = (ImageView) itemsReceptacle.getChildAt(draggedItems - 1);
-            destination.setImageResource(itemResId);
+            loadImage(destination, itemResId);
+
+            float halfWidth = itemWidth * 0.8f / 2;
+            float halfHeight = itemHeight * 0.8f / 2;
+
+            if (ix == -1) {
+                ix = destination.getX() + halfWidth;
+                iy = destination.getY() + halfHeight;
+                nx = destination.getX() + halfWidth;
+                ny = destination.getY() + halfHeight;
+            } else {
+                if (destination.getX() + halfWidth > nx) {
+                    nx = destination.getX() + halfWidth;
+                }
+                if (destination.getY() + halfHeight > ny) {
+                    ny = destination.getY() + halfHeight;
+                }
+            }
+
             destination.setVisibility(View.VISIBLE);
             playSound(getNumberSound(), placementRunnable);
             if (draggedItems == targetItems) {
                 dragEnabled = false;
                 drillComplete = true;
-                /*new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    public void run() {
-                        playTouch();
-                    }
-                }, 1000);*/
+
+                handler.delayed(() -> {
+                    float x = ((nx - ix) / 2) + ix;
+                    float y = ((ny - iy) / 2) + iy;
+
+                    ImageView dummyView = new ImageView(context);
+                    MarginLayoutParams dummyViewLayoutParmas = new MarginLayoutParams(
+                            MarginLayoutParams.WRAP_CONTENT,
+                            MarginLayoutParams.WRAP_CONTENT
+                    );
+                    dummyView.setLayoutParams(dummyViewLayoutParmas);
+                    dummyView.setX(x);
+                    dummyView.setY(y);
+
+                    itemsReceptacle.addView(dummyView);
+                    starWorks.play(this, dummyView);
+                }, 100);
             }
         }
         catch(Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -338,10 +313,10 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
                     // Get square
                     Square square = squares[count++];
                     // Get drawable
-                    Drawable d = getResources().getDrawable(imageId, null);
+                    // Drawable d = getResources().getDrawable(imageId, null);
                     // Create image view
-                    ImageView iv = new ImageView(getApplicationContext());
-                    iv.setImageDrawable(d);
+                    ImageView iv = new ImageView(context);
+                    loadImage(iv, imageId);
                     iv.setScaleX(0.8f);
                     iv.setScaleY(0.8f);
                     // iv.setBackgroundColor(Color.argb(150, 0, 0, 255));
@@ -356,18 +331,19 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
                     ivParams.topMargin = 0;
                     ivParams.width = square.w;
                     ivParams.height = square.w;
+
+                    itemWidth = square.w;
+                    itemHeight = square.w;
+
                     iv.setLayoutParams(ivParams);
                     // Set coordinates
                     iv.setX((float) square.x);
                     iv.setY((float) square.y);
                     // Set image
                     iv.setVisibility(View.VISIBLE);
-                    iv.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            itemResId = imageId;
-                            return dragItem(v,event);
-                        }
+                    iv.setOnTouchListener((v, event) -> {
+                        itemResId = imageId;
+                        return dragItem(v,event);
                     });
                 }
             }
@@ -378,25 +354,17 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
         }
     }
 
-    private Runnable placementRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (drillComplete && !endDrill) {
-                endDrill = true;
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        playSound(FetchResource.positiveAffirmation(THIS), placementRunnable);
-                    }
-                }, 500);
-            } else if (endDrill) {
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
-            }
+    private Runnable placementRunnable = () -> {
+        if (drillComplete && !endDrill) {
+            endDrill = true;
+            handler.delayed(() -> playSound(FetchResource.positiveAffirmation(context), this::endDrill), 0);
         }
     };
+
+    private void endDrill() {
+        finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
 
     private void setupNumbers(){
         try {
@@ -419,13 +387,13 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
                 }
                 switch (pos) {
                     case 0:
-                        numberOne.setImageResource(FetchResource.imageId(this, numbers, i, "image"));
+                        loadImage(numberOne, FetchResource.imageId(this, numbers, i, "image"));
                         break;
                     case 1:
-                        numberTwo.setImageResource(FetchResource.imageId(this, numbers, i, "image"));
+                        loadImage(numberTwo, FetchResource.imageId(this, numbers, i, "image"));
                         break;
                     case 2:
-                        numberThree.setImageResource(FetchResource.imageId(this, numbers, i, "image"));
+                        loadImage(numberThree, FetchResource.imageId(this, numbers, i, "image"));
                         break;
                 }
             }
@@ -443,10 +411,8 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
                 playSound(FetchResource.positiveAffirmation(this), new Runnable() {
                     @Override
                     public void run() {
-                        if (mp != null) {
-                            mp.release();
-                        }
                         finish();
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     }
                 });
             } else {
@@ -473,41 +439,10 @@ public class MathsDrillFiveActivity extends AppCompatActivity {
     private void dragItems(){
         try{
             String sound = allData.getString("drag_items_onto_shelf");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    dragEnabled = true;
-                }
-            });
+            playSound(sound, () -> dragEnabled = true);
         }
         catch (Exception ex){
             ex.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

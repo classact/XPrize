@@ -1,17 +1,13 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -27,47 +23,50 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
-import classact.com.xprize.common.Code;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
-import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.WordLetterLayout;
 import classact.com.xprize.view.WriteView;
 
-public class SoundDrillFourteenActivity extends AppCompatActivity {
-    private ImageView item1;
-    private ImageView item2;
-    private ImageView item3;
-    private ImageView item4;
-    private ImageView item5;
-    private ImageView item6;
-    private ImageView item7;
-    private ImageView item8;
-    private ImageView item9;
-    private ImageView receptable1;
-    private ImageView receptable2;
-    private ImageView receptable3;
-    private ImageView receptable4;
-    private ImageView receptable5;
-    private ImageView receptable6;
-    private ImageView receptable7;
-    private ImageView receptable8;
-    private ImageView receptable9;
-    private LinearLayout writingContainer;
+public class SoundDrillFourteenActivity extends DrillActivity {
+
+    @BindView(R.id.item1) ImageView item1;
+    @BindView(R.id.item2) ImageView item2;
+    @BindView(R.id.item3) ImageView item3;
+    @BindView(R.id.item4) ImageView item4;
+    @BindView(R.id.item5) ImageView item5;
+    @BindView(R.id.item6) ImageView item6;
+    @BindView(R.id.item7) ImageView item7;
+    @BindView(R.id.item8) ImageView item8;
+    @BindView(R.id.item9) ImageView item9;
+
+    @BindView(R.id.loc1) ImageView receptable1;
+    @BindView(R.id.loc2) ImageView receptable2;
+    @BindView(R.id.loc3) ImageView receptable3;
+    @BindView(R.id.loc4) ImageView receptable4;
+    @BindView(R.id.loc5) ImageView receptable5;
+    @BindView(R.id.loc6) ImageView receptable6;
+    @BindView(R.id.loc7) ImageView receptable7;
+    @BindView(R.id.loc8) ImageView receptable8;
+    @BindView(R.id.loc9) ImageView receptable9;
+
+    @BindView(R.id.activity_sound_drill_fourteen) RelativeLayout rootView;
+    @BindView(R.id.writing_canvas_container) LinearLayout writingContainer;
+    @BindView(R.id.layout1) LinearLayout displayContainer;
 
     private RelativeLayout letterContainer;
 
-    private LinearLayout displayContainer;
     private LinearLayout blanksContainer;
     private DrillFourteenWriteView writingView;
     private JSONArray words;
     private int currentWord;
-    private MediaPlayer mp;
     private int currentTries;
     private JSONObject allData;
 
     String textholder;
-    Handler handler;
 
     private boolean mCanWrite;
     private boolean mIsWriting;
@@ -75,7 +74,6 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
     private TextView mTimer;
     private int mTimerCounter;
     private boolean mTimerReset;
-    private RelativeLayout mRootView;
     private LinearLayout mItemsParent;
     private LinearLayout mReceptaclesParent;
 
@@ -87,34 +85,34 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
     private final float TIMER_MID_X = 2065f;
     private final float TIMER_MID_Y = 425f;
 
+    private SoundDrill14ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_fourteen);
+        ButterKnife.bind(this);
 
-        item1 = (ImageView) findViewById(R.id.item1);
-        item2 = (ImageView) findViewById(R.id.item2);
-        item3 = (ImageView) findViewById(R.id.item3);
-        item4 = (ImageView) findViewById(R.id.item4);
-        item5 = (ImageView) findViewById(R.id.item5);
-        item6 = (ImageView) findViewById(R.id.item6);
-        item7 = (ImageView) findViewById(R.id.item7);
-        item8 = (ImageView) findViewById(R.id.item8);
-        item9 = (ImageView) findViewById(R.id.item9);
-        receptable1 = (ImageView) findViewById(R.id.loc1);
-        receptable2 = (ImageView) findViewById(R.id.loc2);
-        receptable3 = (ImageView) findViewById(R.id.loc3);
-        receptable4 = (ImageView) findViewById(R.id.loc4);
-        receptable5 = (ImageView) findViewById(R.id.loc5);
-        receptable6 = (ImageView) findViewById(R.id.loc6);
-        receptable7 = (ImageView) findViewById(R.id.loc7);
-        receptable8 = (ImageView) findViewById(R.id.loc8);
-        receptable9 = (ImageView) findViewById(R.id.loc9);
-        writingContainer = (LinearLayout) findViewById(R.id.writing_canvas_container);
-        displayContainer = (LinearLayout)findViewById(R.id.layout1);
-        mRootView = (RelativeLayout) displayContainer.getParent();
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill14ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
 
-        blanksContainer = (LinearLayout) mRootView.getChildAt(1);
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
+        loadImage(receptable1, R.drawable.line);
+        loadImage(receptable2, R.drawable.line);
+        loadImage(receptable3, R.drawable.line);
+        loadImage(receptable4, R.drawable.line);
+        loadImage(receptable5, R.drawable.line);
+        loadImage(receptable6, R.drawable.line);
+        loadImage(receptable7, R.drawable.line);
+        loadImage(receptable8, R.drawable.line);
+        loadImage(receptable9, R.drawable.line);
+
+        blanksContainer = (LinearLayout) rootView.getChildAt(1);
 
         mItemsParent = (LinearLayout) item1.getParent();
         mReceptaclesParent = (LinearLayout) receptable1.getParent();
@@ -129,7 +127,7 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
         timerClock.setScaleY(0.75f);
         timerClock.setX(1775f);
         timerClock.setY(125f);
-        mRootView.addView(timerClock);
+        rootView.addView(timerClock);
 
         mTimer = new TextView(getApplicationContext());
         mTimer.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()), Typeface.BOLD);
@@ -145,14 +143,13 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
         // timer.setBackgroundColor(Color.argb(100, 255, 0, 0));
         mTimer.setX(TIMER_MID_X);
         mTimer.setY(TIMER_MID_Y);
-        mRootView.addView(mTimer);
+        rootView.addView(mTimer);
 
         Point textSize = Globals.TEXT_MEASURED_SIZE(mTimer, String.valueOf(mTimerCounter));
         mTimer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
         mTimer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
 
         String drillData = getIntent().getExtras().getString("data");
-        handler = new Handler();
         initialiseData(drillData);
     }
 
@@ -164,40 +161,6 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
             startDrill();
         } catch (Exception ex) {
             ex.printStackTrace();
-        }
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
         }
     }
 
@@ -503,7 +466,7 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
             playSound(sound, new Runnable() {
                 @Override
                 public void run() {
-                    handler.postDelayed(wereYouCorrectRunnable,100);
+                    handler.delayed(wereYouCorrectRunnable,100);
                 }
             });
         }
@@ -520,7 +483,7 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                 playSound(sound, new Runnable() {
                     @Override
                     public void run() {
-                        handler.postDelayed(continueRunnable, 2000);
+                        handler.delayed(continueRunnable, 2000);
                     }
                 });
             }
@@ -530,18 +493,13 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
         }
     };
 
-    public Runnable continueRunnable = new Runnable() {
-        @Override
-        public void run() {
-            currentWord++;
-            if (currentWord <= words.length()) {
-                startDrill();
-            } else {
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
-            }
+    public Runnable continueRunnable = () -> {
+        currentWord++;
+        if (currentWord <= words.length()) {
+            startDrill();
+        } else {
+            finish();
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
     };
 
@@ -564,20 +522,6 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                 //reward5.setImageResource(R.drawable.rewardball1colour);
                 break;
         }
-    }
-
-    private void rewardAndGoNext(){
-        reward();
-        playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
-            @Override
-            public void run() {
-                currentWord++;
-                if (currentWord <= 5)
-                    startDrill();
-                else
-                    finish();
-            }
-        });
     }
 
     private class DrillFourteenWriteView extends WriteView {
@@ -613,7 +557,7 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
                         mThisActivity.setLastWrittenTime(new Date().getTime());
 
                         handler.removeCallbacks(countDown);
-                        handler.postDelayed(new Runnable() {
+                        handler.delayed(new Runnable() {
                             @Override
                             public void run() {
                                 mTimer.setTextColor(Color.DKGRAY);
@@ -633,9 +577,6 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-
-                System.out.println("Starting countdown!! " + mIsWriting + ", " + mLastWrittenTime);
-
                 long currentTime = new Date().getTime();
 
                 if (!(mIsWriting || mLastWrittenTime == 0l || (currentTime - mLastWrittenTime) < DRAW_WAIT_TIME )) {
@@ -650,21 +591,17 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
 
                     if (mTimerCounter > 0) {
                         mTimerCounter--;
-                        handler.postDelayed(countDown, 1000);
+                        handler.delayed(countDown, 1000);
                     } else {
                         mCanWrite = false;
                         mTimer.setTextColor(Color.parseColor("#33ccff"));
-                        handler.postDelayed(showWordRunnable, 500);
+                        handler.delayed(showWordRunnable, 500);
                     }
                 } else {
                     mTimer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
                 }
             } catch (Exception ex) {
-                System.err.println("==========================================");
-                System.err.println("SDFourteenActivity.countDown > Exception: " + ex.getMessage());
-                System.err.println("------------------------------------------");
                 ex.printStackTrace();
-                System.err.println("==========================================");
             }
         }
     };
@@ -691,32 +628,5 @@ public class SoundDrillFourteenActivity extends AppCompatActivity {
 
     public long getLastWrittenTime() {
         return mLastWrittenTime;
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        handler = null;
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

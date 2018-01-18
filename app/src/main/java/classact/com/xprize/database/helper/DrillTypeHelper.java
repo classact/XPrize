@@ -4,28 +4,34 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.util.SparseArray;
 
-import java.util.LinkedHashMap;
+import javax.inject.Inject;
 
 import classact.com.xprize.database.model.DrillType;
 
 /**
  * Created by hcdjeong on 2017/07/24.
+ * Helper for {@link DrillType}
  */
 
 public class DrillTypeHelper {
 
-    public static int updateDrillType(SQLiteDatabase db, DrillType drillType) throws SQLiteException {
+    @Inject
+    public DrillTypeHelper() {}
+
+    public int updateDrillType(SQLiteDatabase db, DrillType drillType) throws SQLiteException {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put("Name", drillType.getName());
         contentValues.put("LanguageId", drillType.getLanguageId());
-        int id = db.update("tbl_DrillType", contentValues, "_id = ? ",
+        int numOfRowsUpdated = db.update("tbl_DrillType", contentValues, "_id = ? ",
                 new String[] { Integer.toString(drillType.getDrillTypeId()) });
-        return id;
+        contentValues.clear();
+        return numOfRowsUpdated;
     }
 
-    public static DrillType getDrillType(SQLiteDatabase db, int id) throws SQLiteException {
+    public DrillType getDrillType(SQLiteDatabase db, int id) throws SQLiteException {
 
         Cursor cursor = db.rawQuery(
                 "SELECT " +
@@ -41,14 +47,14 @@ public class DrillTypeHelper {
             drillType.setDrillTypeId(id);
             drillType.setName(cursor.getString(cursor.getColumnIndex("Name")));
             drillType.setLanguageId(cursor.getInt(cursor.getColumnIndex("LanguageId")));
-            cursor.close();
         }
+        cursor.close();
         return drillType;
     }
 
-    public static LinkedHashMap<Integer, DrillType> getDrillTypes(SQLiteDatabase db, int languageId) throws SQLiteException {
+    public SparseArray<DrillType> getDrillTypes(SQLiteDatabase db, int languageId) throws SQLiteException {
 
-        LinkedHashMap<Integer, DrillType> drillTypes = null;
+        SparseArray<DrillType> drillTypes = null;
 
         Cursor cursor = db.rawQuery(
                 "SELECT " +
@@ -59,7 +65,7 @@ public class DrillTypeHelper {
                         "WHERE LanguageId = " + languageId, null);
 
         if (cursor.getCount() > 0) {
-            drillTypes = new LinkedHashMap<>();
+            drillTypes = new SparseArray<>();
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 DrillType drillType = new DrillType();
                 drillType.setDrillTypeId(cursor.getInt(cursor.getColumnIndex("_id")));
@@ -67,8 +73,8 @@ public class DrillTypeHelper {
                 drillType.setLanguageId(cursor.getInt(cursor.getColumnIndex("LanguageId")));
                 drillTypes.put(drillType.getDrillTypeId(), drillType);
             }
-            cursor.close();
         }
+        cursor.close();
         return drillTypes;
     }
 }

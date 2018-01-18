@@ -10,7 +10,6 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.support.annotation.Dimension;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -179,15 +178,67 @@ public class Globals {
         }
     }
 
+    private static float mBackgroundMusicPlayerVolume = 0f;
+
     public static void STOP_BACKGROUND_MUSIC(Context context) {
         if (mBackgroundMusicPlayer == null) {
             System.err.println("Background Music Player: Cannot stop, is null");
             return;
         }
+
         mBackgroundMusicPlayer.stop();
         mBackgroundMusicPlayer.reset();
         mBackgroundMusicPlayer.release();
         mBackgroundMusicPlayer = null;
+        /*
+        if (mBackgroundMusicPlayer.isPlaying()) {
+
+            mBackgroundMusicPlayerVolume = 1f;
+
+            int duration = mBackgroundMusicPlayer.getDuration();
+            int timeLeft = duration - mBackgroundMusicPlayer.getCurrentPosition();
+
+            if (timeLeft > 1000) {
+                timeLeft = 1000;
+            }
+
+            final float deltaTime = timeLeft;
+            final float fadeSpeed = ((float) timeLeft/1000f)/10f;
+
+            final Timer timer = new Timer(true);
+            final TimerTask timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    mBackgroundMusicPlayerVolume = fadeOutBackgroundMusic(mBackgroundMusicPlayerVolume, fadeSpeed, deltaTime);
+                    if (mBackgroundMusicPlayerVolume <= 0f) {
+                        mBackgroundMusicPlayer.stop();
+                        mBackgroundMusicPlayer.reset();
+                        mBackgroundMusicPlayer.release();
+                        mBackgroundMusicPlayer = null;
+                        timer.cancel();
+                        timer.purge();
+                    }
+                }
+            };
+            timer.scheduleAtFixedRate(timerTask, new Date(), (int) timeLeft);
+        } else {
+            mBackgroundMusicPlayer.stop();
+            mBackgroundMusicPlayer.reset();
+            mBackgroundMusicPlayer.release();
+            mBackgroundMusicPlayer = null;
+        }
+        */
+    }
+
+    private static float fadeOutBackgroundMusic(float volume, float fadeSpeed, float deltaTime) {
+        if (mBackgroundMusicPlayer == null) {
+            System.err.println("Background Music Player: Cannot fade out, is null");
+            return 0f;
+        }
+        mBackgroundMusicPlayer.setVolume(volume, volume);
+        volume -= fadeSpeed * deltaTime;
+        System.out.println("Volume is: " + volume);
+        return volume;
     }
 
     public static void playStarWorks(Context context, View v) {

@@ -1,25 +1,14 @@
 package classact.com.xprize.activity.drill.sound;
 
-import android.app.ActionBar;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,16 +17,18 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
-import classact.com.xprize.common.Code;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
-import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.view.WriteView;
 
-public class SoundDrillNineActivity extends AppCompatActivity {
+public class SoundDrillNineActivity extends DrillActivity {
+
+    @BindView(R.id.activity_sound_drill_nine) RelativeLayout rootView;
+
     CustomWriteView view;
-    private MediaPlayer mp;
-    private Handler handler;
     private RelativeLayout writingContainer;
     private JSONObject params;
     private String data;
@@ -56,12 +47,23 @@ public class SoundDrillNineActivity extends AppCompatActivity {
     private final float TIMER_MID_X = 2065f;
     private final float TIMER_MID_Y = 425f;
 
-    private final Context THIS = this;
+    private SoundDrill09ViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_nine);
+        ButterKnife.bind(this);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill09ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         startedDrawing = false;
         drawingTimeUp = false;
         canDraw = false;
@@ -69,10 +71,9 @@ public class SoundDrillNineActivity extends AppCompatActivity {
         view = new CustomWriteView(this, R.drawable.drawapic1, true);
         // view.setAlpha(0.0f);
         writingContainer = (RelativeLayout)findViewById(R.id.activity_sound_drill_nine);
-        handler = new Handler(Looper.getMainLooper());
         writingContainer.addView(view);
 
-        ImageView timerClock = new ImageView(THIS);
+        ImageView timerClock = new ImageView(context);
         timerClock.setImageResource(R.drawable.timer_clock_001);
         timerClock.setScaleX(0.75f);
         timerClock.setScaleY(0.75f);
@@ -105,55 +106,16 @@ public class SoundDrillNineActivity extends AppCompatActivity {
         playLetsDraw();
     }
 
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
-    }
-
     private void playLetsDraw() {
         try {
             params = new JSONObject(data);
             //Todo: Sound
             String sound = params.getString("lets_draw");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    handler.postDelayed(playDrawSomethingThatStartsWithRunnable, 500);
-                }
-            });
+            playSound(sound, () -> handler.delayed(playDrawSomethingThatStartsWithRunnable, 500));
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -176,7 +138,7 @@ public class SoundDrillNineActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -187,14 +149,14 @@ public class SoundDrillNineActivity extends AppCompatActivity {
             playSound(sound, new Runnable() {
                 @Override
                 public void run() {
-                    handler.postDelayed(enableDrawing,500);
+                    handler.delayed(enableDrawing,500);
                 }
             });
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
-            handler.postDelayed(new Runnable() {
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
+            handler.delayed(new Runnable() {
                 @Override
                 public void run() {
                     enableDrawing.run();
@@ -216,28 +178,18 @@ public class SoundDrillNineActivity extends AppCompatActivity {
         public void run() {
             try{
                 String sound = params.getString("what_did_you_draw");
-                playSound(sound, new Runnable() {
-                    @Override
-                    public void run() {
-                        handler.postDelayed(completeDrill, 4550);
-                    }
-                });
+                playSound(sound, () -> handler.delayed(completeDrill, 4550));
             }
             catch (Exception ex){
                 ex.printStackTrace();
-                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     };
 
-    private Runnable completeDrill = new Runnable() {
-        @Override
-        public void run() {
-            if (mp != null) {
-                mp.release();
-            }
-            finish();
-        }
+    private Runnable completeDrill = () -> {
+        finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     };
 
     private Runnable countDown = new Runnable() {
@@ -261,21 +213,17 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                     if (timerCounter > 0) {
                         timerCounter--;
                         timer.setVisibility(View.VISIBLE);
-                        handler.postDelayed(countDown, 1000);
+                        handler.delayed(countDown, 1000);
                     } else {
                         canDraw = false;
                         drillComplete = true;
                         timer.setTextColor(Color.parseColor("#33ccff"));
                         drawingTimeUp = true;
-                        handler.postDelayed(playWhatDidYouDraw, 500);
+                        handler.delayed(playWhatDidYouDraw, 500);
                     }
                 }
             } catch (Exception ex) {
-                System.err.println("SoundDrillNineActivity.countDown > Exception: " + ex.getMessage());
                 ex.printStackTrace();
-                if (mp != null) {
-                    mp.release();
-                }
             }
         }
     };
@@ -299,7 +247,7 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                     if (canDraw) {
                         if (!(startedDrawing || drawingTimeUp)) {
                             startedDrawing = true;
-                            lastDrawnTime = 0l;
+                            lastDrawnTime = 0;
                             timer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
                         }
                     }
@@ -315,38 +263,11 @@ public class SoundDrillNineActivity extends AppCompatActivity {
                         lastDrawnTime = new Date().getTime();
 
                         handler.removeCallbacks(countDown);
-                        handler.postDelayed(countDown, DRAW_WAIT_TIME);
+                        handler.delayed(countDown, DRAW_WAIT_TIME);
                     }
                     break;
             }
             return true;
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.stop();
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

@@ -3,9 +3,9 @@ package classact.com.xprize.activity.menu;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,37 +20,44 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
+import classact.com.xprize.activity.MenuActivity;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.database.model.Section;
 import classact.com.xprize.database.model.Unit;
 import classact.com.xprize.database.model.UnitSection;
-import classact.com.xprize.locale.Languages;
 
-public class SectionsMenu extends AppCompatActivity {
+public class SectionsMenu extends MenuActivity {
 
-    private TextView mChapterTitle;
-    private TextView mChapterNumber;
+    @BindView(R.id.chapter_title) TextView mChapterTitle;
+    @BindView(R.id.chapter_number) TextView mChapterNumber;
 
-    private TextView mStoryTitle;
-    private TextView mPhonicsTitle;
-    private TextView mWordsTitle;
-    private TextView mBooksTitle;
-    private TextView mMathsTitle;
+    @BindView(R.id.intro_title) TextView mStoryTitle;
+    @BindView(R.id.phonics_title) TextView mPhonicsTitle;
+    @BindView(R.id.words_title) TextView mWordsTitle;
+    @BindView(R.id.books_title) TextView mBooksTitle;
+    @BindView(R.id.maths_title) TextView mMathsTitle;
 
-    private ImageButton mStoryButton;
-    private ImageButton mPhonicsButton;
-    private ImageButton mWordsButton;
-    private ImageButton mBooksButton;
-    private ImageButton mMathsButton;
+    @BindView(R.id.intro_button) ImageButton mStoryButton;
+    @BindView(R.id.phonics_button) ImageButton mPhonicsButton;
+    @BindView(R.id.words_button) ImageButton mWordsButton;
+    @BindView(R.id.books_button) ImageButton mBooksButton;
+    @BindView(R.id.maths_button) ImageButton mMathsButton;
 
-    private ImageButton mStoryMonkey;
-    private ImageButton mPhonicsMonkey;
-    private ImageButton mWordsMonkey;
-    private ImageButton mBooksMonkey;
-    private ImageButton mMathsMonkey;
+    @BindView(R.id.intro_monkey) ImageButton mStoryMonkey;
+    @BindView(R.id.phonics_monkey) ImageButton mPhonicsMonkey;
+    @BindView(R.id.words_monkey) ImageButton mWordsMonkey;
+    @BindView(R.id.books_monkey) ImageButton mBooksMonkey;
+    @BindView(R.id.maths_monkey) ImageButton mMathsMonkey;
+
+    @BindView(R.id.hsv) HorizontalScrollView mHSV;
+    @BindView(R.id.chapter_header) ImageView mChapterHeader;
 
     private LinkedHashMap<ImageButton, TextView> mButtonTitles;
     private LinkedHashMap<ImageButton, ImageButton> mButtonMonkeys;
@@ -60,8 +67,6 @@ public class SectionsMenu extends AppCompatActivity {
     private LinkedHashMap<Integer, ImageButton> mSectionMonkeys;
     private LinkedHashMap<Integer, ImageButton> mSectionButtons;
 
-    private HorizontalScrollView mHSV;
-    private ImageView mChapterHeader;
     private List<Integer> mChapterHeaderImageResources;
 
     private DisplayMetrics mDisplayMetrics;
@@ -72,16 +77,18 @@ public class SectionsMenu extends AppCompatActivity {
     private final float MAX_HSV_WIDTH = 5120f;
     private final float SCN_CH_DIFF = MAX_CH_WIDTH - MAX_SCN_WIDTH;
 
-    private DatabaseController mDb;
     private Intent mIntent;
     private int mSelectedChapter;
     private boolean mFinishActivity;
-    private final Context THIS = this;
+
+    @Inject DatabaseController mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sections_menu);
+        ButterKnife.bind(this);
+
         mIntent = getIntent();
         mSelectedChapter = mIntent.getIntExtra("selected_chapter", 0);
         mFinishActivity = false;
@@ -91,28 +98,14 @@ public class SectionsMenu extends AppCompatActivity {
         mDisplayMetrics = getResources().getDisplayMetrics();
         mScreenDensity = mDisplayMetrics.density;
 
-        mChapterHeader = (ImageView) findViewById(R.id.chapter_header);
-        mHSV = (HorizontalScrollView) findViewById(R.id.hsv);
-        mHSV.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+        mHSV.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
 
-                float fScrollX = (float) scrollX;
-                float ratio = fScrollX/MAX_HSV_WIDTH;
-                float translationX = SCN_CH_DIFF * ratio * -1f;
+            float fScrollX = (float) scrollX;
+            float ratio = fScrollX/MAX_HSV_WIDTH;
+            float translationX = SCN_CH_DIFF * ratio * -1f;
 
-                mChapterHeader.setX(translationX);
-            }
+            mChapterHeader.setX(translationX);
         });
-
-        mChapterTitle = (TextView) findViewById(R.id.chapter_title);
-        mChapterNumber = (TextView) findViewById(R.id.chapter_number);
-
-        mStoryTitle = (TextView) findViewById(R.id.intro_title);
-        mPhonicsTitle = (TextView) findViewById(R.id.phonics_title);
-        mWordsTitle = (TextView) findViewById(R.id.words_title);
-        mBooksTitle = (TextView) findViewById(R.id.books_title);
-        mMathsTitle = (TextView) findViewById(R.id.maths_title);
 
         mChapterTitle.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
         mChapterNumber.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
@@ -123,17 +116,6 @@ public class SectionsMenu extends AppCompatActivity {
         mBooksTitle.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
         mMathsTitle.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
 
-        mStoryButton = (ImageButton) findViewById(R.id.intro_button);
-        mPhonicsButton = (ImageButton) findViewById(R.id.phonics_button);
-        mWordsButton = (ImageButton) findViewById(R.id.words_button);
-        mBooksButton = (ImageButton) findViewById(R.id.books_button);
-        mMathsButton = (ImageButton) findViewById(R.id.maths_button);
-
-        mStoryMonkey = (ImageButton) findViewById(R.id.intro_monkey);
-        mPhonicsMonkey = (ImageButton) findViewById(R.id.phonics_monkey);
-        mWordsMonkey = (ImageButton) findViewById(R.id.words_monkey);
-        mBooksMonkey = (ImageButton) findViewById(R.id.books_monkey);
-        mMathsMonkey = (ImageButton) findViewById(R.id.maths_monkey);
 
         mChapterHeaderImageResources.add(R.drawable.chapter_01_header);
         mChapterHeaderImageResources.add(R.drawable.chapter_02_header);
@@ -156,16 +138,15 @@ public class SectionsMenu extends AppCompatActivity {
         mChapterHeaderImageResources.add(R.drawable.chapter_19_header);
         mChapterHeaderImageResources.add(R.drawable.chapter_20_header);
 
-        mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
-        LinkedHashMap<Integer, Section> sectionMap = mDb.getSections();
-        LinkedHashMap<Integer, UnitSection> unitSectionMap = mDb.getUnitSections(mSelectedChapter);
+        SparseArray<Section> sectionMap = mDb.getSections();
+        SparseArray<UnitSection> unitSectionMap = mDb.getUnitSections(mSelectedChapter);
         List<UnitSection> unitSections = new ArrayList<>();
         UnitSection lastUnlockedUnitSection = null;
 
         List<String> sectionHeadings = new ArrayList<>();
-        List<Integer> sectionIds = new ArrayList<>();
-        for (Map.Entry<Integer, UnitSection> entry : unitSectionMap.entrySet()) {
-            UnitSection unitSection = entry.getValue();
+        for (int i = 0; i < unitSectionMap.size(); i++) {
+            int key = unitSectionMap.keyAt(i);
+            UnitSection unitSection = unitSectionMap.get(key);
             int sectionId = unitSection.getSectionId();
             Section section = sectionMap.get(sectionId);
             String sectionName = section.getName();
@@ -187,11 +168,11 @@ public class SectionsMenu extends AppCompatActivity {
         final int BOOKS_SECTION = DatabaseController.BOOKS_SECTION;
         final int MATHS_SECTION = DatabaseController.MATHS_SECTION;
 
-        int storyWidth = Globals.TEXT_MEASURED_WIDTH(mStoryTitle, sectionHeadings.get(0));
-        int phonicsWidth = Globals.TEXT_MEASURED_WIDTH(mPhonicsTitle, sectionHeadings.get(1));
-        int WordsWidth = Globals.TEXT_MEASURED_WIDTH(mWordsTitle, sectionHeadings.get(2));
-        int booksWidth = Globals.TEXT_MEASURED_WIDTH(mBooksTitle, sectionHeadings.get(3));
-        int mathsWidth = Globals.TEXT_MEASURED_WIDTH(mMathsTitle, sectionHeadings.get(4));
+        int storyWidth = getMeasuredWidth(mStoryTitle, sectionHeadings.get(0));
+        int phonicsWidth = getMeasuredWidth(mPhonicsTitle, sectionHeadings.get(1));
+        int WordsWidth = getMeasuredWidth(mWordsTitle, sectionHeadings.get(2));
+        int booksWidth = getMeasuredWidth(mBooksTitle, sectionHeadings.get(3));
+        int mathsWidth = getMeasuredWidth(mMathsTitle, sectionHeadings.get(4));
 
         placeMonkey(mStoryMonkey, (int) ((float) storyWidth/1.5f));
         placeMonkey(mPhonicsMonkey, (int) ((float) phonicsWidth/1.5f));
@@ -243,7 +224,7 @@ public class SectionsMenu extends AppCompatActivity {
 
         mChapterTitle.setText(R.string.Chapter);
         mChapterNumber.setText(String.valueOf(mSelectedChapter));
-        mChapterHeader.setImageResource(mChapterHeaderImageResources.get(mSelectedChapter-1));
+        loadImage(mChapterHeader, mChapterHeaderImageResources.get(mSelectedChapter-1));
 
         // Check if is latest chapter
         LinkedHashMap<Integer, Unit> units = mDb.getUnits();
@@ -321,9 +302,9 @@ public class SectionsMenu extends AppCompatActivity {
                     int selectedSectionId = mButtonSections.get(button);
                     Intent intent = null;
                     if (selectedSectionId == DatabaseController.PHONICS_SECTION) {
-                        intent = new Intent(THIS, PhonicsSubMenu.class);
+                        intent = new Intent(context, PhonicsSubMenu.class);
                     } else {
-                        intent = new Intent(THIS, DrillsMenu.class);
+                        intent = new Intent(context, DrillsMenu.class);
 
                         UnitSection unitSection = mDb.getUnitSection(mSelectedChapter, selectedSectionId, 0);
                         intent.putExtra("selected_unit_section", unitSection.getUnitSectionId());
@@ -335,26 +316,25 @@ public class SectionsMenu extends AppCompatActivity {
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
             });
-            button.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    int action = event.getAction();
-                    switch (action) {
-                        case MotionEvent.ACTION_DOWN:
-                            if (monkey.getVisibility() == View.VISIBLE) {
-                                monkey.setPressed(true);
-                            }
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            if (monkey.getVisibility() == View.VISIBLE) {
-                                monkey.setPressed(false);
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    return false;
+            button.setOnTouchListener((v, event) -> {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (monkey.getVisibility() == View.VISIBLE) {
+                            monkey.setPressed(true);
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (monkey.getVisibility() == View.VISIBLE) {
+                            monkey.setPressed(false);
+                            v.performClick();
+                            return true;
+                        }
+                        break;
+                    default:
+                        break;
                 }
+                return false;
             });
         } else {
             title.setTextColor(Color.argb(200, 75, 75, 75));
@@ -410,7 +390,7 @@ public class SectionsMenu extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         if (!mFinishActivity) {
-            Globals.RESUME_BACKGROUND_MUSIC(THIS);
+            Globals.RESUME_BACKGROUND_MUSIC(context);
         } else {
             mFinishActivity = false;
         }
@@ -420,7 +400,7 @@ public class SectionsMenu extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         if (!mFinishActivity) {
-            Globals.PAUSE_BACKGROUND_MUSIC(THIS);
+            Globals.PAUSE_BACKGROUND_MUSIC(context);
         }
     }
 

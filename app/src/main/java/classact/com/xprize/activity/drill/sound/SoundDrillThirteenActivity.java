@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Color;
@@ -26,7 +27,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
@@ -34,30 +38,31 @@ import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 import classact.com.xprize.utils.WordLetterLayout;
 
-public class SoundDrillThirteenActivity extends AppCompatActivity {
+public class SoundDrillThirteenActivity extends DrillActivity {
 
-    private LinearLayout container1;
-    private LinearLayout container2;
-    private LinearLayout container3;
-    private LinearLayout container4;
-    private LinearLayout container5;
-    private LinearLayout container6;
-    private LinearLayout container7;
-    private LinearLayout container8;
+    @BindView(R.id.activity_sound_drill_thirteen) RelativeLayout rootView;
 
-    private ImageView receptacle1;
-    private ImageView receptacle2;
-    private ImageView receptacle3;
-    private ImageView receptacle4;
-    private ImageView receptacle5;
-    private ImageView receptacle6;
-    private ImageView receptacle7;
-    private ImageView receptacle8;
+    @BindView(R.id.container1) LinearLayout container1;
+    @BindView(R.id.container2) LinearLayout container2;
+    @BindView(R.id.container3) LinearLayout container3;
+    @BindView(R.id.container4) LinearLayout container4;
+    @BindView(R.id.container5) LinearLayout container5;
+    @BindView(R.id.container6) LinearLayout container6;
+    @BindView(R.id.container7) LinearLayout container7;
+    @BindView(R.id.container8) LinearLayout container8;
+
+    @BindView(R.id.loc1) ImageView receptacle1;
+    @BindView(R.id.loc2) ImageView receptacle2;
+    @BindView(R.id.loc3) ImageView receptacle3;
+    @BindView(R.id.loc4) ImageView receptacle4;
+    @BindView(R.id.loc5) ImageView receptacle5;
+    @BindView(R.id.loc6) ImageView receptacle6;
+    @BindView(R.id.loc7) ImageView receptacle7;
+    @BindView(R.id.loc8) ImageView receptacle8;
 
     private int currentItem;
     public JSONArray drills;
     private int currentDrill;
-    private MediaPlayer mp;
     private int correctItems;
     private JSONObject allData;
     private JSONArray letters;
@@ -84,38 +89,28 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
     private final String SOUND = "sound";
     private final String YAY = "YAY_001";
     private final String NAY = "NAY_001";
-    private Handler handler;
 
     private RelativeLayout mRootView;
     private RelativeLayout mReceptaclesView;
-    private final Context THIS = this;
 
     private LinkedHashMap<String, List<Integer>> letterMap;
+
+    private SoundDrill13ViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Debug
-        System.out.println("SDThirteenActivity.OnCreate > Debug: MC");
-
         setContentView(R.layout.activity_sound_drill_thirteen);
-        container1 = (LinearLayout) findViewById(R.id.container1);
-        container2 = (LinearLayout) findViewById(R.id.container2);
-        container3 = (LinearLayout) findViewById(R.id.container3);
-        container4 = (LinearLayout) findViewById(R.id.container4);
-        container5 = (LinearLayout) findViewById(R.id.container5);
-        container6 = (LinearLayout) findViewById(R.id.container6);
-        container7 = (LinearLayout) findViewById(R.id.container7);
-        container8 = (LinearLayout) findViewById(R.id.container8);
-        receptacle1 = (ImageView)findViewById(R.id.loc1);
-        receptacle2 = (ImageView)findViewById(R.id.loc2);
-        receptacle3 = (ImageView)findViewById(R.id.loc3);
-        receptacle4 = (ImageView)findViewById(R.id.loc4);
-        receptacle5 = (ImageView)findViewById(R.id.loc5);
-        receptacle6 = (ImageView)findViewById(R.id.loc6);
-        receptacle7 = (ImageView)findViewById(R.id.loc7);
-        receptacle8 = (ImageView)findViewById(R.id.loc8);
+        ButterKnife.bind(this);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill13ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
 
         mRootView = (RelativeLayout) container1.getParent();
 
@@ -177,8 +172,6 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
         mThisActivity = this;
 
-        handler = new Handler();
-
         letterMap = new LinkedHashMap<>();
 
         String drillData = getIntent().getExtras().getString("data");
@@ -187,9 +180,6 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
     }
 
     private void initializeData(String drillData){
-
-        // Debug
-        System.out.println("SDThirteenActivity.initializeData > Debug: MC");
 
         try{
             allData = new JSONObject(drillData);
@@ -201,52 +191,11 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
             mEndDrill = false;
         }
         catch (Exception ex){
-            System.err.println("==============================");
-            System.err.println("SDThirteenActivity.initializeData");
-            System.err.println("------------------------------");
             ex.printStackTrace();
-            System.err.println("==============================");
-        }
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
         }
     }
 
     public void prepareDrill(){
-
-        // Debug
-        System.out.println("SDThirteenActivity.prepareDrill > Debug: MC");
 
         try{
             mDrillComplete = false;
@@ -279,7 +228,6 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                 } else {
                     // Get the letter index (a shuffled index)
                     int containerIndex = mLetterOrder[i];
-                    System.out.println(":: BINDING Letter " + i + " to container " + containerIndex);
                     // Extract the letter from data
                     JSONObject letter = letters.getJSONObject(i);
                     // Get letter image resource id
@@ -316,7 +264,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
             int ivMargin = (int) (density * 10);
 
             if (mReceptaclesView == null) {
-                mReceptaclesView = new RelativeLayout(THIS);
+                mReceptaclesView = new RelativeLayout(context);
                 RelativeLayout.LayoutParams receptaclesLayout = new RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.MATCH_PARENT,
                         RelativeLayout.LayoutParams.MATCH_PARENT
@@ -348,7 +296,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
             }
 
             for (int i = 0; i < n; i++) {
-                ImageView iv = new ImageView(THIS);
+                ImageView iv = new ImageView(context);
                 iv.setImageResource(lRVs.get(i));
                 // iv.setBackgroundColor(Color.argb(100, 0, 0, 255));
                 mReceptaclesView.addView(iv);
@@ -421,7 +369,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
             float letterScale = 1.f;
 
             lVs = WordLetterLayout.level(
-                    THIS,
+                    context,
                     lVs,
                     lRVs,
                     word,
@@ -439,11 +387,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
             playSound(DRAG_THE_LETTERS_TO_WRITE, mDragTheLettersToWriteSound);
         }
         catch (Exception ex){
-            System.err.println("==============================");
-            System.err.println("SDThirteenActivity.prepareDrill");
-            System.err.println("------------------------------");
             ex.printStackTrace();
-            System.err.println("==============================");
         }
     }
 
@@ -463,8 +407,6 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         public boolean onTouch(View v, MotionEvent event) {
 
             try {
-                // Debug
-                System.out.println("SDThirteenActivity.TouchAndDragListener(class).onTouch > Debug: MC");
 
                 mThisActivity.setCurrentItem(mActualIndex);
                 System.out.println("Moving letter: actual(" + mActualIndex + "), shuffled(" + mShuffledIndex + ")");
@@ -478,7 +420,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
             } catch (Exception ex) {
                 ex.printStackTrace();
-                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
             return dragItem(v, event);
         }
@@ -620,13 +562,13 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                                 }
                                 if (affirm) {
                                     // Play full sound
-                                    handler.postDelayed(new Runnable() {
+                                    handler.delayed(new Runnable() {
                                         @Override
                                         public void run() {
                                             playSound(mCurrentWordSound, new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    handler.postDelayed(new Runnable() {
+                                                    handler.delayed(new Runnable() {
                                                         @Override
                                                         public void run() {
                                                             // Play affirmation sound
@@ -665,11 +607,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                 return false;
             }
             catch (Exception ex){
-                System.err.println("==============================");
-                System.err.println("SDThirteenActivity.TouchAndDragListener(class).onDrag");
-                System.err.println("------------------------------");
                 ex.printStackTrace();
-                System.err.println("==============================");
             }
             return false;
         }
@@ -692,11 +630,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                     view.startDragAndDrop(data, shadowBuilder, view, 0);
                     return true;
                 } catch (Exception ex) {
-                    System.err.println("==============================");
-                    System.err.println("SDThirteenActivity.dragItem");
-                    System.err.println("------------------------------");
                     ex.printStackTrace();
-                    System.err.println("==============================");
                 }
             }
         }
@@ -705,53 +639,31 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
     public void playSound(String tag, String sound) {
 
-        // Debug
-        System.out.println("SDThirteenActivity.playSound > Debug: MC");
-
         try {
             // Declare sound path
             String soundPath;
 
             // Determine sound path
             if (sound.equalsIgnoreCase(YAY)) {
-                soundPath = "android.resource://" + getApplicationContext().getPackageName() + "/" +
-                        ResourceSelector.getPositiveAffirmationSound(getApplicationContext());
+                soundPath = "android.resource://" + context.getPackageName() + "/" +
+                        ResourceSelector.getPositiveAffirmationSound(context);
             } else if (sound.equalsIgnoreCase(NAY)) {
-                soundPath = "android.resource://" + getApplicationContext().getPackageName() + "/" +
-                        ResourceSelector.getNegativeAffirmationSound(getApplicationContext());;
+                soundPath = "android.resource://" + context.getPackageName() + "/" +
+                        ResourceSelector.getNegativeAffirmationSound(context);;
             } else {
-                soundPath = FetchResource.sound(getApplicationContext(), sound);
-            }
-
-            // Init media player if required
-            if (mp == null) {
-                mp = new MediaPlayer();
+                soundPath = FetchResource.sound(context, sound);
             }
 
             // Reset media player
-            mp.reset();
-
-            // Set data source of media player
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-
-            // Set listeners
-            mp.setOnPreparedListener(new SoundListener(mThisActivity, tag, sound, soundPath));
-            mp.setOnCompletionListener(new SoundListener(mThisActivity, tag, sound, soundPath));
+            mediaPlayer.reset();
+            mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(soundPath));
+            mediaPlayer.setOnPreparedListener(new SoundListener(mThisActivity, tag, sound, soundPath));
+            mediaPlayer.setOnCompletionListener(new SoundListener(mThisActivity, tag, sound, soundPath));
 
             // Prepare media player to Rock and Rumble ~ ♩ ♪ ♫ ♬
-            mp.prepare();
+            mediaPlayer.prepare();
         } catch (Exception ex) {
-            System.err.println("==============================");
-            System.err.println("SDThirteenActivity.playSound)");
-            System.err.println("------------------------------");
             ex.printStackTrace();
-            System.err.println("==============================");
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            (new SoundListener(mThisActivity, tag, sound, null)).onCompletion(null);
         }
     }
 
@@ -771,9 +683,6 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
         @Override
         public void onPrepared(MediaPlayer mp) {
-
-            // Debug
-            System.out.println("SDThirteenActivity.SoundListener(class).onPrepared > Debug: MC");
 
             switch (mTag) {
                 case DRAG_THE_LETTERS_TO_WRITE: {
@@ -805,8 +714,7 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
         @Override
         public void onCompletion(MediaPlayer mp) {
 
-            // Debug
-            System.out.println("SDThirteenActivity.SoundListener(class).onCompletion > Debug: MC");
+            mediaPlayer.stop();
 
             switch (mTag) {
                 case DRAG_THE_LETTERS_TO_WRITE: {
@@ -825,12 +733,9 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                 }
                 case YAY: {
                     if (mThisActivity.getEndDrill()) {
-
-                        // Release media player
-                        mp.release();
-
                         // Finish activity
                         mThisActivity.finish();
+                        mThisActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
                     } else if (mThisActivity.getDrillComplete()) {
 
@@ -848,9 +753,6 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
     private void resetListeners() {
 
-        // Debug
-        System.out.println("SDThirteenActivity.resetListeners > Debug: MC");
-
         try {
             if (mLetterImageViews != null) {
 
@@ -864,18 +766,11 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                 }
             }
         } catch (Exception ex) {
-            System.err.println("==============================");
-            System.err.println("SDThirteenActivity.resetContainers)");
-            System.err.println("------------------------------");
             ex.printStackTrace();
-            System.err.println("==============================");
         }
     }
 
     private void resetContainers() {
-
-        // Debug
-        System.out.println("SDThirteenActivity.resetContainers > Debug: MC");
 
         try {
             if (mContainers != null) {
@@ -890,18 +785,11 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                 }
             }
         } catch (Exception ex) {
-            System.err.println("==============================");
-            System.err.println("SDThirteenActivity.resetContainers)");
-            System.err.println("------------------------------");
             ex.printStackTrace();
-            System.err.println("==============================");
         }
     }
 
     private void resetReceptacles() {
-
-        // Debug
-        System.out.println("SDThirteenActivity.resetReceptacles > Debug: MC");
 
         try {
             if (mReceptaclesParent != null) {
@@ -926,29 +814,18 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
                 throw new Exception("Receptacles parent is null!");
             }
         } catch (Exception ex) {
-            System.err.println("==============================");
-            System.err.println("SDThirteenActivity.resetReceptacles)");
-            System.err.println("------------------------------");
             ex.printStackTrace();
-            System.err.println("==============================");
         }
     }
 
     private void resetReceptacleEntries() {
-
-        // Debug
-        System.out.println("SDThirteenActivity.resetReceptacleEntries > Debug: MC");
 
         try {
             for (int i = 0; i < mReceptacleEntries.length; i++) {
                 mReceptacleEntries[i] = false;
             }
         } catch (Exception ex) {
-            System.err.println("==============================");
-            System.err.println("SDThirteenActivity.resetReceptacleEntries)");
-            System.err.println("------------------------------");
             ex.printStackTrace();
-            System.err.println("==============================");
         }
     }
 
@@ -1034,32 +911,5 @@ public class SoundDrillThirteenActivity extends AppCompatActivity {
 
     public ImageView[] getLetterImageViews() {
         return mLetterImageViews;
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        handler = null;
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

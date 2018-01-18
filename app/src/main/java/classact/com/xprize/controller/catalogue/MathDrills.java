@@ -8,13 +8,14 @@ import android.util.SparseArray;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import javax.inject.Inject;
 
 import classact.com.xprize.activity.drill.math.MathsDrillFiveActivity;
 import classact.com.xprize.activity.drill.math.MathsDrillFiveAndOneActivity;
@@ -45,7 +46,12 @@ import classact.com.xprize.locale.Languages;
 
 public class MathDrills {
 
-    public static Intent D1(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
+    @Inject
+    public MathDrills() {
+
+    }
+
+    public Intent D1(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
         Intent intent;
 
         try {
@@ -80,7 +86,7 @@ public class MathDrills {
         return intent;
     }
 
-    public static Intent D2(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
+    public Intent D2(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
         Intent intent;
 
         try {
@@ -136,7 +142,7 @@ public class MathDrills {
         return intent;
     }
 
-    public static Intent D3(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
+    public Intent D3(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
         Intent intent;
 
         try {
@@ -182,7 +188,7 @@ public class MathDrills {
         return intent;
     }
 
-    public static Intent D4(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
+    public Intent D4(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
         Intent intent;
 
         try {
@@ -230,7 +236,7 @@ public class MathDrills {
         return intent;
     }
 
-    public static Intent D5A(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
+    public Intent D5A(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
         Intent intent;
 
         try {
@@ -294,7 +300,7 @@ public class MathDrills {
         return intent;
     }
 
-    public static Intent D5B(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
+    public Intent D5B(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
         Intent intent;
 
         try {
@@ -402,7 +408,7 @@ public class MathDrills {
         return intent;
     }
 
-    public static Intent D6A(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
+    public Intent D6A(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
         Intent intent;
 
         try {
@@ -441,7 +447,7 @@ public class MathDrills {
         return intent;
     }
 
-    public static Intent D6B(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
+    public Intent D6B(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
         Intent intent;
 
         try {
@@ -523,7 +529,7 @@ public class MathDrills {
         return intent;
     }
 
-    public static Intent D6C(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
+    public Intent D6C(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
         Intent intent;
 
         try {
@@ -644,7 +650,7 @@ public class MathDrills {
         return intent;
     }
 
-    public static Intent D6D(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
+    public Intent D6D(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
         Intent intent;
 
         try {
@@ -702,7 +708,7 @@ public class MathDrills {
         return intent;
     }
 
-    public static Intent D6E(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
+    public Intent D6E(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
         Intent intent;
 
         try {
@@ -765,7 +771,7 @@ public class MathDrills {
         return intent;
     }
 
-    public static Intent D7A(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
+    public Intent D7A(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
         Intent intent;
 
         try {
@@ -817,7 +823,7 @@ public class MathDrills {
         return intent;
     }
 
-    public static Intent D7B(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
+    public Intent D7B(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
         Intent intent;
 
         try {

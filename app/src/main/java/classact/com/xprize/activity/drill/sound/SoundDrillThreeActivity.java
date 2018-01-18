@@ -1,78 +1,79 @@
 package classact.com.xprize.activity.drill.sound;
 
-import android.content.Context;
-import android.media.MediaPlayer;
-import android.net.Uri;
+import android.arch.lifecycle.ViewModelProviders;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
+import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.widget.TextView;
+
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Random;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
-import classact.com.xprize.common.Code;
-import classact.com.xprize.common.Globals;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.utils.FetchResource;
 
-public class SoundDrillThreeActivity extends AppCompatActivity {
-    private MediaPlayer mp;
-    private ImageView demoItem;
-    private ImageView item1;
-    private ImageView item2;
+public class SoundDrillThreeActivity extends DrillActivity {
+
+    @BindView(R.id.activity_sound_drill_three) ConstraintLayout rootView;
+    @BindView(R.id.background) ImageView background;
+    @BindView(R.id.target_letter) ImageView targetLetter;
+    @BindView(R.id.left_letter) ImageView leftLetter;
+    @BindView(R.id.right_letter) ImageView rightLetter;
+
     private String drillData;
     private JSONArray sets;
-    private Handler handler;
     private int currentSet;
     private int correctItem;
     private String currentSound;
     private String currentPhonicSound;
-    private LinearLayout itemsLayout;
     private JSONObject params;
     private Runnable mRunnable;
     private boolean itemsEnabled;
     private Random rnd;
 
-    private final Context THIS = this;
+    private SoundDrill03ViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_three);
-        demoItem = (ImageView)findViewById(R.id.item_demo);
-        item1 = (ImageView)findViewById(R.id.item1);
-        item2 = (ImageView)findViewById(R.id.item2);
-        itemsLayout = (LinearLayout)findViewById(R.id.items);
+        ButterKnife.bind(this);
+
+        preloadImage(R.drawable.background_choosetheletter);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill03ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         rnd = new Random();
-        // setItemsEnabled(false);
+
         itemsEnabled = false;
-        item1.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        clickedItem(0);
-                    }
-                }
-        );
-        item2.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        clickedItem(1);
-                    }
-                }
-        );
+        leftLetter.setOnClickListener((v) -> clickedItem(0));
+        rightLetter.setOnClickListener((v) -> clickedItem(1));
         drillData = getIntent().getExtras().getString("data");
         currentSet = 0;
-        handler = new Handler(Looper.getMainLooper());
         initialiseData();
         showSet();
     }
@@ -85,51 +86,20 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
         }
     }
 
     public void showSet(){
-        demoItem.setVisibility(View.VISIBLE);
-        itemsLayout.setVisibility(View.INVISIBLE);
+        background.setImageResource(0);
+        targetLetter.setVisibility(View.VISIBLE);
+        ez.hide(leftLetter, rightLetter);
+
         try{
             JSONObject setData = sets.getJSONObject(currentSet);
             String image = setData.getString("image");
-            demoItem.setImageResource(FetchResource.imageId(THIS, image));
+
+            loadImage(targetLetter, FetchResource.imageId(context, image));
+
             currentSound = setData.getString("sound");
             currentPhonicSound = setData.getString("phonic_sound");
             JSONArray images = setData.getJSONArray("images");
@@ -154,148 +124,85 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
 
             // Determine where item{1|2}JSONObject should be assigned to
             if (correctItem == 0) {
+
                 // item1 is item1JSONObject
-                item1.setImageResource(FetchResource.imageId(THIS, item1JSONObject, "image"));
-                item2.setImageResource(FetchResource.imageId(THIS, item2JSONObject, "image"));
+                loadImage(leftLetter, FetchResource.imageId(context, item1JSONObject, "image"));
+                loadImage(rightLetter, FetchResource.imageId(context, item2JSONObject, "image"));
+
             } else if (correctItem == 1) {
+
                 // item1 is item2JSONObject
-                item1.setImageResource(FetchResource.imageId(THIS, item2JSONObject, "image"));
-                item2.setImageResource(FetchResource.imageId(THIS, item1JSONObject, "image"));
+                loadImage(leftLetter, FetchResource.imageId(context, item2JSONObject, "image"));
+                loadImage(rightLetter, FetchResource.imageId(context, item1JSONObject, "image"));
             }
 
             String sound = params.getString("this_is_the_letter");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    playSound();
-                }
-            });
+            playSound(sound, this::playSound);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     public void playSound(){
         try {
-            playSound(currentSound, new Runnable() {
-                @Override
-                public void run() {
-                    playItMakes();
-                }
-            });
+            playSound(currentSound, this::playItMakes);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playItMakes();
-                }
-            }, 800);
         }
     }
 
     private void playItMakes(){
         try {
             String sound = params.getString("it_makes_sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    playPhonicSound();
-                }
-            });
+            playSound(sound, this::playPhonicSound);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     private void playPhonicSound(){
         try {
-            playSound(currentPhonicSound, new Runnable() {
-                @Override
-                public void run() {
-                    playNextSound();
-                }
-            });
+            playSound(currentPhonicSound, this::playNextSound);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playNextSound();
-                }
-            }, 800);
         }
     }
 
     public void playNextSound(){
         try {
-            demoItem.setVisibility(View.INVISIBLE);
-            itemsLayout.setVisibility(View.VISIBLE);
-            String sound = params.getString("touch");
-            playSound(sound, new Runnable() {
+
+            loadImage(background, R.drawable.background_choosetheletter, new RequestListener() {
                 @Override
-                public void run() {
-                    playSoundAgain();
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
+                    ez.hide(targetLetter);
+                    ez.show(leftLetter, rightLetter);
+                    return false;
                 }
             });
+
+            String sound = params.getString("touch");
+            playSound(sound, this::playSoundAgain);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     public void playSoundAgain(){
         try {
-            playSound(currentPhonicSound, new Runnable() {
-                @Override
-                public void run() {
-                    itemsEnabled = true;
-                }
-            });
+            playSound(currentPhonicSound, () -> itemsEnabled = true);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    itemsEnabled = true;
-                }
-            }, 700);
-        }
-    }
-
-    private void playSoundAndRunnableAfterCompletion(String sound) {
-        try {
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    if (mRunnable != null) {
-                        mRunnable.run();
-                    }
-                }
-            });
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                   if (mRunnable != null) {
-                       mRunnable.run();
-                   }
-                }
-            }, 800);
         }
     }
 
@@ -306,78 +213,28 @@ public class SoundDrillThreeActivity extends AppCompatActivity {
 
                 ImageView iv = null;
                 if (item == 0) {
-                    iv = item1;
+                    iv = leftLetter;
                 } else if (item == 1) {
-                    iv = item2;
+                    iv = rightLetter;
                 }
-                Globals.playStarWorks(THIS, iv);
+                starWorks.play(this, iv); // Globals.playStarWorks(context, iv);
 
                 itemsEnabled = false;
                 mRunnable = null;
-                mRunnable = new Runnable() {
-                    @Override
-                    public void run() {
+                mRunnable = () -> {
                         if (currentSet < sets.length() - 1) {
                             currentSet++;
-                            handler.postDelayed(nextDrill, 350);
+                            // Next drill
+                            handler.delayed(this::showSet, 350);
                         } else {
-                            if (mp != null) {
-                                mp.release();
-                            }
                             finish();
+                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                         }
-                    }
-                };
-                playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mRunnable != null) {
-                            mRunnable.run();
-                        }
-                    }
-                });
+                    };
+                playSound(FetchResource.positiveAffirmation(context), mRunnable);
             } else {
-                playSound(FetchResource.negativeAffirmation(THIS), null);
+                playSound(FetchResource.negativeAffirmation(context), null);
             }
         }
-    }
-
-    private Runnable nextDrill = new Runnable(){
-        @Override
-        public void run() {
-            showSet();
-        }
-    };
-
-    private void setItemsEnabled(boolean enable) {
-        item1.setEnabled(enable);
-        item2.setEnabled(enable);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.stop();
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

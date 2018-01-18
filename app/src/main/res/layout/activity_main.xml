@@ -82,40 +82,44 @@
         android:id="@+id/app_emblem"
         android:layout_width="300dp"
         android:layout_height="300dp"
+        android:contentDescription="@string/App_Logo"
         app:layout_constraintTop_toBottomOf="@+id/gl_h1"
         app:layout_constraintLeft_toRightOf="@+id/gl_v3"
         app:layout_constraintRight_toLeftOf="@+id/gl_v3"
         app:layout_constraintBottom_toTopOf="@+id/gl_h2"
-        android:background="@drawable/app_emblem" />
+        android:background="@android:color/transparent" />
 
-    <ImageButton
+    <ImageView
         android:id="@+id/read_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="280dp"
+        android:contentDescription="@string/Read_Button"
         app:layout_constraintLeft_toRightOf="@+id/gl_v3"
         app:layout_constraintRight_toLeftOf="@+id/gl_v3"
         app:layout_constraintTop_toTopOf="@+id/app_emblem"
-        android:background="@drawable/read_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
+    <ImageView
         android:id="@+id/stars_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="140dp"
+        android:contentDescription="@string/Stars_Button"
         app:layout_constraintLeft_toRightOf="@+id/gl_v3"
         app:layout_constraintRight_toLeftOf="@+id/gl_v3"
         app:layout_constraintTop_toTopOf="@+id/read_button"
-        android:background="@drawable/stars_button"/>
+        android:background="@android:color/transparent"/>
 
-    <ImageButton
+    <ImageView
         android:id="@+id/help_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="140dp"
+        android:contentDescription="@string/Help_Button"
         app:layout_constraintLeft_toRightOf="@+id/gl_v3"
         app:layout_constraintRight_toLeftOf="@+id/gl_v3"
         app:layout_constraintTop_toTopOf="@+id/stars_button"
-        android:background="@drawable/help_button"/>
+        android:background="@android:color/transparent"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -1,14 +1,10 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.media.Image;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
+import android.support.constraint.ConstraintLayout;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
@@ -16,27 +12,31 @@ import android.widget.ImageView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Random;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
-import classact.com.xprize.common.Code;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
 
-public class SoundDrillFiveActivity extends AppCompatActivity {
-    private MediaPlayer mp;
-    private ImageView demoItem;
-    private ImageView item1;
-    private ImageView item2;
-    private ImageView item3;
-    private ImageView item4;
+public class SoundDrillFiveActivity extends DrillActivity {
+
+    @BindView(R.id.activity_sound_drill_five) ConstraintLayout rootView;
+
+    @BindView(R.id.background) ImageView background;
+    @BindView(R.id.target_image) ImageView targetImage;
+    @BindView(R.id.image_NW) ImageView image1;
+    @BindView(R.id.image_NE) ImageView image2;
+    @BindView(R.id.image_SW) ImageView image3;
+    @BindView(R.id.image_SE) ImageView image4;
+    
     private String drillData;
     private JSONArray sets;
     JSONArray images;
-    private Handler handler;
     private int currentSet;
     private int currentItem;
     private int correctItem;
@@ -51,18 +51,25 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
 
     private final Context THIS = this;
 
+    private SoundDrill05ViewModel vm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_five);
-        demoItem = (ImageView)findViewById(R.id.item_demo);
-        itemsEnabled = false;
-        item1 = (ImageView)findViewById(R.id.item1);
-        item2 = (ImageView)findViewById(R.id.item2);
-        item3 = (ImageView)findViewById(R.id.item3);
-        item4 = (ImageView)findViewById(R.id.item4);
+        ButterKnife.bind(this);
 
-        item1.setOnClickListener(
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill05ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+        itemsEnabled = false;
+
+        image1.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
@@ -70,7 +77,7 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
                     }
                 }
         );
-        item2.setOnClickListener(
+        image2.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
@@ -78,7 +85,7 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
                     }
                 }
         );
-        item3.setOnClickListener(
+        image3.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
@@ -86,7 +93,7 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
                     }
                 }
         );
-        item4.setOnClickListener(
+        image4.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
@@ -96,53 +103,18 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
         );
 
         items = new ImageView[4];
-        items[0] = item1;
-        items[1] = item2;
-        items[2] = item3;
-        items[3] = item4;
+        items[0] = image1;
+        items[1] = image2;
+        items[2] = image3;
+        items[3] = image4;
 
         toggleItemsVisibility(false);
 
         rnd = new Random();
         drillData = getIntent().getExtras().getString("data");
         currentSet = 0;
-        handler = new Handler(Looper.getMainLooper());
         initialiseData();
         showSet();
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
     }
 
     private void initialiseData(){
@@ -152,10 +124,6 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -164,14 +132,14 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
         try{
             JSONObject setData = sets.getJSONObject(currentSet);
 
-            demoItem.setImageResource(setData.getInt("demoimage"));
-            demoItem.setVisibility(View.VISIBLE);
+            loadImage(targetImage, setData.getInt("demoimage"));
+            targetImage.setVisibility(View.VISIBLE);
 
             currentItemName = setData.getString("demosound");
             currentSound = setData.getString("sound");
             images = setData.getJSONArray("images");
 
-            ImageView[] items = {item1, item2, item3, item4};
+            ImageView[] items = {image1, image2, image3, image4};
             int numberOfImages = images.length();
             int numberOfItems = items.length;
             orderedImages = new JSONObject[numberOfImages];
@@ -196,7 +164,7 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
 
                 System.out.println("::: Selected image #" + randomizedIndex + ": " + imageResourceId);
 
-                items[randomizedIndex].setImageResource(imageResourceId);
+                loadImage(items[randomizedIndex], imageResourceId);
                 orderedImages[randomizedIndex] = item;
 
                 if (item.getInt("correct") == 1) {
@@ -208,87 +176,26 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
     public void playBahatiHasA(){
         try {
             String sound = params.getString("bahati_has_a");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    playCurrentItemSound();
-                }
-            });
-            mp.prepare();
+            playSound(sound, this::playCurrentItemSound);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
     public void playCurrentItemSound(){
         try {
-            String soundPath = FetchResource.sound(getApplicationContext(), currentItemName);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            playSheNeedsSomethingElse();
-                        }
-                    }, 500);
-                }
-            });
-            mp.prepare();
+            playSound(currentItemName, () ->
+                    handler.delayed(this::playSheNeedsSomethingElse, 500));
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", currentItemName).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playSheNeedsSomethingElse();
-                }
-            }, 1300);
         }
     }
 
@@ -296,33 +203,11 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
         try {
             toggleItemsVisibility(true);
             String sound = params.getString("she_needs_something_else");
+            playSound(sound, this::playCurrentSound);
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    playCurrentSound();
-                }
-            });
-            mp.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -330,115 +215,41 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
         try {
             toggleItemsVisibility(true);
             String soundPath = FetchResource.sound(getApplicationContext(), currentSound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            itemsEnabled = true;
-                        }
-                    }, mp.getDuration() - 100);
-                }
+            mediaPlayer.reset();
+            mediaPlayer.setDataSource(context, Uri.parse(soundPath));
+            mediaPlayer.setOnPreparedListener((mp) -> {
+                mediaPlayer.start();
+                    handler.delayed(() -> itemsEnabled = true, mp.getDuration() - 100);
+                });
+            mediaPlayer.setOnCompletionListener((mp) -> {
+                mediaPlayer.stop();
             });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                }
-            });
-            mp.prepare();
+            mediaPlayer.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", currentSound).show();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    itemsEnabled = true;
-                }
-            }, 700);
-        }
-    }
-
-    private void playSound(int soundId){
-        try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
     private void playPositiveSound(int soundId){
         try {
             Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    ImageView iv = items[correctItem];
-                    int waitDuration = Math.min(mp.getDuration(), 200);
-                    fadeIncorrect(iv, waitDuration);
-                    mp.start();
-                }
+            mediaPlayer.reset();
+            mediaPlayer.setDataSource(context, myUri);
+            mediaPlayer.setOnPreparedListener((mp) -> {
+                ImageView iv = items[correctItem];
+                int waitDuration = Math.min(mp.getDuration(), 200);
+                fadeIncorrect(iv, waitDuration);
+                mp.start();
             });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            repeatCorrect();
-                        }
-                    }, 500);
-                }
+            mediaPlayer.setOnCompletionListener((mp) -> {
+                mp.stop();
+                handler.delayed(this::repeatCorrect, 500);
             });
-            mp.prepare();
+            mediaPlayer.prepare();
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -448,31 +259,14 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
             final String soundMatch = orderedImages[currentItem].getString("sound");
 
             // Play current
-            playSound(currentItemName, new Runnable() {
-                @Override
-                public void run() {
-                    // Play sound match
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            playSound(soundMatch, new Runnable() {
-                                @Override
-                                public void run() {
-                                    // Drill control logic
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            determineNextDrillItem();
-                                        }
-                                    }, 450);
-                                }
-                            });
-                        }
-                    }, 400);
-                }
+            playSound(currentItemName, () -> {
+                handler.delayed(() ->
+                        playSound(soundMatch, () ->
+                                handler.delayed(this::determineNextDrillItem,
+                                    450)),
+                    400);
             });
         } catch (Exception ex) {
-            System.err.println(ex.getMessage());
             ex.printStackTrace();
         }
     }
@@ -481,25 +275,14 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
         try {
             currentSet++;
             if (currentSet < sets.length()) {
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Show next set
-                        showSet();
-                    }
-                }, 1000);
+                handler.delayed(this::showSet, 1000);
             } else {
                 // End drill
-                mp.release();
                 finish();
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
             ex.printStackTrace();
-
-            // End drill
-            mp.release();
-            finish();
         }
     }
 
@@ -520,12 +303,7 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
                 }
 
                 String sound = orderedImages[currentItem].getString("sound");
-                playSound(sound, new Runnable() {
-                    @Override
-                    public void run() {
-                        checkProgress();
-                    }
-                });
+                playSound(sound, this::checkProgress);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -537,7 +315,7 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
             playPositiveSound(ResourceSelector.getPositiveAffirmationSound(this));
         }
         else{
-            playSound(ResourceSelector.getNegativeAffirmationSound(this));
+            playSound(ResourceSelector.getNegativeAffirmationSound(this), null);
         }
     }
 
@@ -587,36 +365,4 @@ public class SoundDrillFiveActivity extends AppCompatActivity {
             }
         }
     }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.stop();
-            mp.release();
-        }
-        if (handler != null) {
-            handler.removeCallbacksAndMessages(null);
-            handler = null;
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-    }
 }
-

@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,14 +16,17 @@ import android.widget.TextView;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import classact.com.xprize.R;
+import classact.com.xprize.activity.MenuActivity;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.database.model.UnitSection;
-import classact.com.xprize.locale.Languages;
+import dagger.android.support.DaggerAppCompatActivity;
 
-public class PhonicsSubMenu extends AppCompatActivity {
+public class PhonicsSubMenu extends MenuActivity {
 
     private TextView mChapterTitle;
     private TextView mChapterNumber;
@@ -42,14 +45,14 @@ public class PhonicsSubMenu extends AppCompatActivity {
     private ImageButton mMonkeyA;
     private ImageButton mMonkeyB;
 
-    private DatabaseController mDb;
     private Intent mIntent;
     private int mSelectedChapter;
     private int mSelectedSection;
     private int mSelectedSubId;
     private ConstraintLayout mRootView;
     private boolean mFinishActivity;
-    private final Context THIS = this;
+
+    @Inject DatabaseController mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +140,7 @@ public class PhonicsSubMenu extends AppCompatActivity {
 
         // Setup selected sound resources
         mSelectedSoundResource.put("a-e", R.drawable.sound_selected_ae_button);
-        mSelectedSoundResource.put("a-i", R.drawable.sound_selected_ai_button);
+        mSelectedSoundResource.put("ai", R.drawable.sound_selected_ai_button);
         mSelectedSoundResource.put("ay", R.drawable.sound_selected_ay_button);
         mSelectedSoundResource.put("ch", R.drawable.sound_selected_ch_button);
         mSelectedSoundResource.put("ck", R.drawable.sound_selected_ck_button);
@@ -148,12 +151,12 @@ public class PhonicsSubMenu extends AppCompatActivity {
         mSelectedSoundResource.put("oo", R.drawable.sound_selected_oo_button);
         mSelectedSoundResource.put("sh", R.drawable.sound_selected_sh_button);
         mSelectedSoundResource.put("th", R.drawable.sound_selected_th_button);
-        mSelectedSoundResource.put("ue", R.drawable.sound_selected_ue_button);
+        mSelectedSoundResource.put("u-e", R.drawable.sound_selected_ue_button);
         mSelectedSoundResource.put("wh", R.drawable.sound_selected_wh_button);
 
         // Setup non-selected sound resources
         mNonSelectedSoundResource.put("a-e", R.drawable.sound_ae_button);
-        mNonSelectedSoundResource.put("a-i", R.drawable.sound_ai_button);
+        mNonSelectedSoundResource.put("ai", R.drawable.sound_ai_button);
         mNonSelectedSoundResource.put("ay", R.drawable.sound_ay_button);
         mNonSelectedSoundResource.put("ch", R.drawable.sound_ch_button);
         mNonSelectedSoundResource.put("ck", R.drawable.sound_ck_button);
@@ -164,7 +167,7 @@ public class PhonicsSubMenu extends AppCompatActivity {
         mNonSelectedSoundResource.put("oo", R.drawable.sound_oo_button);
         mNonSelectedSoundResource.put("sh", R.drawable.sound_sh_button);
         mNonSelectedSoundResource.put("th", R.drawable.sound_th_button);
-        mNonSelectedSoundResource.put("ue", R.drawable.sound_ue_button);
+        mNonSelectedSoundResource.put("u-e", R.drawable.sound_ue_button);
         mNonSelectedSoundResource.put("wh", R.drawable.sound_wh_button);
 
         // Setup chapter header image resources
@@ -196,9 +199,6 @@ public class PhonicsSubMenu extends AppCompatActivity {
         mChapterSection.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
         mSelectionInstruction.setTypeface(Globals.TYPEFACE_EDU_AID(assets));
 
-        // Get database controller
-        mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
-
         // Setup sub id button map
         LinkedHashMap<Integer, ImageButton> subIdButtonMap = new LinkedHashMap<>();
         subIdButtonMap.put(1, mButtonA);
@@ -207,9 +207,10 @@ public class PhonicsSubMenu extends AppCompatActivity {
         // Get letter map and selected sub id
         LinkedHashMap<Integer, String> subIdLetterMap = new LinkedHashMap<>();
         mSelectedSubId = 1;
-        LinkedHashMap<Integer, UnitSection> unitSectionMap = mDb.getUnitSections(mSelectedChapter, mSelectedSection);
-        for (Map.Entry<Integer, UnitSection> entry : unitSectionMap.entrySet()) {
-            UnitSection unitSection = entry.getValue();
+        SparseArray<UnitSection> unitSectionMap = mDb.getUnitSections(mSelectedChapter, mSelectedSection);
+        for (int i = 0; i < unitSectionMap.size(); i++) {
+            int key = unitSectionMap.keyAt(i);
+            UnitSection unitSection = unitSectionMap.get(key);
             int subId = unitSection.getSectionSubId();
             String subject = unitSection.getSectionSubject();
             subIdLetterMap.put(subId, subject);
@@ -263,7 +264,7 @@ public class PhonicsSubMenu extends AppCompatActivity {
 
                         UnitSection selectedUnitSection = mDb.getUnitSection(mSelectedChapter, mSelectedSection, 1);
 
-                        Intent intent = new Intent(THIS, DrillsMenu.class);
+                        Intent intent = new Intent(context, DrillsMenu.class);
                         intent.putExtra("selected_chapter", mSelectedChapter);
                         intent.putExtra("selected_section", mSelectedSection);
                         intent.putExtra("selected_unit_section", selectedUnitSection.getUnitSectionId());
@@ -298,7 +299,7 @@ public class PhonicsSubMenu extends AppCompatActivity {
 
                         UnitSection selectedUnitSection = mDb.getUnitSection(mSelectedChapter, mSelectedSection, 2);
 
-                        Intent intent = new Intent(THIS, DrillsMenu.class);
+                        Intent intent = new Intent(context, DrillsMenu.class);
                         intent.putExtra("selected_chapter", mSelectedChapter);
                         intent.putExtra("selected_section", mSelectedSection);
                         intent.putExtra("selected_unit_section", selectedUnitSection.getUnitSectionId());
@@ -328,6 +329,8 @@ public class PhonicsSubMenu extends AppCompatActivity {
         int resourceB = 0;
         boolean soundAFound = false;
         boolean soundBFound = false;
+
+        System.out.println("A B C: " + a + ", " + b + ", " + c);
 
         // Check if "a" is selected
         if (a.equalsIgnoreCase(c)) {
@@ -409,7 +412,7 @@ public class PhonicsSubMenu extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         if (!mFinishActivity) {
-            Globals.RESUME_BACKGROUND_MUSIC(THIS);
+            Globals.RESUME_BACKGROUND_MUSIC(context);
         } else {
             mFinishActivity = false;
         }
@@ -419,7 +422,7 @@ public class PhonicsSubMenu extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         if (!mFinishActivity) {
-            Globals.PAUSE_BACKGROUND_MUSIC(THIS);
+            Globals.PAUSE_BACKGROUND_MUSIC(context);
         }
     }
 

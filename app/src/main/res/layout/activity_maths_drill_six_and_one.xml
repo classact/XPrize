@@ -18,7 +18,7 @@
         android:layout_marginLeft="10dip"
         android:layout_marginTop="200dip"
         android:id="@+id/big_shape"
-        android:src="@drawable/rectangular_cake" />
+        android:background="@android:color/transparent" />
     <ImageView
         android:layout_width="200dip"
         android:layout_height="200dip"
@@ -28,5 +28,5 @@
         android:layout_marginTop="350dip"
         android:layout_marginLeft="50dip"
         android:id="@+id/small_shape"
-        android:src="@drawable/rectangular_cake" />
+        android:background="@android:color/transparent" />
 </RelativeLayout>

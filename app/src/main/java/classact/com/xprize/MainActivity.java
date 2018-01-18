@@ -1,172 +1,152 @@
 package classact.com.xprize;
 
+import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteException;
-import android.media.AudioManager;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.ImageButton;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
-import java.io.IOException;
-import java.util.Date;
+import javax.inject.Inject;
 
-import classact.com.xprize.activity.drill.tutorial.Tutorial;
-import classact.com.xprize.activity.link.LevelCompleteLink;
-import classact.com.xprize.activity.link.MathsLink;
-import classact.com.xprize.activity.link.PhonicsLink;
-import classact.com.xprize.activity.link.StoryLink;
-import classact.com.xprize.activity.link.WordsLink;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import classact.com.xprize.activity.MenuActivity;
 import classact.com.xprize.activity.menu.HelpMenu;
-import classact.com.xprize.activity.menu.MusicMenu;
 import classact.com.xprize.activity.menu.StarsMenu;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
-import classact.com.xprize.activity.movie.Movie;
-import classact.com.xprize.activity.movie.MoviePausable;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.controller.DrillFetcher;
-import classact.com.xprize.database.DbHelper;
-import classact.com.xprize.database.helper.UnitHelper;
-import classact.com.xprize.database.model.Drill;
-import classact.com.xprize.database.model.DrillType;
-import classact.com.xprize.database.model.Section;
-import classact.com.xprize.database.model.Unit;
-import classact.com.xprize.database.model.UnitSection;
 import classact.com.xprize.database.model.UnitSectionDrill;
 import classact.com.xprize.locale.Languages;
-import classact.com.xprize.utils.ResourceDecoder;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends MenuActivity {
 
-    private final boolean ALLOW_DB_RECOPY = false;
+    @BindView(R.id.app_emblem) ImageView appEmblem;
+    @BindView(R.id.read_button) ImageView readButton;
+    @BindView(R.id.stars_button) ImageView starsButton;
+    @BindView(R.id.help_button) ImageView helpButton;
 
-    // Database hack related
-    private final boolean HACK_NEXT_UNIT = false;
-    private final int HACK_UNIT_ID = 1;
-    private final int HACK_UNIT_SUB_ID_IN_PROGRESS = 0;
-    private final int HACK_DRILL_LAST_PLAYED = 0;
-    private final int HACK_UNIT_FIRST_TIME = 0;
-    private final int HACK_UNIT_FIRST_TIME_MOVIE = 0;
+    private final int READ_BUTTON = 0;
+    private final int STARS_BUTTON = 1;
+    private final int HELP_BUTTON = 2;
 
-    private boolean mInitialized;
-    private DbHelper mDbHelper;
-
-    private ConstraintLayout mRootView;
-
-    private boolean mPhonicsStarted;
-    private boolean mWordsStarted;
-    private boolean mBooksStarted;
-    private boolean mMathsStarted;
-
-    private ImageButton mReadButton;
-    private ImageButton mHelpButton;
-    private ImageButton mStarsButton;
-    private AudioManager mAudioManager;
-    private DatabaseController mDb;
     private boolean mNewActivity;
-    private final Context THIS = this;
+
+    @Inject DatabaseController mDb;
+    @Inject DrillFetcher drillFetcher;
+    MainActivityViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mRootView = (ConstraintLayout) findViewById(R.id.activity_main);
+        ButterKnife.bind(this);
 
-        mReadButton = (ImageButton) findViewById(R.id.read_button);
-        mHelpButton = (ImageButton) findViewById(R.id.help_button);
-        mStarsButton = (ImageButton) findViewById(R.id.stars_button);
+        mDb.setLanguage(Languages.ENGLISH);
 
-        // Check read button
-        checkReadButton();
+//        vm = ViewModelProviders.of(this, vmFactory).get(MainActivityViewModel.class);
 
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         mNewActivity = false;
 
-        // Read Button
-        mReadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playNextDrill();
-            }
-        });
+        setupGraphics();
+        setupButtons();
+        // preloadImages();
+        addListeners();
 
-        // Help Button
-        mHelpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mNewActivity = true;
-                Intent intent = new Intent(THIS, HelpMenu.class);
-                startActivityForResult(intent, 0);
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
+        Globals.PLAY_BACKGROUND_MUSIC(context);
+    }
+
+    public void setupGraphics() {
+
+        readButton.setScaleType(ImageView.ScaleType.FIT_XY);
+        starsButton.setScaleType(ImageView.ScaleType.FIT_XY);
+        helpButton.setScaleType(ImageView.ScaleType.FIT_XY);
+
+        // App emblem
+        loadImage(appEmblem, R.drawable.app_emblem);
+
+        // Buttons
+        loadAndLayoutImage(readButton, R.drawable.read_button_up);
+        loadAndLayoutImage(starsButton, R.drawable.stars_button_up);
+        loadAndLayoutImage(helpButton, R.drawable.help_button_up);
+    }
+
+    public void setupButtons() {
+        setTouchListener(readButton, R.drawable.read_button_up, R.drawable.read_button_down);
+        setTouchListener(starsButton, R.drawable.stars_button_up, R.drawable.stars_button_down);
+        setTouchListener(helpButton, R.drawable.help_button_up, R.drawable.help_button_down);
+    }
+
+    public void preloadImages() {
+        preloadImage(
+                R.drawable.star_blue_01,
+                R.drawable.star_blue_02,
+                R.drawable.star_blue_03,
+                R.drawable.star_blue_04,
+                R.drawable.star_blue_05,
+                R.drawable.star_blue_06,
+                R.drawable.star_blue_07,
+                R.drawable.star_blue_08,
+                R.drawable.star_blue_09,
+                R.drawable.star_blue_10,
+                R.drawable.star_blue_11,
+                R.drawable.star_blue_12,
+                R.drawable.star_blue_13,
+                R.drawable.star_blue_14,
+                R.drawable.star_blue_15,
+                R.drawable.star_blue_16,
+                R.drawable.star_blue_17,
+                R.drawable.star_blue_18,
+                R.drawable.star_blue_19,
+                R.drawable.star_blue_20
+        );
+    }
+
+    public void addListeners() {
+        // Read Button
+        readButton.setOnClickListener((v) -> {
+            playNextDrill();
         });
 
         // Stars Button
-        mStarsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mNewActivity = true;
-                Intent intent = new Intent(THIS, StarsMenu.class);
-                startActivityForResult(intent, 0);
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
+        starsButton.setOnClickListener((v) -> {
+            mNewActivity = true;
+            Intent intent = new Intent(context, StarsMenu.class);
+            startActivityForResult(intent, 0);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
 
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        Globals.PLAY_BACKGROUND_MUSIC(this);
-
-        // System.out.println("!!!!!!!!!!!!!!!!!!!! " + Build.VERSION.SECURITY_PATCH + ", " + Build.VERSION.RELEASE);
-
-        mPhonicsStarted = false;
-        mWordsStarted = false;
-        mBooksStarted = false;
-        mMathsStarted = false;
-    }
-
-    public void checkReadButton() {
-        // Setup Database Controller
-        mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
-
-        // Get current unit section drill in progress
-        UnitSectionDrill currentUnitSectionDrill = mDb.getUnitSectionDrillInProgress();
-
-        // Check if it should display "Read" or "Continue"
-        if (currentUnitSectionDrill.getUnitSectionDrillId() == 1) {
-            mReadButton.setBackgroundResource(R.drawable.read_button);
-        } else {
-            mReadButton.setBackgroundResource(R.drawable.continue_button);
-        }
-
+        // Help Button
+        helpButton.setOnClickListener((v) -> {
+            mNewActivity = true;
+            Intent intent = new Intent(context, HelpMenu.class);
+            startActivityForResult(intent, 0);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
     }
 
     public void playNextDrill() {
-
-        // Setup Database Controller
-        mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
-
         // Get unit section drill data
         UnitSectionDrill unitSectionDrill = mDb.getUnitSectionDrillInProgress();
 
         try {
-            if (dbEstablsh(false)) {
-                System.out.println("About to play: " + unitSectionDrill.getUnitSectionDrillId());
-                Object[] objectArray = DrillFetcher.fetch(THIS, mDbHelper, Languages.ENGLISH, unitSectionDrill);
-                dbClose();
-                Intent intent = (Intent) objectArray[0];
-                int resultCode = (int) objectArray[1];
+            System.out.println("About to play: " + unitSectionDrill.getUnitSectionDrillId());
+            Object[] objectArray = new Object[2];
+            drillFetcher.fetch(objectArray, Languages.ENGLISH, unitSectionDrill);
 
-                Globals.STOP_BACKGROUND_MUSIC(THIS);
+            Intent intent = (Intent) objectArray[0];
+            int resultCode = (int) objectArray[1];
 
-                startActivityForResult(intent, resultCode);
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
+            Globals.STOP_BACKGROUND_MUSIC(context);
+
+            startActivityForResult(intent, resultCode);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
             ex.printStackTrace();
@@ -174,28 +154,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void autoProgressDrill() {
-
-        System.out.println("!!!!!! Auto progress Drill !!!!!");
-
-        // Setup Database Controller
-        mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
-
         // Get unit section drill data
         UnitSectionDrill nextUnitSectionDrill = mDb.moveToNextUnitSectionDrill();
 
         try {
-            if (dbEstablsh(false)) {
-                Object[] objectArray = DrillFetcher.fetch(THIS, mDbHelper, Languages.ENGLISH, nextUnitSectionDrill);
-                dbClose();
-                Intent intent = (Intent) objectArray[0];
-                int resultCode = (int) objectArray[1];
+            Object[] objectArray = new Object[2];
+            drillFetcher.fetch(objectArray, Languages.ENGLISH, nextUnitSectionDrill);
+            Intent intent = (Intent) objectArray[0];
+            int resultCode = (int) objectArray[1];
 
+            Globals.STOP_BACKGROUND_MUSIC(context);
 
-                Globals.STOP_BACKGROUND_MUSIC(THIS);
-
-                startActivityForResult(intent, resultCode);
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
+            startActivityForResult(intent, resultCode);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
             ex.printStackTrace();
@@ -234,42 +205,35 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         } else {
-            DrillFetcher.mPhonicsStarted = false;
-            DrillFetcher.mWordsStarted = false;
-            DrillFetcher.mBooksStarted = false;
-            DrillFetcher.mMathsStarted = false;
+            drillFetcher.mPhonicsStarted = false;
+            drillFetcher.mWordsStarted = false;
+            drillFetcher.mBooksStarted = false;
+            drillFetcher.mMathsStarted = false;
         }
     }
 
     protected void processActivityResult(int code) {
         switch (code) {
             case Code.FINALE:
-                // Setup Database Controller
-                mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
                 mDb.moveToNextUnitSectionDrill();
-                mReadButton.setBackgroundResource(R.drawable.read_button);
+                readButton.setBackgroundColor(Color.TRANSPARENT);
+                readButton.setImageResource(R.drawable.read_button);
                 System.out.println("FINALE!!!!");
                 break;
             case Code.DRILL_SPLASH:
-                // Setup Database Controller
-                mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
-
                 // Get unit section drill data
                 UnitSectionDrill nextUnitSectionDrill = mDb.getUnitSectionDrillInProgress();
 
                 try {
-                    System.out.println("!!!!! DRILL SPLASH !!!!!!!");
-                    if (dbEstablsh(false)) {
-                        Object[] objectArray = DrillFetcher.fetch(THIS, mDbHelper, Languages.ENGLISH, nextUnitSectionDrill);
-                        dbClose();
-                        Intent intent = (Intent) objectArray[0];
-                        int resultCode = (int) objectArray[1];
+                    Object[] objectArray = new Object[2];
+                    drillFetcher.fetch(objectArray, Languages.ENGLISH, nextUnitSectionDrill);
+                    Intent intent = (Intent) objectArray[0];
+                    int resultCode = (int) objectArray[1];
 
-                        Globals.STOP_BACKGROUND_MUSIC(THIS);
+                    Globals.STOP_BACKGROUND_MUSIC(context);
 
-                        startActivityForResult(intent, resultCode);
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                    }
+                    startActivityForResult(intent, resultCode);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 } catch (Exception ex) {
                     System.err.println(ex.getMessage());
                     ex.printStackTrace();
@@ -301,77 +265,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Establish db connection
-     * @return Returns true/false if db connection has been established
-     */
-    protected boolean dbEstablsh(boolean recopy) {
-        try {
-            // Initialize DbHelper
-            mDbHelper = DbHelper.getDbHelper(getApplicationContext());
-
-            // Try create database or connect to existing
-            if (ALLOW_DB_RECOPY) {
-                mDbHelper.createDatabase(recopy);
-            } else {
-                mDbHelper.createDatabase();
-            }
-
-            // Test opening database
-            mDbHelper.openDatabase();
-
-            // All good
-            return true;
-
-        // Otherwise
-        } catch (IOException ioex) {
-            System.err.println("MainActivity.dbEstablish > IOException: " + ioex.getMessage());
-        } catch (SQLiteException sqlex) {
-            System.err.println("MainActivity.dbEstablish > SQLiteException: " + sqlex.getMessage());
-        } catch (Exception ex) {
-            System.err.println("MainActivity.dbEstablish > Exception: " + ex.getMessage());
-        }
-        return false;
-    }
-
-    protected boolean dbEstablishWithRecopy() {
-        try {
-            // Initialize DbHelper
-            mDbHelper = DbHelper.getDbHelper(getApplicationContext());
-
-            // Try create database or connect to existing
-            mDbHelper.createDatabase(true);
-
-            // Test opening database
-            mDbHelper.openDatabase();
-
-            // All good
-            return true;
-
-            // Otherwise
-        } catch (IOException ioex) {
-            System.err.println("MainActivity.dbEstablish > IOException: " + ioex.getMessage());
-        } catch (SQLiteException sqlex) {;
-            System.err.println("MainActivity.dbEstablish > SQLiteException: " + sqlex.getMessage());
-        } catch (Exception ex) {
-            System.err.println("MainActivity.dbEstablish > Exception: " + ex.getMessage());
-        }
-        return false;
-    }
-
-    protected void dbClose() {
-        if (mDbHelper != null) {
-            mDbHelper.close();
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
         if (!mNewActivity) {
-            Globals.RESUME_BACKGROUND_MUSIC(THIS);
+            Globals.RESUME_BACKGROUND_MUSIC(context);
         } else {
-            checkReadButton();
             mNewActivity = false;
         }
     }
@@ -380,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         if (!mNewActivity) {
-            Globals.PAUSE_BACKGROUND_MUSIC(THIS);
+            Globals.PAUSE_BACKGROUND_MUSIC(context);
         } else {
             mNewActivity = false;
         }
@@ -406,27 +305,18 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Hey, Smart Little Monkey!");
         builder.setMessage("Want to stop reading?");
-        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Globals.STOP_BACKGROUND_MUSIC(THIS);
-                finishAndRemoveTask();
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
+        builder.setPositiveButton(android.R.string.yes, (dialog, which) -> {
+            Globals.STOP_BACKGROUND_MUSIC(context);
+            finishAndRemoveTask();
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
-        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
+        builder.setNegativeButton(android.R.string.no, (dialog, which) -> {
+            dialog.cancel();
         });
         final AlertDialog alertDialog = builder.create();
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(android.R.color.holo_blue_light, null));
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(android.R.color.holo_blue_light, null));
-            }
+        alertDialog.setOnShowListener((dialog) -> {
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(android.R.color.holo_blue_light, null));
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(android.R.color.holo_blue_light, null));
         });
         alertDialog.show();
     }

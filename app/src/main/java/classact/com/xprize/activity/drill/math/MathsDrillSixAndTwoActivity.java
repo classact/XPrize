@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -12,28 +13,39 @@ import android.widget.RelativeLayout;
 
 import org.json.JSONObject;
 
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 
-public class MathsDrillSixAndTwoActivity extends AppCompatActivity {
+public class MathsDrillSixAndTwoActivity extends DrillActivity {
     private ImageView shapeContainerOne;
     private ImageView shapeContainerTwo;
     private ImageView shapeContainerThree;
     private ImageView shapeContainerFour;
-    private MediaPlayer mp;
     private JSONObject allData;
 
     private boolean touchEnabled;
 
-    private final Context THIS = this;
+    private MathDrill06CViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_six_and_two);
+        ButterKnife.bind(this);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill06CViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
 
         shapeContainerOne = (ImageView)findViewById(R.id.big_shape_one);
         shapeContainerTwo = (ImageView)findViewById(R.id.small_shape_one);
@@ -89,8 +101,8 @@ public class MathsDrillSixAndTwoActivity extends AppCompatActivity {
             String shapeOneImage = shapeOne.getString("image_name");
             String shapeTwoImage = shapeTwo.getString("image_name");
 
-            int shapeOneImageId = FetchResource.imageId(THIS, shapeOneImage);
-            int shapeTwoImageId = FetchResource.imageId(THIS, shapeTwoImage);
+            int shapeOneImageId = FetchResource.imageId(context, shapeOneImage);
+            int shapeTwoImageId = FetchResource.imageId(context, shapeTwoImage);
 
             ImageView[] orderedSquareContainers = {
                     shapeContainerOne,
@@ -144,7 +156,7 @@ public class MathsDrillSixAndTwoActivity extends AppCompatActivity {
 
             // Big shape one
             ImageView iv1 = shuffledSquareContainers[0];
-            iv1.setImageResource(shapeOneImageId);
+            loadImage(iv1, shapeOneImageId);
             iv1 = scale(iv1, BIG_SCALE);
             iv1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -155,7 +167,7 @@ public class MathsDrillSixAndTwoActivity extends AppCompatActivity {
 
             // Small shape two
             ImageView iv2 = shuffledSquareContainers[1];
-            iv2.setImageResource(shapeTwoImageId);
+            loadImage(iv2, shapeTwoImageId);
             iv2 = scale(iv2, SMALL_SCALE);
             iv2.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -166,7 +178,7 @@ public class MathsDrillSixAndTwoActivity extends AppCompatActivity {
 
             // Big shape two
             ImageView iv3 = shuffledSquareContainers[2];
-            iv3.setImageResource(shapeTwoImageId);
+            loadImage(iv3, shapeTwoImageId);
             iv3 = scale(iv3, BIG_SCALE);
             iv3.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -177,7 +189,7 @@ public class MathsDrillSixAndTwoActivity extends AppCompatActivity {
 
             // Small shape one
             ImageView iv4 = shuffledSquareContainers[3];
-            iv4.setImageResource(shapeOneImageId);
+            loadImage(iv4, shapeOneImageId);
             iv4 = scale(iv4, SMALL_SCALE);
             iv3.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -252,17 +264,15 @@ public class MathsDrillSixAndTwoActivity extends AppCompatActivity {
                 String objectToTouch = allData.getString("object_comparative_sound");
                 if (objectToTouch.equalsIgnoreCase(touchedObject)) {
                     touchEnabled = false;
-                    playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                    playSound(FetchResource.positiveAffirmation(context), new Runnable() {
                         @Override
                         public void run() {
-                            if (mp != null) {
-                                mp.release();
-                            }
                             finish();
+                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                         }
                     });
                 } else {
-                    playSound(FetchResource.negativeAffirmation(THIS), null);
+                    playSound(FetchResource.negativeAffirmation(context), null);
                 }
             }
         }
@@ -419,73 +429,5 @@ public class MathsDrillSixAndTwoActivity extends AppCompatActivity {
         catch (Exception ex){
             ex.printStackTrace();
         }
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if (mp != null){
-            mp.release();
-        }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

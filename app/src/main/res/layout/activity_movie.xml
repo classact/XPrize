@@ -1,42 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_movie"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
-    tools:context="classact.com.xprize.activity.movie.Movie">
+    tools:context="classact.com.xprize.activity.movie.MovieActivity">
 
-    <VideoView
-        android:id="@+id/movie_video"
-        android:layout_width="match_parent"
+    <!-- Base Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_start_horizontal"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_centerVertical="true"
-        />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.0"/>
 
-    <RelativeLayout
-        android:id="@+id/movie_splash_container"
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_end_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="1.0"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_start_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.0"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_mid_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_end_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="1.0"/>
+
+    <!-- Base Guidelines END -->
+
+    <!-- Background START -->
+
+    <ImageView
+        android:id="@+id/activity_background"
+        android:scaleType="fitXY"
+        android:contentDescription="@string/Background_Image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"/>
 
-        <RelativeLayout
-            android:id="@+id/movie_splash"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/black">
+    <!-- Background END -->
 
-            <ImageView
-                android:id="@+id/movie_splash_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:background="@drawable/chapter_bg"/>
-        </RelativeLayout>
-    </RelativeLayout>
-</RelativeLayout>
+    <!-- Primary Container START -->
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline_start_horizontal"
+        app:layout_constraintLeft_toRightOf="@id/guideline_start_vertical"/>
+
+    <!-- Primary Container END -->
+
+    <!-- Drill Controller START -->
+
+    <!-- Drill Controller Guidelines START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_drill_controller_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="60dp"/>
+
+    <!-- Drill Controller Guidelines END -->
+
+    <FrameLayout
+        android:id="@+id/drill_controller"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/guideline_end_horizontal"
+        app:layout_constraintLeft_toRightOf="@id/guideline_drill_controller_vertical"/>
+
+    <!-- Drill Controller END -->
+
+</android.support.constraint.ConstraintLayout>

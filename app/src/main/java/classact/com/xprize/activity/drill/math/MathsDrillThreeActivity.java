@@ -1,16 +1,13 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
-import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.DragEvent;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -19,35 +16,54 @@ import android.widget.RelativeLayout;
 
 import org.json.JSONObject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
-import classact.com.xprize.common.Code;
-import classact.com.xprize.common.Globals;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.utils.FetchResource;
+import classact.com.xprize.utils.LiveObjectAnimator;
 import classact.com.xprize.utils.Square;
 import classact.com.xprize.utils.SquarePacker;
 
-public class MathsDrillThreeActivity extends AppCompatActivity {
+public class MathsDrillThreeActivity extends DrillActivity {
+
+    @BindView(R.id.activity_maths_drill_three) RelativeLayout rootView;
+
+    @BindView(R.id.itemsReceptacle) RelativeLayout itemsReceptacle;
+    @BindView(R.id.itemsContainer) RelativeLayout itemsContainer;
+
     private JSONObject allData;
-    private MediaPlayer mp;
     private int segment = 1;
-    private RelativeLayout itemsContainer;
     private int draggedItems = 0;
-    private RelativeLayout itemsReceptacle;
     private int targetItems = 0;
     private int itemResId;
     private boolean isInReceptacle;
     private boolean dragEnabled;
     private boolean drillComplete;
     private boolean endDrill;
-    private Handler handler;
-    private final Context THIS = this;
+
+    private float itemWidth, itemHeight;
+    private float ix = -1, iy = -1, nx = -1, ny = -1;
+
+    private MathDrill03ViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_three);
-        itemsContainer = (RelativeLayout) findViewById(R.id.itemsContainer);
-        itemsReceptacle = (RelativeLayout)findViewById(R.id.itemsReceptacle);
+        ButterKnife.bind(this);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill03ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
+        // itemsReceptacle.setBackgroundColor(Color.argb(100, 255, 0, 0));
+
         itemsReceptacle.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
@@ -88,42 +104,7 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
         dragEnabled = false;
         drillComplete = false;
         endDrill = false;
-        handler = new Handler();
         initialiseData();
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
     }
 
     private void initialiseData(){
@@ -133,7 +114,7 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
             targetItems = allData.getInt("number_of_items");
             placeObjects();
             final String sound = allData.getString("monkey_wants_to_eat");
-            handler.postDelayed(new Runnable() {
+            handler.delayed(new Runnable() {
                 @Override
                 public void run() {
                     playSound(sound, new Runnable() {
@@ -194,35 +175,68 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
 
     private void placeOnTable(){
         ImageView item = (ImageView)itemsReceptacle.getChildAt(draggedItems - 1);
-        item.setImageResource(itemResId);
+        loadImage(item, itemResId);
+
+        float halfWidth = itemWidth * 0.8f / 2;
+        float halfHeight = itemHeight * 0.8f / 2;
+
+        if (ix == -1) {
+            ix = item.getX() + halfWidth;
+            iy = item.getY() + halfHeight;
+            nx = item.getX() + halfWidth;
+            ny = item.getY() + halfHeight;
+        } else {
+            if (item.getX() + halfWidth > nx) {
+                nx = item.getX() + halfWidth;
+            }
+            if (item.getY() + halfHeight > ny) {
+                ny = item.getY() + halfHeight;
+            }
+        }
+
         item.setVisibility(View.VISIBLE);
-        playSound(getNumberSound(), placementRunnable);
         if (draggedItems == targetItems){
             drillComplete = true;
             dragEnabled = false;
-        }
-    }
 
-    private Runnable placementRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (drillComplete && !endDrill) {
-                endDrill = true;
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        playSound(FetchResource.positiveAffirmation(THIS), placementRunnable);
-                    }
-                }, 300);
-            } else if (endDrill) {
-                handler.removeCallbacks(placementRunnable);
-                if (mp != null) {
-                    mp.release();
+            for (int i = 0; i < itemsContainer.getChildCount(); i++) {
+                LiveObjectAnimator fadeView = ez.fadeHide(getLifecycle(), 500, itemsContainer.getChildAt(i));
+                if (fadeView != null) {
+                    fadeView.start();
                 }
-                finish();
             }
         }
-    };
+        playSound(getNumberSound(), this::completeDrill);
+    }
+
+    private void completeDrill() {
+        if (drillComplete) {
+            handler.delayed(() -> {
+                playSound(FetchResource.positiveAffirmation(context),
+                    () -> {
+                        float x = ((nx - ix) / 2) + ix;
+                        float y = ((ny - iy) / 2) + iy;
+
+                        ImageView dummyView = new ImageView(context);
+                        MarginLayoutParams dummyViewLayoutParmas = new MarginLayoutParams(
+                                MarginLayoutParams.WRAP_CONTENT,
+                                MarginLayoutParams.WRAP_CONTENT
+                        );
+                        dummyView.setLayoutParams(dummyViewLayoutParmas);
+                        dummyView.setX(x);
+                        dummyView.setY(y);
+
+                        itemsReceptacle.addView(dummyView);
+                        starWorks.play(this, dummyView);
+                    },
+                    () -> {
+                        finish();
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    }
+                );
+            }, 75);
+        }
+    }
 
     public boolean dragItem(View view, MotionEvent motionEvent){
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
@@ -258,7 +272,7 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
             int n = allData.getInt("total_items");
             int w = itemsLayout.width;
             int h = itemsLayout.height;
-            int imageId = FetchResource.imageId(this, allData, "item");
+            int imageId = FetchResource.imageId(context, allData, "item");
             itemResId = imageId;
 
             SquarePacker squarePacker = new SquarePacker(w, h);
@@ -268,10 +282,11 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
                 // Get square
                 Square square = squares[i];
                 // Get drawable
-                Drawable d = getResources().getDrawable(imageId, null);
+                // Drawable d = getResources().getDrawable(imageId, null);
                 // Create image view
-                ImageView iv = new ImageView(getApplicationContext());
-                iv.setImageDrawable(d);
+                ImageView iv = new ImageView(context);
+                // iv.setImageDrawable(d);
+                loadImage(iv, imageId);
                 iv.setScaleX(0.8f);
                 iv.setScaleY(0.8f);
                 // iv.setBackgroundColor(Color.argb(150, 0, 0, 255));
@@ -291,7 +306,9 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
                 iv.setX((float) square.x);
                 iv.setY((float) square.y);
 
-                iv.setImageResource(itemResId);
+                itemWidth = square.w;
+                itemHeight = square.w;
+
                 iv.setVisibility(View.VISIBLE);
                 iv.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -302,7 +319,7 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
             }
 
             /*
-            itemResId = FetchResource.imageId(this, allData, "item");
+            itemResId = FetchResource.imageId(context, allData, "item");
             ImageView item;
             for(int i=0; i < totalItems;i++){
                 item = (ImageView)itemsContainer.getChildAt(i);
@@ -319,10 +336,6 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -341,10 +354,6 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null){
-                mp.release();
-            }
-            finish();
         }
     }
 
@@ -378,32 +387,5 @@ public class MathsDrillThreeActivity extends AppCompatActivity {
         catch (Exception ex){
             ex.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        handler.removeCallbacks(placementRunnable);
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

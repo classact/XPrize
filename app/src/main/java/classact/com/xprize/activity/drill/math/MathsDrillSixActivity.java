@@ -1,59 +1,64 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
 import java.util.Random;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.locale.Languages;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 
-public class MathsDrillSixActivity extends AppCompatActivity {
-    private RelativeLayout objectsContainer;
-    private ImageView demoShape;
-    private ImageView shape1;
-    private ImageView shape2;
-    private ImageView shape3;
+public class MathsDrillSixActivity extends DrillActivity {
+
+    @BindView(R.id.activity_maths_drill_six) RelativeLayout rootView;
+    @BindView(R.id.demo_shape) ImageView demoShape;
+    @BindView(R.id.objectsContainer) RelativeLayout objectsContainer;
+    @BindView(R.id.shape1) ImageView shape1;
+    @BindView(R.id.shape2) ImageView shape2;
+    @BindView(R.id.shape3) ImageView shape3;
+
     private JSONObject allData;
-    private MediaPlayer mp;
     private boolean touchEnabled;
-    private Handler handler;
     private ImageView[] shapeImageViews;
 
-    private final Context THIS = this;
+    private MathDrill06AViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_six);
-        objectsContainer = (RelativeLayout)findViewById(R.id.objectsContainer);
-        demoShape = (ImageView)findViewById(R.id.demo_shape);
+        ButterKnife.bind(this);
 
-        shape1 = (ImageView)findViewById(R.id.rectangle);
-        shape2 = (ImageView)findViewById(R.id.circle);
-        shape3 = (ImageView)findViewById(R.id.square);
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill06AViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
 
         shape1.setImageResource(0);
         shape2.setImageResource(0);
         shape3.setImageResource(0);
 
-        handler = new Handler();
         touchEnabled = false;
         initialise();
     }
@@ -63,8 +68,8 @@ public class MathsDrillSixActivity extends AppCompatActivity {
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
             String objectImage = allData.getString("demo_object");
-            int objectImageId = FetchResource.imageId(THIS, objectImage);
-            demoShape.setImageResource(objectImageId);
+            int objectImageId = FetchResource.imageId(context, objectImage);
+            loadImage(demoShape, objectImageId);
             // demoShape.setBackgroundColor(Color.argb(100, 0, 0, 255));
 
             DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
@@ -72,7 +77,7 @@ public class MathsDrillSixActivity extends AppCompatActivity {
             int screenH = displayMetrics.heightPixels;
             float density = displayMetrics.density;
 
-            Drawable demoDrawable = demoShape.getDrawable();
+            Drawable demoDrawable = getResources().getDrawable(objectImageId, null);
             int demoW = demoDrawable.getIntrinsicWidth();
             int demoH = demoDrawable.getIntrinsicHeight();
 
@@ -147,7 +152,8 @@ public class MathsDrillSixActivity extends AppCompatActivity {
                 ImageView iv = shapeImageViews[i];
 
                 final String shapeName = shapes[i];
-                int imageId = FetchResource.imageId(THIS, shapeName);
+                int imageId = FetchResource.imageId(context, shapeName);
+                // loadImage(iv, imageId);
                 iv.setImageResource(imageId);
 
                 // Now here is where shape sound is used / passed in as a comparator
@@ -161,75 +167,84 @@ public class MathsDrillSixActivity extends AppCompatActivity {
                 });
             }
 
-            /*shape1.setBackgroundColor(Color.argb(100, 255, 0, 0));
-            shape2.setBackgroundColor(Color.argb(100, 0, 255, 0));
-            shape3.setBackgroundColor(Color.argb(100, 0, 0, 255));*/
+            setupShapes(density);
+            startDrill();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
 
-            Drawable s1d = shape1.getDrawable();
-            Drawable s2d = shape2.getDrawable();
-            Drawable s3d = shape3.getDrawable();
+    private void setupShapes(float density) {
 
-            int s1IW = s1d.getIntrinsicWidth();
-            int s2IW = s2d.getIntrinsicWidth();
-            int s3IW = s3d.getIntrinsicWidth();
+        Drawable s1d = shape1.getDrawable();
+        Drawable s2d = shape2.getDrawable();
+        Drawable s3d = shape3.getDrawable();
 
-            int s1IH = s1d.getIntrinsicHeight();
-            int s2IH = s2d.getIntrinsicHeight();
-            int s3IH = s3d.getIntrinsicHeight();
+        int s1IW = s1d.getIntrinsicWidth();
+        int s2IW = s2d.getIntrinsicWidth();
+        int s3IW = s3d.getIntrinsicWidth();
 
-            int s1SW = (int) ((float) s1IW / density);
-            int s2SW = (int) ((float) s2IW / density);
-            int s3SW = (int) ((float) s3IW / density);
+        int s1IH = s1d.getIntrinsicHeight();
+        int s2IH = s2d.getIntrinsicHeight();
+        int s3IH = s3d.getIntrinsicHeight();
 
-            int s1SH = (int) ((float) s1IH / density);
-            int s2SH = (int) ((float) s2IH / density);
-            int s3SH = (int) ((float) s3IH / density);
+        int s1SW = (int) ((float) s1IW / density);
+        int s2SW = (int) ((float) s2IW / density);
+        int s3SW = (int) ((float) s3IW / density);
 
-            int s1Max = Math.max(s1SW, s1SH);
-            int s2Max = Math.max(s2SW, s2SH);
-            int s3Max = Math.max(s3SW, s3SH);
+        int s1SH = (int) ((float) s1IH / density);
+        int s2SH = (int) ((float) s2IH / density);
+        int s3SH = (int) ((float) s3IH / density);
 
-            double s1Ratio = (double) 250 / s1Max;
-            double s2Ratio = (double) 250 / s2Max;
-            double s3Ratio = (double) 250 / s3Max;
+        int s1Max = Math.max(s1SW, s1SH);
+        int s2Max = Math.max(s2SW, s2SH);
+        int s3Max = Math.max(s3SW, s3SH);
 
-            int s1RSW = (int) ((double) s1SW * s1Ratio);
-            int s2RSW = (int) ((double) s2SW * s2Ratio);
-            int s3RSW = (int) ((double) s3SW * s3Ratio);
+        double s1Ratio = (double) 250 / s1Max;
+        double s2Ratio = (double) 250 / s2Max;
+        double s3Ratio = (double) 250 / s3Max;
 
-            int s1RSH = (int) ((double) s1SH * s1Ratio);
-            int s2RSH = (int) ((double) s2SH * s2Ratio);
-            int s3RSH = (int) ((double) s3SH * s3Ratio);
+        int s1RSW = (int) ((double) s1SW * s1Ratio);
+        int s2RSW = (int) ((double) s2SW * s2Ratio);
+        int s3RSW = (int) ((double) s3SW * s3Ratio);
 
-            int s1PW = 100 + 250 - (int) (((double) 250 - (double) s1RSW)/2);
-            int s2PW = 100 + 250 + (int) (((double) 250 - (double) s2RSW)/2);
-            System.out.println("S1PW: " + s1PW + ", S2PW: " + s2PW);
+        int s1RSH = (int) ((double) s1SH * s1Ratio);
+        int s2RSH = (int) ((double) s2SH * s2Ratio);
+        int s3RSH = (int) ((double) s3SH * s3Ratio);
 
-            System.out.println("S1 - sw: " + s1RSW + ", sh: " + s1RSH);
-            System.out.println("S2 - sw: " + s2RSW + ", sh: " + s2RSH);
-            System.out.println("S3 - sw: " + s3RSW + ", sh: " + s3RSH);
+        int s1PW = 100 + 250 - (int) (((double) 250 - (double) s1RSW)/2);
+        int s2PW = 100 + 250 + (int) (((double) 250 - (double) s2RSW)/2);
+        System.out.println("S1PW: " + s1PW + ", S2PW: " + s2PW);
 
-            int s2s1DB = s2PW - s1PW;
-            System.out.println("Distance between: " + s2s1DB);
+        System.out.println("S1 - sw: " + s1RSW + ", sh: " + s1RSH);
+        System.out.println("S2 - sw: " + s2RSW + ", sh: " + s2RSH);
+        System.out.println("S3 - sw: " + s3RSW + ", sh: " + s3RSH);
 
-            RelativeLayout.LayoutParams shape1Layout = (RelativeLayout.LayoutParams) shape1.getLayoutParams();
-            RelativeLayout.LayoutParams shape2Layout = (RelativeLayout.LayoutParams) shape2.getLayoutParams();
-            RelativeLayout.LayoutParams shape3Layout = (RelativeLayout.LayoutParams) shape3.getLayoutParams();
+        int s2s1DB = s2PW - s1PW;
+        System.out.println("Distance between: " + s2s1DB);
 
-            shape1Layout.topMargin = 160;
-            shape2Layout.topMargin = 60;
+        RelativeLayout.LayoutParams shape1Layout = (RelativeLayout.LayoutParams) shape1.getLayoutParams();
+        RelativeLayout.LayoutParams shape2Layout = (RelativeLayout.LayoutParams) shape2.getLayoutParams();
+        RelativeLayout.LayoutParams shape3Layout = (RelativeLayout.LayoutParams) shape3.getLayoutParams();
 
-            if (s2s1DB < 54) {
-                shape2Layout.leftMargin += (int) ((float) (54 - s2s1DB));
-            }
+        shape1Layout.topMargin = 160;
+        shape2Layout.topMargin = 60;
 
-            // shape2Layout.leftMargin = (int) ((float) 110 / density);
-            shape3Layout.topMargin = 30;
+        if (s2s1DB < 54) {
+            shape2Layout.leftMargin += (int) ((float) (54 - s2s1DB));
+        }
 
-            shape1.setLayoutParams(shape1Layout);
-            shape2.setLayoutParams(shape2Layout);
-            shape3.setLayoutParams(shape3Layout);
+        // shape2Layout.leftMargin = (int) ((float) 110 / density);
+        shape3Layout.topMargin = 30;
 
+        shape1.setLayoutParams(shape1Layout);
+        shape2.setLayoutParams(shape2Layout);
+        shape3.setLayoutParams(shape3Layout);
+    }
+
+    private void startDrill() {
+        try {
             String sound = allData.getString("lets_look_at_shapes");
             playSound(sound, new Runnable() {
                 @Override
@@ -237,9 +252,9 @@ public class MathsDrillSixActivity extends AppCompatActivity {
                     sayThisIsA();
                 }
             });
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -249,17 +264,12 @@ public class MathsDrillSixActivity extends AppCompatActivity {
                 String objectToTouch = allData.getString("object_sound");
                 if (objectToTouch.equalsIgnoreCase(touchedObject)) {
                     touchEnabled = false;
-                    playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mp != null) {
-                                mp.release();
-                            }
-                            finish();
-                        }
+                    playSound(FetchResource.positiveAffirmation(context), () -> {
+                        finish();
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     });
                 } else {
-                    playSound(FetchResource.negativeAffirmation(THIS), null);
+                    playSound(FetchResource.negativeAffirmation(context), null);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -357,65 +367,5 @@ public class MathsDrillSixActivity extends AppCompatActivity {
         catch (Exception ex){
             ex.printStackTrace();
         }
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
-        }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

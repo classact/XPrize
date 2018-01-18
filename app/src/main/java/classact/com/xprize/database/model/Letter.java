@@ -17,6 +17,7 @@ public class Letter {
     private String phonicSoundURI;
     private String letterLowerPath;
     private String letterUpperPath;
+    private int isLetter;
 
     public int getLetterId() {
         return letterId;
@@ -119,7 +120,13 @@ public class Letter {
 
     public void setLetterUpperPath(String letterUpperPath) {
         this.letterUpperPath = letterUpperPath;
-
     }
 
+    public int getIsLetter() {
+        return isLetter;
+    }
+
+    public void setIsLetter(int isLetter) {
+        this.isLetter = isLetter;
+    }
 }

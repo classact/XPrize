@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.inject.Inject;
+
 import classact.com.xprize.database.helper.SQLiteAssetHelper;
 
 /**
@@ -24,7 +26,8 @@ public class DbHelper extends SQLiteAssetHelper {
 	private static String DATABASE_PATH;
 	private static int DATABASE_VERSION=1;
 	private SQLiteDatabase myDatabase;
-	private final Context myContext;
+
+	@Inject Context context;
 
     public static DbHelper getDbHelper(Context c) {
 
@@ -42,9 +45,9 @@ public class DbHelper extends SQLiteAssetHelper {
         return myDbHelper;
     }
 
-	private DbHelper(Context c) {
+	@Inject
+	public DbHelper(Context c) {
 		super(c, DATABASE_NAME, null, DATABASE_VERSION);
-		this.myContext = c;
 		this.DATABASE_PATH = c.getApplicationInfo().dataDir + "/databases/";
 	}
 
@@ -127,7 +130,7 @@ public class DbHelper extends SQLiteAssetHelper {
 
 	private void copyDatabase() throws IOException{
 		//Open our local db as the input stream
-		InputStream myInput = myContext.getAssets().open(DATABASE_NAME);
+		InputStream myInput = context.getAssets().open(DATABASE_NAME);
 
 		//Path to the just created empty DB
 		String outFilename = DATABASE_PATH + DATABASE_NAME;

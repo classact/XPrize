@@ -4,18 +4,25 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.util.SparseArray;
 
-import java.util.LinkedHashMap;
+import javax.inject.Inject;
 
 import classact.com.xprize.database.model.Drill;
 
 /**
  * Created by hcdjeong on 2017/07/24.
+ * Helper for {@link Drill}
  */
 
 public class DrillHelper {
 
-    public static int updateDrill(SQLiteDatabase db, Drill drill) throws SQLiteException {
+    @Inject
+    public DrillHelper() {
+
+    }
+
+    public int updateDrill(SQLiteDatabase db, Drill drill) throws SQLiteException {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put("DrillTypeId", drill.getDrillTypeId());
@@ -24,7 +31,7 @@ public class DrillHelper {
         return id;
     }
 
-    public static Drill getDrill(SQLiteDatabase db, int id) throws SQLiteException {
+    public Drill getDrill(SQLiteDatabase db, int id) throws SQLiteException {
 
         Cursor cursor = db.rawQuery(
                 "SELECT " +
@@ -43,9 +50,9 @@ public class DrillHelper {
         return drill;
     }
 
-    public static LinkedHashMap<Integer, Drill> getDrills(SQLiteDatabase db) throws SQLiteException {
+    public SparseArray<Drill> getDrills(SQLiteDatabase db) throws SQLiteException {
 
-        LinkedHashMap<Integer, Drill> drills = null;
+        SparseArray<Drill> drills = null;
 
         Cursor cursor = db.rawQuery(
                 "SELECT " +
@@ -54,7 +61,7 @@ public class DrillHelper {
                         "FROM tbl_Drill", null);
 
         if (cursor.getCount() > 0) {
-            drills = new LinkedHashMap<>();
+            drills = new SparseArray<>();
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 Drill drill = new Drill();
                 drill.setDrillId(cursor.getInt(cursor.getColumnIndex("_id")));

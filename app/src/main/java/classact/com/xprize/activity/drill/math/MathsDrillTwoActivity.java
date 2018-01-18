@@ -1,6 +1,8 @@
 package classact.com.xprize.activity.drill.math;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -11,11 +13,17 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
@@ -23,28 +31,44 @@ import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.Square;
 import classact.com.xprize.utils.SquarePacker;
 
-public class MathsDrillTwoActivity extends AppCompatActivity {
+public class MathsDrillTwoActivity extends DrillActivity {
+
+
     private JSONObject allData;
-    private MediaPlayer mp;
     private ImageView numberOne;
     private ImageView numberTwo;
     private ImageView numberThree;
     private JSONArray numbers;
     private RelativeLayout rootLayout;
     private RelativeLayout objectsContainer;
-    private Handler handler;
     private boolean touchEnabled;
-    private final Context THIS = this;
+
+    private LinkedHashMap<Integer, ImageView> mNumberNumberMap;
 
     private final int PICTURES_FRAME_WIDTH = 745;
     private final int PICTURES_FRAME_HEIGHT = 955;
     private final int NUMBERS_FRAME_WIDTH = 745;
     private final int NUMBERS_FRAME_HEIGHT = 955;
 
+    private MathDrill02ViewModel vm;
+
+    private View lastWrongNumber;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maths_drill_two);
+        ButterKnife.bind(this);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(MathDrill02ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         rootLayout = (RelativeLayout) findViewById(R.id.activity_math_drill_two);
         objectsContainer = (RelativeLayout) findViewById(R.id.objects_container);
 
@@ -62,7 +86,6 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
         }
 
         // Init data blah blah
-        handler = new Handler();
         touchEnabled = false;
         initialiseData();
 
@@ -97,10 +120,10 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                     // Get square
                     Square square = squares[i];
                     // Get drawable
-                    Drawable d = getResources().getDrawable(imageId, null);
+                    // Drawable d = getResources().getDrawable(imageId, null);
                     // Create image view
                     ImageView iv = new ImageView(getApplicationContext());
-                    iv.setImageDrawable(d);
+                    loadImage(iv, imageId);
                     iv.setScaleX(0.8f);
                     iv.setScaleY(0.8f);
                     // iv.setBackgroundColor(Color.argb(150, 0, 0, 255));
@@ -150,16 +173,17 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                 Square[] squares = squarePacker.get(n);
                 int[] scrambles = FisherYates.shuffle(n);
 
+                mNumberNumberMap = new LinkedHashMap<>();
+
                 for (int i = 0; i < squares.length; i++) {
                     int si = scrambles[i];
                     // Get square
                     Square square = squares[si];
                     // Get drawable
-                    Drawable d = getResources()
-                            .getDrawable(FetchResource.imageId(this, numbers, i, "image"), null);
+                    // Drawable d = getResources().getDrawable(FetchResource.imageId(this, numbers, i, "image"), null);
                     // Create image view
-                    ImageView iv = new ImageView(getApplicationContext());
-                    iv.setImageDrawable(d);
+                    ImageView iv = new ImageView(context);
+                    loadImage(iv, FetchResource.imageId(this, numbers, i, "image"));
                     iv.setScaleX(0.8f);
                     iv.setScaleY(0.8f);
                     // iv.setBackgroundColor(Color.argb(150, 0, 0, 255));
@@ -182,50 +206,20 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
                     // Setup listener
                     final int numberIndex = i;
 
+                    iv.setAlpha(0.2f);
+
                     iv.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            numberClicked(numberIndex);
+                            numberClicked(v, numberIndex);
                         }
                     });
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
 
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
+                    mNumberNumberMap.put(numberIndex, iv);
+                }
             }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
         } catch (Exception ex) {
             ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
         }
     }
 
@@ -262,55 +256,56 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
         }
     }
 
-    public void numberClicked(int position){
+    public void numberClicked(View view, int position){
         if (touchEnabled) {
+
+            // Uncolor last wrong number
+            if (lastWrongNumber != null && view != lastWrongNumber) {
+                unHighlight(lastWrongNumber);
+            }
+
             try {
                 int correct = numbers.getJSONObject(position).getInt("right");
                 String sound = numbers.getJSONObject(position).getString("sound");
                 if (correct == 0) {
-                    playSound(sound, new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                playSound(FetchResource.negativeAffirmation(THIS), null);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                    });
+
+                    lastWrongNumber = view;
+
+                    // Color number
+                    highlightWrong(view);
+
+                    playSound(sound, () ->
+                        playSound(FetchResource.negativeAffirmation(context), () -> {
+
+                            // Uncolor number
+                            unHighlight(view);
+                        }));
+
                 } else {
                     touchEnabled = false;
-                    playSound(sound, new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        handler.postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                if (mp != null) {
-                                                    mp.release();
-                                                }
-                                                finish();
-                                            }
-                                        }, 100);
-                                    }
+                    ImageView iv = mNumberNumberMap.get(position);
+                    Globals.playStarWorks(this, iv);
+
+                    // Color number
+                    highlightCorrect(view);
+
+                    playSound(sound, () -> {
+                        try {
+                            handler.delayed(() -> {
+                                playSound(FetchResource.positiveAffirmation(context), () -> {
+                                    handler.delayed(() -> {
+                                        finish();
+                                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                                    }, 100);
                                 });
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                                finish();
-                            }
+                            }, 50);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
                     });
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                if (mp != null) {
-                    mp.release();
-                }
-                finish();
             }
         }
     }
@@ -336,44 +331,21 @@ public class MathsDrillTwoActivity extends AppCompatActivity {
             playSound(sound, new Runnable() {
                 @Override
                 public void run() {
-                    handler.postDelayed(new Runnable() {
+                    handler.delayed(new Runnable() {
                         @Override
                         public void run() {
                             touchEnabled = true;
+                            for (Map.Entry<Integer, ImageView> entrySet : mNumberNumberMap.entrySet()) {
+                                ImageView iv = entrySet.getValue();
+                                iv.setAlpha(1f);
+                            }
                         }
-                    }, 500);
+                    }, 200);
                 }
             });
         }
         catch (Exception ex){
             ex.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.stop();
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

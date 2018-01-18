@@ -1,5 +1,6 @@
 package classact.com.xprize.activity.drill.sound;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -29,7 +30,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
@@ -38,15 +42,16 @@ import classact.com.xprize.view.PathAnimationView;
 import classact.com.xprize.view.PathCoordinate;
 import classact.com.xprize.view.WriteView;
 
-public class SoundDrillEightActivity extends AppCompatActivity implements PathAnimationView.AnimationDone{
-    private RelativeLayout drawArea;
+public class SoundDrillEightActivity extends DrillActivity implements PathAnimationView.AnimationDone{
+
+    @BindView(R.id.draw_area) RelativeLayout drawArea;
+    @BindView(R.id.item1) ImageView item1;
+
     private PathAnimationView animationView;
     private DrillEightWriteView writingView;
     private JSONObject drillData;
     private JSONArray paths;
     private ImageView letter;
-    private MediaPlayer mp;
-    private Handler handler;
     private int numberOfChecks = 0;
     private int repeat = 1;
 
@@ -63,17 +68,29 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
     private final int OFFSET_Y = 90;
 
     private RelativeLayout mDetectionView;
-    private final Context THIS = this;
+
+    private SoundDrill08ViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_eight);
+        ButterKnife.bind(this);
+
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill08ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         letter = (ImageView)findViewById(R.id.item1);
         drawArea = (RelativeLayout) findViewById(R.id.draw_area);
         String drillData = getIntent().getExtras().getString("data");
 
-        mDetectionView = new RelativeLayout(THIS);
+        mDetectionView = new RelativeLayout(context);
         RelativeLayout.LayoutParams detectionLayout = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT
@@ -85,8 +102,6 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         RelativeLayout.LayoutParams letterLayout = (RelativeLayout.LayoutParams) letter.getLayoutParams();
         letterLayout.topMargin += OFFSET_Y;
         letter.setLayoutParams(letterLayout);
-
-        handler = new Handler(Looper.getMainLooper());
         startDrill();
     }
 
@@ -99,41 +114,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void playSound(String sound, final Runnable action) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (action != null) {
-                        action.run();
-                    }
-                }
-            });
-            mp.prepare();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (action != null) {
-                action.run();
-            }
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -147,7 +128,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
             int item = drillData.getInt("big_letter");
             if (repeat == 2)
                 item = drillData.getInt("small_letter");
-            letter.setImageResource(item);
+            loadImage(letter, item);
             getPathData();
             String sound = "";
             if (repeat == 1) {
@@ -169,7 +150,6 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         }
         catch(Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -186,7 +166,6 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -211,7 +190,6 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -235,7 +213,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
             });
         } catch (Exception ex) {
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -258,7 +236,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
         // Add draw timer
         drawArea.removeView(mTimer);
         mTimer = new TextView(getApplicationContext());
-        mTimer.setBackgroundResource(android.R.color.transparent);
+        mTimer.setBackgroundColor(Color.TRANSPARENT);
         mTimerCounter = TIMER_MAX;
 
         mTimer.setText(String.valueOf(mTimerCounter));
@@ -289,7 +267,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
             });
         } catch (Exception ex) {
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -303,10 +281,10 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
     public void checkIsDone(){
         try {
             if (writingView.didDraw()) {
-                playSound(FetchResource.positiveAffirmation(THIS), new Runnable() {
+                playSound(FetchResource.positiveAffirmation(context), new Runnable() {
                     @Override
                     public void run() {
-                        handler.postDelayed(new Runnable() {
+                        handler.delayed(new Runnable() {
                             @Override
                             public void run() {
                                 completed();
@@ -325,7 +303,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
             } */
         } catch (Exception ex) {
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -334,13 +312,11 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
             repeat++;
             startDrill();
         } else {
-            if (mp != null) {
-                mp.release();
-            }
-            handler.postDelayed(new Runnable() {
+            handler.delayed(new Runnable() {
                 @Override
                 public void run() {
                     finish();
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
             }, 500);
         }
@@ -363,7 +339,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
                     paths = new JSONObject(result.toString()).getJSONArray("paths");
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
                 } finally {
                     reader.close();
                 }
@@ -372,7 +348,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -388,7 +364,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
                     path.add(coordinate);
 
                     /*
-                    ImageView iv = new ImageView(THIS);
+                    ImageView iv = new ImageView(context);
                     mDetectionView.addView(iv);
                     RelativeLayout.LayoutParams ivLayout = (RelativeLayout.LayoutParams) iv.getLayoutParams();
                     int ivWidth = 10;
@@ -405,7 +381,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
         return pathsArray;
     }
@@ -430,16 +406,16 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
 
                     if (mTimerCounter > 0) {
                         mTimerCounter--;
-                        handler.postDelayed(countDown, 1000);
+                        handler.delayed(countDown, 1000);
                     } else {
                         mCanDraw = false;
                         mTimer.setTextColor(Color.parseColor("#33ccff"));
-                        handler.postDelayed(checkDone, 500);
+                        handler.delayed(checkDone, 500);
                     }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     };
@@ -477,7 +453,7 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
                         mThisActivity.setLastDrawnTime(new Date().getTime());
 
                         handler.removeCallbacks(countDown);
-                        handler.postDelayed(countDown, DRAW_WAIT_TIME);
+                        handler.delayed(countDown, DRAW_WAIT_TIME);
 
                         System.out.println("Drawing complete!");
                         break;
@@ -517,32 +493,5 @@ public class SoundDrillEightActivity extends AppCompatActivity implements PathAn
 
     public long getLastDrawnTime() {
         return mLastDrawnTime;
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        handler = null;
-        if (mp != null) {
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

@@ -4,9 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -19,7 +20,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import classact.com.xprize.R;
+import classact.com.xprize.activity.MenuActivity;
 import classact.com.xprize.activity.menu.controller.DatabaseController;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
@@ -28,8 +32,9 @@ import classact.com.xprize.database.DbHelper;
 import classact.com.xprize.database.model.UnitSection;
 import classact.com.xprize.database.model.UnitSectionDrill;
 import classact.com.xprize.locale.Languages;
+import dagger.android.support.DaggerAppCompatActivity;
 
-public class DrillsMenu extends AppCompatActivity {
+public class DrillsMenu extends MenuActivity {
 
     private TextView mChapterTitle;
     private TextView mChapterNumber;
@@ -70,9 +75,7 @@ public class DrillsMenu extends AppCompatActivity {
     private LinkedHashMap<ImageButton, ImageButton> mButtonMonkeyMap;
     private LinkedHashMap<ImageButton, Integer> mButtonDrillMap;
 
-    private DatabaseController mDb;
-    private DbHelper mDbHelper;
-    private LinkedHashMap<Integer, UnitSectionDrill> mUnitSectionDrillMap;
+    private SparseArray<UnitSectionDrill> mUnitSectionDrillMap;
     private LinkedHashMap<Integer, UnitSectionDrill> mUnitSectionDrillByDrillNumberMap;
 
     private Intent mIntent;
@@ -83,7 +86,9 @@ public class DrillsMenu extends AppCompatActivity {
     private String mSelectedLetter;
     private ConstraintLayout mRootView;
     private boolean mFinishActivity;
-    private final Context THIS = this;
+
+    @Inject DatabaseController mDb;
+    @Inject DrillFetcher drillFetcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,9 +209,6 @@ public class DrillsMenu extends AppCompatActivity {
         mChapterSection.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
         mDrillInstruction.setTypeface(Globals.TYPEFACE_EDU_AID(getAssets()));
 
-        // Get database controller
-        mDb = DatabaseController.getInstance(THIS, Languages.ENGLISH);
-
         // Get number of unit section drills
         mUnitSectionDrillMap = mDb.getUnitSectionDrills(mSelectedUnitSection);
         int numberOfDrills = mUnitSectionDrillMap.size();
@@ -218,8 +220,9 @@ public class DrillsMenu extends AppCompatActivity {
         int numberOfUnlockedDrills = 0;
         int currentDrillInProgress = 1;
         boolean currentDrillInProgressFound = false;
-        for (Map.Entry<Integer, UnitSectionDrill> entry : mUnitSectionDrillMap.entrySet()) {
-            UnitSectionDrill unitSectionDrill = entry.getValue();
+        for (int i = 0; i < mUnitSectionDrillMap.size(); i++) {
+            int key = mUnitSectionDrillMap.keyAt(i);
+            UnitSectionDrill unitSectionDrill = mUnitSectionDrillMap.get(key);
             if (unitSectionDrill.getUnlocked() == 1) {
                 numberOfUnlockedDrills++;
                 if (unitSectionDrill.getInProgress() == 1) {
@@ -242,10 +245,11 @@ public class DrillsMenu extends AppCompatActivity {
         // Or navigate to different intent
         String drillInstruction = "";
         switch (mSelectedSection) {
-            case DatabaseController.INTRO_SECTION:
+            case DatabaseController.STORY_SECTION:
                 UnitSectionDrill unitSectionDrill = null;
-                for (Map.Entry<Integer, UnitSectionDrill> entry : mUnitSectionDrillMap.entrySet()) {
-                    unitSectionDrill = entry.getValue();
+                for (int i = 0; i < mUnitSectionDrillMap.size(); i++) {
+                    int key = mUnitSectionDrillMap.keyAt(i);
+                    unitSectionDrill = mUnitSectionDrillMap.get(key);
                     int unitSectionId = unitSectionDrill.getUnitSectionId();
                     UnitSection unitSection = mDb.getUnitSection(unitSectionId);
                     int sectionId = unitSection.getSectionId();
@@ -255,32 +259,30 @@ public class DrillsMenu extends AppCompatActivity {
                             .getName().equalsIgnoreCase("Movie") &&
                             mDb.getSections()
                                     .get(sectionId)
-                                    .getName().equalsIgnoreCase("Intro")) {
+                                    .getName().equalsIgnoreCase("Story")) {
                         break;
                     }
                 }
                 try {
                     if (unitSectionDrill == null) {
-                        throw new Exception("DrillsMenu: Cannot play intro movie");
+                        throw new Exception("DrillsMenu: Cannot play story movie");
                     }
                     mDb.playUnitSectionDrill(unitSectionDrill.getUnitSectionDrillId());
 
-                    if (dbEstablsh()) {
-                        Object[] objectArray = DrillFetcher.fetch(THIS, mDbHelper, Languages.ENGLISH, unitSectionDrill);
-                        Intent intent = (Intent) objectArray[0];
-                        int resultCode = (int) objectArray[1];
+                    Object[] objectArray = new Object[2];
+                    drillFetcher.fetch(objectArray, Languages.ENGLISH, unitSectionDrill);
 
-                        mFinishActivity = true;
-                        Globals.STOP_BACKGROUND_MUSIC(THIS);
+                    Intent intent = (Intent) objectArray[0];
+                    int resultCode = (int) objectArray[1];
 
-                        startActivityForResult(intent, resultCode);
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                    }
+                    mFinishActivity = true;
+                    Globals.STOP_BACKGROUND_MUSIC(context);
+
+                    startActivityForResult(intent, resultCode);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 } catch (Exception ex) {
                     System.err.println(ex.getMessage());
                     ex.printStackTrace();
-                } finally {
-                    dbClose();
                 }
                 break;
             case DatabaseController.PHONICS_SECTION:
@@ -288,9 +290,10 @@ public class DrillsMenu extends AppCompatActivity {
                 mSelectedSubId = mIntent.getIntExtra("selected_sub_id", 1);
 
                 LinkedHashMap<Integer, String> subIdLetterMap = new LinkedHashMap<>();
-                LinkedHashMap<Integer, UnitSection> unitSectionMap = mDb.getUnitSections(mSelectedChapter, mSelectedSection);
-                for (Map.Entry<Integer, UnitSection> entry : unitSectionMap.entrySet()) {
-                    UnitSection unitSection = entry.getValue();
+                SparseArray<UnitSection> unitSectionMap = mDb.getUnitSections(mSelectedChapter, mSelectedSection);
+                for (int i = 0; i < unitSectionMap.size(); i++) {
+                    int key = unitSectionMap.keyAt(i);
+                    UnitSection unitSection = unitSectionMap.get(key);
                     int subId = unitSection.getSectionSubId();
                     String subject = unitSection.getSectionSubject();
                     subIdLetterMap.put(subId, subject);
@@ -310,7 +313,7 @@ public class DrillsMenu extends AppCompatActivity {
                 break;
             case DatabaseController.WORDS_SECTION:
                 // mRootView.setBackgroundResource(R.drawable.bg_pink);
-                drillInstruction = "Learn to write words !";
+                drillInstruction = "Learn to read and write words !";
                 break;
             case DatabaseController.BOOKS_SECTION:
                 // mRootView.setBackgroundResource(R.drawable.bg_green);
@@ -378,22 +381,20 @@ public class DrillsMenu extends AppCompatActivity {
                     mDb.playUnitSectionDrill(unitSectionDrill.getUnitSectionDrillId());
 
                     try {
-                        if (dbEstablsh()) {
-                            Object[] objectArray = DrillFetcher.fetch(THIS, mDbHelper, Languages.ENGLISH, unitSectionDrill);
-                            Intent intent = (Intent) objectArray[0];
-                            int resultCode = (int) objectArray[1];
+                        Object[] objectArray = new Object[2];
+                        drillFetcher.fetch(objectArray, Languages.ENGLISH, unitSectionDrill);
 
-                            mFinishActivity = true;
-                            Globals.STOP_BACKGROUND_MUSIC(THIS);
+                        Intent intent = (Intent) objectArray[0];
+                        int resultCode = (int) objectArray[1];
 
-                            startActivityForResult(intent, resultCode);
-                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                        }
+                        mFinishActivity = true;
+                        Globals.STOP_BACKGROUND_MUSIC(context);
+
+                        startActivityForResult(intent, resultCode);
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     } catch (Exception ex) {
                         System.err.println(ex.getMessage());
                         ex.printStackTrace();
-                    } finally {
-                        dbClose();
                     }
                 }
             });
@@ -420,34 +421,6 @@ public class DrillsMenu extends AppCompatActivity {
             });
         } else {
             button.setEnabled(false);
-        }
-    }
-
-    private boolean dbEstablsh() {
-        try {
-            // Initialize DbHelper
-            mDbHelper = DbHelper.getDbHelper(THIS);
-            // Create database (or connect to existing)
-            mDbHelper.createDatabase();
-            // Test opening database
-            mDbHelper.openDatabase();
-            // All good
-            return true;
-
-            // Otherwise
-        } catch (IOException ioex) {
-            System.err.println("DatabaseController.dbEstablish > IOException: " + ioex.getMessage());
-        } catch (SQLiteException sqlex) {
-            System.err.println("DatabaseController.dbEstablish > SQLiteException: " + sqlex.getMessage());
-        } catch (Exception ex) {
-            System.err.println("DatabaseController.dbEstablish > Exception: " + ex.getMessage());
-        }
-        return false;
-    }
-
-    private void dbClose() {
-        if (mDbHelper != null) {
-            mDbHelper.close();
         }
     }
 
@@ -487,7 +460,7 @@ public class DrillsMenu extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         if (!mFinishActivity) {
-            Globals.RESUME_BACKGROUND_MUSIC(THIS);
+            Globals.RESUME_BACKGROUND_MUSIC(context);
         } else {
             mFinishActivity = false;
         }
@@ -497,7 +470,7 @@ public class DrillsMenu extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         if (!mFinishActivity) {
-            Globals.PAUSE_BACKGROUND_MUSIC(THIS);
+            Globals.PAUSE_BACKGROUND_MUSIC(context);
         }
     }
 

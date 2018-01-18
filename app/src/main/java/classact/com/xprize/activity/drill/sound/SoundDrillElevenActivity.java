@@ -1,20 +1,14 @@
 package classact.com.xprize.activity.drill.sound;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.net.Uri;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
-import android.widget.ImageButton;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -23,24 +17,27 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.Random;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import classact.com.xprize.R;
-import classact.com.xprize.common.Code;
+import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
-import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 import classact.com.xprize.utils.TextShrinker;
 
-public class SoundDrillElevenActivity extends AppCompatActivity {
-    private ImageButton ImageButtonWord1;
-    private ImageButton ImageButtonWord2;
-    private ImageButton ImageButtonWord3;
-    private ImageButton ImageButtonWord4;
-    private ImageButton ImageButtonWord5;
-    private ImageButton ImageButtonWord6;
-    private ImageButton ImageButtonWord7;
-    private ImageButton ImageButtonWord8;
-    private ImageButton ImageButtonWord9;
-    private ImageButton ImageButtonWord10;
+public class SoundDrillElevenActivity extends DrillActivity {
+
+    @BindView(R.id.button_word1) ImageView wordImage1;
+    @BindView(R.id.button_word2)  ImageView wordImage2;
+    @BindView(R.id.button_word3)  ImageView wordImage3;
+    @BindView(R.id.button_word4)  ImageView wordImage4;
+    @BindView(R.id.button_word5)  ImageView wordImage5;
+    @BindView(R.id.button_word6)  ImageView wordImage6;
+    @BindView(R.id.button_word7)  ImageView wordImage7;
+    @BindView(R.id.button_word8)  ImageView wordImage8;
+    @BindView(R.id.button_word9)  ImageView wordImage9;
+    @BindView(R.id.button_word10)  ImageView wordImage10;
+
     private JSONArray words;
     private int correctSets;
     private int[] assignments;
@@ -48,41 +45,37 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
     private int[] openPair;
     private boolean[] cardState;
     private int startPair;
-    private MediaPlayer mp;
-    Handler handler;
     private JSONObject allData;
 
     private boolean gameStarted;
 
-    private final Context THIS = this;
+    private SoundDrill11ViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_drill_eleven);
-        ImageButtonWord1 = (ImageButton)findViewById(R.id.button_word1);
-        ImageButtonWord2 = (ImageButton)findViewById(R.id.button_word2);
-        ImageButtonWord3 = (ImageButton)findViewById(R.id.button_word3);
-        ImageButtonWord4 = (ImageButton)findViewById(R.id.button_word4);
-        ImageButtonWord5 = (ImageButton)findViewById(R.id.button_word5);
-        ImageButtonWord6 = (ImageButton)findViewById(R.id.button_word6);
-        ImageButtonWord7 = (ImageButton)findViewById(R.id.button_word7);
-        ImageButtonWord8 = (ImageButton)findViewById(R.id.button_word8);
-        ImageButtonWord9 = (ImageButton)findViewById(R.id.button_word9);
-        ImageButtonWord10 = (ImageButton)findViewById(R.id.button_word10);
+        ButterKnife.bind(this);
 
-        /*
-        ImageButtonWord1.setAlpha(0f);
-        ImageButtonWord2.setAlpha(0f);
-        ImageButtonWord3.setAlpha(0f);
-        ImageButtonWord4.setAlpha(0f);
-        ImageButtonWord5.setAlpha(0f);
-        ImageButtonWord6.setAlpha(0f);
-        ImageButtonWord7.setAlpha(0f);
-        ImageButtonWord8.setAlpha(0f);
-        ImageButtonWord9.setAlpha(0f);
-        ImageButtonWord10.setAlpha(0f);
-        */
+        // View Model
+        vm = ViewModelProviders.of(this, viewModelFactory)
+                .get(SoundDrill11ViewModel.class)
+                .register(getLifecycle())
+                .prepare(context);
+
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
+        wordImage1.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage2.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage3.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage4.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage5.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage6.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage7.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage8.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage9.setBackgroundResource(R.drawable.cardsinglesml);
+        wordImage10.setBackgroundResource(R.drawable.cardsinglesml);
 
         gameStarted = false;
 
@@ -92,30 +85,10 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
 
         String drillData = getIntent().getExtras().getString("data");
 
-        handler = new Handler();
         initialiseData(drillData);
 
         try {
             String sound = allData.getString("monkey_wants_two");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp != null) {
-                mp.release();
-            }
-            mp = new MediaPlayer();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    completeIntro();
-                }
-            });
 
             AlphaAnimation animation1 = new AlphaAnimation(0f, 1.0f);
             AlphaAnimation animation2 = new AlphaAnimation(0f, 1.0f);
@@ -161,162 +134,72 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
             animation9.setFillAfter(true);
             animation10.setFillAfter(true);
 
-            ImageButtonWord1.startAnimation(animation1);
-            ImageButtonWord2.startAnimation(animation2);
-            ImageButtonWord3.startAnimation(animation3);
-            ImageButtonWord4.startAnimation(animation4);
-            ImageButtonWord5.startAnimation(animation5);
-            ImageButtonWord6.startAnimation(animation6);
-            ImageButtonWord7.startAnimation(animation7);
-            ImageButtonWord8.startAnimation(animation8);
-            ImageButtonWord9.startAnimation(animation9);
-            ImageButtonWord10.startAnimation(animation10);
+            wordImage1.startAnimation(animation1);
+            wordImage2.startAnimation(animation2);
+            wordImage3.startAnimation(animation3);
+            wordImage4.startAnimation(animation4);
+            wordImage5.startAnimation(animation5);
+            wordImage6.startAnimation(animation6);
+            wordImage7.startAnimation(animation7);
+            wordImage8.startAnimation(animation8);
+            wordImage9.startAnimation(animation9);
+            wordImage10.startAnimation(animation10);
 
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    enableCards(true);
-                }
-            }, 500);
+            handler.delayed(() -> enableCards(true), 500);
 
-            mp.prepare();
+            playSound(sound, this::completeIntro);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     private void completeIntro(){
         try {
             String sound = allData.getString("can_you_match");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    gameStarted = true;
-                }
-            });
-            mp.prepare();
+            playSound(sound, () -> gameStarted = true);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     private void initialiseCards(){
-        ImageButtonWord1.setImageResource(0);
-        ImageButtonWord1.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(1);
-                    }
-                }
-        );
-        ImageButtonWord2.setImageResource(0);
-        ImageButtonWord2.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(2);
-                    }
-                }
-        );
-        ImageButtonWord3.setImageResource(0);
-        ImageButtonWord3.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(3);
-                    }
-                }
-        );
-        ImageButtonWord4.setImageResource(0);
-        ImageButtonWord4.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(4);
-                    }
-                }
-        );
-        ImageButtonWord5.setImageResource(0);
-        ImageButtonWord5.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(5);
-                    }
-                }
-        );
-        ImageButtonWord6.setImageResource(0);
-        ImageButtonWord6.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(6);
-                    }
-                }
-        );
-        ImageButtonWord7.setImageResource(0);
-        ImageButtonWord7.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(7);
-                    }
-                }
-        );
-        ImageButtonWord8.setImageResource(0);
-        ImageButtonWord8.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(8);
-                    }
-                }
-        );
-        ImageButtonWord9.setImageResource(0);
-        ImageButtonWord9.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(9);
-                    }
-                }
-        );
-        ImageButtonWord10.setImageResource(0);
-        ImageButtonWord10.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        turnCard(10);
-                    }
-                }
-        );
+        wordImage1.setImageResource(0);
+        wordImage1.setOnClickListener((v) -> turnCard(1));
+        wordImage2.setImageResource(0);
+        wordImage2.setOnClickListener((v) -> turnCard(2));
+        wordImage3.setImageResource(0);
+        wordImage3.setOnClickListener((v) -> turnCard(3));
+        wordImage4.setImageResource(0);
+        wordImage4.setOnClickListener((v) -> turnCard(4));
+        wordImage5.setImageResource(0);
+        wordImage5.setOnClickListener((v) -> turnCard(5));
+        wordImage6.setImageResource(0);
+        wordImage6.setOnClickListener((v) -> turnCard(6));
+        wordImage7.setImageResource(0);
+        wordImage7.setOnClickListener((v) -> turnCard(7));
+        wordImage8.setImageResource(0);
+        wordImage8.setOnClickListener((v) -> turnCard(8));
+        wordImage9.setImageResource(0);
+        wordImage9.setOnClickListener((v) -> turnCard(9));
+        wordImage10.setImageResource(0);
+        wordImage10.setOnClickListener((v) -> turnCard(10));
     }
 
     public void enableCards(boolean enable) {
-        ImageButtonWord1.setEnabled(enable);
-        ImageButtonWord2.setEnabled(enable);
-        ImageButtonWord3.setEnabled(enable);
-        ImageButtonWord4.setEnabled(enable);
-        ImageButtonWord5.setEnabled(enable);
-        ImageButtonWord6.setEnabled(enable);
-        ImageButtonWord7.setEnabled(enable);
-        ImageButtonWord8.setEnabled(enable);
-        ImageButtonWord9.setEnabled(enable);
-        ImageButtonWord10.setEnabled(enable);
+        wordImage1.setEnabled(enable);
+        wordImage2.setEnabled(enable);
+        wordImage3.setEnabled(enable);
+        wordImage4.setEnabled(enable);
+        wordImage5.setEnabled(enable);
+        wordImage6.setEnabled(enable);
+        wordImage7.setEnabled(enable);
+        wordImage8.setEnabled(enable);
+        wordImage9.setEnabled(enable);
+        wordImage10.setEnabled(enable);
     }
 
     private void initialiseData(String drillData){
@@ -354,213 +237,133 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         }
         catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
-    private ImageButton getCard(int card){
-        ImageButton ImageButton = null;
+    private ImageView getCard(int card){
+        ImageView ImageView = null;
         switch (card){
             case 1:
-                ImageButton = ImageButtonWord1;
+                ImageView = wordImage1;
                 break;
             case 2:
-                ImageButton = ImageButtonWord2;
+                ImageView = wordImage2;
                 break;
             case 3:
-                ImageButton = ImageButtonWord3;
+                ImageView = wordImage3;
                 break;
             case 4:
-                ImageButton = ImageButtonWord4;
+                ImageView = wordImage4;
                 break;
             case 5:
-                ImageButton = ImageButtonWord5;
+                ImageView = wordImage5;
                 break;
             case 6:
-                ImageButton = ImageButtonWord6;
+                ImageView = wordImage6;
                 break;
             case 7:
-                ImageButton = ImageButtonWord7;
+                ImageView = wordImage7;
                 break;
             case 8:
-                ImageButton = ImageButtonWord8;
+                ImageView = wordImage8;
                 break;
             case 9:
-                ImageButton = ImageButtonWord9;
+                ImageView = wordImage9;
                 break;
             case 10:
-                ImageButton = ImageButtonWord10;
+                ImageView = wordImage10;
                 break;
         }
-        return ImageButton;
+        return ImageView;
     }
 
     private void turnCard(int card){
         if (gameStarted) {
             try {
                 if (!cardState[card - 1]) {
-                    ImageButton ImageButton = getCard(card);
-                    processCard(card, ImageButton);
+                    ImageView ImageView = getCard(card);
+                    processCard(card, ImageView);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    private void processCard(int card, ImageButton button ){
+    private void processCard(int index, ImageView card ){
         try {
             if (startPair < 2) {
-                cardState[card - 1] = true;
-                openPair[startPair] = card;
+                cardState[index - 1] = true;
+                openPair[startPair] = index;
                 startPair++;
-                String sound = words.getJSONObject(assignments[card - 1]).getString("sound");
-                int image = words.getJSONObject(assignments[card - 1]).getInt("image");
-                button.setBackgroundResource(R.drawable.cardsinglesmlback_empty);
-                button.setImageResource(image);
+                String sound = words.getJSONObject(assignments[index - 1]).getString("sound");
+                int image = words.getJSONObject(assignments[index - 1]).getInt("image");
+                card.setBackgroundResource(R.drawable.cardsinglesmlback_empty);
+                // loadImage(card, image);
 
                 int cardWidth = 180;
                 float percentage = 0.9f;
-                DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-                button = TextShrinker.shrink(button, cardWidth, percentage, getResources());
+                TextShrinker.shrink(card, cardWidth, percentage, image, getResources());
 
                 playThisSound(sound);
             }
         }
         catch(Exception ex){
             ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     private void playThisSound(String sound){
         try {
-            System.out.println("SoundDrillElevenActivity.playThisSound(\"" + sound + "\") > Debug: METHOD CALLED");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
+            playSound(sound, () -> {
+                if (startPair == 2) {
+                    handler.delayed(this::playStarWorksIfCorrect, 100);
                 }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (startPair == 2) {
-                        handler.postDelayed(isCorrectPair, 500);
-                    }
+            }, 0, () -> {
+                if (startPair == 2) {
+                    handler.delayed(isCorrectPair, 200);
                 }
-            });
-            mp.prepare();
+            }, 0);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            if (mp != null) {
-                mp.release();
-            }
-            mp = null;
-            Globals.bugBar(this.findViewById(android.R.id.content), "sound", sound).show();
-            if (startPair == 2) {
-                handler.postDelayed(isCorrectPair, 500);
-            }
         }
     }
 
-    /* private void playThisSound(int soundid){
+    private void playSoundAndEnd(int soundId){
         try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.prepare();
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (startPair == 2)
-                        handler.postDelayed(isCorrectPair, 500);
-                }
+            playSound(soundId, () -> {
+                finish();
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             });
         }
         catch (Exception ex){
             ex.printStackTrace();
-            finish();
-        }
-    } */
-
-    private void playSound(int soundid){
-        try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-
-    private void playSoundAndEnd(int soundid){
-        try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundid);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.release();
-                    finish();
-                }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-            Toast.makeText(THIS, ex.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
-    private void resetCard(ImageButton card){
+    private void resetCard(ImageView card){
         card.setBackgroundResource(R.drawable.cardsinglesml);
         card.setImageResource(0);
     }
 
-    private void hideCard(ImageButton card){
-        card.setImageResource(0);
-        card.setBackgroundResource(0);
-        card.setVisibility(View.INVISIBLE);
+    private void hideCard(final ImageView card){
         card.setEnabled(false);
+        card.animate()
+                .alpha(0f)
+                .setDuration(125L)
+                .setInterpolator(new DecelerateInterpolator())
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        card.setImageResource(0);
+                        card.setBackgroundResource(0);
+                        card.setVisibility(View.INVISIBLE);
+                    }
+                });
     }
 
     private void reward(){
@@ -583,60 +386,42 @@ public class SoundDrillElevenActivity extends AppCompatActivity {
         }
     }
 
+    public void playStarWorksIfCorrect() {
+        if (assignments[openPair[0] - 1] == assignments[openPair[1] - 1]){
+            ImageView card1 = getCard(openPair[0]);
+            ImageView card2 = getCard(openPair[1]);
+            Globals.playStarWorks(this, card1);
+            Globals.playStarWorks(this, card2);
+        }
+    }
+
     Runnable isCorrectPair = new Runnable() {
         @Override
         public void run() {
             if (assignments[openPair[0] - 1] == assignments[openPair[1] - 1]){
-                ImageButton card = getCard(openPair[0]);
-                hideCard(card);
-                card = getCard(openPair[1]);
-                hideCard(card);
+                ImageView card1 = getCard(openPair[0]);
+                ImageView card2 = getCard(openPair[1]);
+                hideCard(card1);;
+                hideCard(card2);
                 correctSets ++;
                 reward();
                 if (correctSets < 5)
-                    playSound(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
+                    playSound(ResourceSelector.getPositiveAffirmationSound(context), null);
                 else
-                    playSoundAndEnd(ResourceSelector.getPositiveAffirmationSound(getApplicationContext()));
+                    playSoundAndEnd(ResourceSelector.getPositiveAffirmationSound(context));
             }
             else{
-                ImageButton card = getCard(openPair[0]);
+                ImageView card = getCard(openPair[0]);
                 resetCard(card);
                 card = getCard(openPair[1]);
                 resetCard(card);
                 cardState[openPair[0] - 1] = false;
                 cardState[openPair[1] - 1] = false;
-                playSound(ResourceSelector.getNegativeAffirmationSound(getApplicationContext()));
+                playSound(ResourceSelector.getNegativeAffirmationSound(context), null);
             }
             Arrays.fill(openPair,0);
             startPair = 0;
             handler.removeCallbacks(this);
         }
     };
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        int action = event.getAction();
-
-        if (action == KeyEvent.ACTION_UP) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mp != null) {
-            mp.stop();
-            mp.release();
-        }
-        setResult(Globals.TO_MAIN);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-    }
 }
