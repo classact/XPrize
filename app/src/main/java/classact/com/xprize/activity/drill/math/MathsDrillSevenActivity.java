@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.LinkedHashMap;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
@@ -35,18 +36,21 @@ import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 
 public class MathsDrillSevenActivity extends DrillActivity implements View.OnTouchListener, View.OnDragListener {
-    private LinearLayout itemsContainer;
-    private ImageView filler1;
-    private ImageView filler2;
-    private ImageView filler3;
-    private ImageView filler4;
-    private ImageView filler5;
-    private ImageView itemToFill;
+
+    @BindView(R.id.activity_maths_drill_seven) RelativeLayout rootView;
+    @BindView(R.id.itemsContainer) LinearLayout itemsContainer;
+    @BindView(R.id.filler1) ImageView filler1;
+    @BindView(R.id.filler2) ImageView filler2;
+    @BindView(R.id.filler3) ImageView filler3;
+    @BindView(R.id.filler4) ImageView filler4;
+    @BindView(R.id.filler5) ImageView filler5;
+    @BindView(R.id.missing) ImageView itemToFill;
+    @BindView(R.id.pattern) ImageView pattern;
+
     private JSONObject allData;
     private boolean isInReceptacle;
     private int draggedItemIndex;
     private int currentItem = 0;
-    private ImageView pattern;
     private boolean endDrill;
     private ImageView[] fillerViews;
     private ImageView[] visibleFillerViews;
@@ -58,8 +62,6 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
     private boolean dragEnabled;
 
     private final int DRAG_TAG = 0;
-
-    private RelativeLayout parentView;
 
     private MathDrill07AViewModel vm;
 
@@ -78,12 +80,8 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
 
-        parentView = (RelativeLayout) findViewById(R.id.activity_maths_drill_seven);
-
-        itemsContainer = (LinearLayout)findViewById(R.id.itemsContainer);
         // itemsContainer.setBackgroundColor(Color.argb(100, 0, 255, 0));
         itemsContainer.setOnDragListener(this);
-        itemToFill = (ImageView)findViewById(R.id.missing);
 
         RelativeLayout.LayoutParams itemsContainerLayout = (RelativeLayout.LayoutParams) itemsContainer.getLayoutParams();
         itemsContainerLayout.leftMargin += 70;
@@ -103,7 +101,7 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
         int ivFillWidth = (int) ((float) 175 * density);
 
         itemToFillSub = new ImageView(context);
-        parentView.addView(itemToFillSub);
+        rootView.addView(itemToFillSub);
         ViewGroup.MarginLayoutParams itemToFillSubLP = (ViewGroup.MarginLayoutParams) itemToFillSub.getLayoutParams();
         itemToFillSubLP.width = ivFillWidth;
         itemToFillSubLP.height = ivFillWidth;
@@ -111,14 +109,6 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
         // itemToFillSub.setBackgroundColor(Color.argb(100, 255, 0, 0));
         itemToFillSub.setX(1670f);
         itemToFillSub.setY(430f);
-
-        pattern = (ImageView)findViewById(R.id.pattern);
-
-        filler1 = (ImageView)findViewById(R.id.filler1);
-        filler2 = (ImageView)findViewById(R.id.filler2);
-        filler3 = (ImageView)findViewById(R.id.filler3);
-        filler4 = (ImageView)findViewById(R.id.filler4);
-        filler5 = (ImageView)findViewById(R.id.filler5);
 
         fillerViews = new ImageView[5];
         fillerViews[0] = filler1;
@@ -380,6 +370,7 @@ public class MathsDrillSevenActivity extends DrillActivity implements View.OnTou
                         placeItem();
                         ImageView view = (ImageView) event.getLocalState();
                         view.setVisibility(View.INVISIBLE);
+                        handler.delayed(() -> starWorks.play(this, itemToFill), 100);
                         dragEnabled = false;
                         playSound(FetchResource.positiveAffirmation(context), new Runnable() {
                             @Override
