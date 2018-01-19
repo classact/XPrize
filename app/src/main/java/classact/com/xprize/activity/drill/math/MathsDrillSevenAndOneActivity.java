@@ -407,15 +407,11 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
                         placeItem();
                         ImageView view = (ImageView) event.getLocalState();
                         view.setVisibility(View.INVISIBLE);
+                        starWorks.play(this, v);
                         if (mediaPlayer != null) {
                             if (mediaPlayer.isPlaying()) {
                                 int timeLeft = mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition();
-                                handler.delayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        end();
-                                    }
-                                }, timeLeft);
+                                handler.delayed(this::end, timeLeft);
                             } else {
                                 end();
                             }

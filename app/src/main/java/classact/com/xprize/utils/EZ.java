@@ -75,11 +75,54 @@ public class EZ {
     }
 
     public void size(View view, int width, int height) {
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        layoutParams.width = width;
+        layoutParams.height = height;
+        view.setLayoutParams(layoutParams);
+    }
+
+    public void scale(View view, float percentageScale) {
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+
+        float x = view.getX();
+        float y = view.getY();
+
+        float currentWidth = layoutParams.width;
+        float currentHeight = layoutParams.height;
+
+        float newWidth = currentWidth * percentageScale;
+        float newHeight = currentHeight * percentageScale;
+
+        // 5, 10; 5 - 10 = -5; x -= -5/2; 10, 5; 10 - 5 = 5; x += 5/2
+
+        float xOffset = (currentWidth - newWidth) / 2;
+        float yOffset = (currentHeight - newHeight) / 2;
+
+        layoutParams.width = (int) newWidth;
+        layoutParams.height = (int) newHeight;
+
+        view.setLayoutParams(layoutParams);
+
+        view.setX(x + xOffset);
+        view.setY(y + yOffset);
+    }
+
+    public void sizeDpi(View view, int width, int height) {
         float dpi = context.getResources().getDisplayMetrics().density;
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         layoutParams.width = (int) (dpi * width);
         layoutParams.height = (int) (dpi * height);
         view.setLayoutParams(layoutParams);
+    }
+
+    public int getWidth(View view) {
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        return layoutParams.width;
+    }
+
+    public int getHeight(View view) {
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        return layoutParams.height;
     }
 
     public void height(View view, int height) {

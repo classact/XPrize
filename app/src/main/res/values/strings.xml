@@ -63,6 +63,9 @@
     <string name="Chapter_1">Chapter 1</string>
     <string name="Chapter_Select">Chapter Select</string>
 
+    <string name="Shape_01">Shape 1</string>
+    <string name="Shape_02">Shape 2</string>
+
     <string name="Singing_Monkey">Singing Monkey</string>
     <string name="Volume">Volume</string>
     <string name="Percentage">Percentage</string>
