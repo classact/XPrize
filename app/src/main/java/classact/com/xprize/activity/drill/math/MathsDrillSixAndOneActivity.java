@@ -1,9 +1,11 @@
 package classact.com.xprize.activity.drill.math;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Guideline;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,6 +110,11 @@ public class MathsDrillSixAndOneActivity extends DrillActivity {
             float ss = 0.5f;
             float mss = 0.85f;
 
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            float screenWidth = displayMetrics.widthPixels;
+            float screenHeight = displayMetrics.heightPixels;
+            float density = displayMetrics.density;
+
             boolean morphLeft = false;
             if (Math.random() < 0.5f) {
                 morphLeft = true;
@@ -121,10 +128,30 @@ public class MathsDrillSixAndOneActivity extends DrillActivity {
                     ez.size(largeShape, largeWidth, largeHeight);
                     ez.size(smallShape, smallWidth, smallHeight);
 
-                    ez.guide.setPercentage(gv01, 0.23f);
-                    ez.guide.setPercentage(gv02, 0.43f);
+                    // LEFT = BIG
+                    // RIGHT = SMALL
 
-                    Log.d("Option", "A");
+                    if (largeShape.getX() + ez.getWidth(largeShape) >= smallShape.getX()) {
+                        Log.d("OVERLAP", "DETECTED");
+                    } else {
+                        Log.d("OVERLAP", "NOT DETECTED");
+                    }
+
+                    float addPercentage = 80f / (screenWidth / density);
+
+                    ez.guide.setPercentage(gv01, 0.25f);
+                    ez.guide.setPercentage(gv02, 0.45f + addPercentage);
+
+//                    ImageView leftMarker = ez.rect(50, 50, Color.RED);
+//                    ImageView rightMarker = ez.rect(50, 50, Color.CYAN);
+//                    rootView.addView(leftMarker);
+//                    rootView.addView(rightMarker);
+//                    leftMarker.setX(ez.guide.getPos(gv01) + (ez.getWidth(largeShape) / density));
+//                    leftMarker.setY(ez.guide.getPos(gh01));
+//                    rightMarker.setX(ez.guide.getPos(gv02));
+//                    rightMarker.setY(ez.guide.getPos(gh02));
+//
+//                    Log.d("Option", "A: " + (rightMarker.getX() - leftMarker.getX()));
 
                 } else {
                     int largeWidth = (int) (475 * ss);
@@ -135,10 +162,28 @@ public class MathsDrillSixAndOneActivity extends DrillActivity {
                     ez.size(largeShape, largeWidth, largeHeight);
                     ez.size(smallShape, smallWidth, smallHeight);
 
+                    // LEFT = SMALL
+                    // RIGHT = BIG
+
+                    if (smallShape.getX() + ez.getWidth(smallShape) >= largeShape.getX()) {
+                        Log.d("OVERLAP", "DETECTED");
+                    } else {
+                        Log.d("OVERLAP", "NOT DETECTED");
+                    }
+
                     ez.guide.setPercentage(gv01, 0.23f);
                     ez.guide.setPercentage(gv02, 0.43f);
 
-                    Log.d("Option", "B");
+//                    ImageView leftMarker = ez.rect(50, 50, Color.RED);
+//                    ImageView rightMarker = ez.rect(50, 50, Color.CYAN);
+//                    rootView.addView(leftMarker);
+//                    rootView.addView(rightMarker);
+//                    leftMarker.setX(ez.guide.getPos(gv01) + (ez.getWidth(smallShape) / density));
+//                    leftMarker.setY(ez.guide.getPos(gh01));
+//                    rightMarker.setX(ez.guide.getPos(gv02));
+//                    rightMarker.setY(ez.guide.getPos(gh02));
+//
+//                    Log.d("Option", "B: " + (rightMarker.getX() - leftMarker.getX()));
                 }
             } else {
                 if (morphBigger) {
@@ -151,10 +196,30 @@ public class MathsDrillSixAndOneActivity extends DrillActivity {
                     ez.size(smallShape, smallWidth, smallHeight);
                     ez.size(largeShape, largeWidth, largeHeight);
 
-                    ez.guide.setPercentage(gv01, 0.23f);
-                    ez.guide.setPercentage(gv02, 0.43f);
+                    // LEFT = SMALL
+                    // RIGHT = BIG
 
-                    Log.d("Option", "C");
+                    if (smallShape.getX() + ez.getWidth(smallShape) >= largeShape.getX()) {
+                        Log.d("OVERLAP", "DETECTED");
+                    } else {
+                        Log.d("OVERLAP", "NOT DETECTED");
+                    }
+
+                    float addPercentage = 80f / (screenWidth / density);
+
+                    ez.guide.setPercentage(gv01, 0.18f);
+                    ez.guide.setPercentage(gv02, 0.38f + addPercentage);
+
+//                    ImageView leftMarker = ez.rect(50, 50, Color.RED);
+//                    ImageView rightMarker = ez.rect(50, 50, Color.CYAN);
+//                    rootView.addView(leftMarker);
+//                    rootView.addView(rightMarker);
+//                    leftMarker.setX(ez.guide.getPos(gv01) + (ez.getWidth(smallShape) / density));
+//                    leftMarker.setY(ez.guide.getPos(gh01));
+//                    rightMarker.setX(ez.guide.getPos(gv02));
+//                    rightMarker.setY(ez.guide.getPos(gh02));
+//
+//                    Log.d("Option", "C: " + (rightMarker.getX() - leftMarker.getX()));
 
                 } else {
 
@@ -166,10 +231,22 @@ public class MathsDrillSixAndOneActivity extends DrillActivity {
                     ez.size(smallShape, smallWidth, smallHeight);
                     ez.size(largeShape, largeWidth, largeHeight);
 
-                    ez.guide.setPercentage(gv01, 0.3f);
-                    ez.guide.setPercentage(gv02, 0.5f);
+                    // LEFT = BIG
+                    // RIGHT = SMALL
 
-                    Log.d("Option", "D");
+                    ez.guide.setPercentage(gv01, 0.28f);
+                    ez.guide.setPercentage(gv02, 0.48f);
+
+//                    ImageView leftMarker = ez.rect(50, 50, Color.RED);
+//                    ImageView rightMarker = ez.rect(50, 50, Color.CYAN);
+//                    rootView.addView(leftMarker);
+//                    rootView.addView(rightMarker);
+//                    leftMarker.setX(ez.guide.getPos(gv01) + (ez.getWidth(largeShape) / density));
+//                    leftMarker.setY(ez.guide.getPos(gh01));
+//                    rightMarker.setX(ez.guide.getPos(gv02));
+//                    rightMarker.setY(ez.guide.getPos(gh02));
+//
+//                    Log.d("Option", "D: " + (rightMarker.getX() - leftMarker.getX()));
                 }
             }
 

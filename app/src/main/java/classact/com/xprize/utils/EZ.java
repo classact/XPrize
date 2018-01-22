@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import javax.inject.Inject;
@@ -130,6 +131,19 @@ public class EZ {
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         layoutParams.height = (int) (dpi * height);
         view.setLayoutParams(layoutParams);
+    }
+
+    public ImageView rect(int width, int height, int color) {
+        ImageView rect = new ImageView(context);
+        ViewGroup.MarginLayoutParams rectLayoutParams = new ViewGroup.MarginLayoutParams(
+                ViewGroup.MarginLayoutParams.WRAP_CONTENT,
+                ViewGroup.MarginLayoutParams.WRAP_CONTENT
+        );
+        rectLayoutParams.width = width;
+        rectLayoutParams.height = height;
+        rect.setLayoutParams(rectLayoutParams);
+        rect.setBackgroundColor(color);
+        return rect;
     }
 
     /**
