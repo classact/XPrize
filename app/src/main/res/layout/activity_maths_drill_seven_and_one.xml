@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_maths_drill_seven_and_one"
     android:layout_width="match_parent"
@@ -7,131 +8,221 @@
     android:background="@drawable/background_counting_beads"
     tools:context="classact.com.xprize.activity.drill.math.MathsDrillSevenAndOneActivity">
 
-    <ImageView
+    <!-- Beads START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_beads"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dip"
-        android:contentDescription="@string/app_name"
-        android:id="@+id/beads"
-        android:background="@android:color/transparent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4"/>
 
-    <RelativeLayout
-        android:id="@+id/itemsReceptacle"
-        android:layout_marginTop="200dp"
-        android:layout_marginStart="100dip"
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_beads"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/item_one"
-            android:layout_width="80dip"
-            android:layout_height="80dip"
-            android:layout_marginTop="70dp"
-            android:layout_marginStart="80dip"
-            android:contentDescription="@string/app_name"
-            android:visibility="visible"
-            android:background="@android:color/transparent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
-
-        <ImageView
-            android:id="@+id/item_two"
-            android:layout_width="80dip"
-            android:layout_height="80dip"
-            android:layout_marginTop="50dp"
-            android:layout_marginStart="220dip"
-            android:contentDescription="@string/app_name"
-            android:visibility="visible"
-            android:background="@android:color/transparent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
-
-        <ImageView
-            android:id="@+id/item_three"
-            android:layout_width="80dip"
-            android:layout_height="80dip"
-            android:layout_marginTop="80dp"
-            android:layout_marginStart="370dip"
-            android:contentDescription="@string/app_name"
-            android:visibility="visible"
-            android:background="@android:color/transparent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
-
-        <ImageView
-            android:id="@+id/item_four"
-            android:layout_width="80dip"
-            android:layout_height="80dip"
-            android:layout_marginTop="130dp"
-            android:layout_marginStart="510dip"
-            android:contentDescription="@string/app_name"
-            android:visibility="visible"
-            android:background="@android:color/transparent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
-
-        <ImageView
-            android:id="@+id/item_five"
-            android:layout_width="80dip"
-            android:layout_height="80dip"
-            android:layout_marginTop="150dp"
-            android:layout_marginStart="630dip"
-            android:contentDescription="@string/app_name"
-            android:visibility="visible"
-            android:background="@android:color/transparent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
-
-        <ImageView
-            android:id="@+id/item_six"
-            android:layout_width="80dip"
-            android:layout_height="80dip"
-            android:layout_marginTop="100dp"
-            android:layout_marginStart="780dip"
-            android:contentDescription="@string/app_name"
-            android:visibility="visible"
-            android:background="@android:color/transparent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
-
-    </RelativeLayout>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
 
     <ImageView
-        android:id="@+id/numeral_1"
-        android:layout_width="100dip"
-        android:layout_height="100dip"
-        android:layout_marginTop="590dp"
-        android:layout_marginStart="300dip"
-        android:contentDescription="@string/app_name"
-        android:visibility="invisible"
+        android:id="@+id/beads"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/colour_beads"
         android:background="@android:color/transparent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        app:layout_constraintTop_toTopOf="@id/g_h_beads"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_beads"
+        app:layout_constraintRight_toRightOf="@id/g_v_beads"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_beads"/>
+
+    <!-- Beads END -->
+    <!-- Numbers Guide START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_numbers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.35"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_numbers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <!-- Numbers Guide END -->
+    <!-- First Number START -->
 
     <ImageView
-        android:id="@+id/numeral_2"
-        android:layout_width="100dip"
-        android:layout_height="100dip"
-        android:layout_marginTop="590dp"
-        android:layout_marginStart="500dip"
-        android:contentDescription="@string/app_name"
-        android:visibility="invisible"
+        android:id="@+id/number_01"
+        android:layout_width="80dip"
+        android:layout_height="80dip"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="250dp"
+        android:contentDescription="@string/first_number"
         android:background="@android:color/transparent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        app:layout_constraintTop_toBottomOf="@id/g_h_numbers"
+        app:layout_constraintRight_toLeftOf="@id/g_v_numbers"/>
+
+    <!-- First Number END -->
+    <!-- Second Number START -->
 
     <ImageView
-        android:id="@+id/numeral_3"
+        android:id="@+id/number_02"
+        android:layout_width="80dip"
+        android:layout_height="80dip"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="150dp"
+        android:contentDescription="@string/second_number"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/g_h_numbers"
+        app:layout_constraintRight_toLeftOf="@id/g_v_numbers"/>
+
+    <!-- Second Number END -->
+    <!-- Third Number START -->
+
+    <ImageView
+        android:id="@+id/number_03"
+        android:layout_width="80dip"
+        android:layout_height="80dip"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="50dp"
+        android:contentDescription="@string/third_number"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/g_h_numbers"
+        app:layout_constraintRight_toLeftOf="@id/g_v_numbers"/>
+
+    <!-- Third Number END -->
+    <!-- Fourth Number START -->
+
+    <ImageView
+        android:id="@+id/number_04"
+        android:layout_width="80dip"
+        android:layout_height="80dip"
+        android:layout_marginTop="55dp"
+        android:layout_marginStart="50dp"
+        android:contentDescription="@string/fourth_number"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/g_h_numbers"
+        app:layout_constraintLeft_toRightOf="@id/g_v_numbers"/>
+
+    <!-- Fourth Number END -->
+    <!-- Fifth Number START -->
+
+    <ImageView
+        android:id="@+id/number_05"
+        android:layout_width="80dip"
+        android:layout_height="80dip"
+        android:layout_marginTop="80dp"
+        android:layout_marginStart="150dp"
+        android:contentDescription="@string/fifth_number"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/g_h_numbers"
+        app:layout_constraintLeft_toRightOf="@id/g_v_numbers"/>
+
+    <!-- Fifth Number END -->
+    <!-- Sixth Number START -->
+
+    <ImageView
+        android:id="@+id/number_06"
+        android:layout_width="80dip"
+        android:layout_height="80dip"
+        android:layout_marginTop="60dp"
+        android:layout_marginStart="250dp"
+        android:contentDescription="@string/sixth_number"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/g_h_numbers"
+        app:layout_constraintLeft_toRightOf="@id/g_v_numbers"/>
+
+    <!-- Sixth Number END -->
+
+    <!-- START -->
+    <!-- First Word START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_numeral_01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.75"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_numeral_01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.35"/>
+
+    <ImageView
+        android:id="@+id/numeral_01"
         android:layout_width="100dip"
         android:layout_height="100dip"
-        android:layout_marginTop="590dp"
-        android:layout_marginStart="700dip"
-        android:contentDescription="@string/app_name"
-        android:visibility="invisible"
+        android:contentDescription="@string/first_word"
         android:background="@android:color/transparent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        app:layout_constraintTop_toTopOf="@id/g_h_numeral_01"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_numeral_01"
+        app:layout_constraintRight_toRightOf="@id/g_v_numeral_01"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_numeral_01"/>
 
-</RelativeLayout>
+    <!-- First Word END -->
+    <!-- Second Word START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_numeral_02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.75"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_numeral_02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <ImageView
+        android:id="@+id/numeral_02"
+        android:layout_width="100dip"
+        android:layout_height="100dip"
+        android:contentDescription="@string/second_word"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/g_h_numeral_02"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_numeral_02"
+        app:layout_constraintRight_toRightOf="@id/g_v_numeral_02"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_numeral_02"/>
+
+    <!-- Second Word END -->
+    <!-- Third Word START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_numeral_03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.75"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_numeral_03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.65"/>
+
+    <ImageView
+        android:id="@+id/numeral_03"
+        android:layout_width="100dip"
+        android:layout_height="100dip"
+        android:contentDescription="@string/third_word"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/g_h_numeral_03"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_numeral_03"
+        app:layout_constraintRight_toRightOf="@id/g_v_numeral_03"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_numeral_03"/>
+
+    <!-- Third Word END -->
+    <!-- END -->
+
+</android.support.constraint.ConstraintLayout>

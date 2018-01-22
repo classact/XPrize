@@ -11,17 +11,7 @@
     <string name="zero_numeric">0</string>
     <string name="percentage_sign">%</string>
 
-    <string name="flash_word">Flash Word</string>
-    <string name="first_word">First Word</string>
-    <string name="second_word">Second Word</string>
-    <string name="third_word">Third Word</string>
-    <string name="fourth_word">Fourth Word</string>
-    <string name="fifth_word">Fifth Word</string>
-    <string name="sixth_word">Sixth Word</string>
-    <string name="seventh_word">Seventh Word</string>
-    <string name="eighth_word">Eighth Word</string>
-    <string name="ninth_word">Ninth Word</string>
-    <string name="tenth_word">Tenth Word</string>
+    <string name="colour_beads">Colour Beads</string>
 
     <string name="play">Play</string>
     <string name="read">Read</string>
@@ -37,10 +27,6 @@
     <string name="Right_Box">Right Box</string>
 
     <string name="Image_to_Match">Image to Match</string>
-    <string name="Image_01">Image 01</string>
-    <string name="Image_02">Image 02</string>
-    <string name="Image_03">Image 03</string>
-    <string name="Image_04">Image 04</string>
 
     <string name="Background_Image">Background Image</string>
 
@@ -63,13 +49,37 @@
     <string name="Chapter_1">Chapter 1</string>
     <string name="Chapter_Select">Chapter Select</string>
 
-    <string name="Shape_01">Shape 1</string>
-    <string name="Shape_02">Shape 2</string>
-
     <string name="Singing_Monkey">Singing Monkey</string>
     <string name="Volume">Volume</string>
     <string name="Percentage">Percentage</string>
     <string name="zero_percent">0 %</string>
+
+    <string name="first_number">First Number</string>
+    <string name="second_number">Second Number</string>
+    <string name="third_number">Third Number</string>
+    <string name="fourth_number">Fourth Number</string>
+    <string name="fifth_number">Fifth Number</string>
+    <string name="sixth_number">Sixth Number</string>
+
+    <string name="flash_word">Flash Word</string>
+    <string name="first_word">First Word</string>
+    <string name="second_word">Second Word</string>
+    <string name="third_word">Third Word</string>
+    <string name="fourth_word">Fourth Word</string>
+    <string name="fifth_word">Fifth Word</string>
+    <string name="sixth_word">Sixth Word</string>
+    <string name="seventh_word">Seventh Word</string>
+    <string name="eighth_word">Eighth Word</string>
+    <string name="ninth_word">Ninth Word</string>
+    <string name="tenth_word">Tenth Word</string>
+
+    <string name="Image_01">Image 01</string>
+    <string name="Image_02">Image 02</string>
+    <string name="Image_03">Image 03</string>
+    <string name="Image_04">Image 04</string>
+
+    <string name="Shape_01">Shape 1</string>
+    <string name="Shape_02">Shape 2</string>
 
     <string name="Star_01">Star 01</string>
     <string name="Star_02">Star 02</string>

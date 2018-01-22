@@ -29,8 +29,6 @@ public class MathsDrillSixAndOneActivity extends DrillActivity {
     @BindView(R.id.g_h_02) Guideline gh02;
     @BindView(R.id.g_v_02) Guideline gv02;
 
-
-
     private ImageView largeShape;
     private ImageView smallShape;
     private JSONObject allData;
@@ -131,27 +129,10 @@ public class MathsDrillSixAndOneActivity extends DrillActivity {
                     // LEFT = BIG
                     // RIGHT = SMALL
 
-                    if (largeShape.getX() + ez.getWidth(largeShape) >= smallShape.getX()) {
-                        Log.d("OVERLAP", "DETECTED");
-                    } else {
-                        Log.d("OVERLAP", "NOT DETECTED");
-                    }
-
                     float addPercentage = 80f / (screenWidth / density);
 
                     ez.guide.setPercentage(gv01, 0.25f);
                     ez.guide.setPercentage(gv02, 0.45f + addPercentage);
-
-//                    ImageView leftMarker = ez.rect(50, 50, Color.RED);
-//                    ImageView rightMarker = ez.rect(50, 50, Color.CYAN);
-//                    rootView.addView(leftMarker);
-//                    rootView.addView(rightMarker);
-//                    leftMarker.setX(ez.guide.getPos(gv01) + (ez.getWidth(largeShape) / density));
-//                    leftMarker.setY(ez.guide.getPos(gh01));
-//                    rightMarker.setX(ez.guide.getPos(gv02));
-//                    rightMarker.setY(ez.guide.getPos(gh02));
-//
-//                    Log.d("Option", "A: " + (rightMarker.getX() - leftMarker.getX()));
 
                 } else {
                     int largeWidth = (int) (475 * ss);
@@ -165,25 +146,8 @@ public class MathsDrillSixAndOneActivity extends DrillActivity {
                     // LEFT = SMALL
                     // RIGHT = BIG
 
-                    if (smallShape.getX() + ez.getWidth(smallShape) >= largeShape.getX()) {
-                        Log.d("OVERLAP", "DETECTED");
-                    } else {
-                        Log.d("OVERLAP", "NOT DETECTED");
-                    }
-
                     ez.guide.setPercentage(gv01, 0.23f);
                     ez.guide.setPercentage(gv02, 0.43f);
-
-//                    ImageView leftMarker = ez.rect(50, 50, Color.RED);
-//                    ImageView rightMarker = ez.rect(50, 50, Color.CYAN);
-//                    rootView.addView(leftMarker);
-//                    rootView.addView(rightMarker);
-//                    leftMarker.setX(ez.guide.getPos(gv01) + (ez.getWidth(smallShape) / density));
-//                    leftMarker.setY(ez.guide.getPos(gh01));
-//                    rightMarker.setX(ez.guide.getPos(gv02));
-//                    rightMarker.setY(ez.guide.getPos(gh02));
-//
-//                    Log.d("Option", "B: " + (rightMarker.getX() - leftMarker.getX()));
                 }
             } else {
                 if (morphBigger) {
@@ -199,27 +163,10 @@ public class MathsDrillSixAndOneActivity extends DrillActivity {
                     // LEFT = SMALL
                     // RIGHT = BIG
 
-                    if (smallShape.getX() + ez.getWidth(smallShape) >= largeShape.getX()) {
-                        Log.d("OVERLAP", "DETECTED");
-                    } else {
-                        Log.d("OVERLAP", "NOT DETECTED");
-                    }
-
                     float addPercentage = 80f / (screenWidth / density);
 
                     ez.guide.setPercentage(gv01, 0.18f);
                     ez.guide.setPercentage(gv02, 0.38f + addPercentage);
-
-//                    ImageView leftMarker = ez.rect(50, 50, Color.RED);
-//                    ImageView rightMarker = ez.rect(50, 50, Color.CYAN);
-//                    rootView.addView(leftMarker);
-//                    rootView.addView(rightMarker);
-//                    leftMarker.setX(ez.guide.getPos(gv01) + (ez.getWidth(smallShape) / density));
-//                    leftMarker.setY(ez.guide.getPos(gh01));
-//                    rightMarker.setX(ez.guide.getPos(gv02));
-//                    rightMarker.setY(ez.guide.getPos(gh02));
-//
-//                    Log.d("Option", "C: " + (rightMarker.getX() - leftMarker.getX()));
 
                 } else {
 
@@ -236,61 +183,22 @@ public class MathsDrillSixAndOneActivity extends DrillActivity {
 
                     ez.guide.setPercentage(gv01, 0.28f);
                     ez.guide.setPercentage(gv02, 0.48f);
-
-//                    ImageView leftMarker = ez.rect(50, 50, Color.RED);
-//                    ImageView rightMarker = ez.rect(50, 50, Color.CYAN);
-//                    rootView.addView(leftMarker);
-//                    rootView.addView(rightMarker);
-//                    leftMarker.setX(ez.guide.getPos(gv01) + (ez.getWidth(largeShape) / density));
-//                    leftMarker.setY(ez.guide.getPos(gh01));
-//                    rightMarker.setX(ez.guide.getPos(gv02));
-//                    rightMarker.setY(ez.guide.getPos(gh02));
-//
-//                    Log.d("Option", "D: " + (rightMarker.getX() - leftMarker.getX()));
                 }
             }
 
             if (morphLeft) {
-                largeShape.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        objectClicked(largeShape, objectComparativeSound);
-                    }
-                });
-                smallShape.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        objectClicked(smallShape, objectSingularSound);
-                    }
-                });
+                largeShape.setOnClickListener((v) -> objectClicked(largeShape, objectComparativeSound));
+                smallShape.setOnClickListener((v) -> objectClicked(smallShape, objectSingularSound));
             } else {
-                largeShape.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        objectClicked(largeShape, objectSingularSound);
-                    }
-                });
-                smallShape.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        objectClicked(smallShape, objectComparativeSound);
-                    }
-                });
+                largeShape.setOnClickListener((v) -> objectClicked(largeShape, objectSingularSound));
+                smallShape.setOnClickListener((v) -> objectClicked(smallShape, objectComparativeSound));
             }
-
-//            smallShape.setBackgroundColor(Color.argb(100, 255, 0, 0));
-//            largeShape.setBackgroundColor(Color.argb(100, 0, 255, 0));
 
             // Disable touch
             touchEnabled = false;
 
             String sound = allData.getString("lets_look_at_shapes");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    sayTheseArea();
-                }
-            });
+            playSound(sound, this::sayTheseArea);
         }
         catch (Exception ex){
             ex.printStackTrace();

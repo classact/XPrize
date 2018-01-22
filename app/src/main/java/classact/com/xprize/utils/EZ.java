@@ -146,6 +146,126 @@ public class EZ {
         return rect;
     }
 
+    public void topMargin(int topMargin, View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            viewLayoutParams.topMargin = topMargin;
+            view.setLayoutParams(viewLayoutParams);
+        }
+    }
+
+    public void leftMargin(int leftMargin, View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            viewLayoutParams.leftMargin = leftMargin;
+            view.setLayoutParams(viewLayoutParams);
+        }
+    }
+
+    public void startMargin(int startMargin, View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            viewLayoutParams.setMarginStart(startMargin);
+            view.setLayoutParams(viewLayoutParams);
+        }
+    }
+
+    public void rightMargin(int rightMargin, View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            viewLayoutParams.rightMargin = rightMargin;
+            view.setLayoutParams(viewLayoutParams);
+        }
+    }
+
+    public void endMargin(int endMargin, View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            viewLayoutParams.setMarginEnd(endMargin);
+            view.setLayoutParams(viewLayoutParams);
+        }
+    }
+
+    public void topLeftMargin(int topMargin, int leftMargin, View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            viewLayoutParams.topMargin = topMargin;
+            viewLayoutParams.leftMargin = leftMargin;
+            view.setLayoutParams(viewLayoutParams);
+        }
+    }
+
+    public void topStartMargin(int topMargin, int startMargin, View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            viewLayoutParams.topMargin = topMargin;
+            viewLayoutParams.setMarginStart(startMargin);
+            view.setLayoutParams(viewLayoutParams);
+        }
+    }
+
+    public void topRightMargin(int topMargin, int rightMargin, View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            viewLayoutParams.topMargin = topMargin;
+            viewLayoutParams.rightMargin = rightMargin;
+            view.setLayoutParams(viewLayoutParams);
+        }
+    }
+
+    public void topEndMargin(int topMargin, int endMargin, View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            viewLayoutParams.topMargin = topMargin;
+            viewLayoutParams.setMarginEnd(endMargin);
+            view.setLayoutParams(viewLayoutParams);
+        }
+    }
+
+    public void botMargin(int bottomMargin, View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            viewLayoutParams.bottomMargin = bottomMargin;
+            view.setLayoutParams(viewLayoutParams);
+        }
+    }
+
+    public void botLeftMargin(int bottomMargin, int leftMargin, View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            viewLayoutParams.bottomMargin = bottomMargin;
+            viewLayoutParams.leftMargin = leftMargin;
+            view.setLayoutParams(viewLayoutParams);
+        }
+    }
+
+    public void botStartMargin(int bottomMargin, int startMargin, View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            viewLayoutParams.bottomMargin = bottomMargin;
+            viewLayoutParams.setMarginStart(startMargin);
+            view.setLayoutParams(viewLayoutParams);
+        }
+    }
+
+    public void botRightMargin(int bottomMargin, int rightMargin, int leftMargin, View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            viewLayoutParams.bottomMargin = bottomMargin;
+            viewLayoutParams.rightMargin = rightMargin;
+            view.setLayoutParams(viewLayoutParams);
+        }
+    }
+
+    public void botEndMargin(int bottomMargin, int endMargin, int leftMargin, View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            viewLayoutParams.bottomMargin = bottomMargin;
+            viewLayoutParams.setMarginEnd(endMargin);
+            view.setLayoutParams(viewLayoutParams);
+        }
+    }
+
     /**
      * Function to highlight using argb
      * @param view View to highlight
@@ -155,6 +275,12 @@ public class EZ {
      */
     public void highlight(View view, int r, int g, int b) {
         view.setBackgroundColor(Color.argb(100, r, g, b));
+    }
+
+    public void highlight(int color, View... views) {
+        for (View view : views) {
+            view.setBackgroundColor(color);
+        }
     }
 
     /**
