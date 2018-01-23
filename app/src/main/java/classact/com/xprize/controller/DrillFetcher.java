@@ -10,6 +10,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import classact.com.xprize.activity.drill.books.StoryActivity;
+import classact.com.xprize.activity.drill.sound.SoundDrillThreeActivity;
 import classact.com.xprize.activity.drill.tutorial.Tutorial;
 import classact.com.xprize.activity.link.LevelCompleteLink;
 import classact.com.xprize.activity.link.MathsLink;
@@ -239,10 +240,11 @@ public class DrillFetcher extends DbAccessor {
                         break;
                     }
                     case 3: {
-                        int limit = 5; // 5 cupcakes selectable
+//                        int limit = 5; // 5 cupcakes selectable
 
                         // Fetch D3
-                        intent = phonicsDrills.D3(context, dbHelper, unitId, subId, drillId, languageId, letterId, limit);
+//                        intent = phonicsDrills.D3(context, dbHelper, unitId, subId, drillId, languageId, letterId, limit);
+                        intent = new Intent(context, SoundDrillThreeActivity.class);
                         break;
                     }
                     case 4: {

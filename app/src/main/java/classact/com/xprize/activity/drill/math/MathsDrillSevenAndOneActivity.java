@@ -33,9 +33,9 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
 
     @BindView(R.id.beads) ImageView beads;
 
-    @BindView(R.id.numeral_01) ImageView filler1;
-    @BindView(R.id.numeral_02) ImageView filler2;
-    @BindView(R.id.numeral_03) ImageView filler3;
+    @BindView(R.id.missing_number_01) ImageView filler1;
+    @BindView(R.id.missing_number_02) ImageView filler2;
+    @BindView(R.id.missing_number_03) ImageView filler3;
 
     @BindView(R.id.number_01) ImageView item1;
     @BindView(R.id.number_02) ImageView item2;
@@ -44,9 +44,9 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
     @BindView(R.id.number_05) ImageView item5;
     @BindView(R.id.number_06) ImageView item6;
 
-    @BindView(R.id.g_h_numeral_01) Guideline ghNumeral01;
-    @BindView(R.id.g_h_numeral_02) Guideline ghNumeral02;
-    @BindView(R.id.g_h_numeral_03) Guideline ghNumeral03;
+    @BindView(R.id.g_h_missing_number_01) Guideline ghMissingNumber01;
+    @BindView(R.id.g_h_missing_number_02) Guideline ghMissingNumber02;
+    @BindView(R.id.g_h_missing_number_03) Guideline ghMissingNumber03;
 
     @BindView(R.id.g_h_numbers) Guideline ghNumbers;
     @BindView(R.id.g_v_numbers) Guideline gvNumbers;
@@ -79,29 +79,6 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
                 .prepare(context);
 
         loadImage(beads, R.drawable.counting_beads);
-
-//        ez.highlight(
-//                Color.argb(50, 0, 100, 100),
-//                item1,
-//                item2,
-//                item3,
-//                item4,
-//                item5,
-//                item6);
-
-        float density = getResources().getDisplayMetrics().density;
-
-        ez.guide.setPercentage(ghNumeral01, 0.7f);
-        ez.guide.setPercentage(ghNumeral02, 0.7f);
-        ez.guide.setPercentage(ghNumeral03, 0.7f);
-        ez.guide.setPercentage(ghNumbers, 0.22f);
-
-        ez.topEndMargin((int) (40 * density), (int) (350 * density), item1);
-        ez.topEndMargin((int) (12 * density), (int) (190 * density), item2);
-        ez.topEndMargin((int) (42 * density), (int) (30 * density), item3);
-        ez.topStartMargin((int) (100 * density), (int) (40 * density), item4);
-        ez.topStartMargin((int) (120 * density), (int) (185 * density), item5);
-        ez.topStartMargin((int) (70 * density), (int) (340 * density), item6);
 
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();

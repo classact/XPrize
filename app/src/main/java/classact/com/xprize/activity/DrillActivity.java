@@ -138,6 +138,7 @@ public abstract class DrillActivity extends DaggerAppCompatActivity {
     protected void playSound(String sound, Runnable action, long delayMillis) {
         try {
             String soundPath = fetch.raw(sound);
+            Log.d("TEST", soundPath);
             mediaPlayer.reset();
             mediaPlayer.setDataSource(context, Uri.parse(soundPath));
             mediaPlayer.setOnPreparedListener((mp -> {

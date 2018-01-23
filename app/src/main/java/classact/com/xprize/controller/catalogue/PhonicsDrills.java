@@ -97,7 +97,7 @@ public class PhonicsDrills {
             Letter letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
             ArrayList<Integer> rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
             ArrayList<Integer> wrongDrillWordIDs = DrillWordHelper.getWrongDrillWordsByLetter(dbHelper.getReadableDatabase(), languageId, wordType, letter.getLetterName(), limit);
-            ArrayList<RightWrongPair> pairs = new ArrayList<>();
+            List<RightWrongPair> pairs = new ArrayList<>();
             for (int i=0; i < rightDrillWordIDs.size(); i++ ){ // we have the same amount of right and wrong words. So just loop over right words.
                 Word rightWord = WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i));
                 Word wrongWord = WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(i));
@@ -217,7 +217,7 @@ public class PhonicsDrills {
 
         try {
             DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-            ArrayList<DraggableImage<ObjectAndSound>> images = new ArrayList<>();
+            List<DraggableImage<ObjectAndSound>> images = new ArrayList<>();
 
 
             Letter letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);

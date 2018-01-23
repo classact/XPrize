@@ -15,82 +15,73 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:id="@+id/letters_g_h"
-        app:layout_constraintGuide_percent="0.25"/>
+        app:layout_constraintGuide_percent="0.2"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:id="@+id/letters_g_v"
-        app:layout_constraintGuide_percent="0.5"/>
+        app:layout_constraintGuide_percent="0.6"/>
 
     <LinearLayout
         android:id="@+id/writing_container"
-        android:layout_width="866dp"
-        android:layout_height="190dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="70dp"
-        android:layout_marginStart="350dp"
         app:layout_constraintTop_toTopOf="@id/letters_g_h"
         app:layout_constraintLeft_toLeftOf="@id/letters_g_v"
         app:layout_constraintRight_toRightOf="@id/letters_g_v"
         app:layout_constraintBottom_toBottomOf="@id/letters_g_h">
 
         <ImageView
-            android:layout_width="150dp"
             android:id="@+id/letter_1"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/app_name"
-            android:visibility="visible"
-            android:layout_height="150dp"/>
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:contentDescription="@string/first_letter"
+            android:background="@android:color/transparent"/>
 
         <ImageView
-            android:layout_width="150dp"
             android:id="@+id/letter_2"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/app_name"
-            android:visibility="invisible"
-            android:layout_height="150dp"/>
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:contentDescription="@string/second_letter"
+            android:background="@android:color/transparent"/>
 
         <ImageView
-            android:layout_width="150dp"
             android:id="@+id/letter_3"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/app_name"
-            android:visibility="invisible"
-            android:layout_height="150dp"/>
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:contentDescription="@string/third_letter"
+            android:background="@android:color/transparent"/>
 
         <ImageView
-            android:layout_width="150dp"
             android:id="@+id/letter_4"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/app_name"
-            android:visibility="invisible"
-            android:layout_height="150dp"/>
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:contentDescription="@string/fourth_letter"
+            android:background="@android:color/transparent"/>
 
         <ImageView
-            android:layout_width="150dp"
             android:id="@+id/letter_5"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/app_name"
-            android:visibility="invisible"
-            android:layout_height="150dp"/>
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:contentDescription="@string/fifth_letter"
+            android:background="@android:color/transparent"/>
 
         <ImageView
-            android:layout_width="150dp"
             android:id="@+id/letter_6"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/app_name"
-            android:visibility="invisible"
-            android:layout_height="150dp"/>
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:contentDescription="@string/sixth_letter"
+            android:background="@android:color/transparent"/>
 
         <ImageView
-            android:layout_width="150dp"
             android:id="@+id/letter_7"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/app_name"
-            android:visibility="invisible"
-            android:layout_height="150dp"/>
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:contentDescription="@string/seventh_letter"
+            android:background="@android:color/transparent"/>
 
     </LinearLayout>
 
@@ -102,7 +93,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:id="@+id/images_g_h"
-        app:layout_constraintGuide_percent="0.75"/>
+        app:layout_constraintGuide_percent="0.775"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -113,52 +104,39 @@
 
     <LinearLayout
         android:id="@+id/objects_container"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="visible"
-        android:layout_weight="2.73"
-        android:layout_height="0dip"
         app:layout_constraintTop_toTopOf="@id/images_g_h"
         app:layout_constraintLeft_toLeftOf="@id/images_g_v"
         app:layout_constraintRight_toRightOf="@id/images_g_v"
         app:layout_constraintBottom_toBottomOf="@id/images_g_h">
 
         <ImageView
-            android:layout_marginStart="100dip"
-            android:layout_width="300dip"
             android:id="@+id/item1"
-            android:background="@android:color/transparent"
-            android:layout_gravity="center_vertical"
-            android:contentDescription="@string/app_name"
-            android:visibility="visible"
-            android:layout_height="300dip"
-            android:layout_marginTop="100dp"/>
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:contentDescription="@string/Image_01"
+            android:background="@android:color/transparent"/>
 
         <ImageView
-            android:layout_marginStart="50dip"
-            android:layout_width="300dip"
             android:id="@+id/item2"
-            android:background="@android:color/transparent"
-            android:layout_gravity="center_vertical"
-            android:visibility="visible"
-            android:contentDescription="@string/app_name"
-            android:layout_height="300dip"
-            android:layout_marginTop="100dp"/>
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_marginStart="50dp"
+            android:contentDescription="@string/Image_02"
+            android:background="@android:color/transparent"/>
 
         <ImageView
-            android:layout_marginStart="50dip"
-            android:layout_width="300dip"
             android:id="@+id/item3"
-            android:background="@android:color/transparent"
-            android:layout_gravity="center_vertical"
-            android:visibility="visible"
-            android:contentDescription="@string/app_name"
-            android:layout_height="300dip"
-            android:layout_marginTop="100dp"/>
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_marginStart="50dp"
+            android:contentDescription="@string/Image_03"
+            android:background="@android:color/transparent"/>
+
     </LinearLayout>
 
     <!-- Images End -->
 
 </android.support.constraint.ConstraintLayout>
-
-

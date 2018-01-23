@@ -54,12 +54,43 @@
     <string name="Percentage">Percentage</string>
     <string name="zero_percent">0 %</string>
 
+    <string name="pattern">Pattern</string>
+
+    <string name="missing_shape">Missing Shape</string>
+    <string name="shape_01">Shape 01</string>
+    <string name="shape_02">Shape 02</string>
+    <string name="shape_03">Shape 03</string>
+    <string name="shape_04">Shape 04</string>
+    <string name="shape_05">Shape 05</string>
+    <string name="shape_06">Shape 06</string>
+    <string name="shape_07">Shape 07</string>
+    <string name="shape_08">Shape 08</string>
+    <string name="shape_09">Shape 09</string>
+    <string name="shape_10">Shape 10</string>
+
+    <string name="missing_letter">Missing Letter</string>
+    <string name="first_letter">First Letter</string>
+    <string name="second_letter">Second Letter</string>
+    <string name="third_letter">Third Letter</string>
+    <string name="fourth_letter">Fourth Letter</string>
+    <string name="fifth_letter">Fifth Letter</string>
+    <string name="sixth_letter">Sixth Letter</string>
+    <string name="seventh_letter">Seventh Letter</string>
+    <string name="eighth_letter">Eighth Letter</string>
+    <string name="ninth_letter">Ninth Letter</string>
+    <string name="tenth_letter">Tenth Letter</string>
+
+    <string name="missing_number">Missing Number</string>
     <string name="first_number">First Number</string>
     <string name="second_number">Second Number</string>
     <string name="third_number">Third Number</string>
     <string name="fourth_number">Fourth Number</string>
     <string name="fifth_number">Fifth Number</string>
     <string name="sixth_number">Sixth Number</string>
+    <string name="seventh_number">Seventh Number</string>
+    <string name="eighth_number">Eighth Number</string>
+    <string name="ninth_number">Ninth Number</string>
+    <string name="tenth_number">Tenth Number</string>
 
     <string name="flash_word">Flash Word</string>
     <string name="first_word">First Word</string>
@@ -77,6 +108,12 @@
     <string name="Image_02">Image 02</string>
     <string name="Image_03">Image 03</string>
     <string name="Image_04">Image 04</string>
+    <string name="Image_05">Image 05</string>
+    <string name="Image_06">Image 06</string>
+    <string name="Image_07">Image 07</string>
+    <string name="Image_08">Image 08</string>
+    <string name="Image_09">Image 09</string>
+    <string name="Image_10">Image 10</string>
 
     <string name="Shape_01">Shape 1</string>
     <string name="Shape_02">Shape 2</string>

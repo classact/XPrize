@@ -11,17 +11,17 @@
     <!-- General Start -->
 
     <android.support.constraint.Guideline
+        android:id="@+id/g_h_mid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/mid_g_h"
         app:layout_constraintGuide_percent="0.5"/>
 
     <android.support.constraint.Guideline
+        android:id="@+id/g_v_mid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/mid_g_v"
         app:layout_constraintGuide_percent="0.5"/>
 
     <ImageView
@@ -35,27 +35,27 @@
     <!-- Toybox start -->
     
     <android.support.constraint.Guideline
+        android:id="@+id/g_h_toy_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/toybox_g_h"
         app:layout_constraintGuide_percent="1.0"/>
     
     <android.support.constraint.Guideline
+        android:id="@+id/g_v_toy_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/toybox_g_v"
         app:layout_constraintGuide_percent="1.0"/>
     
     <ImageView
-        android:id="@+id/toybox"
+        android:id="@+id/toy_box"
         android:layout_width="531dp"
         android:layout_height="394dp"
         android:contentDescription="@string/receptacle"
         android:background="@android:color/transparent"
-        app:layout_constraintRight_toLeftOf="@id/toybox_g_v"
-        app:layout_constraintBottom_toTopOf="@id/toybox_g_h"/>
+        app:layout_constraintRight_toLeftOf="@id/g_v_toy_box"
+        app:layout_constraintBottom_toTopOf="@id/g_h_toy_box"/>
 
     <!-- Toybox end -->
     <!-- Item 1 start -->
@@ -64,26 +64,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/item1_g_h"
+        android:id="@+id/g_h_toy_01"
         app:layout_constraintGuide_percent="0.225"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/item1_g_v"
+        android:id="@+id/g_v_toy_01"
         app:layout_constraintGuide_percent="0.125"/>
     
     <ImageView
-        android:id="@+id/item1"
-        android:layout_width="200dip"
-        android:layout_height="200dip"
+        android:id="@+id/toy_01"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:contentDescription="@string/Damas_Toy"
         android:background="@android:color/transparent"
-        app:layout_constraintTop_toTopOf="@id/item1_g_h"
-        app:layout_constraintLeft_toLeftOf="@id/item1_g_v"
-        app:layout_constraintRight_toRightOf="@id/item1_g_v"
-        app:layout_constraintBottom_toBottomOf="@id/item1_g_h"/>
+        app:layout_constraintTop_toTopOf="@id/g_h_toy_01"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_toy_01"
+        app:layout_constraintRight_toRightOf="@id/g_v_toy_01"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_toy_01"/>
 
     <!-- Item 1 end -->
     <!-- Item 2 start -->
@@ -92,26 +92,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/item2_g_h"
+        android:id="@+id/g_h_toy_02"
         app:layout_constraintGuide_percent="0.125"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/item2_g_v"
+        android:id="@+id/g_v_toy_02"
         app:layout_constraintGuide_percent="0.375"/>
     
     <ImageView
-        android:id="@+id/item2"
+        android:id="@+id/toy_02"
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:contentDescription="@string/Damas_Toy"
         android:background="@android:color/transparent"
-        app:layout_constraintTop_toTopOf="@id/item2_g_h"
-        app:layout_constraintLeft_toLeftOf="@id/item2_g_v"
-        app:layout_constraintRight_toRightOf="@id/item2_g_v"
-        app:layout_constraintBottom_toBottomOf="@id/item2_g_h"/>
+        app:layout_constraintTop_toTopOf="@id/g_h_toy_02"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_toy_02"
+        app:layout_constraintRight_toRightOf="@id/g_v_toy_02"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_toy_02"/>
 
     <!-- Item 2 end -->
     <!-- Item 3 start -->
@@ -120,26 +120,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/item3_g_h"
+        android:id="@+id/g_h_toy_03"
         app:layout_constraintGuide_percent="0.375"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/item3_g_v"
+        android:id="@+id/g_v_toy_03"
         app:layout_constraintGuide_percent="0.25"/>
     
     <ImageView
-        android:id="@+id/item3"
+        android:id="@+id/toy_03"
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:contentDescription="@string/Damas_Toy"
         android:background="@android:color/transparent"
-        app:layout_constraintTop_toTopOf="@id/item3_g_h"
-        app:layout_constraintLeft_toLeftOf="@id/item3_g_v"
-        app:layout_constraintRight_toRightOf="@id/item3_g_v"
-        app:layout_constraintBottom_toBottomOf="@id/item3_g_h"/>
+        app:layout_constraintTop_toTopOf="@id/g_h_toy_03"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_toy_03"
+        app:layout_constraintRight_toRightOf="@id/g_v_toy_03"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_toy_03"/>
 
     <!-- Item 3 end -->
     <!-- Item 4 start -->
@@ -148,26 +148,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/item4_g_h"
+        android:id="@+id/g_h_toy_04"
         app:layout_constraintGuide_percent="0.125"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/item4_g_v"
+        android:id="@+id/g_v_toy_04"
         app:layout_constraintGuide_percent="0.625"/>
     
     <ImageView
-        android:id="@+id/item4"
-        android:layout_width="200dip"
-        android:layout_height="200dip"
+        android:id="@+id/toy_04"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:contentDescription="@string/Damas_Toy"
         android:background="@android:color/transparent"
-        app:layout_constraintTop_toTopOf="@id/item4_g_h"
-        app:layout_constraintLeft_toLeftOf="@id/item4_g_v"
-        app:layout_constraintRight_toRightOf="@id/item4_g_v"
-        app:layout_constraintBottom_toBottomOf="@id/item4_g_h"/>
+        app:layout_constraintTop_toTopOf="@id/g_h_toy_04"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_toy_04"
+        app:layout_constraintRight_toRightOf="@id/g_v_toy_04"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_toy_04"/>
 
     <!-- Item 4 end -->
     <!-- Item 5 start -->
@@ -176,26 +176,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/item5_g_h"
+        android:id="@+id/g_h_toy_05"
         app:layout_constraintGuide_percent="0.225"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/item5_g_v"
+        android:id="@+id/g_v_toy_05"
         app:layout_constraintGuide_percent="0.875"/>
     
     <ImageView
-        android:id="@+id/item5"
-        android:layout_width="200dip"
+        android:id="@+id/toy_05"
+        android:layout_width="250dp"
         android:layout_height="250dp"
         android:contentDescription="@string/Damas_Toy"
         android:background="@android:color/transparent"
-        app:layout_constraintTop_toTopOf="@id/item5_g_h"
-        app:layout_constraintLeft_toLeftOf="@id/item5_g_v"
-        app:layout_constraintRight_toRightOf="@id/item5_g_v"
-        app:layout_constraintBottom_toBottomOf="@id/item5_g_h"/>
+        app:layout_constraintTop_toTopOf="@id/g_h_toy_05"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_toy_05"
+        app:layout_constraintRight_toRightOf="@id/g_v_toy_05"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_toy_05"/>
 
     <!-- Item 5 end -->
     <!-- Item 6 start -->
@@ -204,26 +204,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/item6_g_h"
+        android:id="@+id/g_h_toy_06"
         app:layout_constraintGuide_percent="0.375"/>
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/item6_g_v"
+        android:id="@+id/g_v_toy_06"
         app:layout_constraintGuide_percent="0.75"/>
     
     <ImageView
-        android:id="@+id/item6"
-        android:layout_width="200dip"
-        android:layout_height="200dp"
+        android:id="@+id/toy_06"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:contentDescription="@string/Damas_Toy"
         android:background="@android:color/transparent"
-        app:layout_constraintTop_toTopOf="@id/item6_g_h"
-        app:layout_constraintLeft_toLeftOf="@id/item6_g_v"
-        app:layout_constraintRight_toRightOf="@id/item6_g_v"
-        app:layout_constraintBottom_toBottomOf="@id/item6_g_h"/>
+        app:layout_constraintTop_toTopOf="@id/g_h_toy_06"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_toy_06"
+        app:layout_constraintRight_toRightOf="@id/g_v_toy_06"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_toy_06"/>
 
     <!-- Item 6 end -->
 

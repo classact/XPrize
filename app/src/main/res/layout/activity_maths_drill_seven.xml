@@ -1,90 +1,127 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_maths_drill_seven"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/background_maths_patterns"
     tools:context="classact.com.xprize.activity.drill.math.MathsDrillSevenActivity">
+
+    <!-- Pattern Container START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_pattern_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.32"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_pattern_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.43"/>
+
     <LinearLayout
-        android:id="@+id/itemsContainer"
-        android:layout_marginTop="200dip"
-        android:layout_marginLeft="50px"
-        android:layout_width="940dip"
-        android:layout_height="200dip">
+        android:id="@+id/pattern_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/g_h_pattern_container"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_pattern_container"
+        app:layout_constraintRight_toRightOf="@id/g_v_pattern_container"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_pattern_container">
+
         <ImageView
-            android:layout_width="800dip"
-            android:layout_height="200dip"
-            android:contentDescription="@string/app_name"
-            android:layout_gravity="center_vertical"
             android:id="@+id/pattern"
+            android:layout_width="800dp"
+            android:layout_height="200dp"
+            android:contentDescription="@string/pattern"
             android:background="@android:color/transparent" />
+
         <ImageView
-            android:layout_width="120dip"
-            android:layout_height="120dip"
-            android:layout_toRightOf="@id/pattern"
-            android:contentDescription="@string/app_name"
-            android:layout_gravity="center_vertical"
-            android:visibility="invisible"
-            android:id="@+id/missing"
+            android:id="@+id/missing_shape"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:contentDescription="@string/missing_shape"
             android:background="@android:color/transparent" />
+
     </LinearLayout>
-    <ImageView
-        android:layout_width="100dip"
-        android:layout_height="100dip"
-        android:layout_marginTop="90dip"
-        android:layout_marginLeft="50dip"
-        android:layout_below="@id/itemsContainer"
-        android:contentDescription="@string/app_name"
-        android:layout_gravity="center_vertical"
-        android:id="@+id/filler1"
-        android:background="@android:color/transparent" />
-    <ImageView
-        android:layout_width="100dip"
-        android:layout_height="100dip"
-        android:layout_marginTop="90dip"
-        android:layout_marginLeft="50dip"
-        android:layout_toRightOf="@id/filler1"
-        android:layout_below="@id/itemsContainer"
-        android:contentDescription="@string/app_name"
-        android:layout_gravity="center_vertical"
-        android:id="@+id/filler2"
-        android:background="@android:color/transparent" />
-    <ImageView
-        android:layout_width="100dip"
-        android:layout_height="100dip"
-        android:layout_marginTop="90dip"
-        android:layout_marginLeft="50dip"
-        android:layout_toRightOf="@id/filler2"
-        android:layout_below="@id/itemsContainer"
-        android:contentDescription="@string/app_name"
-        android:layout_gravity="center_vertical"
-        android:id="@+id/filler3"
-        android:background="@android:color/transparent" />
-    <ImageView
-        android:layout_width="100dip"
-        android:layout_height="100dip"
-        android:layout_marginTop="90dip"
-        android:layout_marginLeft="50dip"
-        android:layout_toRightOf="@id/filler3"
-        android:layout_below="@id/itemsContainer"
-        android:contentDescription="@string/app_name"
-        android:layout_gravity="center_vertical"
-        android:id="@+id/filler4"
-        android:background="@android:color/transparent" />
-    <ImageView
-        android:layout_width="100dip"
-        android:layout_height="90dip"
-        android:layout_marginTop="100dip"
-        android:layout_marginLeft="50dip"
-        android:layout_toRightOf="@id/filler4"
-        android:layout_below="@id/itemsContainer"
-        android:contentDescription="@string/app_name"
-        android:layout_gravity="center_vertical"
-        android:id="@+id/filler5"
-        android:background="@android:color/transparent" />
-</RelativeLayout>
+
+    <!-- Pattern Container END -->
+    <!-- Shape Container START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_shape_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.74"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_shape_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.43"/>
+
+    <LinearLayout
+        android:id="@+id/shape_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/g_h_shape_container"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_shape_container"
+        app:layout_constraintRight_toRightOf="@id/g_v_shape_container"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_shape_container">
+
+        <ImageView
+            android:id="@+id/shape_01"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:contentDescription="@string/shape_01"
+            android:background="@android:color/transparent"/>
+
+        <ImageView
+            android:id="@+id/shape_02"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="50dp"
+            android:contentDescription="@string/shape_02"
+            android:background="@android:color/transparent"/>
+
+        <ImageView
+            android:id="@+id/shape_03"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="50dp"
+            android:contentDescription="@string/shape_03"
+            android:background="@android:color/transparent"/>
+
+        <ImageView
+            android:id="@+id/shape_04"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="50dp"
+            android:contentDescription="@string/shape_04"
+            android:background="@android:color/transparent"/>
+
+        <ImageView
+            android:id="@+id/shape_05"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="50dp"
+            android:contentDescription="@string/shape_05"
+            android:background="@android:color/transparent"/>
+
+    </LinearLayout>
+
+    <!-- Shape Container END -->
+
+</android.support.constraint.ConstraintLayout>

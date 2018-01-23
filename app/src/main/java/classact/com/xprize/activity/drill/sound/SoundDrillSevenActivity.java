@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.Guideline;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -33,7 +35,7 @@ import classact.com.xprize.utils.WordLetterLayout;
 public class SoundDrillSevenActivity extends DrillActivity {
     //private SegmetedWritingView segmentWritingView;
 
-    @BindView(R.id.activity_sound_drill_seven) LinearLayout rootView;
+    @BindView(R.id.activity_sound_drill_seven) ConstraintLayout rootView;
 
     @BindView(R.id.writing_container) LinearLayout writingContainer;
 
@@ -50,6 +52,9 @@ public class SoundDrillSevenActivity extends DrillActivity {
     @BindView(R.id.item1) ImageView item1;
     @BindView(R.id.item2) ImageView item2;
     @BindView(R.id.item3) ImageView item3;
+
+    @BindView(R.id.letters_g_v) Guideline gvLetters;
+    @BindView(R.id.images_g_v) Guideline gvImages;
 
     private String[] letterSounds;
     private String mWordSound;
@@ -87,9 +92,6 @@ public class SoundDrillSevenActivity extends DrillActivity {
 
         itemsEnabled = false;
         roundEnd = false;
-        item1 = (ImageView)findViewById(R.id.item1);
-        item2 = (ImageView)findViewById(R.id.item2);
-        item3 = (ImageView)findViewById(R.id.item3);
 
         items = new ImageView[3];
         items[0] = item1;
@@ -100,9 +102,11 @@ public class SoundDrillSevenActivity extends DrillActivity {
             items[i].setImageResource(0);
         }
 
+        ez.guide.setPercentage(gvLetters, 0.725f);
+//        ez.guide.setPercentage(gvImages, 0.5f);
+
         currentTripple = 0;
 
-        writingContainer = (LinearLayout)findViewById(R.id.writing_container);
         String drillData = getIntent().getExtras().getString("data");
         initialiseData(drillData);
         showTripple();
@@ -198,12 +202,6 @@ public class SoundDrillSevenActivity extends DrillActivity {
                 iv.setAlpha(1f);
             }
 
-            // Image view
-            ImageView iv1 = items[0];
-            MarginLayoutParams iv1Layout = (MarginLayoutParams) iv1.getLayoutParams();
-            iv1Layout.leftMargin = (screenWidth - totalWidth)/2;
-            iv1.setLayoutParams(iv1Layout);
-
             // Double check that an image with correct picture exists
             if (!foundCorrectItem) {
 
@@ -240,9 +238,6 @@ public class SoundDrillSevenActivity extends DrillActivity {
                 ImageView iv = (ImageView) writingContainer.getChildAt(i);
                 iv.setImageResource(0);
                 iv.setVisibility(View.INVISIBLE);
-                MarginLayoutParams ivLayout = (MarginLayoutParams) iv.getLayoutParams();
-                ivLayout.topMargin = (int) (0 * density);
-                iv.setLayoutParams(ivLayout);
             }
 
             // Populate word

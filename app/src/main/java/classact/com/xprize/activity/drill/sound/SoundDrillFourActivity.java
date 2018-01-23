@@ -2,17 +2,14 @@ package classact.com.xprize.activity.drill.sound;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
-import android.media.MediaPlayer;
-import android.net.Uri;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Guideline;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -23,27 +20,39 @@ import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
-import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillFourActivity extends DrillActivity {
 
     @BindView(R.id.activity_sound_drill_four) ConstraintLayout rootView;
 
-    @BindView(R.id.item1) ImageView item1;
-    @BindView(R.id.item2) ImageView item2;
-    @BindView(R.id.item3) ImageView item3;
-    @BindView(R.id.item4) ImageView item4;
-    @BindView(R.id.item5) ImageView item5;
-    @BindView(R.id.item6) ImageView item6;
-    @BindView(R.id.toybox) ImageView toyBox;
+    @BindView(R.id.toy_01) ImageView item1;
+    @BindView(R.id.toy_02) ImageView item2;
+    @BindView(R.id.toy_03) ImageView item3;
+    @BindView(R.id.toy_04) ImageView item4;
+    @BindView(R.id.toy_05) ImageView item5;
+    @BindView(R.id.toy_06) ImageView item6;
+    @BindView(R.id.toy_box) ImageView toyBox;
+
+    @BindView(R.id.g_h_toy_01) Guideline gh01;
+    @BindView(R.id.g_h_toy_02) Guideline gh02;
+    @BindView(R.id.g_h_toy_03) Guideline gh03;
+    @BindView(R.id.g_h_toy_04) Guideline gh04;
+    @BindView(R.id.g_h_toy_05) Guideline gh05;
+    @BindView(R.id.g_h_toy_06) Guideline gh06;
+
+    @BindView(R.id.g_v_toy_01) Guideline gv01;
+    @BindView(R.id.g_v_toy_02) Guideline gv02;
+    @BindView(R.id.g_v_toy_03) Guideline gv03;
+    @BindView(R.id.g_v_toy_04) Guideline gv04;
+    @BindView(R.id.g_v_toy_05) Guideline gv05;
+    @BindView(R.id.g_v_toy_06) Guideline gv06;
 
     private int currentItem;
     private int current_reward = 0;
     private String drillData;
     private int totalItems = 6;
     private JSONArray images;
-    private MediaPlayer mp;
     float x;
     float y;
     private boolean entered;
@@ -66,7 +75,12 @@ public class SoundDrillFourActivity extends DrillActivity {
                 .register(getLifecycle())
                 .prepare(context);
 
+        handler = vm.getHandler();
+        mediaPlayer = vm.getMediaPlayer();
+
         loadImage(toyBox, R.drawable.receptacletoybox);
+
+        // ez.highlight(Color.argb(100, 100, 0, 0), item1, item2, item3, item4, item5, item6);
 
         // setItemsEnabled(false);
         itemsEnabled = false;
@@ -141,15 +155,78 @@ public class SoundDrillFourActivity extends DrillActivity {
         try {
             params = new JSONObject(data);
             images = params.getJSONArray("images");
-            loadImage(item1, images.getJSONObject(0).getInt("image"));
-            loadImage(item2, images.getJSONObject(1).getInt("image"));
-            loadImage(item3, images.getJSONObject(2).getInt("image"));
-            loadImage(item4, images.getJSONObject(3).getInt("image"));
-            loadImage(item5, images.getJSONObject(4).getInt("image"));
-            loadImage(item6, images.getJSONObject(5).getInt("image"));
+
+            ImageView[] items = {item1, item2, item3, item4, item5, item6};
+            int n = images.length();
+
+            if (n > items.length) {
+                throw new Exception("Too many toys!");
+            }
+
+            for (int i = 0; i < items.length; i++) {
+                if (i < n) {
+                    loadImage(items[i], images.getJSONObject(i).getInt("image"));
+                } else {
+                    rootView.removeView(items[i]);
+                }
+            }
             drillSound = params.getString("drillsound");
+
+            // Arrange
+            if (n < 5) {
+
+                ez.guide.setPercentage(gh01, 0.29f);
+                ez.guide.setPercentage(gv01, 0.35f);
+
+                ez.guide.setPercentage(gh02, 0.275f);
+                ez.guide.setPercentage(gv02, 0.62f);
+
+                ez.guide.setPercentage(gh03, 0.675f);
+                ez.guide.setPercentage(gv03, 0.29f);
+
+                ez.guide.setPercentage(gh04, 0.625f);
+                ez.guide.setPercentage(gv04, 0.535f);
+
+            } else if (n < 6) {
+
+                ez.guide.setPercentage(gh01, 0.3f);
+                ez.guide.setPercentage(gv01, 0.2375f);
+
+                ez.guide.setPercentage(gh02, 0.21f);
+                ez.guide.setPercentage(gv02, 0.5f);
+
+                ez.guide.setPercentage(gh03, 0.3f);
+                ez.guide.setPercentage(gv03, 0.75f);
+
+                ez.guide.setPercentage(gh04, 0.675f);
+                ez.guide.setPercentage(gv04, 0.29f);
+
+                ez.guide.setPercentage(gh05, 0.625f);
+                ez.guide.setPercentage(gv05, 0.535f);
+
+            } else {
+
+                ez.guide.setPercentage(gh01, 0.3f);
+                ez.guide.setPercentage(gv01, 0.23f);
+
+                ez.guide.setPercentage(gh02, 0.22f);
+                ez.guide.setPercentage(gv02, 0.44f);
+
+                ez.guide.setPercentage(gh03, 0.675f);
+                ez.guide.setPercentage(gv03, 0.29f);
+
+                ez.guide.setPercentage(gh04, 0.31f);
+                ez.guide.setPercentage(gv04, 0.645f);
+
+                ez.guide.setPercentage(gh05, 0.225f);
+                ez.guide.setPercentage(gv05, 0.84f);
+
+                ez.guide.setPercentage(gh06, 0.63f);
+                ez.guide.setPercentage(gv06, 0.545f);
+            }
         }
         catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -157,28 +234,10 @@ public class SoundDrillFourActivity extends DrillActivity {
     private void playDamaNeedsToCleanSound(){
         try {
             String sound = params.getString("dama_needs_to_clean");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    playDragThePicturesThatStartWithSound();
-                }
-            });
-            mp.prepare();
+            playSound(sound, this::playDragThePicturesThatStartWithSound);
         }
         catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -186,56 +245,20 @@ public class SoundDrillFourActivity extends DrillActivity {
     private void playDragThePicturesThatStartWithSound(){
         try {
             String sound = params.getString("drag_the_pictures_that_start");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    playDrillSound();
-                }
-            });
-            mp.prepare();
+            playSound(sound, this::playDrillSound);
         }
         catch (Exception ex) {
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
 
     public void playDrillSound(){
         try{
-            String soundPath = FetchResource.sound(getApplicationContext(), drillSound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    playIntoTheBoxSound();
-                }
-            });
-            mp.prepare();
+            playSound(drillSound, this::playIntoTheBoxSound);
         }
         catch (Exception ex) {
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -243,144 +266,23 @@ public class SoundDrillFourActivity extends DrillActivity {
     public void playIntoTheBoxSound() {
         try{
             String sound = params.getString("into_the_box");
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    // setItemsEnabled(true);
-                    itemsEnabled = true;
-                }
-            });
-            mp.prepare();
+            playSound(sound, () -> itemsEnabled = true);
         }
         catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private void playSoundAndRunnableAfterCompletion(String sound) {
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (mRunnable != null) {
-                        mRunnable.run();
-                    }
-                }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
 
     private void playSoundAndRunnableAfterCompletion(int soundId) {
         try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(context, myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
+            playSound(soundId, () -> {
+                if (mRunnable != null) {
+                    mRunnable.run();
                 }
             });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    if (mRunnable != null) {
-                        mRunnable.run();
-                    }
-                }
-            });
-            mp.prepare();
         }
         catch (Exception ex){
-            ex.printStackTrace();
-        }
-    }
-
-    private void playSound(String sound){
-        try {
-            String soundPath = FetchResource.sound(getApplicationContext(), sound);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), Uri.parse(soundPath));
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
-    }
-
-    private void playSound(int soundId){
-        try {
-            Uri myUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + soundId);
-            if (mp == null) {
-                mp = new MediaPlayer();
-            }
-            mp.reset();
-            mp.setDataSource(getApplicationContext(), myUri);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                }
-            });
-            mp.prepare();
-        }
-        catch (Exception ex){
-            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
@@ -395,7 +297,7 @@ public class SoundDrillFourActivity extends DrillActivity {
                     view.startDragAndDrop(data, shadowBuilder, view, 0);
                     entered = false;
                     String sound = images.getJSONObject(currentItem).getString("sound");
-                    playSound(sound);
+                    playSound(sound, null);
                     return true;
                 }
             } catch (Exception ex) {
@@ -462,19 +364,10 @@ public class SoundDrillFourActivity extends DrillActivity {
                 };
                 playSoundAndRunnableAfterCompletion(ResourceSelector.getPositiveAffirmationSound(context));
             } else {
-                playSound(ResourceSelector.getPositiveAffirmationSound(context));
+                playSound(ResourceSelector.getPositiveAffirmationSound(context), null);
             }
         } else {
-            playSound(ResourceSelector.getNegativeAffirmationSound(context));
+            playSound(ResourceSelector.getNegativeAffirmationSound(context), null);
         }
-    }
-
-    private void setItemsEnabled(boolean enable) {
-        item1.setEnabled(enable);
-        item2.setEnabled(enable);
-        item3.setEnabled(enable);
-        item4.setEnabled(enable);
-        item5.setEnabled(enable);
-        item6.setEnabled(enable);
     }
 }
