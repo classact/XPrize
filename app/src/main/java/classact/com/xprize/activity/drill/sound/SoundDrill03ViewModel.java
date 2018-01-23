@@ -74,15 +74,18 @@ public class SoundDrill03ViewModel extends DrillViewModel {
                 dbHelper.getReadableDatabase(),
                 1,
                 unitSection.getUnitId(),
-                unitSectionDrill.getDrillSubId());
+                unitSection.getSectionSubId());
         Letter primaryLetter = letterHelper.getLetter(dbHelper.getReadableDatabase(), 1, primaryLetterId);
+
+        // Add primary letter to excluded letters list
+        excludedLetterIds.add(primaryLetterId);
 
         // Get secondary letters
         List<Letter> secondaryLetters = letterHelper.getLettersBelow(
                 dbHelper.getReadableDatabase(),
                 1,
                 unitSection.getUnitId(),
-                unitSectionDrill.getDrillSubId(), 2);
+                unitSection.getSectionSubId(), 2);
 
         // Add secondary letters to letters list
         // Ensure that secondary letters are 'excluded' from the 'comparison letters' found for each letter

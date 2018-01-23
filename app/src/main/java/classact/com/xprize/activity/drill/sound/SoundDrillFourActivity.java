@@ -2,7 +2,6 @@ package classact.com.xprize.activity.drill.sound;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Guideline;
@@ -12,14 +11,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
+import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
 public class SoundDrillFourActivity extends DrillActivity {
@@ -50,14 +47,10 @@ public class SoundDrillFourActivity extends DrillActivity {
 
     private int currentItem;
     private int current_reward = 0;
-    private String drillData;
-    private int totalItems = 6;
-    private JSONArray images;
     float x;
     float y;
     private boolean entered;
     private String drillSound;
-    JSONObject params;
     private boolean itemsEnabled;
     private Runnable mRunnable;
 
@@ -85,49 +78,29 @@ public class SoundDrillFourActivity extends DrillActivity {
         // setItemsEnabled(false);
         itemsEnabled = false;
 
-        item1.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 0;
-                return dragItem(v,event);
-            }
+        item1.setOnTouchListener((v, event) -> {
+            currentItem = 0;
+            return dragItem(v,event);
         });
-        item2.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 1;
-                return dragItem(v,event);
-            }
+        item2.setOnTouchListener((v, event) -> {
+            currentItem = 1;
+            return dragItem(v,event);
         });
-        item3.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 2;
-                return dragItem(v,event);
-            }
+        item3.setOnTouchListener((v, event) -> {
+            currentItem = 2;
+            return dragItem(v,event);
         });
-        item4.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 3;
-                return dragItem(v,event);
-            }
+        item4.setOnTouchListener((v, event) -> {
+            currentItem = 3;
+            return dragItem(v,event);
         });
-
-        item5.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 4;
-                return dragItem(v,event);
-            }
+        item5.setOnTouchListener((v, event) -> {
+            currentItem = 4;
+            return dragItem(v,event);
         });
-
-        item6.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 5;
-                return dragItem(v,event);
-            }
+        item6.setOnTouchListener((v, event) -> {
+            currentItem = 5;
+            return dragItem(v,event);
         });
 
         /*  */
@@ -146,18 +119,14 @@ public class SoundDrillFourActivity extends DrillActivity {
 
         toyBox.setOnDragListener(onItemDraggedIntoToyboxListener);
 
-        drillData = getIntent().getExtras().getString("data");
-        initialiseData(drillData);
+        initialiseData();
         playDamaNeedsToCleanSound();
     }
 
-    private void initialiseData (String data){
+    private void initialiseData(){
         try {
-            params = new JSONObject(data);
-            images = params.getJSONArray("images");
-
             ImageView[] items = {item1, item2, item3, item4, item5, item6};
-            int n = images.length();
+            int n = vm.getWordCount();
 
             if (n > items.length) {
                 throw new Exception("Too many toys!");
@@ -165,12 +134,15 @@ public class SoundDrillFourActivity extends DrillActivity {
 
             for (int i = 0; i < items.length; i++) {
                 if (i < n) {
-                    loadImage(items[i], images.getJSONObject(i).getInt("image"));
+                    loadImage(items[i], FetchResource.imageId(context, vm.getWord(i).getWordPictureURI()));
                 } else {
                     rootView.removeView(items[i]);
                 }
             }
-            drillSound = params.getString("drillsound");
+
+            drillSound = (vm.getLetter().getIsLetter() == 1) ?
+                    vm.getLetter().getLetterSoundURI() :
+                    vm.getLetter().getPhonicSoundURI();
 
             // Arrange
             if (n < 5) {
@@ -192,11 +164,11 @@ public class SoundDrillFourActivity extends DrillActivity {
                 ez.guide.setPercentage(gh01, 0.3f);
                 ez.guide.setPercentage(gv01, 0.2375f);
 
-                ez.guide.setPercentage(gh02, 0.21f);
+                ez.guide.setPercentage(gh02, 0.23f);
                 ez.guide.setPercentage(gv02, 0.5f);
 
                 ez.guide.setPercentage(gh03, 0.3f);
-                ez.guide.setPercentage(gv03, 0.75f);
+                ez.guide.setPercentage(gv03, 0.76f);
 
                 ez.guide.setPercentage(gh04, 0.675f);
                 ez.guide.setPercentage(gv04, 0.29f);
@@ -233,7 +205,7 @@ public class SoundDrillFourActivity extends DrillActivity {
 
     private void playDamaNeedsToCleanSound(){
         try {
-            String sound = params.getString("dama_needs_to_clean");
+            String sound = "drill4drillsound1";
             playSound(sound, this::playDragThePicturesThatStartWithSound);
         }
         catch (Exception ex){
@@ -244,7 +216,7 @@ public class SoundDrillFourActivity extends DrillActivity {
 
     private void playDragThePicturesThatStartWithSound(){
         try {
-            String sound = params.getString("drag_the_pictures_that_start");
+            String sound = "drill4drillsound2";
             playSound(sound, this::playDrillSound);
         }
         catch (Exception ex) {
@@ -265,7 +237,7 @@ public class SoundDrillFourActivity extends DrillActivity {
 
     public void playIntoTheBoxSound() {
         try{
-            String sound = params.getString("into_the_box");
+            String sound = "drill4drillsound3";
             playSound(sound, () -> itemsEnabled = true);
         }
         catch (Exception ex) {
@@ -296,7 +268,7 @@ public class SoundDrillFourActivity extends DrillActivity {
                             view);
                     view.startDragAndDrop(data, shadowBuilder, view, 0);
                     entered = false;
-                    String sound = images.getJSONObject(currentItem).getString("sound");
+                    String sound = vm.getWord(currentItem).getWordSoundURI();
                     playSound(sound, null);
                     return true;
                 }
@@ -319,16 +291,14 @@ public class SoundDrillFourActivity extends DrillActivity {
                     entered = false;
                 }
             } else if (event.getAction() == DragEvent.ACTION_DROP && entered) {
-                int right = images.getJSONObject(currentItem).getInt("right");
-                if (right == 1) {
+                if (vm.isCorrect(currentItem)) {
                     Globals.playStarWorks(this, toyBox);
                     playRewardSound(true);
                 } else {
                     playRewardSound(false);
                 }
             } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && entered) {
-                int right = images.getJSONObject(currentItem).getInt("right");
-                if (right == 1) {
+                if (vm.isCorrect(currentItem)) {
                     ImageView view = (ImageView) event.getLocalState();
                     view.setVisibility(View.INVISIBLE);
                 }
@@ -349,7 +319,7 @@ public class SoundDrillFourActivity extends DrillActivity {
             // Debug
             System.out.println("SoundDrillFourActivity.playRewardSound > Debug: Current reward is (" + current_reward + ")");
 
-            if (current_reward == 4) {
+            if (current_reward == vm.getCorrectWordCount()) {
                 // setItemsEnabled(false);
                 itemsEnabled = false;
 

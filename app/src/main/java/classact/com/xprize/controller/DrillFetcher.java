@@ -10,6 +10,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import classact.com.xprize.activity.drill.books.StoryActivity;
+import classact.com.xprize.activity.drill.sound.SoundDrillFourActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillThreeActivity;
 import classact.com.xprize.activity.drill.tutorial.Tutorial;
 import classact.com.xprize.activity.link.LevelCompleteLink;
@@ -248,12 +249,12 @@ public class DrillFetcher extends DbAccessor {
                         break;
                     }
                     case 4: {
-                        int wordType = 1; // drill 1 only uses phonic words, which is WordType 1
-                        int rightLimit = 4; // limit the words to 4 for this drill
-                        int wrongLimit = 2;
+//                        int wordType = 1; // drill 1 only uses phonic words, which is WordType 1
+//                        int rightLimit = 4; // limit the words to 4 for this drill
+//                        int wrongLimit = 2;
 
                         // Fetch D4
-                        intent = phonicsDrills.D4(context, dbHelper, unitId, drillId, languageId, subId, letterId, rightLimit, wrongLimit, wordType);
+                        intent = new Intent(context, SoundDrillFourActivity.class);
                         break;
                     }
                     case 5: {
