@@ -162,7 +162,7 @@ public class MathsDrillSixActivity extends DrillActivity {
                 iv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        objectClicked(shapeSound);
+                        objectClicked(v, shapeSound);
                     }
                 });
             }
@@ -258,12 +258,13 @@ public class MathsDrillSixActivity extends DrillActivity {
         }
     }
 
-    private void objectClicked(String touchedObject){
+    private void objectClicked(View view, String touchedObject){
         if (touchEnabled) {
             try {
                 String objectToTouch = allData.getString("object_sound");
                 if (objectToTouch.equalsIgnoreCase(touchedObject)) {
                     touchEnabled = false;
+                    starWorks.play(this, view);
                     playSound(FetchResource.positiveAffirmation(context), () -> {
                         finish();
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

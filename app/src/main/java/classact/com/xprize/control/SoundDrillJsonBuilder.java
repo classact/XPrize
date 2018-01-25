@@ -50,114 +50,24 @@ public class SoundDrillJsonBuilder {
                                      String drillSound,
                                      String thisIsASound,
                                      String touchPictureStartWithSound,
-                                     ArrayList<RightWrongPair> pairs){
+                                     List<RightWrongPair> pairs){
 
-        for (int i = 0; i < pairs.size(); i++) {
-            System.out.println("Right: " + pairs.get(i).getRightObject().getObjectImage() +
-                    ", Wrong: " + pairs.get(i).getWrongObject().getObjectImage());
-        }
-
-        String drillData = "{\"paircount\": 4," +
+        String drillData = "{\"paircount\": " + pairs.size() + "," +
                 "\"drillsound\":\"" + drillSound + "\"," +
                 "\"this_is_a\":\"" + thisIsASound + "\"," +
                 "\"touch_picture_starts_with\":\"" + touchPictureStartWithSound + "\"," +
-                "\"pairs\":[" +
-                "{\"correctimage\": " + ResourceDecoder.getIdentifier(context,pairs.get(0).getRightObject().getObjectImage(),"drawable") + "," +
-                "\"correctsound\":\"" + pairs.get(0).getRightObject().getObjectSound() + "\"," +
-                "\"wrongimage\":" + ResourceDecoder.getIdentifier(context,pairs.get(0).getWrongObject().getObjectImage(),"drawable") + "," +
-                "\"wrongsound\":\"" + pairs.get(0).getWrongObject().getObjectSound() + "\"}," +
-                "{\"correctimage\":" + ResourceDecoder.getIdentifier(context,pairs.get(1).getRightObject().getObjectImage(),"drawable") + "," +
-                "\"correctsound\":\"" + pairs.get(1).getRightObject().getObjectSound() + "\"," +
-                "\"wrongsound\":\"" + pairs.get(1).getWrongObject().getObjectSound() + "\"," +
-                "\"wrongimage\":" + ResourceDecoder.getIdentifier(context,pairs.get(1).getWrongObject().getObjectImage(),"drawable") +"}," +
-                "{\"correctimage\": " + ResourceDecoder.getIdentifier(context,pairs.get(2).getRightObject().getObjectImage(),"drawable") + "," +
-                "\"correctsound\":\"" + pairs.get(2).getRightObject().getObjectSound() + "\"," +
-                "\"wrongsound\":\"" + pairs.get(2).getWrongObject().getObjectSound() + "\"," +
-                "\"wrongimage\":" + ResourceDecoder.getIdentifier(context,pairs.get(2).getWrongObject().getObjectImage(),"drawable") +"}," +
-                "{\"correctimage\":" + ResourceDecoder.getIdentifier(context,pairs.get(3).getRightObject().getObjectImage(),"drawable") + "," +
-                "\"correctsound\":\"" + pairs.get(3).getRightObject().getObjectSound() + "\"," +
-                "\"wrongsound\":\"" + pairs.get(3).getWrongObject().getObjectSound() + "\"," +
-                "\"wrongimage\":" + ResourceDecoder.getIdentifier(context,pairs.get(3).getWrongObject().getObjectImage(),"drawable") +"}" +
-                "]}";
-        return drillData;
-    }
-
-    //Builds JSON to pass to Sound Drill Activity three
-    public static String getSoundDrillThreeJson(Context context,
-                                             String thisIsTheLetterSound,
-                                             String itMakesTheSound,
-                                             String touchSound,
-                                             List<SoundDrillThreeObject> list){
-
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println("Image: " + list.get(i).getObject().getObjectImage() +
-                    ", Right: " + list.get(i).getPair().getRightObject().getObjectImage() +
-                    ", Wrong: " + list.get(i).getPair().getWrongObject().getObjectImage());
-        }
-
-        String drillData = "{\"sets\":[";
-
-        int numberOfListItems = list.size();
-
-        for (int i = 0; i < numberOfListItems; i++) {
-            SoundDrillThreeObject drillObject = list.get(i);
-
-            drillData += "{\"image\":\"" + drillObject.getObject().getObjectImage() + "\"," +
-                    "\"sound\":\"" + drillObject.getObject().getObjectSound() + "\"," +
-                    "\"phonic_sound\":\"" + drillObject.getObject().getObjectPhonicSound() + "\"," +
-                    "\"images\":[" +
-                    "{\"image\":\"" + drillObject.getPair().getRightObject().getObjectImage() + "\",\"correct\":1}," +
-                    "{\"image\":\"" + drillObject.getPair().getWrongObject().getObjectImage() + "\",\"correct\":0}" +
-                    "]}";
-            if (i < numberOfListItems - 1) {
+                "\"pairs\":[";
+        for (int i = 0; i < pairs.size(); i++) {
+            RightWrongPair pair = pairs.get(i);
+            if (i > 0) {
                 drillData += ",";
             }
+            drillData += "{\"correctimage\": " + ResourceDecoder.getIdentifier(context,pair.getRightObject().getObjectImage(),"drawable") + "," +
+                    "\"correctsound\":\"" + pair.getRightObject().getObjectSound() + "\"," +
+                    "\"wrongimage\":" + ResourceDecoder.getIdentifier(context,pair.getWrongObject().getObjectImage(),"drawable") + "," +
+                    "\"wrongsound\":\"" + pair.getWrongObject().getObjectSound() + "\"}";
         }
-        drillData += "]," +
-                "\"this_is_the_letter\":\"" + thisIsTheLetterSound + "\"," +
-                "\"it_makes_sound\":\"" + itMakesTheSound + "\"," +
-                "\"touch\":\"" + touchSound + "\"}";
-        return drillData;
-    }
-
-    //Builds JSON to pass to Sound Drill activity Four
-    public static String getSoundDrillFourActivity(Context context,
-                                                   String drillSound,
-                                                   String intoTheBoxSound,
-                                                   String damaNeedsToCleanSound,
-                                                   String dragPicturesThatStartWithSound,
-                                                   ArrayList<DraggableImage<ObjectAndSound>> images){
-
-        String drillData = "{\"images\":[" +
-                "{\"position\":" + images.get(0).getPosition() + "," +
-                "\"image\":" + ResourceDecoder.getIdentifier(context,(images.get(0).getcontent()).getObjectImage(),"drawable") + "," +
-                "\"sound\":\"" + (images.get(0).getcontent()).getObjectSound() + "\"" +
-                ",\"right\":" + images.get(0).isRight() + "}," +
-                "{\"position\":" + images.get(1).getPosition() + "," +
-                "\"image\":" + ResourceDecoder.getIdentifier(context,(images.get(1).getcontent()).getObjectImage(),"drawable") + "," +
-                "\"sound\":\"" + (images.get(1).getcontent()).getObjectSound() + "\"" +
-                ",\"right\":" + images.get(1).isRight() + "}," +
-                "{\"position\":" + images.get(2).getPosition() + "," +
-                "\"image\":" + ResourceDecoder.getIdentifier(context,(images.get(2).getcontent()).getObjectImage(),"drawable") + "," +
-                "\"sound\":\"" + (images.get(2).getcontent()).getObjectSound() + "\"" +
-                ",\"right\":" + images.get(2).isRight() + "}," +
-                "{\"position\":" + images.get(3).getPosition() + "," +
-                "\"image\":" + ResourceDecoder.getIdentifier(context,(images.get(3).getcontent()).getObjectImage(),"drawable") + "," +
-                "\"sound\":\"" + (images.get(3).getcontent()).getObjectSound() + "\"" +
-                ",\"right\":" + images.get(3).isRight() + "}," +
-                "{\"position\":" + images.get(4).getPosition() + "," +
-                "\"image\":" + ResourceDecoder.getIdentifier(context,(images.get(4).getcontent()).getObjectImage(),"drawable") + "," +
-                "\"sound\":\"" + (images.get(4).getcontent()).getObjectSound() + "\"" +
-                ",\"right\":" + images.get(4).isRight() + "}," +
-                "{\"position\":" + images.get(5).getPosition() + "," +
-                "\"image\":" + ResourceDecoder.getIdentifier(context,(images.get(5).getcontent()).getObjectImage(),"drawable") + "," +
-                "\"sound\":\"" + (images.get(5).getcontent()).getObjectSound() + "\"" +
-                ",\"right\":" + images.get(5).isRight() + "}" +
-                "],\"drillsound\":\"" + drillSound + "\"," +
-                "\"into_the_box\":\"" + intoTheBoxSound + "\"," +
-                "\"dama_needs_to_clean\":\"" + damaNeedsToCleanSound + "\"," +
-                "\"drag_the_pictures_that_start\":\"" + dragPicturesThatStartWithSound + "\"" +
-                "}";
+        drillData += "]}";
         return drillData;
     }
 
@@ -226,74 +136,6 @@ public class SoundDrillJsonBuilder {
                 "\"this_is_the_upper_case\":\"" + thisisUppderCaseSound + "\"," +
                 "\"drag_the_letters\":\"" + dragTheLettersSound + "\"" +
                 "}";
-
-        return drillData;
-    }
-
-    public static  String getSoundDrillSevenJson(Context context,
-                                                 String listenToWordAndTouch,
-                                                 ArrayList<SpelledWord> words){
-
-        String drillData = "{\"listen_to_word_and_touch\":\"" + listenToWordAndTouch + "\"," + "\"words\":[";
-
-        for (int i = 0; i < words.size(); i++) {
-
-            SpelledWord word = words.get(i);
-
-            if (i > 0) {
-                drillData += ",";
-            }
-            drillData += "{\"word_image\":" + ResourceDecoder.getIdentifier(context,word.getWord().getObjectImage(),"drawable") + ",";
-            drillData += "\"word_sound\":\"" + word.getWord().getObjectSound() + "\",";
-            drillData += "\"segmeted_word_spelling\":[";
-
-            String[] images = word.getWord().getSpelling().split(",");
-
-            for(int x = 0; x < images.length; x++){
-
-                String[] BlackAndRed = images[x].split("&");
-
-                if (x > 0) {
-                    drillData += ",";
-                }
-                drillData += "{\"black\":" + ResourceDecoder.getIdentifier(context,BlackAndRed[0],"drawable");
-                drillData += ",\"red\":" + ResourceDecoder.getIdentifier(context,BlackAndRed[1],"drawable");
-                drillData += ",\"letter\":" + "\"" + ("" + word.getWord().getCustomData().charAt(x)) + "\"" + "}";
-            }
-
-            drillData += "],\"segmeted_word_sound\":\"" + word.getWord().getObjectSound() + "\"," +
-                    "\"segmeted_word_slow_sound\":\"" + word.getWord().getObjectSlowSound() + "\"," +
-                    "\"segmeted_word_sounds\":[";
-
-            List<String> sounds = word.getLettersSound();
-            for (int j = 0; j < sounds.size(); j++) {
-
-                String sound = sounds.get(j);
-
-                if (j > 0) {
-                    drillData += ",";
-                }
-                drillData += "{\"sound\":\"" + sound + "\"}";
-            }
-
-            drillData += "],";
-            drillData +=  "\"pictures\":[" ;
-
-            List<DraggableImage<String>> draggableImages = word.getLettersImages();
-            for (int k = 0; k < draggableImages.size(); k++) {
-
-                DraggableImage<String> draggableImage = draggableImages.get(k);
-
-                if (k > 0) {
-                    drillData += ",";
-                }
-                drillData += "{\"picture\":" + ResourceDecoder.getIdentifier(context,draggableImage.getcontent(),"drawable") +
-                        ",\"word_sound\":\"" +  draggableImage.getSound() + "\"" +
-                        ",\"correct\":" +  draggableImage.isRight() + "}";
-            }
-            drillData += "]}";
-        }
-        drillData += "]}";
 
         return drillData;
     }

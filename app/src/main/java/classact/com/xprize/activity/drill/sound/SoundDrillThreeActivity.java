@@ -27,6 +27,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
+import classact.com.xprize.database.model.Letter;
 import classact.com.xprize.utils.FetchResource;
 
 public class SoundDrillThreeActivity extends DrillActivity {
@@ -37,13 +38,13 @@ public class SoundDrillThreeActivity extends DrillActivity {
     @BindView(R.id.left_letter) ImageView leftLetter;
     @BindView(R.id.right_letter) ImageView rightLetter;
 
-    private String drillData;
-    private JSONArray sets;
+    private Letter correctLetter;
+    private Letter wrongLetter;
+
     private int currentSet;
     private int correctItem;
     private String currentSound;
     private String currentPhonicSound;
-    private JSONObject params;
     private Runnable mRunnable;
     private boolean itemsEnabled;
     private Random rnd;
@@ -67,26 +68,17 @@ public class SoundDrillThreeActivity extends DrillActivity {
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
 
-        rnd = new Random();
-
-        itemsEnabled = false;
         leftLetter.setOnClickListener((v) -> clickedItem(0));
         rightLetter.setOnClickListener((v) -> clickedItem(1));
-        drillData = getIntent().getExtras().getString("data");
-        currentSet = 0;
+
         initialiseData();
         showSet();
     }
 
     private void initialiseData(){
-        try {
-            params = new JSONObject(drillData);
-            sets = params.getJSONArray("sets");
-            showSet();
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
+        rnd = new Random();
+        itemsEnabled = false;
+        currentSet = 0;
     }
 
     public void showSet(){
@@ -95,84 +87,62 @@ public class SoundDrillThreeActivity extends DrillActivity {
         ez.hide(leftLetter, rightLetter);
 
         try{
-            JSONObject setData = sets.getJSONObject(currentSet);
-            String image = setData.getString("image");
+            correctLetter = vm.getCorrectLetter(currentSet);
+            wrongLetter = vm.getWrongLetter(currentSet);
 
+            String image = correctLetter.getLetterPictureLowerCaseBlackURI();
             loadImage(targetLetter, FetchResource.imageId(context, image));
 
-            currentSound = setData.getString("sound");
-            currentPhonicSound = setData.getString("phonic_sound");
-            JSONArray images = setData.getJSONArray("images");
-
-            JSONObject item1JSONObject = null;
-            JSONObject item2JSONObject = null;
-
-            for (int i = 0; i < images.length(); i++) {
-                // Get item from images JSONArray
-                JSONObject item = images.getJSONObject(i);
-
-                // Check if it's the correct one
-                if (item.getInt("correct") == 1) {
-                    item1JSONObject = item;
-                } else {
-                    item2JSONObject = item;
-                }
-            }
+            currentPhonicSound = correctLetter.getPhonicSoundURI();
+            currentSound = (correctLetter.getIsLetter() == 1) ? correctLetter.getLetterSoundURI() : currentPhonicSound;
 
             // Get a random value between 0 and 1
             correctItem = rnd.nextInt(2);
 
-            // Determine where item{1|2}JSONObject should be assigned to
+            // Assign correct | wrong letter
             if (correctItem == 0) {
 
-                // item1 is item1JSONObject
-                loadImage(leftLetter, FetchResource.imageId(context, item1JSONObject, "image"));
-                loadImage(rightLetter, FetchResource.imageId(context, item2JSONObject, "image"));
+                loadImage(leftLetter, FetchResource.imageId(context, correctLetter.getLetterPictureLowerCaseBlackURI()));
+                loadImage(rightLetter, FetchResource.imageId(context, wrongLetter.getLetterPictureLowerCaseBlackURI()));
 
             } else if (correctItem == 1) {
 
                 // item1 is item2JSONObject
-                loadImage(leftLetter, FetchResource.imageId(context, item2JSONObject, "image"));
-                loadImage(rightLetter, FetchResource.imageId(context, item1JSONObject, "image"));
+                loadImage(leftLetter, FetchResource.imageId(context, wrongLetter.getLetterPictureLowerCaseBlackURI()));
+                loadImage(rightLetter, FetchResource.imageId(context, correctLetter.getLetterPictureLowerCaseBlackURI()));
             }
 
-            String sound = params.getString("this_is_the_letter");
-            playSound(sound, this::playSound);
+            thisIsTheLetter();
         }
         catch (Exception ex){
             ex.printStackTrace();
         }
     }
 
-    public void playSound(){
-        try {
-            playSound(currentSound, this::playItMakes);
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
+
+    public void thisIsTheLetter() {
+        String sound = (correctLetter.getIsLetter() == 1) ?
+                "drill3drillsound1" :
+                "this_is_the_sound";
+        playSound(sound, this::letterSound);
     }
 
-    private void playItMakes(){
-        try {
-            String sound = params.getString("it_makes_sound");
-            playSound(sound, this::playPhonicSound);
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
+    public void letterSound(){
+        playSound(currentSound, this::itMakesTheSound);
     }
 
-    private void playPhonicSound(){
-        try {
-            playSound(currentPhonicSound, this::playNextSound);
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
+    private void itMakesTheSound(){
+        String sound = (correctLetter.getIsLetter() == 1) ?
+                "drill3drillsound2" :
+                "m_phrase26";
+        playSound(sound, this::phonicSound);
     }
 
-    public void playNextSound(){
+    private void phonicSound(){
+        playSound(currentPhonicSound, this::touch);
+    }
+
+    public void touch(){
         try {
 
             loadImage(background, R.drawable.background_choosetheletter, new RequestListener() {
@@ -189,7 +159,7 @@ public class SoundDrillThreeActivity extends DrillActivity {
                 }
             });
 
-            String sound = params.getString("touch");
+            String sound = "drill3drillsound3";
             playSound(sound, this::playSoundAgain);
         }
         catch (Exception ex){
@@ -222,7 +192,7 @@ public class SoundDrillThreeActivity extends DrillActivity {
                 itemsEnabled = false;
                 mRunnable = null;
                 mRunnable = () -> {
-                        if (currentSet < sets.length() - 1) {
+                        if (currentSet < vm.getLetterCount() - 1) {
                             currentSet++;
                             // Next drill
                             handler.delayed(this::showSet, 350);

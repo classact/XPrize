@@ -1,13 +1,15 @@
 package classact.com.xprize.activity.drill.math;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.Guideline;
 import android.util.SparseArray;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -27,22 +29,27 @@ import classact.com.xprize.utils.RandomExcluding;
 
 public class MathsDrillSevenAndOneActivity extends DrillActivity implements View.OnTouchListener, View.OnDragListener {
 
-    @BindView(R.id.activity_maths_drill_seven_and_one) RelativeLayout rootView;
+    @BindView(R.id.activity_maths_drill_seven_and_one) ConstraintLayout rootView;
 
     @BindView(R.id.beads) ImageView beads;
 
-    @BindView(R.id.itemsReceptacle) RelativeLayout itemsReceptacle;
+    @BindView(R.id.missing_number_01) ImageView filler1;
+    @BindView(R.id.missing_number_02) ImageView filler2;
+    @BindView(R.id.missing_number_03) ImageView filler3;
 
-    @BindView(R.id.numeral_1) ImageView filler1;
-    @BindView(R.id.numeral_2) ImageView filler2;
-    @BindView(R.id.numeral_3) ImageView filler3;
+    @BindView(R.id.number_01) ImageView item1;
+    @BindView(R.id.number_02) ImageView item2;
+    @BindView(R.id.number_03) ImageView item3;
+    @BindView(R.id.number_04) ImageView item4;
+    @BindView(R.id.number_05) ImageView item5;
+    @BindView(R.id.number_06) ImageView item6;
 
-    @BindView(R.id.item_one) ImageView item1;
-    @BindView(R.id.item_two) ImageView item2;
-    @BindView(R.id.item_three) ImageView item3;
-    @BindView(R.id.item_four) ImageView item4;
-    @BindView(R.id.item_five) ImageView item5;
-    @BindView(R.id.item_six) ImageView item6;
+    @BindView(R.id.g_h_missing_number_01) Guideline ghMissingNumber01;
+    @BindView(R.id.g_h_missing_number_02) Guideline ghMissingNumber02;
+    @BindView(R.id.g_h_missing_number_03) Guideline ghMissingNumber03;
+
+    @BindView(R.id.g_h_numbers) Guideline ghNumbers;
+    @BindView(R.id.g_v_numbers) Guideline gvNumbers;
 
     private JSONObject allData;
 
@@ -71,8 +78,6 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
                 .register(getLifecycle())
                 .prepare(context);
 
-        beads.setY(320f);
-        beads.setX(-30f);
         loadImage(beads, R.drawable.counting_beads);
 
         handler = vm.getHandler();
@@ -106,53 +111,6 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
 
     private void initialiseObjects(){
         try {
-            item1.setPadding(40, 40, 40, 40);
-            RelativeLayout.LayoutParams item1LP = (RelativeLayout.LayoutParams) item1.getLayoutParams();
-            item1LP.width = 230;
-            item1LP.height = 230;
-            item1LP.leftMargin = 170;
-            item1LP.topMargin = 165;
-            item1.setLayoutParams(item1LP);
-
-            item2.setPadding(40, 40, 40, 40);
-            RelativeLayout.LayoutParams item2LP = (RelativeLayout.LayoutParams) item2.getLayoutParams();
-            item2LP.width = 285;
-            item2LP.height = 230;
-            item2LP.leftMargin = 450;
-            item2LP.topMargin = 105;
-            item2.setLayoutParams(item2LP);
-
-            item3.setPadding(40, 40, 40, 40);
-            RelativeLayout.LayoutParams item3LP = (RelativeLayout.LayoutParams) item3.getLayoutParams();
-            item3LP.width = 290;
-            item3LP.height = 230;
-            item3LP.leftMargin = 760;
-            item3LP.topMargin = 165;
-            item3.setLayoutParams(item3LP);
-
-            item4.setPadding(40, 40, 40, 40);
-            RelativeLayout.LayoutParams item4LP = (RelativeLayout.LayoutParams) item4.getLayoutParams();
-            item4LP.width = 290;
-            item4LP.height = 240;
-            item4LP.leftMargin = 1050;
-            item4LP.topMargin = 280;
-            item4.setLayoutParams(item4LP);
-
-            item5.setPadding(40, 40, 40, 40);
-            RelativeLayout.LayoutParams item5LP = (RelativeLayout.LayoutParams) item5.getLayoutParams();
-            item5LP.width = 280;
-            item5LP.height = 230;
-            item5LP.leftMargin = 1340;
-            item5LP.topMargin = 320;
-            item5.setLayoutParams(item5LP);
-
-            item6.setPadding(40, 40, 40, 40);
-            RelativeLayout.LayoutParams item6LP = (RelativeLayout.LayoutParams) item6.getLayoutParams();
-            item6LP.width = 310;
-            item6LP.height = 225;
-            item6LP.leftMargin = 1630;
-            item6LP.topMargin = 220;
-            item6.setLayoutParams(item6LP);
 
             staticNumberViews = new SparseArray<>();
             JSONArray items = allData.getJSONArray("completion_pieces");
@@ -407,15 +365,11 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
                         placeItem();
                         ImageView view = (ImageView) event.getLocalState();
                         view.setVisibility(View.INVISIBLE);
+                        starWorks.play(this, v);
                         if (mediaPlayer != null) {
                             if (mediaPlayer.isPlaying()) {
                                 int timeLeft = mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition();
-                                handler.delayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        end();
-                                    }
-                                }, timeLeft);
+                                handler.delayed(this::end, timeLeft);
                             } else {
                                 end();
                             }
