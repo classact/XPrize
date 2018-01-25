@@ -11,6 +11,7 @@ import javax.inject.Inject;
 
 import classact.com.xprize.activity.drill.books.StoryActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillFourActivity;
+import classact.com.xprize.activity.drill.sound.SoundDrillSevenActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillThreeActivity;
 import classact.com.xprize.activity.drill.tutorial.Tutorial;
 import classact.com.xprize.activity.link.LevelCompleteLink;
@@ -282,34 +283,11 @@ public class DrillFetcher extends DbAccessor {
                         break;
                     }
                     case 7: {
-                        int wordType = 1; // drill 1 only uses phonic words, which is WordType 1
-                        int limit = 6; // 5 words for this drill
-                        int wrongWordLimit = 10;
+//                        int wordType = 1; // drill 1 only uses phonic words, which is WordType 1
+//                        int limit = 6; // 5 words for this drill
+//                        int wrongWordLimit = 10;
 
-                        //This will get 5 random words based on the specific unit ID
-                        ArrayList<Integer> rightDrillWordIds = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
-                        ArrayList<Integer> wrongDrillWordIds = DrillWordHelper.getWrongDrillWordsByLetter(dbHelper.getReadableDatabase(), languageId, wordType, letter.getLetterName(), wrongWordLimit);
-                        DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-                        // Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
-
-                        ArrayList<Word> rightDrillWords = new ArrayList<>();
-                        for (Integer id : rightDrillWordIds) {
-                            rightDrillWords.add(WordHelper.getWord(dbHelper.getReadableDatabase(), id));
-                        }
-
-                        ArrayList<Word> wrongDrillWords = new ArrayList<>();
-                        for (Integer id : wrongDrillWordIds) {
-                            wrongDrillWords.add(WordHelper.getWord(dbHelper.getReadableDatabase(), id));
-                        }
-
-
-                        // Fetch D7
-                        intent = phonicsDrills.D7(context, dbHelper, unitId, drillId, languageId,
-                                letter,
-                                rightDrillWords,
-                                wrongDrillWords,
-                                drillFlowWord.getDrillSound1()
-                        );
+                        intent = new Intent(context, SoundDrillSevenActivity.class);
                         break;
                     }
                     case 8: {
