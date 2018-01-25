@@ -89,36 +89,43 @@ public class SoundDrill04ViewModel extends DrillViewModel {
         List<Word> tempWords = new ArrayList<>();
         List<Boolean> tempCheckList = new ArrayList<>();
 
-        // Get correct word ids
-        List<Integer> correctWordIds = DrillWordHelper.getDrillWords(
+        // Get correct words
+        correctWords = WordHelper.getUnitWords(
                 dbHelper.getReadableDatabase(),
                 1,
                 unitSection.getUnitId(),
                 unitSection.getSectionSubId(),
-                unitSectionDrill.getDrillId(),
                 1,
                 4);
 
-        // Get correct words
-        for (int i = 0; i < correctWordIds.size(); i++) {
-            Word word = WordHelper.getWord(dbHelper.getReadableDatabase(), correctWordIds.get(i));
-            correctWords.add(word);
+        // Add to temp words list
+        for (int i = 0; i < tempWords.size(); i++) {
+            Word word = correctWords.get(i);
             tempWords.add(word);
             tempCheckList.add(true);
         }
 
-        // Get wrong word ids
-        List<Integer> wrongWordIds = DrillWordHelper.getWrongDrillWordsByLetter(
-                dbHelper.getReadableDatabase(),
-                1,
-                1,
-                letter.getLetterName(),
-                2);
-
         // Get wrong words
-        for (int i = 0; i < wrongWordIds.size(); i++) {
-            Word word = WordHelper.getWord(dbHelper.getReadableDatabase(), wrongWordIds.get(i));
-            wrongWords.add(word);
+        wrongWords = (letter.getIsLetter() == 1) ?
+                WordHelper.getAntiUnitWords(
+                        dbHelper.getReadableDatabase(),
+                        1,
+                        unitSection.getUnitId(),
+                        unitSection.getSectionSubId(),
+                        1,
+                        letter.getLetterName(),
+                        2) :
+                WordHelper.getAntiUnitWords(
+                        dbHelper.getReadableDatabase(),
+                        1,
+                        unitSection.getUnitId(),
+                        unitSection.getSectionSubId(),
+                        1,
+                        2);
+
+        // Add to temp words list
+        for (int i = 0; i < wrongWords.size(); i++) {
+            Word word = wrongWords.get(i);
             tempWords.add(word);
             tempCheckList.add(false);
         }

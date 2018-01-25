@@ -242,19 +242,10 @@ public class DrillFetcher extends DbAccessor {
                         break;
                     }
                     case 3: {
-//                        int limit = 5; // 5 cupcakes selectable
-
-                        // Fetch D3
-//                        intent = phonicsDrills.D3(context, dbHelper, unitId, subId, drillId, languageId, letterId, limit);
                         intent = new Intent(context, SoundDrillThreeActivity.class);
                         break;
                     }
                     case 4: {
-//                        int wordType = 1; // drill 1 only uses phonic words, which is WordType 1
-//                        int rightLimit = 4; // limit the words to 4 for this drill
-//                        int wrongLimit = 2;
-
-                        // Fetch D4
                         intent = new Intent(context, SoundDrillFourActivity.class);
                         break;
                     }
@@ -283,10 +274,6 @@ public class DrillFetcher extends DbAccessor {
                         break;
                     }
                     case 7: {
-//                        int wordType = 1; // drill 1 only uses phonic words, which is WordType 1
-//                        int limit = 6; // 5 words for this drill
-//                        int wrongWordLimit = 10;
-
                         intent = new Intent(context, SoundDrillSevenActivity.class);
                         break;
                     }

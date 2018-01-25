@@ -7,11 +7,14 @@ public class Word {
     private int wordID;
     private int languageID;
     private String wordName;
+    private int wordType;
     private String wordPictureURI;
     private String imagePictureURI;
     private String wordSlowSoundURI;
     private String wordSoundURI;
     private String english;
+    private int isPlural;
+    private int isVowel;
 
     public int getWordID() {
         return wordID;
@@ -35,6 +38,14 @@ public class Word {
 
     public void setWordName(String wordName) {
         this.wordName = wordName;
+    }
+
+    public int getWordType() {
+        return wordType;
+    }
+
+    public void setWordType(int wordType) {
+        this.wordType = wordType;
     }
 
     public String getWordPictureURI() {
@@ -77,4 +88,19 @@ public class Word {
         this.english = english;
     }
 
+    public int getIsPlural() {
+        return isPlural;
+    }
+
+    public void setIsPlural(int isPlural) {
+        this.isPlural = isPlural;
+    }
+
+    public int getIsVowel() {
+        return isVowel;
+    }
+
+    public void setIsVowel(int isVowel) {
+        this.isVowel = isVowel;
+    }
 }

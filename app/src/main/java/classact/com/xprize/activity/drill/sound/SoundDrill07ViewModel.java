@@ -83,25 +83,34 @@ public class SoundDrill07ViewModel extends DrillViewModel {
         letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), 1, letterId);
 
         // Get correct word ids
-        List<Integer> correctWordIds = DrillWordHelper.getDrillWords(
+        List<Word> correctWords = WordHelper.getUnitWords(
                 dbHelper.getReadableDatabase(),
                 1,
                 unitSection.getUnitId(),
                 unitSection.getSectionSubId(),
-                unitSectionDrill.getDrillId(),
                 1,
                 5);
 
         // Get correct words
-        int numCorrectWords = correctWordIds.size();
+        int numCorrectWords = correctWords.size();
 
         // Get wrong word ids
-        List<Integer> wrongWordIds = DrillWordHelper.getWrongDrillWordsByLetter(
-                dbHelper.getReadableDatabase(),
-                1,
-                1,
-                letter.getLetterName(),
-                numCorrectWords * 2);
+        List<Word> wrongWords = (letter.getIsLetter() == 1) ?
+                WordHelper.getAntiUnitWords(
+                        dbHelper.getReadableDatabase(),
+                        1,
+                        unitSection.getUnitId(),
+                        unitSection.getSectionSubId(),
+                        1,
+                        letter.getLetterName(),
+                        numCorrectWords * 2) :
+                WordHelper.getAntiUnitWords(
+                        dbHelper.getReadableDatabase(),
+                        1,
+                        unitSection.getUnitId(),
+                        unitSection.getSectionSubId(),
+                        1,
+                        numCorrectWords * 2);
 
         // Populate word sets
         int startingWrongWordId = 0;
@@ -110,8 +119,8 @@ public class SoundDrill07ViewModel extends DrillViewModel {
             // Setup words
             List<Word> words = new ArrayList<>();
 
-            // Get correct word
-            Word correctWord = WordHelper.getWord(dbHelper.getReadableDatabase(), correctWordIds.get(i));
+            // Add correct word to words list
+            Word correctWord = correctWords.get(i);
             words.add(correctWord);
 
             // Get correct word letter sounds
@@ -132,9 +141,9 @@ public class SoundDrill07ViewModel extends DrillViewModel {
             // Add word letters to correct word letters
             correctWordLetters.add(wordLetters);
 
-            // Get wrong words
-            words.add(WordHelper.getWord(dbHelper.getReadableDatabase(), wrongWordIds.get(startingWrongWordId++))); // wrong word
-            words.add(WordHelper.getWord(dbHelper.getReadableDatabase(), wrongWordIds.get(startingWrongWordId++))); // wrong word
+            // Add wrong words to words list
+            words.add(wrongWords.get(startingWrongWordId++));
+            words.add(wrongWords.get(startingWrongWordId++));
 
             //  Shuffle words and add
             List<Word> shuffledWords = new ArrayList<>();
