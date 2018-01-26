@@ -1,20 +1,17 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
+import classact.com.xprize.utils.FetchResource;
 
 public class SoundDrillOneActivity extends DrillActivity {
 
@@ -23,12 +20,7 @@ public class SoundDrillOneActivity extends DrillActivity {
     @BindView(R.id.letter) ImageView letter;
     @BindView(R.id.image) ImageView image;
 
-    private JSONObject drillData;
-    private JSONArray objects;
     private int currentObject;
-    private int letterType;
-
-    private int mStage;
 
     private SoundDrill01ViewModel vm;
 
@@ -44,23 +36,11 @@ public class SoundDrillOneActivity extends DrillActivity {
                 .register(getLifecycle())
                 .prepare(context);
 
-        ViewGroup.MarginLayoutParams letterLayoutParams = (ViewGroup.MarginLayoutParams) letter.getLayoutParams();
-        letterLayoutParams.height = (int) (400f * getResources().getDisplayMetrics().density);
-        letterLayoutParams.width = ViewGroup.MarginLayoutParams.WRAP_CONTENT;
-        letter.setLayoutParams(letterLayoutParams);
-
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
 
-        String drillData = getIntent().getExtras().getString("data");
-        initialiseData(drillData);
+        initialize();
         //this letter is a small
-
-        pauseScreen = ez.frameFull();
-        pauseScreen.setClickable(true);
-        pauseScreen.setFocusable(true);
-        ez.gray(pauseScreen);
-        rootView.addView(pauseScreen);
 
         playIntro();
     }
@@ -68,13 +48,23 @@ public class SoundDrillOneActivity extends DrillActivity {
     //
     // This method reads the JSON that is passed into the activity
     //
-    private void initialiseData(String data){
+    private void initialize(){
         try {
-            drillData = new JSONObject(data);
-            int item = drillData.getInt("letter");
-            letterType = drillData.getInt("letter_type");
-            letter.setImageResource(item);
-            objects = drillData.getJSONArray("objects");
+            ViewGroup.MarginLayoutParams letterLayoutParams = (ViewGroup.MarginLayoutParams) letter.getLayoutParams();
+            letterLayoutParams.height = (int) (400f * getResources().getDisplayMetrics().density);
+            letterLayoutParams.width = ViewGroup.MarginLayoutParams.WRAP_CONTENT;
+            letter.setLayoutParams(letterLayoutParams);
+
+            pauseScreen = ez.frameFull();
+            pauseScreen.setClickable(true);
+            pauseScreen.setFocusable(true);
+            ez.gray(pauseScreen);
+            rootView.addView(pauseScreen);
+
+            int letterImageId = FetchResource.imageId(context, vm.getLetter().getLetterPictureLowerCaseBlackURI());
+            letter.setImageResource(letterImageId);
+
+            currentObject = 0;
         }
         catch (Exception ex){
             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
@@ -88,7 +78,7 @@ public class SoundDrillOneActivity extends DrillActivity {
     private void playIntro(){
         String sound;
         try {
-            sound = drillData.getString("intro");
+            sound = (vm.isLetter()) ? "drill1drillsound1" : "this_is_the_sound";
             playSound(sound, this::playNormalLetterSound);
         }
         catch (Exception ex){
@@ -100,10 +90,10 @@ public class SoundDrillOneActivity extends DrillActivity {
     public void playNormalLetterSound(){
         String sound;
         try {
-            if (letterType == 1) {
-                sound = drillData.getString("letter_sound");
+            if (vm.isLetter()) {
+                sound = vm.getLetter().getLetterSoundURI();
             } else {
-                sound = drillData.getString("letter_phonic_sound");
+                sound = vm.getLetter().getLetterSoundURI();
             }
             playSound(sound, this::playPhonicSoundIntro);
         }
@@ -116,11 +106,7 @@ public class SoundDrillOneActivity extends DrillActivity {
     public void playPhonicSoundIntro(){
         String sound;
         try {
-            if (letterType == 1) {
-                sound = drillData.getString("it_makes_sound");
-            } else {
-                sound = "m_phrase26";
-            }
+            sound = (vm.isLetter()) ? "drill1drillsound2" : "m_phrase26";
             playSound(sound, this::playletterSound);
         }
         catch (Exception ex) {
@@ -132,7 +118,7 @@ public class SoundDrillOneActivity extends DrillActivity {
     public void playletterSound(){
         String sound;
         try {
-            sound = drillData.getString("letter_phonic_sound");
+            sound = vm.getLetter().getPhonicSoundURI();
             playSound(sound, this::nowYouTry);
         }
         catch (Exception ex){
@@ -144,8 +130,8 @@ public class SoundDrillOneActivity extends DrillActivity {
     private void nowYouTry(){
         String sound;
         try {
-            sound = drillData.getString("now_you_try");
-            playSound(sound, this::intiatePrescence);
+            sound = "drill1drillsound3";
+            playSound(sound, () -> handler.delayed(this::soundAndObject,1000));
         }
         catch (Exception ex){
             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
@@ -153,23 +139,12 @@ public class SoundDrillOneActivity extends DrillActivity {
         }
     }
 
-    public void intiatePrescence(){
-        currentObject = 0;
-        handler.delayed(this::soundAndObject,1000);
-
-    }
-
     private void soundAndObject(){
         String sound;
         try {
-            int image = objects.getJSONObject(currentObject).getInt("object");
+            int image = FetchResource.imageId(context, vm.getWord(currentObject).getImagePictureURI());
             loadImage(letter, image);
-            if (letterType == 1) {
-                // sound = drillData.getString("letter_sound");
-                sound = drillData.getString("letter_phonic_sound");
-            } else {
-                sound = drillData.getString("letter_phonic_sound");
-            }
+            sound = vm.getLetter().getPhonicSoundURI();
             playSound(sound, this::playObject);
         }
         catch (Exception ex) {
@@ -181,7 +156,7 @@ public class SoundDrillOneActivity extends DrillActivity {
     private void playObject(){
         String sound;
         try {
-            sound = objects.getJSONObject(currentObject).getString("object_sound");
+            sound = vm.getWord(currentObject).getWordSoundURI();
             playSound(sound, () -> {
                 currentObject ++;
                 if (currentObject < 3){

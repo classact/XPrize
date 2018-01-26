@@ -13,38 +13,6 @@ import classact.com.xprize.utils.ResourceDecoder;
 
 public class SoundDrillJsonBuilder {
 
-    //Builds JSON to pass to Sound Drill Activity One
-    public static String getSoundDrillOneJson(Context context,
-            ObjectAndSound<String> letter,
-            int letterType,
-            String thisIsTheLetterSound,
-            String itMakesTheSound,
-            String nowTrySound,
-            List<ObjectAndSound<String>> illustrativeObjects){
-        String drillData = "";
-        drillData += "{\"letter\":" + ResourceDecoder.getIdentifier(context,letter.getObjectImage(),"drawable") + ",";
-        drillData += "\"letter_type\":" + letterType + ",";
-
-        if (letterType == 0) {
-            drillData += "\"intro\":\"this_is_the_sound\",";
-        } else {
-            drillData += "\"intro\":\"" + thisIsTheLetterSound + "\",";
-        }
-        drillData += "\"it_makes_sound\":\"" + itMakesTheSound+ "\",";
-        drillData += "\"now_you_try\":\"" + nowTrySound+ "\",";
-        drillData += "\"letter_sound\":\"" + letter.getObjectSound()+ "\",";
-        drillData += "\"letter_phonic_sound\":\"" + letter.getObjectPhonicSound()+ "\",";
-        drillData += "\"objects\": [";
-        drillData += "{\"object\": " + ResourceDecoder.getIdentifier(context,illustrativeObjects.get(0).getObjectImage(),"drawable")+ ",";
-        drillData += "\"object_sound\":\"" + illustrativeObjects.get(0).getObjectSound()+ "\"},";
-        drillData += "{\"object\": " + ResourceDecoder.getIdentifier(context,illustrativeObjects.get(1).getObjectImage(),"drawable") + ",";
-        drillData += "\"object_sound\":\"" + illustrativeObjects.get(1).getObjectSound()+ "\"},";
-        drillData += "{\"object\": " + ResourceDecoder.getIdentifier(context,illustrativeObjects.get(2).getObjectImage(),"drawable") + ",";
-        drillData += "\"object_sound\":\"" + illustrativeObjects.get(2).getObjectSound()+ "\"}";
-        drillData += "]}";
-        return drillData;
-    }
-
     //Builds JSON to pass to SoundDrill Activity Two
     public static String getSoundDrillTwoJson(Context context,
                                      String drillSound,

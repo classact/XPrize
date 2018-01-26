@@ -70,6 +70,38 @@ public class LetterHelper {
         return letter;
     }
 
+    public Letter getLetter(SQLiteDatabase db, int languageId, int unitId, int subId) {
+        Letter letter = null;
+        Cursor cursor = db.rawQuery("" +
+                "SELECT l.* " +
+                "FROM tbl_LetterSequence ls " +
+                "INNER JOIN tbl_Letter l ON l._id = ls.LetterID " +
+                "WHERE ls.LanguageID = " + languageId + " " +
+                "AND ls.UnitID = " + unitId + " " +
+                "AND ls.UnitSubID = " + subId + ";", null);
+
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            letter = new Letter();
+            letter.setLetterId(cursor.getInt(cursor.getColumnIndex("_id")));
+            letter.setLanguageId(cursor.getInt(cursor.getColumnIndex("LanguageID")));
+            letter.setLetterName(cursor.getString(cursor.getColumnIndex("LetterName")));
+            letter.setLetterPictureLowerCaseBlackURI(cursor.getString(cursor.getColumnIndex("LetterPictureLowerCaseBlack")));
+            letter.setLetterPictureLowerCaseBlueURI(cursor.getString(cursor.getColumnIndex("LetterPictureLowerCaseBlue")));
+            letter.setLetterPictureUpperCaseBlackURI(cursor.getString(cursor.getColumnIndex("LetterPictureUpperCaseBlack")));
+            letter.setLetterPictureUpperCaseRedURI(cursor.getString(cursor.getColumnIndex("LetterPictureUpperCaseRed")));
+            letter.setLetterPictureUpperCaseDotsURI(cursor.getString(cursor.getColumnIndex("LetterPictureUpperCaseDots")));
+            letter.setLetterPictureLowerCaseDotsURI(cursor.getString(cursor.getColumnIndex("LetterPictureLowerCaseDots")));
+            letter.setLetterSoundURI(cursor.getString(cursor.getColumnIndex("LetterSound")));
+            letter.setPhonicSoundURI(cursor.getString(cursor.getColumnIndex("PhonicSound")));
+            letter.setLetterLowerPath(cursor.getString(cursor.getColumnIndex("LetterLowerPath")));
+            letter.setLetterUpperPath(cursor.getString(cursor.getColumnIndex("LetterUpperPath")));
+            letter.setIsLetter(cursor.getInt(cursor.getColumnIndex("IsLetter")));
+        }
+        cursor.close();
+        return letter;
+    }
+
     public Letter getLetterByName(SQLiteDatabase db,int languageId, String letterName){
         String[] columns = new String[] {"_id","LanguageID","LetterName","LetterPictureLowerCaseBlack",
                 "LetterPictureLowerCaseBlue","LetterPictureUpperCaseBlack","LetterPictureUpperCaseRed",

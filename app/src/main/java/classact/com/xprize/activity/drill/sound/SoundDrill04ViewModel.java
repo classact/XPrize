@@ -76,14 +76,12 @@ public class SoundDrill04ViewModel extends DrillViewModel {
         UnitSectionDrill unitSectionDrill = unitSectionDrillHelper.getUnitSectionDrillInProgress(dbHelper.getReadableDatabase(), 1);
         UnitSection unitSection = unitSectionHelper.getUnitSection(dbHelper.getReadableDatabase(), unitSectionDrill.getUnitSectionId());
 
-        // Get letter id
         // Get letter
-        int letterId = LetterSequenceHelper.getLetterID(
+        letter = letterHelper.getLetter(
                 dbHelper.getReadableDatabase(),
                 1,
                 unitSection.getUnitId(),
                 unitSectionDrill.getDrillSubId());
-        letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), 1, letterId);
 
         // Prepare temp list
         List<Word> tempWords = new ArrayList<>();

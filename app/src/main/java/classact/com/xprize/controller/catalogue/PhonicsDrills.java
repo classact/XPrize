@@ -46,47 +46,6 @@ public class PhonicsDrills {
         this.letterHelper = letterHelper;
     }
 
-    public Intent D1(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
-                            int subId, int letterId, int limit, int wordType
-    ) throws SQLiteException, Exception {
-        Intent intent;
-
-        try {
-            DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-            Letter letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
-
-            int letterType = letter.getIsLetter();
-
-            ObjectAndSound<String> letterObject = new ObjectAndSound<>(
-                    letter.getLetterPictureLowerCaseBlackURI(),
-                    letter.getLetterSoundURI(),
-                    letter.getPhonicSoundURI());
-            List<ObjectAndSound<String>> drillObjects = new ArrayList<>();
-            ArrayList<Integer> drillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
-
-            for (int i=0; i < drillWordIDs.size(); i++ ){
-                Word word = WordHelper.getWord(dbHelper.getReadableDatabase(), drillWordIDs.get(i));
-                drillObjects.add(new ObjectAndSound<String>(word.getImagePictureURI(), word.getWordSoundURI(), word.getWordSlowSoundURI()));
-            }
-            String drillData = SoundDrillJsonBuilder.getSoundDrillOneJson(context,
-                    letterObject,
-                    letterType,
-                    drillFlowWord.getDrillSound1(),
-                    drillFlowWord.getDrillSound2(),
-                    drillFlowWord.getDrillSound3(),
-                    drillObjects);
-            intent = new Intent(context, SoundDrillOneActivity.class);
-            intent.putExtra("data", drillData);
-
-        } catch (SQLiteException sqlex) {
-            throw new SQLiteException("D1: " + sqlex.getMessage());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new Exception("D1: " + ex.getMessage());
-        }
-        return intent;
-    }
-
     public Intent D2(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
                             int subId, int letterId, int limit, int wordType
     ) throws SQLiteException, Exception {
