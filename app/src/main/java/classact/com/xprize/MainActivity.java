@@ -17,7 +17,10 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 
 import javax.inject.Inject;
@@ -96,6 +99,9 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
         Guideline ghCloud3 = ez.guide.create(true, 0.4f);
         Guideline gvCloud3 = ez.guide.create(false, 0.8f);
 
+        Guideline ghWindmill = ez.guide.create(true, 0.594f);
+        Guideline gvWindmill = ez.guide.create(false, 0.44f);
+
         rootView.addView(ghVillage);
         rootView.addView(ghVege01);
         rootView.addView(gvVege01);
@@ -108,11 +114,15 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
         rootView.addView(gvCloud2);
         rootView.addView(ghCloud3);
         rootView.addView(gvCloud3);
+        rootView.addView(ghWindmill);
+        rootView.addView(gvWindmill);
 
         ez.guide.setPercentage(ghMid, 0.69f);
         ez.guide.setPercentage(gvMid, 0.5f);
 
         ImageView village = new ImageView(context);
+        ImageView windmillTop = new ImageView(context);
+        ImageView windmillBlades = new ImageView(context);
         ImageView clouds1 = new ImageView(context);
         ImageView clouds2 = new ImageView(context);
         ImageView clouds3 = new ImageView(context);
@@ -120,23 +130,29 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
         ImageView vege02 = new ImageView(context);
 
         village.setScaleType(ImageView.ScaleType.FIT_XY);
+        windmillTop.setScaleType(ImageView.ScaleType.FIT_XY);
+        windmillBlades.setScaleType(ImageView.ScaleType.FIT_XY);
         clouds1.setScaleType(ImageView.ScaleType.FIT_XY);
         clouds2.setScaleType(ImageView.ScaleType.FIT_XY);
         clouds3.setScaleType(ImageView.ScaleType.FIT_XY);
         vege01.setScaleType(ImageView.ScaleType.FIT_XY);
         vege02.setScaleType(ImageView.ScaleType.FIT_XY);
 
-        ez.layoutWrapContent(village, clouds1, clouds2, clouds3, vege01, vege02);
+        ez.layoutWrapContent(village, windmillBlades, windmillTop, clouds1, clouds2, clouds3, vege01, vege02);
 
-        rootView.addView(village, rootView.getChildCount() - 15);
-        rootView.addView(clouds1, rootView.getChildCount() - 16);
-        rootView.addView(clouds2, rootView.getChildCount() - 17);
-        rootView.addView(clouds3, rootView.getChildCount() - 18);
+        rootView.addView(windmillTop, rootView.getChildCount() - 17);
+        rootView.addView(windmillBlades, rootView.getChildCount() - 18);
+        rootView.addView(village, rootView.getChildCount() - 19);
+        rootView.addView(clouds1, rootView.getChildCount() - 20);
+        rootView.addView(clouds2, rootView.getChildCount() - 21);
+        rootView.addView(clouds3, rootView.getChildCount() - 22);
 
         rootView.addView(vege01);
         rootView.addView(vege02);
 
-        loadImage(village, R.drawable.bg_landscape_foreground);
+        loadImage(village, R.drawable.bg_landscape_foreground_02);
+        loadImage(windmillBlades, R.drawable.windmill);
+        loadImage(windmillTop, R.drawable.windmill_center);
         loadImage(clouds1, R.drawable.clouds_01);
         loadImage(clouds2, R.drawable.clouds_02);
         loadImage(clouds3, R.drawable.clouds_03);
@@ -145,6 +161,12 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
 
         ez.guide.center(ghVillage, village);
         ez.guide.center(gvMid, village);
+
+        ez.guide.center(ghWindmill, windmillBlades);
+        ez.guide.center(gvWindmill, windmillBlades);
+
+        ez.guide.center(ghWindmill, windmillTop);
+        ez.guide.center(gvWindmill, windmillTop);
 
         ez.guide.center(ghCloud1, clouds1);
         ez.guide.center(gvCloud1, clouds1);
@@ -165,6 +187,10 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
         background.setScaleY(1.4f);
         village.setScaleX(1.4f);
         village.setScaleY(1.4f);
+        windmillBlades.setScaleX(1.4f);
+        windmillBlades.setScaleY(1.4f);
+        windmillTop.setScaleX(1.4f);
+        windmillTop.setScaleY(1.4f);
 
         clouds1.setScaleX(2f);
         clouds1.setScaleY(2f);
@@ -193,30 +219,37 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-//        LiveObjectAnimator cloud1Animator = new LiveObjectAnimator(
-//                getLifecycle(),
-//                ObjectAnimator.ofFloat(clouds1, "translationX", 2500))
-//                    .setDuration(93750)
-//                    .setRepeatCount(Animation.INFINITE)
-//                    .setRepeatMode(Animation.REVERSE);
-//
-//        LiveObjectAnimator cloud2Animator = new LiveObjectAnimator(
-//                getLifecycle(),
-//                ObjectAnimator.ofFloat(clouds2, "translationX", 1000f))
-//                .setDuration(118750)
-//                .setRepeatCount(Animation.INFINITE)
-//                .setRepeatMode(Animation.REVERSE);
-//
-//        LiveObjectAnimator cloud3Animator = new LiveObjectAnimator(
-//                getLifecycle(),
-//                ObjectAnimator.ofFloat(clouds3, "translationX", -2500f))
-//                .setDuration(106250)
-//                .setRepeatCount(Animation.INFINITE)
-//                .setRepeatMode(Animation.REVERSE);
-//
-//        cloud1Animator.start();
-//        cloud2Animator.start();
-//        cloud3Animator.start();
+        LiveObjectAnimator windmillAnimator = new LiveObjectAnimator(
+        getLifecycle(),
+        ObjectAnimator.ofFloat(windmillBlades, "rotation", 0f, 360f))
+            .setDuration(60)
+            .setRepeatCount(Animation.INFINITE).setInterpolator(new LinearInterpolator());
+
+        LiveObjectAnimator cloud1Animator = new LiveObjectAnimator(
+                getLifecycle(),
+                ObjectAnimator.ofFloat(clouds1, "translationX", 2500))
+                    .setDuration(60000)
+                    .setRepeatCount(Animation.INFINITE)
+                    .setRepeatMode(Animation.REVERSE);
+
+        LiveObjectAnimator cloud2Animator = new LiveObjectAnimator(
+                getLifecycle(),
+                ObjectAnimator.ofFloat(clouds2, "translationX", 1000f))
+                .setDuration(96000)
+                .setRepeatCount(Animation.INFINITE)
+                .setRepeatMode(Animation.REVERSE);
+
+        LiveObjectAnimator cloud3Animator = new LiveObjectAnimator(
+                getLifecycle(),
+                ObjectAnimator.ofFloat(clouds3, "translationX", -2500f))
+                .setDuration(75000)
+                .setRepeatCount(Animation.INFINITE)
+                .setRepeatMode(Animation.REVERSE);
+
+        cloud1Animator.start();
+        cloud2Animator.start();
+        cloud3Animator.start();
+        windmillAnimator.start();
 
         Globals.PLAY_BACKGROUND_MUSIC(context);
     }
