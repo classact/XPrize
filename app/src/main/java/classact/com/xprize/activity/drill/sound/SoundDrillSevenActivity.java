@@ -129,7 +129,6 @@ public class SoundDrillSevenActivity extends DrillActivity {
             roundEnd = false;
 
             letters.setText("");
-            ez.guide.setPercentage(gvLetters, 0.3f);
 
             for (int i = 0; i < vm.getSetWordCount(currentSet); i++) {
                 ImageView item = items[i];

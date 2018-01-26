@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:id="@+id/letters_g_v"
-        app:layout_constraintGuide_percent="0.6"/>
+        app:layout_constraintGuide_percent="0.3"/>
 
     <LinearLayout
         android:id="@+id/writing_container"
