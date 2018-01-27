@@ -9,7 +9,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import classact.com.xprize.database.DbHelper;
-import classact.com.xprize.database.helper.DrillWordHelper;
 import classact.com.xprize.database.helper.LetterHelper;
 import classact.com.xprize.database.helper.LetterSequenceHelper;
 import classact.com.xprize.database.helper.UnitSectionDrillHelper;

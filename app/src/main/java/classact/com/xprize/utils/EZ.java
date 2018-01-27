@@ -65,6 +65,16 @@ public class EZ {
         return frame;
     }
 
+    public void layoutWrapContent(View... views) {
+        for (View view : views) {
+            ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(
+                    ViewGroup.MarginLayoutParams.WRAP_CONTENT,
+                    ViewGroup.MarginLayoutParams.WRAP_CONTENT
+            );
+            view.setLayoutParams(layoutParams);
+        }
+    }
+
     public FrameLayout frame() {
         FrameLayout frame = new FrameLayout(context);
         FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(
@@ -677,6 +687,24 @@ public class EZ {
         public float getPercentage(Guideline guideline) {
             ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) guideline.getLayoutParams();
             return layoutParams.guidePercent;
+        }
+
+        public void center(Guideline guideline, View view) {
+
+            ConstraintLayout.LayoutParams guidelineLayoutParams = (ConstraintLayout.LayoutParams) guideline.getLayoutParams();
+            int orientation = guidelineLayoutParams.orientation;
+
+            ConstraintLayout.LayoutParams viewLayoutParams = (ConstraintLayout.LayoutParams) view.getLayoutParams();
+            if (orientation == ConstraintLayout.LayoutParams.HORIZONTAL) {
+                viewLayoutParams.topToTop = guideline.getId();
+                viewLayoutParams.bottomToBottom = guideline.getId();
+            } else if (orientation == ConstraintLayout.LayoutParams.VERTICAL) {
+                viewLayoutParams.leftToLeft = guideline.getId();
+                viewLayoutParams.rightToRight = guideline.getId();
+            } else {
+                Log.w("ez.guide.center", "Invalid orientation");
+            }
+            view.setLayoutParams(viewLayoutParams);
         }
 
         /**

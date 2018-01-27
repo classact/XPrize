@@ -15,6 +15,7 @@ import com.bumptech.glide.request.RequestOptions;
 
 import javax.inject.Inject;
 
+import classact.com.xprize.utils.EZ;
 import dagger.android.support.DaggerAppCompatActivity;
 
 /**
@@ -25,6 +26,7 @@ public abstract class MenuActivity extends DaggerAppCompatActivity {
 
     protected @Inject Context context;
     protected @Inject ViewModelProvider.Factory vmFactory;
+    protected @Inject EZ ez;
 
     protected void loadImage(ImageView iv, int resId) {
         Glide.with(this).load(resId).into(iv);

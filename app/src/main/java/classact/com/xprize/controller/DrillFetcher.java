@@ -10,9 +10,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 import classact.com.xprize.activity.drill.books.StoryActivity;
+import classact.com.xprize.activity.drill.sound.SoundDrillFiveActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillFourActivity;
+import classact.com.xprize.activity.drill.sound.SoundDrillOneActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillSevenActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillThreeActivity;
+import classact.com.xprize.activity.drill.sound.SoundDrillTwoActivity;
 import classact.com.xprize.activity.drill.tutorial.Tutorial;
 import classact.com.xprize.activity.link.LevelCompleteLink;
 import classact.com.xprize.activity.link.MathsLink;
@@ -226,19 +229,11 @@ public class DrillFetcher extends DbAccessor {
 
                 switch (drillId) {
                     case 1: {
-                        int wordType = 1; // drill 1 only uses phonic words, which is WordType 1
-                        int limit = 3; // limit the words to 3 for this drill
-
-                        // Fetch D1
-                        intent = phonicsDrills.D1(context, dbHelper, unitId, drillId, languageId, subId, letterId, limit, wordType);
+                        intent =  new Intent(context, SoundDrillOneActivity.class);
                         break;
                     }
                     case 2: {
-                        int wordType = 1; // drill 1 only uses phonic words, which is WordType 1
-                        int limit = 5; // 5 words for this drill
-
-                        // Fetch D2
-                        intent = phonicsDrills.D2(context, dbHelper, unitId, drillId, languageId, subId, letterId, limit, wordType);
+                        intent = new Intent(context, SoundDrillTwoActivity.class);
                         break;
                     }
                     case 3: {
@@ -250,12 +245,7 @@ public class DrillFetcher extends DbAccessor {
                         break;
                     }
                     case 5: {
-                        int wordType = 1; // drill 1 only uses phonic words, which is WordType 1
-                        int rightLimit = 6; // 3 right words, 3 other right words
-                        int wrongLimit = 9;
-
-                        // Fetch D5
-                        intent = phonicsDrills.D5(context, dbHelper, unitId, drillId, languageId, subId, letterId, rightLimit, wrongLimit, wordType);
+                        intent = new Intent(context, SoundDrillFiveActivity.class);
                         break;
                     }
                     case 6: {
