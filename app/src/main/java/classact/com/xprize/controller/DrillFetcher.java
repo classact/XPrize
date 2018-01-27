@@ -14,6 +14,7 @@ import classact.com.xprize.activity.drill.sound.SoundDrillFourActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillOneActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillSevenActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillThreeActivity;
+import classact.com.xprize.activity.drill.sound.SoundDrillTwoActivity;
 import classact.com.xprize.activity.drill.tutorial.Tutorial;
 import classact.com.xprize.activity.link.LevelCompleteLink;
 import classact.com.xprize.activity.link.MathsLink;
@@ -231,11 +232,12 @@ public class DrillFetcher extends DbAccessor {
                         break;
                     }
                     case 2: {
-                        int wordType = 1; // drill 1 only uses phonic words, which is WordType 1
-                        int limit = 5; // 5 words for this drill
-
-                        // Fetch D2
-                        intent = phonicsDrills.D2(context, dbHelper, unitId, drillId, languageId, subId, letterId, limit, wordType);
+//                        int wordType = 1; // drill 1 only uses phonic words, which is WordType 1
+//                        int limit = 5; // 5 words for this drill
+//
+//                        // Fetch D2
+//                        intent = phonicsDrills.D2(context, dbHelper, unitId, drillId, languageId, subId, letterId, limit, wordType);
+                        intent = new Intent(context, SoundDrillTwoActivity.class);
                         break;
                     }
                     case 3: {
