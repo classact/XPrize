@@ -13,32 +13,6 @@ import classact.com.xprize.utils.ResourceDecoder;
 
 public class SoundDrillJsonBuilder {
 
-    //Builds JSON to pass to SoundDrill Activity Two
-    public static String getSoundDrillTwoJson(Context context,
-                                     String drillSound,
-                                     String thisIsASound,
-                                     String touchPictureStartWithSound,
-                                     List<RightWrongPair> pairs){
-
-        String drillData = "{\"paircount\": " + pairs.size() + "," +
-                "\"drillsound\":\"" + drillSound + "\"," +
-                "\"this_is_a\":\"" + thisIsASound + "\"," +
-                "\"touch_picture_starts_with\":\"" + touchPictureStartWithSound + "\"," +
-                "\"pairs\":[";
-        for (int i = 0; i < pairs.size(); i++) {
-            RightWrongPair pair = pairs.get(i);
-            if (i > 0) {
-                drillData += ",";
-            }
-            drillData += "{\"correctimage\": " + ResourceDecoder.getIdentifier(context,pair.getRightObject().getObjectImage(),"drawable") + "," +
-                    "\"correctsound\":\"" + pair.getRightObject().getObjectSound() + "\"," +
-                    "\"wrongimage\":" + ResourceDecoder.getIdentifier(context,pair.getWrongObject().getObjectImage(),"drawable") + "," +
-                    "\"wrongsound\":\"" + pair.getWrongObject().getObjectSound() + "\"}";
-        }
-        drillData += "]}";
-        return drillData;
-    }
-
     //BuildJSON String for Drill 5
     public static String getSoundDrillFiveJson(Context context,
                                                String bahatiHasASound,

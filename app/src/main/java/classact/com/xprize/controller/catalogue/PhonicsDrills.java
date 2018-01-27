@@ -46,44 +46,6 @@ public class PhonicsDrills {
         this.letterHelper = letterHelper;
     }
 
-    public Intent D2(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
-                            int subId, int letterId, int limit, int wordType
-    ) throws SQLiteException, Exception {
-        Intent intent;
-
-        try {
-            DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-            Letter letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
-            ArrayList<Integer> rightDrillWordIDs = DrillWordHelper.getDrillWords(dbHelper.getReadableDatabase(), languageId, unitId, subId, drillId, wordType, limit);
-            ArrayList<Integer> wrongDrillWordIDs = DrillWordHelper.getWrongDrillWordsByLetter(dbHelper.getReadableDatabase(), languageId, wordType, letter.getLetterName(), limit);
-            List<RightWrongPair> pairs = new ArrayList<>();
-            for (int i=0; i < rightDrillWordIDs.size(); i++ ){ // we have the same amount of right and wrong words. So just loop over right words.
-                Word rightWord = WordHelper.getWord(dbHelper.getReadableDatabase(), rightDrillWordIDs.get(i));
-                Word wrongWord = WordHelper.getWord(dbHelper.getReadableDatabase(), wrongDrillWordIDs.get(i));
-
-                ObjectAndSound<String> rightObject = new ObjectAndSound<>(rightWord.getImagePictureURI(), rightWord.getWordSoundURI(), "");
-                ObjectAndSound<String> wrongObject = new ObjectAndSound<>(wrongWord.getImagePictureURI(), wrongWord.getWordSoundURI(), "");
-                RightWrongPair pair = new RightWrongPair(rightObject, wrongObject);
-                pairs.add(pair);
-            }
-            String drillData = SoundDrillJsonBuilder.getSoundDrillTwoJson(context,
-                    letter.getPhonicSoundURI(),
-                    drillFlowWords.getDrillSound1(),
-                    drillFlowWords.getDrillSound2(),
-                    pairs
-            );
-            intent = new Intent(context, SoundDrillTwoActivity.class);
-            intent.putExtra("data", drillData);
-
-        } catch (SQLiteException sqlex) {
-            throw new SQLiteException("D2: " + sqlex.getMessage());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new Exception("D2: " + ex.getMessage());
-        }
-        return intent;
-    }
-
     public Intent D5(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
                             int subId, int letterId, int rightlimit, int wronglimit, int wordType
     ) throws SQLiteException, Exception {
