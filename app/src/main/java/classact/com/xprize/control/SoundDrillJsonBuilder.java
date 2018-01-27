@@ -13,53 +13,6 @@ import classact.com.xprize.utils.ResourceDecoder;
 
 public class SoundDrillJsonBuilder {
 
-    //BuildJSON String for Drill 5
-    public static String getSoundDrillFiveJson(Context context,
-                                               String bahatiHasASound,
-                                               String sheNeedsSomethingElseSound,
-                                               ArrayList<SoundDrillFiveObject> data){
-        String drillData = "{\"sets\":[";
-
-        for (int i = 0; i < data.size(); i++) {
-            SoundDrillFiveObject item = data.get(i);
-            ObjectAndSound drillObject = item.getDrillObject();
-            ArrayList<ObjectAndSound> images = item.getImages();
-
-            System.out.println("== SoundDrillJsonBuilder.getSoundDrillFiveJson > Debug: # of images = " + images.size());
-
-            if (i != 0) {
-                drillData += ",";
-            }
-
-            drillData +=
-                    "{\"demoimage\":" + ResourceDecoder.getIdentifier(context,drillObject.getObjectImage(),"drawable") + "," +
-                    "\"demosound\":\"" + drillObject.getObjectSound() + "\"," +
-                    "\"sound\":\"" + drillObject.getBeginningLetterSound() + "\"," +
-                    "\"images\":[";
-
-            for (int j = 0; j < images.size(); j++) {
-                ObjectAndSound image = images.get(j);
-
-                if (j != 0) {
-                    drillData += ",";
-                }
-                drillData +=
-                        "{\"image\":" + ResourceDecoder.getIdentifier(context, image.getObjectImage(),"drawable") +
-                        ",\"correct\":" + image.getCustomData() +
-                        ",\"sound\":\"" + image.getObjectSound() + "\"" +
-                        "}";
-            }
-            drillData += "]}";
-        }
-
-        drillData +=
-                "]," +
-                "\"bahati_has_a\":\"" + bahatiHasASound + "\"," +
-                "\"she_needs_something_else\":\"" + sheNeedsSomethingElseSound + "\"" +
-                "}";
-        return drillData;
-    }
-
     public static String getSoundDrillSixJson(Context context,
                                               String smallLetterImage,
                                               String upperLetterImage,

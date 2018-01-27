@@ -62,10 +62,16 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
     @Inject DrillFetcher drillFetcher;
     MainActivityViewModel vm;
 
-    private SensorManager sensorManager;
-    private Sensor sensor;
-    private float[] gravity;
-    private float[] linear_acceleration;
+//    private SensorManager mSensorManager;
+//    private Sensor mAccelerometer;
+//    private Sensor mMagnetometer;
+//
+//    private final float[] mAccelerometerReading = new float[3];
+//    private final float[] mMagnetometerReading = new float[3];
+//
+//    private final float[] mRotationMatrix = new float[9];
+//    private final float[] mOrientationAngles = new float[3];
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -216,10 +222,9 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
         addListeners();
 
         /* SENSORS */
-        gravity = new float[3];
-        linear_acceleration = new float[3];
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+//        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+//        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+//        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
         LiveObjectAnimator windmillAnimator = new LiveObjectAnimator(
         getLifecycle(),
@@ -463,7 +468,10 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
     @Override
     public void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+        // sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+//        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+//        mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+
 
         if (!mNewActivity) {
             Globals.RESUME_BACKGROUND_MUSIC(context);
@@ -475,7 +483,7 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
     @Override
     public void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(this);
+//        mSensorManager.unregisterListener(this);
 
         if (!mNewActivity) {
             Globals.PAUSE_BACKGROUND_MUSIC(context);
@@ -522,29 +530,35 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        // In this example, alpha is calculated as t / (t + dT),
-        // where t is the low-pass filter's time-constant and
-        // dT is the event delivery rate.
 
-        final float alpha = 0.8f;
-
-        // Isolate the force of gravity with the low-pass filter.
-        gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
-        gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
-        gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
-
-        // Remove the gravity contribution with the high-pass filter.
-        float x = linear_acceleration[0] = event.values[0] - gravity[0];
-        float y = linear_acceleration[1] = event.values[1] - gravity[1];
-        float z = linear_acceleration[2] = event.values[2] - gravity[2];
-
-        if (x > 1 || y > 1 || z > 1) {
-            Log.d("Linear Acceleration",
-                    "x: " + x + ", " +
-                            "y:" + y + ", " +
-                            "z: " + z);
-        }
+//        if (event.sensor == mAccelerometer) {
+//            System.arraycopy(event.values, 0, mAccelerometerReading,
+//                    0, mAccelerometerReading.length);
+//        }
+//        else if (event.sensor == mMagnetometer) {
+//            System.arraycopy(event.values, 0, mMagnetometerReading,
+//                    0, mMagnetometerReading.length);
+//        }
+        // updateOrientationAngles();
     }
+
+    // Compute the three orientation angles based on the most recent readings from
+    // the device's accelerometer and magnetometer.
+//    public void updateOrientationAngles() {
+//        // Update rotation matrix, which is needed to update orientation angles.
+//        SensorManager.getRotationMatrix(mRotationMatrix, null,
+//                mAccelerometerReading, mMagnetometerReading);
+//
+//        // "mRotationMatrix" now has up-to-date information.
+//
+//        SensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
+//
+//        // "mOrientationAngles" now has up-to-date information.
+//        Log.d("Orientation Angles",
+//                "Azimuth: " + mOrientationAngles[0] + ", " +
+//                        "Pitch: " + mOrientationAngles[1] + ", " +
+//                        "Roll: " + mOrientationAngles[2]);
+//    }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
