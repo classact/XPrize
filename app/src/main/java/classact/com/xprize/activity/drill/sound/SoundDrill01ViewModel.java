@@ -67,23 +67,24 @@ public class SoundDrill01ViewModel extends DrillViewModel {
         UnitSectionDrill unitSectionDrill = unitSectionDrillHelper.getUnitSectionDrillInProgress(dbHelper.getReadableDatabase(), 1);
         UnitSection unitSection = unitSectionHelper.getUnitSection(dbHelper.getReadableDatabase(), unitSectionDrill.getUnitSectionId());
 
-        // Get unit id and sub id
+        // Get unit id
+        // Get unit sub id
         int unitId = unitSection.getUnitId();
-        int subId = unitSectionDrill.getDrillSubId();
+        int unitSubId = unitSection.getSectionSubId();
 
         // Get letter
         letter = letterHelper.getLetter(
                 dbHelper.getReadableDatabase(),
                 1,
                 unitId,
-                subId);
+                unitSubId);
 
         // Get words
         words = WordHelper.getUnitWords(
                 dbHelper.getReadableDatabase(),
                 1,
                 unitId,
-                subId,
+                unitSubId,
                 1,
                 3);
 

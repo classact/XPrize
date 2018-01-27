@@ -77,13 +77,13 @@ public class SoundDrill04ViewModel extends DrillViewModel {
         UnitSection unitSection = unitSectionHelper.getUnitSection(dbHelper.getReadableDatabase(), unitSectionDrill.getUnitSectionId());
 
         // Get unit id
-        // Get drill sub id
+        // Get unit sub id
         int unitId = unitSection.getUnitId();
-        int drillSubId = unitSectionDrill.getDrillSubId();
+        int unitSubId = unitSection.getSectionSubId();
 
         // Get letter
         letter = letterHelper.getLetter(
-                dbHelper.getReadableDatabase(), 1, unitId, drillSubId);
+                dbHelper.getReadableDatabase(), 1, unitId, unitSubId);
 
         // Prepare temp list
         List<Word> tempWords = new ArrayList<>();
@@ -91,7 +91,7 @@ public class SoundDrill04ViewModel extends DrillViewModel {
 
         // Get correct words
         correctWords = WordHelper.getUnitWords(
-                dbHelper.getReadableDatabase(), 1, unitId, drillSubId, 1, 4);
+                dbHelper.getReadableDatabase(), 1, unitId, unitSubId, 1, 4);
 
         // Add to temp words list
         for (int i = 0; i < tempWords.size(); i++) {
@@ -103,9 +103,9 @@ public class SoundDrill04ViewModel extends DrillViewModel {
         // Get wrong words
         wrongWords = (letter.getIsLetter() == 1) ?
                 WordHelper.getAntiUnitWords(
-                        dbHelper.getReadableDatabase(), 1, unitId, drillSubId, 1, letter.getLetterName(), 2) :
+                        dbHelper.getReadableDatabase(), 1, unitId, unitSubId, 1, letter.getLetterName(), 2) :
                 WordHelper.getAntiUnitWords(
-                        dbHelper.getReadableDatabase(), 1, unitId, drillSubId, 1, 2);
+                        dbHelper.getReadableDatabase(), 1, unitId, unitSubId, 1, 2);
 
         // Add to temp words list
         for (int i = 0; i < wrongWords.size(); i++) {

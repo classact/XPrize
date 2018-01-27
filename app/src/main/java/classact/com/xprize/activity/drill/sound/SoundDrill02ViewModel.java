@@ -70,16 +70,18 @@ public class SoundDrill02ViewModel extends DrillViewModel {
         UnitSectionDrill unitSectionDrill = unitSectionDrillHelper.getUnitSectionDrillInProgress(dbHelper.getReadableDatabase(), 1);
         UnitSection unitSection = unitSectionHelper.getUnitSection(dbHelper.getReadableDatabase(), unitSectionDrill.getUnitSectionId());
 
+        // Get unit id
+        // Get unit sub id
         int unitId = unitSection.getUnitId();
-        int drillSubId = unitSectionDrill.getDrillSubId();
+        int unitSubId = unitSection.getSectionSubId();
 
         // Get letter
         letter = letterHelper.getLetter(
-                dbHelper.getReadableDatabase(), 1, unitId, drillSubId);
+                dbHelper.getReadableDatabase(), 1, unitId, unitSubId);
 
         // Get correct words
         correctWords = WordHelper.getUnitWords(
-                dbHelper.getReadableDatabase(), 1, unitId, drillSubId, 1, 5);
+                dbHelper.getReadableDatabase(), 1, unitId, unitSubId, 1, 5);
 
         // Establish n
         int n = correctWords.size();
@@ -87,9 +89,9 @@ public class SoundDrill02ViewModel extends DrillViewModel {
         // Get wrong words
         wrongWords = (letter.getIsLetter() == 1) ?
                 WordHelper.getAntiUnitWords(
-                        dbHelper.getReadableDatabase(), 1, unitId, drillSubId, 1, letter.getLetterName(), n) :
+                        dbHelper.getReadableDatabase(), 1, unitId, unitSubId, 1, letter.getLetterName(), n) :
                 WordHelper.getAntiUnitWords(
-                        dbHelper.getReadableDatabase(), 1, unitId, drillSubId, 1, n);
+                        dbHelper.getReadableDatabase(), 1, unitId, unitSubId, 1, n);
 
         //
         for (int i = 0; i < n; i++) {
