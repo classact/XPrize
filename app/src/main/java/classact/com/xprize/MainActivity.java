@@ -80,6 +80,7 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
         loadImage(background, R.drawable.bg_landscape);
 
         Guideline ghVillage = ez.guide.create(true, 0.75f);
+        Guideline gvVillage = ez.guide.create(false, 0.5f);
 
         Guideline ghVege01 = ez.guide.create(true, .99f);
         Guideline gvVege01 = ez.guide.create(false, 0.1f);
@@ -103,6 +104,7 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
         Guideline gvWindmill = ez.guide.create(false, 0.44f);
 
         rootView.addView(ghVillage);
+        rootView.addView(gvVillage);
         rootView.addView(ghVege01);
         rootView.addView(gvVege01);
         rootView.addView(ghVege02);
@@ -140,12 +142,12 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
 
         ez.layoutWrapContent(village, windmillBlades, windmillTop, clouds1, clouds2, clouds3, vege01, vege02);
 
-        rootView.addView(windmillTop, rootView.getChildCount() - 17);
-        rootView.addView(windmillBlades, rootView.getChildCount() - 18);
-        rootView.addView(village, rootView.getChildCount() - 19);
-        rootView.addView(clouds1, rootView.getChildCount() - 20);
-        rootView.addView(clouds2, rootView.getChildCount() - 21);
-        rootView.addView(clouds3, rootView.getChildCount() - 22);
+        rootView.addView(windmillTop, rootView.getChildCount() - 18);
+        rootView.addView(windmillBlades, rootView.getChildCount() - 19);
+        rootView.addView(village, rootView.getChildCount() - 20);
+        rootView.addView(clouds1, rootView.getChildCount() - 21);
+        rootView.addView(clouds2, rootView.getChildCount() - 22);
+        rootView.addView(clouds3, rootView.getChildCount() - 23);
 
         rootView.addView(vege01);
         rootView.addView(vege02);
@@ -160,7 +162,7 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
         loadImage(vege02, R.drawable.vegetation_02);
 
         ez.guide.center(ghVillage, village);
-        ez.guide.center(gvMid, village);
+        ez.guide.center(gvVillage, village);
 
         ez.guide.center(ghWindmill, windmillBlades);
         ez.guide.center(gvWindmill, windmillBlades);
@@ -225,30 +227,31 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
             .setDuration(60)
             .setRepeatCount(Animation.INFINITE).setInterpolator(new LinearInterpolator());
 
-        LiveObjectAnimator cloud1Animator = new LiveObjectAnimator(
-                getLifecycle(),
-                ObjectAnimator.ofFloat(clouds1, "translationX", 2500))
-                    .setDuration(60000)
-                    .setRepeatCount(Animation.INFINITE)
-                    .setRepeatMode(Animation.REVERSE);
+//        LiveObjectAnimator cloud1Animator = new LiveObjectAnimator(
+//                getLifecycle(),
+//                ObjectAnimator.ofFloat(clouds1, "translationX", 2500).setA)
+//                    .setDuration(60000)
+//                    .setRepeatCount(Animation.INFINITE)
+//                    .setRepeatMode(Animation.REVERSE);
+//
+//        LiveObjectAnimator cloud2Animator = new LiveObjectAnimator(
+//                getLifecycle(),
+//                ObjectAnimator.ofFloat(clouds2, "translationX", 1000f))
+//                .setDuration(96000)
+//                .setRepeatCount(Animation.INFINITE)
+//                .setRepeatMode(Animation.REVERSE);
+//
+//        LiveObjectAnimator cloud3Animator = new LiveObjectAnimator(
+//                getLifecycle(),
+//                ObjectAnimator.ofFloat(clouds3, "translationX", -2500f))
+//                .setDuration(75000)
+//                .setRepeatCount(Animation.INFINITE)
+//                .setRepeatMode(Animation.REVERSE);
 
-        LiveObjectAnimator cloud2Animator = new LiveObjectAnimator(
-                getLifecycle(),
-                ObjectAnimator.ofFloat(clouds2, "translationX", 1000f))
-                .setDuration(96000)
-                .setRepeatCount(Animation.INFINITE)
-                .setRepeatMode(Animation.REVERSE);
+//        cloud1Animator.start();
+//        cloud2Animator.start();
+//        cloud3Animator.start();
 
-        LiveObjectAnimator cloud3Animator = new LiveObjectAnimator(
-                getLifecycle(),
-                ObjectAnimator.ofFloat(clouds3, "translationX", -2500f))
-                .setDuration(75000)
-                .setRepeatCount(Animation.INFINITE)
-                .setRepeatMode(Animation.REVERSE);
-
-        cloud1Animator.start();
-        cloud2Animator.start();
-        cloud3Animator.start();
         windmillAnimator.start();
 
         Globals.PLAY_BACKGROUND_MUSIC(context);
@@ -523,26 +526,24 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
         // where t is the low-pass filter's time-constant and
         // dT is the event delivery rate.
 
-//        final float alpha = 0.8f;
-//
-//        // Isolate the force of gravity with the low-pass filter.
-//        gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
-//        gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
-//        gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
-//
-//        // Remove the gravity contribution with the high-pass filter.
-//        linear_acceleration[0] = event.values[0] - gravity[0];
-//        linear_acceleration[1] = event.values[1] - gravity[1];
-//        linear_acceleration[2] = event.values[2] - gravity[2];
+        final float alpha = 0.8f;
 
-//        Log.d("Gravity",
-//                "a: " + gravity[0] + ", " +
-//                        "b:" + gravity[1] + ", " +
-//                        "c: " + gravity[2]);
-//        Log.d("Linear Acceleration",
-//                "a: " + linear_acceleration[0] + ", " +
-//                        "b:" + linear_acceleration[1] + ", " +
-//                        "c: " + linear_acceleration[2]);
+        // Isolate the force of gravity with the low-pass filter.
+        gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
+        gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
+        gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
+
+        // Remove the gravity contribution with the high-pass filter.
+        float x = linear_acceleration[0] = event.values[0] - gravity[0];
+        float y = linear_acceleration[1] = event.values[1] - gravity[1];
+        float z = linear_acceleration[2] = event.values[2] - gravity[2];
+
+        if (x > 1 || y > 1 || z > 1) {
+            Log.d("Linear Acceleration",
+                    "x: " + x + ", " +
+                            "y:" + y + ", " +
+                            "z: " + z);
+        }
     }
 
     @Override
