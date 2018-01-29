@@ -72,23 +72,17 @@ public class SoundDrill07ViewModel extends DrillViewModel {
         UnitSectionDrill unitSectionDrill = unitSectionDrillHelper.getUnitSectionDrillInProgress(dbHelper.getReadableDatabase(), 1);
         UnitSection unitSection = unitSectionHelper.getUnitSection(dbHelper.getReadableDatabase(), unitSectionDrill.getUnitSectionId());
 
-        // Get letter id
+        // Get unit id
+        // Get unit sub id
+        int unitId = unitSection.getUnitId();
+        int unitSubId = unitSection.getSectionSubId();
+
         // Get letter
-        int letterId = LetterSequenceHelper.getLetterID(
-                dbHelper.getReadableDatabase(),
-                1,
-                unitSection.getUnitId(),
-                unitSectionDrill.getDrillSubId());
-        letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), 1, letterId);
+        letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), 1, unitId, unitSubId);
 
         // Get correct word ids
         List<Word> correctWords = WordHelper.getUnitWords(
-                dbHelper.getReadableDatabase(),
-                1,
-                unitSection.getUnitId(),
-                unitSection.getSectionSubId(),
-                1,
-                5);
+                dbHelper.getReadableDatabase(), 1, unitId, unitSubId, 1, 5);
 
         // Get correct words
         int numCorrectWords = correctWords.size();
@@ -96,20 +90,9 @@ public class SoundDrill07ViewModel extends DrillViewModel {
         // Get wrong word ids
         List<Word> wrongWords = (letter.getIsLetter() == 1) ?
                 WordHelper.getAntiUnitWords(
-                        dbHelper.getReadableDatabase(),
-                        1,
-                        unitSection.getUnitId(),
-                        unitSection.getSectionSubId(),
-                        1,
-                        letter.getLetterName(),
-                        numCorrectWords * 2) :
+                        dbHelper.getReadableDatabase(), 1, unitId, unitSubId, 1, letter.getLetterName(), numCorrectWords * 2) :
                 WordHelper.getAntiUnitWords(
-                        dbHelper.getReadableDatabase(),
-                        1,
-                        unitSection.getUnitId(),
-                        unitSection.getSectionSubId(),
-                        1,
-                        numCorrectWords * 2);
+                        dbHelper.getReadableDatabase(), 1, unitId, unitSubId, 1, numCorrectWords * 2);
 
         // Populate word sets
         int startingWrongWordId = 0;

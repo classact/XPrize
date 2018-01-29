@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.constraint.Guideline;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,10 +22,13 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.googlecode.leptonica.android.Scale;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -31,6 +36,7 @@ import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
+import classact.com.xprize.database.model.Letter;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
 
@@ -56,17 +62,14 @@ public class SoundDrillSixActivity extends DrillActivity {
     @BindView(R.id.letter_08) ImageView item8;
 
     private int currentItem;
-    private String drillData;
     public float x;
     public float y;
     public int image1;
     public int image2;
     public int [] positions;
-    public String drillSound;
     public boolean isInReceptacle1;
     public boolean isInReceptacle2;
     private int correctItems = 0;
-    private JSONObject data;
     private boolean itemsEnabled;
     private Runnable mRunnable;
 
@@ -94,65 +97,37 @@ public class SoundDrillSixActivity extends DrillActivity {
 
         itemsEnabled = false;
 
-        item1.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 0;
-                return dragItem(v,event);
-            }
+        item1.setOnTouchListener((v, event) -> {
+            currentItem = 0;
+            return dragItem(v,event);
         });
-        item2.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 1;
-                return dragItem(v,event);
-            }
+        item2.setOnTouchListener((v, event) -> {
+            currentItem = 1;
+            return dragItem(v,event);
         });
-        item3.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 2;
-                return dragItem(v,event);
-            }
+        item3.setOnTouchListener((v, event) -> {
+            currentItem = 2;
+            return dragItem(v,event);
         });
-        item4.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 3;
-                return dragItem(v,event);
-            }
+        item4.setOnTouchListener((v, event) -> {
+            currentItem = 3;
+            return dragItem(v,event);
         });
-
-        item5.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 4;
-                return dragItem(v,event);
-            }
+        item5.setOnTouchListener((v, event) -> {
+            currentItem = 4;
+            return dragItem(v,event);
         });
-
-        item6.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 5;
-                return dragItem(v,event);
-            }
+        item6.setOnTouchListener((v, event) -> {
+            currentItem = 5;
+            return dragItem(v,event);
         });
-
-        item7.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 6;
-                return dragItem(v,event);
-            }
+        item7.setOnTouchListener((v, event) -> {
+            currentItem = 6;
+            return dragItem(v,event);
         });
-
-        item8.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                currentItem = 7;
-                return dragItem(v,event);
-            }
+        item8.setOnTouchListener((v, event) -> {
+            currentItem = 7;
+            return dragItem(v,event);
         });
 
         leftBoxDropZone.setOnDragListener((v, event) -> {
@@ -208,49 +183,51 @@ public class SoundDrillSixActivity extends DrillActivity {
             return true;
         });
 
-        drillData = getIntent().getExtras().getString("data");
         initialiseData();
         playWeCanWriteTheLetter();
     }
 
     private void initialiseData(){
         try{
-            data = new JSONObject(drillData);
-            Random rand = new Random();
-            drillSound = data.getString("letter_sound");
-            if (rand.nextInt(2) == 0) {
-                image1 = data.getInt("small_letter");
-                image2 = data.getInt("big_letter");
+
+            ez.hide(item1, item2, item3, item4, item5, item6, item7, item8);
+
+            Random rnd = new Random();
+            List<Integer> indexes = new ArrayList<>();
+            indexes.add(0);
+            indexes.add(1);
+            indexes.add(2);
+            indexes.add(3);
+            indexes.add(4);
+            indexes.add(5);
+            indexes.add(6);
+            indexes.add(7);
+
+            Letter letter = vm.getLetter();
+
+            int lowerCaseImageId = FetchResource.imageId(context, letter.getLetterPictureLowerCaseBlackURI());
+            int upperCaseImageId = FetchResource.imageId(context, letter.getLetterPictureUpperCaseBlackURI());
+
+            loadImage(leftLetter, lowerCaseImageId);
+            loadImage(rightLetter, upperCaseImageId);
+
+            // Shuffle image1 and image2
+            if (rnd.nextInt(2) == 0) {
+                image1 = lowerCaseImageId;
+                image2 = upperCaseImageId;
+            } else {
+                image1 = upperCaseImageId;
+                image2 = lowerCaseImageId;
             }
-            else{
-                image2 = data.getInt("small_letter");
-                image1 = data.getInt("big_letter");
-            }
-            loadImage(leftLetter, data.getInt("small_letter"));
-            loadImage(rightLetter, data.getInt("big_letter"));
 
             positions = new int[8];
-            Arrays.fill(positions,0);
-            int countOne = 0;
-            int countTwo = 0;
-            for(int i = 0; i < 8; i++){
-                boolean assigned = false;
-                while (!assigned) {
-                    int aOrB = rand.nextInt(100);
-                    if (aOrB % 2 == 0 && countOne < 4) {
-                        countOne++;
-                        positions[i] = image1;
-                        assigned = true;
-                    }
-                    else if ( countTwo < 4) {
-                        countTwo++;
-                        positions[i] = image2;
-                        assigned = true;
-                    }
-                    else if ((countOne == 4 )&& (countTwo == 4))
-                        assigned = true;
-                }
+
+            for (int i = 8; i > 0; i--) {
+                int index = indexes.get(rnd.nextInt(i));
+                positions[index] = (i > 4) ? lowerCaseImageId : upperCaseImageId;
+                indexes.remove(indexes.indexOf(index));
             }
+
             loadImage(item1, positions[0]);
             loadImage(item2, positions[1]);
             loadImage(item3, positions[2]);
@@ -259,6 +236,8 @@ public class SoundDrillSixActivity extends DrillActivity {
             loadImage(item6, positions[5]);
             loadImage(item7, positions[6]);
             loadImage(item8, positions[7]);
+
+            correctItems = 0;
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -267,22 +246,18 @@ public class SoundDrillSixActivity extends DrillActivity {
 
     private void playWeCanWriteTheLetter() {
         try {
-
-            // In two ways
-            mRunnable = null;
-            mRunnable = () -> handler.delayed(this::playInTwoWays, 350);
-
-            String sound = data.getString("we_can_write_the_letter");
-            playSound(sound, () -> playDrillLetterAndRunnableAfterCompletion(mRunnable));
+            String sound = "drill6drillsound1";
+            playSound(sound, () -> handler.delayed(this::playDrillLetter, 350));
         }
         catch (Exception ex){
             ex.printStackTrace();
         }
     }
 
-    private void playDrillLetterAndRunnableAfterCompletion(final Runnable runnable){
+    private void playDrillLetter(){
         try {
-            playSound(drillSound, runnable);
+            String sound = vm.getLetter().getLetterSoundURI();
+            playSound(sound, this::playInTwoWays);
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -291,7 +266,7 @@ public class SoundDrillSixActivity extends DrillActivity {
 
     public void playInTwoWays(){
         try {
-            String sound = data.getString("in_two_ways");
+            String sound = "drill6drillsound2";
             playSound(sound, () -> handler.delayed(this::playStartLowerCase, 650));
         }
         catch (Exception ex){
@@ -301,11 +276,8 @@ public class SoundDrillSixActivity extends DrillActivity {
 
     private void playStartLowerCase(){
         try {
-            // Play upper case
-            mRunnable = null;
-            mRunnable = () -> handler.delayed(this::playUpperCase, 650);
-            int imageId = data.getInt("small_letter");;
-            String sound = data.getString("this_is_the_lower_case");
+            int imageId = FetchResource.imageId(context, vm.getLetter().getLetterPictureLowerCaseBlackURI());
+            String sound = "drill6drillsound3";
 
             loadImage(background, R.drawable.backgroundcapitalletterbox,
                     new RequestListener() {
@@ -319,7 +291,7 @@ public class SoundDrillSixActivity extends DrillActivity {
                     ez.hide(leftLetter, rightLetter);
                     loadImage(isolatedLetter, imageId);
                     rootView.setBackgroundColor(Color.WHITE);
-                    playSound(sound, () -> playDrillLetterAndRunnableAfterCompletion(mRunnable));
+                    playSound(sound, () -> playDrillLetterSecondTime());
                     return false;
                 }
             });
@@ -329,15 +301,33 @@ public class SoundDrillSixActivity extends DrillActivity {
         }
     }
 
+    private void playDrillLetterSecondTime(){
+        try {
+            String sound = vm.getLetter().getLetterSoundURI();
+            playSound(sound, () -> handler.delayed(this::playUpperCase, 650));
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
     private void playUpperCase(){
         try {
-            // Play drag the letters
-            mRunnable = null;
-            mRunnable = () -> handler.delayed(this::playDragTheLetters, 610);
+            loadImage(isolatedLetter,
+                    FetchResource.imageId(context, vm.getLetter().getLetterPictureLowerCaseBlackURI()),
+                    FetchResource.imageId(context, vm.getLetter().getLetterPictureUpperCaseBlackURI()));
+            String sound = "drill6drillsound4";
+            playSound(sound, this::playDrillLetterThirdTime);
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
 
-            loadImage(isolatedLetter, data.getInt("small_letter"), data.getInt("big_letter"));
-            String sound = data.getString("this_is_the_upper_case");
-            playSound(sound, () -> playDrillLetterAndRunnableAfterCompletion(mRunnable));
+    private void playDrillLetterThirdTime(){
+        try {
+            String sound = vm.getLetter().getLetterSoundURI();
+            playSound(sound, () -> handler.delayed(this::playDragTheLetters, 610));
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -362,17 +352,18 @@ public class SoundDrillSixActivity extends DrillActivity {
                 }
             });
 
-            String sound = data.getString("drag_the_letters");
+            String sound = "drill6drillsound5";
             String soundPath = FetchResource.sound(getApplicationContext(), sound);
             mediaPlayer.reset();
             mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mediaPlayer.setOnPreparedListener((mp) -> {
                     mp.start();
-                    handler.delayed(() -> itemsEnabled = true,mp.getDuration() - 100);
+                    handler.delayed(() -> {
+                        itemsEnabled = true;
+                        ez.show(item1, item2, item3, item4, item5, item6, item7, item8);
+                    },mp.getDuration() - 100);
                 });
-            mediaPlayer.setOnCompletionListener((mp) -> {
-                mediaPlayer.stop();
-            });
+            mediaPlayer.setOnCompletionListener((mp) -> mediaPlayer.stop());
             mediaPlayer.prepare();
         }
         catch (Exception ex){
@@ -381,7 +372,7 @@ public class SoundDrillSixActivity extends DrillActivity {
     }
 
     public void reward() {
-        correctItems ++;
+        correctItems++;
         if (correctItems == 8){
             mRunnable = null;
             mRunnable = () -> handler.delayed(() -> {
@@ -416,16 +407,5 @@ public class SoundDrillSixActivity extends DrillActivity {
         catch (Exception ex){
             ex.printStackTrace();
         }
-    }
-
-    public void setItemsEnabled(boolean enable) {
-        item1.setEnabled(enable);
-        item2.setEnabled(enable);
-        item3.setEnabled(enable);
-        item4.setEnabled(enable);
-        item5.setEnabled(enable);
-        item6.setEnabled(enable);
-        item7.setEnabled(enable);
-        item8.setEnabled(enable);
     }
 }

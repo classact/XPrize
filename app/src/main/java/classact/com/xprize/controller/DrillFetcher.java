@@ -14,6 +14,7 @@ import classact.com.xprize.activity.drill.sound.SoundDrillFiveActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillFourActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillOneActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillSevenActivity;
+import classact.com.xprize.activity.drill.sound.SoundDrillSixActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillThreeActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillTwoActivity;
 import classact.com.xprize.activity.drill.tutorial.Tutorial;
@@ -249,18 +250,7 @@ public class DrillFetcher extends DbAccessor {
                         break;
                     }
                     case 6: {
-                        DrillFlowWords drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-                        // Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
-
-                        // Fetch D6
-                        intent = phonicsDrills.D6(context, dbHelper, unitId, drillId, languageId,
-                                letter,
-                                drillFlowWord.getDrillSound1(),
-                                drillFlowWord.getDrillSound2(),
-                                drillFlowWord.getDrillSound3(),
-                                drillFlowWord.getDrillSound4(),
-                                drillFlowWord.getDrillSound5()
-                        );
+                        intent = new Intent(context, SoundDrillSixActivity.class);
                         break;
                     }
                     case 7: {

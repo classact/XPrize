@@ -42,6 +42,12 @@ public class EZ {
         this.context = context;
     }
 
+    public void addView(ViewGroup parent, View... children) {
+        for (View child : children) {
+            parent.addView(child);
+        }
+    }
+
     public ImageButton controlButton() {
         ImageButton controlButton = new ImageButton(context);
         controlButton.setBackgroundColor(Color.TRANSPARENT);
@@ -689,6 +695,26 @@ public class EZ {
             return layoutParams.guidePercent;
         }
 
+        public void center(Guideline horizontal, Guideline vertical, View view) {
+            ConstraintLayout.LayoutParams horizontalLayoutParams = (ConstraintLayout.LayoutParams) horizontal.getLayoutParams();
+            int horizontalOrientation = horizontalLayoutParams.orientation;
+            ConstraintLayout.LayoutParams verticalLayoutParams = (ConstraintLayout.LayoutParams) vertical.getLayoutParams();
+            int verticalOrientation = verticalLayoutParams.orientation;
+
+            if (!(horizontalOrientation == ConstraintLayout.LayoutParams.HORIZONTAL ||
+                    verticalOrientation == ConstraintLayout.LayoutParams.VERTICAL)) {
+                Log.e("ez.guide.center(gh, gv, view)", "Invalid orientation");
+                return;
+            }
+
+            ConstraintLayout.LayoutParams viewLayoutParams = (ConstraintLayout.LayoutParams) view.getLayoutParams();
+            viewLayoutParams.topToTop = horizontal.getId();
+            viewLayoutParams.leftToLeft = vertical.getId();
+            viewLayoutParams.rightToRight = vertical.getId();
+            viewLayoutParams.bottomToBottom = horizontal.getId();
+            view.setLayoutParams(viewLayoutParams);
+        }
+
         public void center(Guideline guideline, View view) {
 
             ConstraintLayout.LayoutParams guidelineLayoutParams = (ConstraintLayout.LayoutParams) guideline.getLayoutParams();
@@ -702,7 +728,7 @@ public class EZ {
                 viewLayoutParams.leftToLeft = guideline.getId();
                 viewLayoutParams.rightToRight = guideline.getId();
             } else {
-                Log.w("ez.guide.center", "Invalid orientation");
+                Log.w("ez.guide.center(g, view)", "Invalid orientation");
             }
             view.setLayoutParams(viewLayoutParams);
         }

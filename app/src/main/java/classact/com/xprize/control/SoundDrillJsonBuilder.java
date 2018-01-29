@@ -13,28 +13,6 @@ import classact.com.xprize.utils.ResourceDecoder;
 
 public class SoundDrillJsonBuilder {
 
-    public static String getSoundDrillSixJson(Context context,
-                                              String smallLetterImage,
-                                              String upperLetterImage,
-                                              String letterSound,
-                                              String weCanWriteTheLetterSound,
-                                              String inTwoWaysSound,
-                                              String thisIsLowerCaseSound,
-                                              String thisisUppderCaseSound,
-                                              String dragTheLettersSound){
-        String drillData = "{\"small_letter\":" + ResourceDecoder.getIdentifier(context,smallLetterImage,"drawable") + "," +
-                "\"letter_sound\":\"" + letterSound + "\"," +
-                "\"big_letter\":" + ResourceDecoder.getIdentifier(context,upperLetterImage,"drawable") + "," +
-                "\"we_can_write_the_letter\":\"" + weCanWriteTheLetterSound + "\"," +
-                "\"in_two_ways\":\"" + inTwoWaysSound + "\"," +
-                "\"this_is_the_lower_case\":\"" + thisIsLowerCaseSound + "\"," +
-                "\"this_is_the_upper_case\":\"" + thisisUppderCaseSound + "\"," +
-                "\"drag_the_letters\":\"" + dragTheLettersSound + "\"" +
-                "}";
-
-        return drillData;
-    }
-
     public static String getSoundDrillEightJson(Context context,
                                                  String smallLetterPath,
                                                  String letsLearnToWriteUpperSound,

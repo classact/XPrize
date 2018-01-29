@@ -156,6 +156,22 @@
 
     <!-- Drop Letters -->
 
+    <!-- Letter 01 START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_letter_01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.125"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_letter_01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.15"/>
+
     <ImageView
         android:id="@+id/letter_01"
         android:contentDescription="@string/Letter"
@@ -163,7 +179,29 @@
         android:textColor="@android:color/black"
         android:gravity="center"
         android:layout_width="168dp"
-        android:layout_height="150dp"/>
+        android:layout_height="150dp"
+        app:layout_constraintTop_toTopOf="@id/g_h_letter_01"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_letter_01"
+        app:layout_constraintRight_toRightOf="@id/g_v_letter_01"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_letter_01"/>
+
+
+    <!-- Letter 01 END -->
+    <!-- Letter 02 START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_letter_02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.325"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_letter_02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25"/>
 
     <ImageView
         android:id="@+id/letter_02"
@@ -172,7 +210,29 @@
         android:textColor="@android:color/black"
         android:gravity="center"
         android:layout_width="168dp"
-        android:layout_height="150dp"/>
+        android:layout_height="150dp"
+        app:layout_constraintTop_toTopOf="@id/g_h_letter_02"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_letter_02"
+        app:layout_constraintRight_toRightOf="@id/g_v_letter_02"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_letter_02"/>
+
+    <!-- Letter 02 END -->
+    <!-- Letter 03 START -->
+
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_letter_03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.125"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_letter_03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.35"/>
 
     <ImageView
         android:id="@+id/letter_03"
@@ -181,7 +241,28 @@
         android:textColor="@android:color/black"
         android:gravity="center"
         android:layout_width="168dp"
-        android:layout_height="150dp"/>
+        android:layout_height="150dp"
+        app:layout_constraintTop_toTopOf="@id/g_h_letter_03"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_letter_03"
+        app:layout_constraintRight_toRightOf="@id/g_v_letter_03"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_letter_03"/>
+
+    <!-- Letter 03 END -->
+    <!-- Letter 04 START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_letter_04"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.325"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_letter_04"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.45"/>
 
     <ImageView
         android:id="@+id/letter_04"
@@ -190,7 +271,28 @@
         android:textColor="@android:color/black"
         android:gravity="center"
         android:layout_width="168dp"
-        android:layout_height="150dp"/>
+        android:layout_height="150dp"
+        app:layout_constraintTop_toTopOf="@id/g_h_letter_04"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_letter_04"
+        app:layout_constraintRight_toRightOf="@id/g_v_letter_04"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_letter_04"/>
+
+    <!-- Letter 04 END -->
+    <!-- Letter 05 START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_letter_05"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.125"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_letter_05"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.55"/>
 
     <ImageView
         android:id="@+id/letter_05"
@@ -199,7 +301,28 @@
         android:textColor="@android:color/black"
         android:gravity="center"
         android:layout_width="168dp"
-        android:layout_height="150dp"/>
+        android:layout_height="150dp"
+        app:layout_constraintTop_toTopOf="@id/g_h_letter_05"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_letter_05"
+        app:layout_constraintRight_toRightOf="@id/g_v_letter_05"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_letter_05"/>
+
+    <!-- Letter 05 END -->
+    <!-- Letter 06 START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_letter_06"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.325"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_letter_06"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.65"/>
 
     <ImageView
         android:id="@+id/letter_06"
@@ -208,7 +331,28 @@
         android:textColor="@android:color/black"
         android:gravity="center"
         android:layout_width="168dp"
-        android:layout_height="150dp"/>
+        android:layout_height="150dp"
+        app:layout_constraintTop_toTopOf="@id/g_h_letter_06"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_letter_06"
+        app:layout_constraintRight_toRightOf="@id/g_v_letter_06"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_letter_06"/>
+
+    <!-- Letter 06 END -->
+    <!-- Letter 07 START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_letter_07"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.125"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_letter_07"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75"/>
 
     <ImageView
         android:id="@+id/letter_07"
@@ -217,7 +361,28 @@
         android:textColor="@android:color/black"
         android:gravity="center"
         android:layout_width="168dp"
-        android:layout_height="150dp"/>
+        android:layout_height="150dp"
+        app:layout_constraintTop_toTopOf="@id/g_h_letter_07"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_letter_07"
+        app:layout_constraintRight_toRightOf="@id/g_v_letter_07"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_letter_07"/>
+
+    <!-- Letter 07 END -->
+    <!-- Letter 08 START -->
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_letter_08"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.325"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_letter_08"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.85"/>
 
     <ImageView
         android:id="@+id/letter_08"
@@ -226,7 +391,13 @@
         android:textColor="@android:color/black"
         android:gravity="center"
         android:layout_width="168dp"
-        android:layout_height="150dp"/>
+        android:layout_height="150dp"
+        app:layout_constraintTop_toTopOf="@id/g_h_letter_08"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_letter_08"
+        app:layout_constraintRight_toRightOf="@id/g_v_letter_08"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_letter_08"/>
+
+    <!-- Letter 08 END -->
 
     <!-- Left Box START -->
 
