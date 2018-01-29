@@ -2,18 +2,14 @@ package classact.com.xprize.activity.drill.sound;
 
 import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
-import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import classact.com.xprize.database.DbHelper;
-import classact.com.xprize.database.helper.DrillWordHelper;
 import classact.com.xprize.database.helper.LetterHelper;
-import classact.com.xprize.database.helper.LetterSequenceHelper;
 import classact.com.xprize.database.helper.UnitSectionDrillHelper;
 import classact.com.xprize.database.helper.UnitSectionHelper;
 import classact.com.xprize.database.helper.WordHelper;
@@ -27,6 +23,7 @@ import classact.com.xprize.viewmodel.DrillViewModel;
 
 /**
  * Created by hcdjeong on 2017/12/27.
+ * View Model for Sound Drill Four
  */
 
 public class SoundDrill04ViewModel extends DrillViewModel {
@@ -43,7 +40,7 @@ public class SoundDrill04ViewModel extends DrillViewModel {
     private List<Boolean> checkList;
 
     @Inject
-    public SoundDrill04ViewModel(
+    SoundDrill04ViewModel(
             Bus bus, DbHelper dbHelper,
             LetterHelper letterHelper,
             UnitSectionDrillHelper unitSectionDrillHelper,
@@ -130,27 +127,23 @@ public class SoundDrill04ViewModel extends DrillViewModel {
         return this;
     }
 
-    public Letter getLetter() {
+    Letter getLetter() {
         return letter;
     }
 
-    public int getWordCount() {
+    int getWordCount() {
         return words.size();
     }
 
-    public int getCorrectWordCount() {
+    int getCorrectWordCount() {
         return correctWords.size();
     }
 
-    public int getWrongWordCount() {
-        return wrongWords.size();
-    }
-
-    public Word getWord(int index) {
+    Word getWord(int index) {
         return words.get(index);
     }
 
-    public boolean isCorrect(int index) {
+    boolean isCorrect(int index) {
         return checkList.get(index);
     }
 }

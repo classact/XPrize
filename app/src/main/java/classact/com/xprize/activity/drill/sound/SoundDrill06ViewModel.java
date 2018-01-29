@@ -17,6 +17,7 @@ import classact.com.xprize.viewmodel.DrillViewModel;
 
 /**
  * Created by hcdjeong on 2017/12/27.
+ * View Model for Sound Drill Six
  */
 
 public class SoundDrill06ViewModel extends DrillViewModel {
@@ -29,7 +30,7 @@ public class SoundDrill06ViewModel extends DrillViewModel {
     private Letter letter;
 
     @Inject
-    public SoundDrill06ViewModel(
+    SoundDrill06ViewModel(
             Bus bus, DbHelper dbHelper,
             LetterHelper letterHelper,
             UnitSectionDrillHelper unitSectionDrillHelper,
@@ -70,7 +71,7 @@ public class SoundDrill06ViewModel extends DrillViewModel {
         return this;
     }
 
-    public Letter getLetter() {
+    Letter getLetter() {
         return letter;
     }
 }

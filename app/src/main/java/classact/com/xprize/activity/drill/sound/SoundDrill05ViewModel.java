@@ -41,7 +41,7 @@ public class SoundDrill05ViewModel extends DrillViewModel {
     List<Word[]> words;
 
     @Inject
-    public SoundDrill05ViewModel(
+    SoundDrill05ViewModel(
             Bus bus, DbHelper dbHelper,
             LetterHelper letterHelper,
             UnitSectionDrillHelper unitSectionDrillHelper,
@@ -159,31 +159,31 @@ public class SoundDrill05ViewModel extends DrillViewModel {
         return this;
     }
 
-    public Letter getLetter() {
+    Letter getLetter() {
         return letter;
     }
 
-    public int getSetCount() {
+    int getSetCount() {
         return givenWords.size();
     }
 
-    public Word getGivenWord(int setIndex) {
+    Word getGivenWord(int setIndex) {
         return givenWords.get(setIndex);
     }
 
-    public Word getMatchingWord(int setIndex) {
+    Word getMatchingWord(int setIndex) {
         return matchingWords.get(setIndex);
     }
 
-    public Word getWord(int setIndex, int wordIndex) {
+    Word getWord(int setIndex, int wordIndex) {
         return words.get(setIndex)[wordIndex];
     }
 
-    public Word[] getWords(int setIndex) {
+    Word[] getWords(int setIndex) {
         return words.get(setIndex);
     }
 
-    public boolean isCorrect(int setIndex, int wordIndex) {
+    boolean isCorrect(int setIndex, int wordIndex) {
         return (checkList.get(setIndex) == wordIndex);
     }
 }

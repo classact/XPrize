@@ -21,6 +21,7 @@ import classact.com.xprize.viewmodel.DrillViewModel;
 
 /**
  * Created by hcdjeong on 2017/12/27.
+ * View Model for Sound Drill Three
  */
 
 public class SoundDrill03ViewModel extends DrillViewModel {
@@ -34,7 +35,7 @@ public class SoundDrill03ViewModel extends DrillViewModel {
     private List<Letter> wrongLetters;
 
     @Inject
-    public SoundDrill03ViewModel(
+    SoundDrill03ViewModel(
             Bus bus, DbHelper dbHelper,
             LetterHelper letterHelper,
             UnitSectionDrillHelper unitSectionDrillHelper,
@@ -115,18 +116,18 @@ public class SoundDrill03ViewModel extends DrillViewModel {
         return this;
     }
 
-    public int getLetterCount() {
+    int getLetterCount() {
         return correctLetters.size();
     }
 
-    public Letter getCorrectLetter(int index) {
+    Letter getCorrectLetter(int index) {
         if (index < correctLetters.size()) {
             return correctLetters.get(index);
         }
         return null;
     }
 
-    public Letter getWrongLetter(int index) {
+    Letter getWrongLetter(int index) {
         if (index < wrongLetters.size()) {
             return wrongLetters.get(index);
         }

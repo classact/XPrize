@@ -10,7 +10,6 @@ import javax.inject.Inject;
 
 import classact.com.xprize.database.DbHelper;
 import classact.com.xprize.database.helper.LetterHelper;
-import classact.com.xprize.database.helper.LetterSequenceHelper;
 import classact.com.xprize.database.helper.UnitSectionDrillHelper;
 import classact.com.xprize.database.helper.UnitSectionHelper;
 import classact.com.xprize.database.helper.WordHelper;
@@ -40,7 +39,7 @@ public class SoundDrill07ViewModel extends DrillViewModel {
     private List<Integer> checkList;
 
     @Inject
-    public SoundDrill07ViewModel(
+    SoundDrill07ViewModel(
             Bus bus, DbHelper dbHelper,
             LetterHelper letterHelper,
             UnitSectionDrillHelper unitSectionDrillHelper,
@@ -155,31 +154,31 @@ public class SoundDrill07ViewModel extends DrillViewModel {
         return this;
     }
 
-    public Letter getLetter() {
+    Letter getLetter() {
         return letter;
     }
 
-    public List<Letter> getCorrectWordLetters(int setIndex) {
+    List<Letter> getCorrectWordLetters(int setIndex) {
         return correctWordLetters.get(setIndex);
     }
 
-    public Word getCorrectWord(int setIndex) {
+    Word getCorrectWord(int setIndex) {
         return wordSets.get(setIndex).get(checkList.get(setIndex));
     }
 
-    public int getSetCount() {
+    int getSetCount() {
         return wordSets.size();
     }
 
-    public int getSetWordCount(int setIndex) {
+    int getSetWordCount(int setIndex) {
         return wordSets.get(setIndex).size();
     }
 
-    public boolean isCorrect(int setIndex, int wordIndex) {
+    boolean isCorrect(int setIndex, int wordIndex) {
         return checkList.get(setIndex) == wordIndex;
     }
 
-    public Word getWord(int setIndex, int wordIndex) {
+    Word getWord(int setIndex, int wordIndex) {
         return wordSets.get(setIndex).get(wordIndex);
     }
 }
