@@ -13,6 +13,7 @@ import classact.com.xprize.activity.drill.books.StoryActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillEightActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillFiveActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillFourActivity;
+import classact.com.xprize.activity.drill.sound.SoundDrillNineActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillOneActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillSevenActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillSixActivity;
@@ -29,7 +30,6 @@ import classact.com.xprize.activity.movie.MovieActivity;
 import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.controller.catalogue.MathDrills;
-import classact.com.xprize.controller.catalogue.PhonicsDrills;
 import classact.com.xprize.controller.catalogue.StoryDrills;
 import classact.com.xprize.controller.catalogue.WordDrills;
 import classact.com.xprize.database.DbAccessor;
@@ -62,7 +62,6 @@ public class DrillFetcher extends DbAccessor {
 
     private Context context;
     private DatabaseController mDb;
-    private PhonicsDrills phonicsDrills;
     private WordDrills wordDrills;
     private StoryDrills storyDrills;
     private MathDrills mathDrills;
@@ -73,13 +72,12 @@ public class DrillFetcher extends DbAccessor {
             Context context,
             DatabaseController mDb,
             DbHelper dbHelper,
-            PhonicsDrills phonicsDrills, WordDrills wordDrills,
+            WordDrills wordDrills,
             StoryDrills storyDrills, MathDrills mathDrills,
             LetterHelper letterHelper) {
         super(dbHelper);
         this.context = context;
         this.mDb = mDb;
-        this.phonicsDrills = phonicsDrills;
         this.wordDrills = wordDrills;
         this.storyDrills = storyDrills;
         this.mathDrills = mathDrills;
@@ -215,77 +213,47 @@ public class DrillFetcher extends DbAccessor {
     }
 
     private Intent getPhonicsDrill(int unitId, int drillId, int languageId, int subId) throws Exception {
-        Intent intent = null;
-        try {
-            if (dbOpen()) {
-                // Get unit u
-                Unit u = UnitHelper.getUnitInfo(dbHelper.getReadableDatabase(), unitId);
-
-                // Get letterId using unit u
-                int letterId = LetterSequenceHelper.getLetterID(dbHelper.getReadableDatabase(), languageId, unitId, subId);
-                Letter letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
-
-                // Debug
-                System.out.println("DrillFetcher.getPhonicsDrill > Debug: Letter :: " +
-                        letter.getLetterName() + " :: for (" + languageId + ", " + unitId + ", " + subId + ", " + drillId + ") selected");
-
-                switch (drillId) {
-                    case 1: {
-                        intent =  new Intent(context, SoundDrillOneActivity.class);
-                        break;
-                    }
-                    case 2: {
-                        intent = new Intent(context, SoundDrillTwoActivity.class);
-                        break;
-                    }
-                    case 3: {
-                        intent = new Intent(context, SoundDrillThreeActivity.class);
-                        break;
-                    }
-                    case 4: {
-                        intent = new Intent(context, SoundDrillFourActivity.class);
-                        break;
-                    }
-                    case 5: {
-                        intent = new Intent(context, SoundDrillFiveActivity.class);
-                        break;
-                    }
-                    case 6: {
-                        intent = new Intent(context, SoundDrillSixActivity.class);
-                        break;
-                    }
-                    case 7: {
-                        intent = new Intent(context, SoundDrillSevenActivity.class);
-                        break;
-                    }
-                    case 8: {
-                        // Fetch D8
-                        intent = new Intent(context, SoundDrillEightActivity.class);
-                        break;
-                    }
-                    case 9: {
-                        DrillFlowWords drillFlowWord;
-                        drillFlowWord = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-                        // Letter letter = LetterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
-
-                        // Fetch D9
-                        intent = phonicsDrills.D9(context, dbHelper, unitId, drillId, languageId,
-                                letter,
-                                drillFlowWord.getDrillSound1(),
-                                drillFlowWord.getDrillSound2(),
-                                drillFlowWord.getDrillSound3()
-                        );
-                        break;
-                    }
-                    default: {
-                        throw new Exception("Drill #" + drillId + " is not catalogued as a Phonics Drill.");
-                    }
-                }
+        Intent intent;
+        switch (drillId) {
+            case 1: {
+                intent =  new Intent(context, SoundDrillOneActivity.class);
+                break;
             }
-            dbClose();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new Exception("getPhonicsDrill > Exception: " + ex.getMessage());
+            case 2: {
+                intent = new Intent(context, SoundDrillTwoActivity.class);
+                break;
+            }
+            case 3: {
+                intent = new Intent(context, SoundDrillThreeActivity.class);
+                break;
+            }
+            case 4: {
+                intent = new Intent(context, SoundDrillFourActivity.class);
+                break;
+            }
+            case 5: {
+                intent = new Intent(context, SoundDrillFiveActivity.class);
+                break;
+            }
+            case 6: {
+                intent = new Intent(context, SoundDrillSixActivity.class);
+                break;
+            }
+            case 7: {
+                intent = new Intent(context, SoundDrillSevenActivity.class);
+                break;
+            }
+            case 8: {
+                intent = new Intent(context, SoundDrillEightActivity.class);
+                break;
+            }
+            case 9: {
+                intent = new Intent(context, SoundDrillNineActivity.class);
+                break;
+            }
+            default: {
+                throw new Exception("Drill #" + drillId + " is not catalogued as a Phonics Drill.");
+            }
         }
         return intent;
     }
