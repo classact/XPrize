@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.constraint.Guideline;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
@@ -21,6 +22,7 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.googlecode.leptonica.android.Scale;
 
 import org.json.JSONObject;
 
@@ -188,6 +190,8 @@ public class SoundDrillSixActivity extends DrillActivity {
     private void initialiseData(){
         try{
 
+            ez.hide(item1, item2, item3, item4, item5, item6, item7, item8);
+
             Random rnd = new Random();
             List<Integer> indexes = new ArrayList<>();
             indexes.add(0);
@@ -207,9 +211,14 @@ public class SoundDrillSixActivity extends DrillActivity {
             loadImage(leftLetter, lowerCaseImageId);
             loadImage(rightLetter, upperCaseImageId);
 
-            int rndIndex = rnd.nextInt(1);
-            image1 = (rndIndex == 0) ? lowerCaseImageId : upperCaseImageId;
-            image2 = (rndIndex == 0) ? upperCaseImageId : lowerCaseImageId;
+            // Shuffle image1 and image2
+            if (rnd.nextInt(2) == 0) {
+                image1 = lowerCaseImageId;
+                image2 = upperCaseImageId;
+            } else {
+                image1 = upperCaseImageId;
+                image2 = lowerCaseImageId;
+            }
 
             positions = new int[8];
 
@@ -229,7 +238,6 @@ public class SoundDrillSixActivity extends DrillActivity {
             loadImage(item8, positions[7]);
 
             correctItems = 0;
-
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -350,11 +358,12 @@ public class SoundDrillSixActivity extends DrillActivity {
             mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(soundPath));
             mediaPlayer.setOnPreparedListener((mp) -> {
                     mp.start();
-                    handler.delayed(() -> itemsEnabled = true,mp.getDuration() - 100);
+                    handler.delayed(() -> {
+                        itemsEnabled = true;
+                        ez.show(item1, item2, item3, item4, item5, item6, item7, item8);
+                    },mp.getDuration() - 100);
                 });
-            mediaPlayer.setOnCompletionListener((mp) -> {
-                mediaPlayer.stop();
-            });
+            mediaPlayer.setOnCompletionListener((mp) -> mediaPlayer.stop());
             mediaPlayer.prepare();
         }
         catch (Exception ex){
