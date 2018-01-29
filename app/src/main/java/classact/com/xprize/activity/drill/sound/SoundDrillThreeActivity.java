@@ -1,25 +1,16 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.Random;
 
@@ -39,13 +30,11 @@ public class SoundDrillThreeActivity extends DrillActivity {
     @BindView(R.id.right_letter) ImageView rightLetter;
 
     private Letter correctLetter;
-    private Letter wrongLetter;
 
     private int currentSet;
     private int correctItem;
     private String currentSound;
     private String currentPhonicSound;
-    private Runnable mRunnable;
     private boolean itemsEnabled;
     private Random rnd;
 
@@ -88,7 +77,7 @@ public class SoundDrillThreeActivity extends DrillActivity {
 
         try{
             correctLetter = vm.getCorrectLetter(currentSet);
-            wrongLetter = vm.getWrongLetter(currentSet);
+            Letter wrongLetter = vm.getWrongLetter(currentSet);
 
             String image = correctLetter.getLetterPictureLowerCaseBlackURI();
             loadImage(targetLetter, FetchResource.imageId(context, image));
@@ -190,18 +179,16 @@ public class SoundDrillThreeActivity extends DrillActivity {
                 starWorks.play(this, iv); // Globals.playStarWorks(context, iv);
 
                 itemsEnabled = false;
-                mRunnable = null;
-                mRunnable = () -> {
-                        if (currentSet < vm.getLetterCount() - 1) {
-                            currentSet++;
-                            // Next drill
-                            handler.delayed(this::showSet, 350);
-                        } else {
-                            finish();
-                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                        }
-                    };
-                playSound(FetchResource.positiveAffirmation(context), mRunnable);
+                playSound(FetchResource.positiveAffirmation(context), () -> {
+                    if (currentSet < vm.getLetterCount() - 1) {
+                        currentSet++;
+                        // Next drill
+                        handler.delayed(this::showSet, 350);
+                    } else {
+                        finish();
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    }
+                });
             } else {
                 playSound(FetchResource.negativeAffirmation(context), null);
             }

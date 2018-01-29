@@ -2,6 +2,7 @@ package classact.com.xprize.activity.drill.sound;
 
 import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -94,7 +95,7 @@ public class SoundDrill04ViewModel extends DrillViewModel {
                 dbHelper.getReadableDatabase(), 1, unitId, unitSubId, 1, 4);
 
         // Add to temp words list
-        for (int i = 0; i < tempWords.size(); i++) {
+        for (int i = 0; i < correctWords.size(); i++) {
             Word word = correctWords.get(i);
             tempWords.add(word);
             tempCheckList.add(true);
