@@ -34,14 +34,13 @@ import classact.com.xprize.view.WriteView;
 public class SoundDrillEightActivity extends DrillActivity implements PathAnimationView.AnimationDone{
 
     @BindView(R.id.draw_area) RelativeLayout drawArea;
-    @BindView(R.id.item1) ImageView item1;
+    @BindView(R.id.item1) ImageView letterView;
 
     private PathAnimationView animationView;
     private DrillEightWriteView writingView;
-    private JSONObject drillData;
+
     private JSONArray paths;
-    private ImageView letter;
-    private int numberOfChecks = 0;
+
     private int repeat = 1;
 
     private boolean mCanDraw;
@@ -75,31 +74,24 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
 
-        letter = (ImageView)findViewById(R.id.item1);
-        drawArea = (RelativeLayout) findViewById(R.id.draw_area);
-        String drillData = getIntent().getExtras().getString("data");
-
-        mDetectionView = new RelativeLayout(context);
-        RelativeLayout.LayoutParams detectionLayout = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.MATCH_PARENT
-        );
-        mDetectionView.setLayoutParams(detectionLayout);
-
-        initialiseData(drillData);
-
-        RelativeLayout.LayoutParams letterLayout = (RelativeLayout.LayoutParams) letter.getLayoutParams();
-        letterLayout.topMargin += OFFSET_Y;
-        letter.setLayoutParams(letterLayout);
+        initialize();
         startDrill();
     }
 
-    private void initialiseData(String data){
+    private void initialize(){
         try {
-            drillData = new JSONObject(data);
-            //getWindow().getDecorView().getRootView().setBackgroundResource(drillData.getInt("background"));
-            //int item = drillData.getInt("letter");
-            //letter.setImageResource(item);
+
+
+            mDetectionView = new RelativeLayout(context);
+            RelativeLayout.LayoutParams detectionLayout = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.MATCH_PARENT,
+                    RelativeLayout.LayoutParams.MATCH_PARENT
+            );
+            mDetectionView.setLayoutParams(detectionLayout);
+
+            RelativeLayout.LayoutParams letterViewLayoutParams = (RelativeLayout.LayoutParams) letterView.getLayoutParams();
+            letterViewLayoutParams.topMargin += OFFSET_Y;
+            letterView.setLayoutParams(letterViewLayoutParams);
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -112,30 +104,25 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
             mCanDraw = false;
 
             drawArea.removeAllViews();
-            drawArea.addView(letter);
+            drawArea.addView(letterView);
             drawArea.addView(mDetectionView);
-            int item = drillData.getInt("big_letter");
+            int item = FetchResource.imageId(context, vm.getLetter().getLetterPictureUpperCaseDotsURI());
             if (repeat == 2)
-                item = drillData.getInt("small_letter");
-            loadImage(letter, item);
+                item = FetchResource.imageId(context, vm.getLetter().getLetterPictureLowerCaseDotsURI());
+            loadImage(letterView, item);
             getPathData();
-            String sound = "";
+            String sound;
             if (repeat == 1) {
-                sound = drillData.getString("lets_learn_how_to_write_upper");
+                sound = "drill8drillsound1";
             } else {
-                sound = drillData.getString("lets_learn_how_to_write_lower");
+                sound = "drill8drillsound4";
             }
             animationView = new PathAnimationView(this);
             animationView.setAlpha(0.6f);
             animationView.setPaths(getPathArray());
 
             /* ROCK N ROLL */
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    playLetterSound();
-                }
-            });
+            playSound(sound, this::playLetterSound);
         }
         catch(Exception ex){
             ex.printStackTrace();
@@ -143,32 +130,20 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
     }
 
     public void playLetterSound(){
-        String sound = "";
+        String sound;
         try {
-            sound = drillData.getString("letter_sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    prepareToWrite();
-                }
-            });
+            sound = vm.getLetter().getLetterSoundURI();
+            playSound(sound, this::prepareToWrite);
         }
         catch (Exception ex){
             ex.printStackTrace();
         }
     }
 
-    public Runnable writeRunnable = new Runnable(){
-        @Override
-        public void run() {
-            prepareToWrite();
-        }
-    };
-
     public void prepareToWrite(){
         try{
             drawArea.removeAllViews();
-            drawArea.addView(letter);
+            drawArea.addView(letterView);
 
             animationView = new PathAnimationView(this);
             animationView.setAlpha(0.6f);
@@ -186,19 +161,12 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
     public void playWatch() {
         try {
             //watch first
-            String sound = drillData.getString("watch");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    animationView.setLayoutParams(drawArea.getLayoutParams());
-                    drawArea.addView(animationView);
-                    animationView.bringToFront();
-                    //drawArea.bringToFront();
-                    //animationView.bringToFront();
-                    //drawArea.setZ(10);
-                    //animationView.setZ(10);
-                    animationView.animateThisPath();
-                }
+            String sound = "drill8drillsound2";
+            playSound(sound, () -> {
+                animationView.setLayoutParams(drawArea.getLayoutParams());
+                drawArea.addView(animationView);
+                animationView.bringToFront();
+                animationView.animateThisPath();
             });
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -219,7 +187,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
         writingView.setAlpha(0.675f);
         writingView.setLayoutParams(drawArea.getLayoutParams());
         drawArea.removeAllViews();
-        drawArea.addView(letter);
+        drawArea.addView(letterView);
         drawArea.addView(writingView);
 
         // Add draw timer
@@ -247,49 +215,22 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
     public void playYouTry() {
         try {
             //now you try
-            String sound = drillData.getString("now_you_write");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    mCanDraw = true;
-                }
-            });
+            String sound = "drill8drillsound3";
+            playSound(sound, () -> mCanDraw = true);
         } catch (Exception ex) {
             ex.printStackTrace();
             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
-    public Runnable checkDone = new Runnable() {
-        @Override
-        public void run() {
-            checkIsDone();
-        }
-    };
+    public Runnable checkDone = this::checkIsDone;
 
     public void checkIsDone(){
         try {
             if (writingView.didDraw()) {
-                playSound(FetchResource.positiveAffirmation(context), new Runnable() {
-                    @Override
-                    public void run() {
-                        handler.delayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                completed();
-                            }
-                        }, 1000);
-                    }
-                });
-            } /* else {
-                if (numberOfChecks % 2 == 0) {
-                    playYouTry();
-                } else {
-                    prepareToWrite();
-                }
-                numberOfChecks++;
-
-            } */
+                playSound(FetchResource.positiveAffirmation(context), () ->
+                        handler.delayed(this::completed, 1000));
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
@@ -301,40 +242,33 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
             repeat++;
             startDrill();
         } else {
-            handler.delayed(new Runnable() {
-                @Override
-                public void run() {
-                    finish();
-                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                }
+            handler.delayed(() -> {
+                finish();
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }, 500);
         }
     }
 
     private void getPathData(){
         try {
-            int letterPathFile = drillData.getInt("big_letter_path");
+            int letterPathFile = fetch.rawId(vm.getLetter().getLetterUpperPath());
             if (repeat == 2)
-                letterPathFile = drillData.getInt("small_letter_path");
+                letterPathFile = fetch.rawId(vm.getLetter().getLetterLowerPath());
             InputStream is = this.getResources().openRawResource(letterPathFile);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-                try {
-                    StringBuilder result = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        result.append(line);
-                    }
-                    paths = new JSONObject(result.toString()).getJSONArray("paths");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
-                } finally {
-                    reader.close();
+                StringBuilder result = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
                 }
-            } finally {
-                is.close();
+                paths = new JSONObject(result.toString()).getJSONArray("paths");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
+            reader.close();
+            is.close();
         } catch (Exception ex) {
             ex.printStackTrace();
             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
@@ -342,7 +276,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
     }
 
     private  ArrayList<ArrayList<PathCoordinate>> getPathArray(){
-        ArrayList<ArrayList<PathCoordinate>> pathsArray = new  ArrayList<ArrayList<PathCoordinate>>();
+        ArrayList<ArrayList<PathCoordinate>> pathsArray = new  ArrayList<>();
         try {
             for (int i = 0; i < paths.length(); i++) {
                 ArrayList<PathCoordinate> path = new ArrayList<>();
@@ -351,20 +285,6 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
                 for(int k = 0; k < array.length(); k++) {
                     PathCoordinate coordinate = new PathCoordinate((float)array.getJSONObject(k).getDouble("x"),(float)array.getJSONObject(k).getDouble("y") + OFFSET_Y);
                     path.add(coordinate);
-
-                    /*
-                    ImageView iv = new ImageView(context);
-                    mDetectionView.addView(iv);
-                    RelativeLayout.LayoutParams ivLayout = (RelativeLayout.LayoutParams) iv.getLayoutParams();
-                    int ivWidth = 10;
-                    int ivHeight = 10;
-                    ivLayout.width = ivWidth;
-                    ivLayout.height = ivHeight;
-                    iv.setLayoutParams(ivLayout);
-                    iv.setX(coordinate.getX() - (ivWidth/2));
-                    iv.setY(coordinate.getY() - (ivHeight/2));
-                    iv.setBackgroundColor(Color.argb(100, 0, 0, 255));
-                    */
                 }
                 pathsArray.add(path);
             }
@@ -384,7 +304,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
 
                 long currentTime = new Date().getTime();
 
-                if (!(mIsDrawing || mLastDrawnTime == 0l || (currentTime - mLastDrawnTime) < DRAW_WAIT_TIME )) {
+                if (!(mIsDrawing || mLastDrawnTime == 0 || (currentTime - mLastDrawnTime) < DRAW_WAIT_TIME )) {
                     if (mTimerReset) {
                         mTimerReset = false;
                         mTimerCounter = TIMER_MAX;
@@ -428,17 +348,17 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
             if (mCanDraw) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mThisActivity.setIsDrawing(true);
+                        mIsDrawing = true;
                         mThisActivity.setLastDrawnTime(0);
-                        mThisActivity.showTimer(false);
+                        mTimer.setVisibility(View.INVISIBLE);
                         System.out.println("Drawing not complete!");
                         break;
                     case MotionEvent.ACTION_MOVE:
 
                         break;
                     case MotionEvent.ACTION_UP:
-                        mThisActivity.setIsDrawing(false);
-                        mThisActivity.setTimerReset(true);
+                        mIsDrawing = false;
+                        mTimerReset = true;
                         mThisActivity.setLastDrawnTime(new Date().getTime());
 
                         handler.removeCallbacks(countDown);
@@ -452,35 +372,7 @@ public class SoundDrillEightActivity extends DrillActivity implements PathAnimat
         }
     }
 
-    public void showTimer(boolean showTimer) {
-        if (showTimer) {
-            mTimer.setVisibility(View.VISIBLE);
-        } else {
-            mTimer.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    public void setIsDrawing(boolean isDrawing) {
-        mIsDrawing = isDrawing;
-    }
-
-    public void setTimerReset(boolean timerReset) {
-        mTimerReset = timerReset;
-    }
-
     public void setLastDrawnTime(long lastDrawnTime) {
         mLastDrawnTime = lastDrawnTime;
-    }
-
-    public boolean getIsDrawing() {
-        return mIsDrawing;
-    }
-
-    public boolean getTimerReset() {
-        return mTimerReset;
-    }
-
-    public long getLastDrawnTime() {
-        return mLastDrawnTime;
     }
 }

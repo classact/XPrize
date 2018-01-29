@@ -46,36 +46,6 @@ public class PhonicsDrills {
         this.letterHelper = letterHelper;
     }
 
-    public Intent D8(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
-                            int letterId
-    ) throws SQLiteException, Exception {
-        Intent intent = null;
-
-        try {
-            Letter letter = letterHelper.getLetter(dbHelper.getReadableDatabase(), languageId, letterId);
-            DrillFlowWords drillFlowWords = DrillFlowWordsHelper.getDrillFlowWords(dbHelper.getReadableDatabase(), drillId, languageId);
-            String drillData = SoundDrillJsonBuilder.getSoundDrillEightJson(context,
-                    letter.getLetterLowerPath(),
-                    drillFlowWords.getDrillSound1(),
-                    drillFlowWords.getDrillSound4(),
-                    drillFlowWords.getDrillSound2(),
-                    drillFlowWords.getDrillSound3(),
-                    letter.getLetterPictureLowerCaseDotsURI(),
-                    letter.getLetterSoundURI(),
-                    letter.getLetterUpperPath(),
-                    letter.getLetterPictureUpperCaseDotsURI());
-            intent = new Intent(context, SoundDrillEightActivity.class);
-            intent.putExtra("data", drillData);
-
-        } catch (SQLiteException sqlex) {
-            throw new SQLiteException("D8: " + sqlex.getMessage());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new Exception("D8: " + ex.getMessage());
-        }
-        return intent;
-    }
-
     public Intent D9(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId,
                             Letter letter, String drillSound1, String drillSound2, String drillSound3
     ) throws SQLiteException, Exception {

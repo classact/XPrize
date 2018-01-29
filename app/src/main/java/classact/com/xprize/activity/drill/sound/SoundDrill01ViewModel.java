@@ -36,7 +36,7 @@ public class SoundDrill01ViewModel extends DrillViewModel {
     private List<Word> words;
 
     @Inject
-    public SoundDrill01ViewModel(
+    SoundDrill01ViewModel(
             Bus bus, DbHelper dbHelper,
             LetterHelper letterHelper,
             UnitSectionDrillHelper unitSectionDrillHelper,
@@ -94,19 +94,15 @@ public class SoundDrill01ViewModel extends DrillViewModel {
         return this;
     }
 
-    public Letter getLetter() {
+    Letter getLetter() {
         return letter;
     }
 
-    public boolean isLetter() {
+    boolean isLetter() {
         return (letter.getIsLetter() == 1);
     }
 
-    public int getWordCount() {
-        return words.size();
-    }
-
-    public Word getWord(int index) {
+    Word getWord(int index) {
         return words.get(index);
     }
 }
