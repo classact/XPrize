@@ -47,8 +47,6 @@ public class SoundDrillFourActivity extends DrillActivity {
 
     private int currentItem;
     private int current_reward = 0;
-    float x;
-    float y;
     private boolean entered;
     private String drillSound;
     private boolean itemsEnabled;
@@ -325,12 +323,9 @@ public class SoundDrillFourActivity extends DrillActivity {
 
                 // Runnable to close activity
                 mRunnable = null;
-                mRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                    }
+                mRunnable = () -> {
+                    finish();
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 };
                 playSoundAndRunnableAfterCompletion(ResourceSelector.getPositiveAffirmationSound(context));
             } else {

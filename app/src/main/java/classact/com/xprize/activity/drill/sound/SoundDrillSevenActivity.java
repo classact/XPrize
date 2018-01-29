@@ -1,28 +1,15 @@
 package classact.com.xprize.activity.drill.sound;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Guideline;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,26 +18,12 @@ import classact.com.xprize.activity.DrillActivity;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.database.model.Letter;
 import classact.com.xprize.database.model.Word;
-import classact.com.xprize.utils.Fetch;
 import classact.com.xprize.utils.FetchResource;
-import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.ResourceSelector;
-import classact.com.xprize.utils.WordLetterLayout;
 
 public class SoundDrillSevenActivity extends DrillActivity {
-    //private SegmetedWritingView segmentWritingView;
 
     @BindView(R.id.activity_sound_drill_seven) ConstraintLayout rootView;
-
-    @BindView(R.id.writing_container) LinearLayout writingContainer;
-
-    @BindView(R.id.letter_1) ImageView letter1;
-    @BindView(R.id.letter_2) ImageView letter2;
-    @BindView(R.id.letter_3) ImageView letter3;
-    @BindView(R.id.letter_4) ImageView letter4;
-    @BindView(R.id.letter_5) ImageView letter5;
-    @BindView(R.id.letter_6) ImageView letter6;
-    @BindView(R.id.letter_7) ImageView letter7;
 
     @BindView(R.id.objects_container) LinearLayout objectsContainer;
 
@@ -199,8 +172,7 @@ public class SoundDrillSevenActivity extends DrillActivity {
     }
 
     public void fadeIncorrect(ImageView ivCorrect, long fadeDuration) {
-        for (int i = 0; i < items.length; i++) {
-            ImageView iv = items[i];
+        for (ImageView iv : items) {
             if (iv != ivCorrect) {
                 iv.animate()
                         .alpha(0f)
@@ -274,13 +246,6 @@ public class SoundDrillSevenActivity extends DrillActivity {
             ex.printStackTrace();
         }
     }
-
-    public void setItemsEnabled(boolean enable) {
-        item1.setEnabled(enable);
-        item2.setEnabled(enable);
-        item3.setEnabled(enable);
-    }
-
     private void theEnd() {
         finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

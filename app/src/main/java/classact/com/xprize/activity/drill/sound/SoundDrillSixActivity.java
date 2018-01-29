@@ -2,32 +2,22 @@ package classact.com.xprize.activity.drill.sound;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
-import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.constraint.Guideline;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.googlecode.leptonica.android.Scale;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -35,7 +25,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
-import classact.com.xprize.common.Globals;
 import classact.com.xprize.database.model.Letter;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.ResourceSelector;
@@ -139,7 +128,7 @@ public class SoundDrillSixActivity extends DrillActivity {
                         isInReceptacle1 = false;
                     } else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle1) {
                         if ( positions[currentItem] == image1) {
-                            Globals.playStarWorks(this, leftBoxDropZone);
+                            starWorks.play(this, leftBoxDropZone);
                             reward();
                         }
                     } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle1) {
@@ -166,7 +155,7 @@ public class SoundDrillSixActivity extends DrillActivity {
                     isInReceptacle2 = false;
                 } else if (event.getAction() == DragEvent.ACTION_DROP && isInReceptacle2 ) {
                     if ( positions[currentItem] == image2) {
-                        Globals.playStarWorks(this, rightBoxDropZone);
+                        starWorks.play(this, rightBoxDropZone);
                         reward();
                     }
                 } else if (event.getAction() == DragEvent.ACTION_DRAG_ENDED && isInReceptacle2) {
