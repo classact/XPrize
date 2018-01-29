@@ -13,32 +13,6 @@ import classact.com.xprize.utils.ResourceDecoder;
 
 public class SoundDrillJsonBuilder {
 
-    public static String getSoundDrillEightJson(Context context,
-                                                 String smallLetterPath,
-                                                 String letsLearnToWriteUpperSound,
-                                                 String letsLearnToWriteLowerSound,
-                                                 String watchSound,
-                                                 String nowYouWriteSound,
-                                                 String smallLetterDotsImage,
-                                                 String letterSound,
-                                                 String bigLetterPath,
-                                                 String bigLetterDotsImage){
-        System.out.println("small letter path: " + smallLetterPath);
-        System.out.println("big letter path: " + bigLetterPath);
-        System.out.println();
-        String drillData = "{\"small_letter_path\":" + ResourceDecoder.getIdentifier(context,smallLetterPath,"raw") + "," +
-                "\"lets_learn_how_to_write_upper\":\"" + letsLearnToWriteUpperSound + "\"," +
-                "\"lets_learn_how_to_write_lower\":\"" + letsLearnToWriteLowerSound + "\"," +
-                "\"now_you_write\":\"" + nowYouWriteSound + "\"," +
-                "\"watch\":\"" + watchSound + "\"," +
-                "\"small_letter\":" + ResourceDecoder.getIdentifier(context,smallLetterDotsImage,"drawable") + "," +
-                "\"letter_sound\":\"" + letterSound + "\"," +
-                "\"big_letter_path\":" + ResourceDecoder.getIdentifier(context,bigLetterPath,"raw") + "," +
-                "\"big_letter\":" + ResourceDecoder.getIdentifier(context,bigLetterDotsImage,"drawable") +
-                "}";
-        return drillData;
-    }
-
     public static String getSoundDrillNineJson(Context context,
                                                 String letterSound,
                                                 String letsDrawSound,

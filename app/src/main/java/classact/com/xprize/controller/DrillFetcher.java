@@ -10,6 +10,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import classact.com.xprize.activity.drill.books.StoryActivity;
+import classact.com.xprize.activity.drill.sound.SoundDrillEightActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillFiveActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillFourActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillOneActivity;
@@ -259,7 +260,7 @@ public class DrillFetcher extends DbAccessor {
                     }
                     case 8: {
                         // Fetch D8
-                        intent = phonicsDrills.D8(context, dbHelper, unitId, drillId, languageId, letterId);
+                        intent = new Intent(context, SoundDrillEightActivity.class);
                         break;
                     }
                     case 9: {
