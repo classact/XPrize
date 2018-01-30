@@ -24,67 +24,6 @@
         android:id="@+id/letters_g_v"
         app:layout_constraintGuide_percent="0.3"/>
 
-    <LinearLayout
-        android:id="@+id/writing_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="@id/letters_g_h"
-        app:layout_constraintLeft_toLeftOf="@id/letters_g_v"
-        app:layout_constraintRight_toRightOf="@id/letters_g_v"
-        app:layout_constraintBottom_toBottomOf="@id/letters_g_h">
-
-        <ImageView
-            android:id="@+id/letter_1"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:contentDescription="@string/first_letter"
-            android:background="@android:color/transparent"/>
-
-        <ImageView
-            android:id="@+id/letter_2"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:contentDescription="@string/second_letter"
-            android:background="@android:color/transparent"/>
-
-        <ImageView
-            android:id="@+id/letter_3"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:contentDescription="@string/third_letter"
-            android:background="@android:color/transparent"/>
-
-        <ImageView
-            android:id="@+id/letter_4"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:contentDescription="@string/fourth_letter"
-            android:background="@android:color/transparent"/>
-
-        <ImageView
-            android:id="@+id/letter_5"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:contentDescription="@string/fifth_letter"
-            android:background="@android:color/transparent"/>
-
-        <ImageView
-            android:id="@+id/letter_6"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:contentDescription="@string/sixth_letter"
-            android:background="@android:color/transparent"/>
-
-        <ImageView
-            android:id="@+id/letter_7"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:contentDescription="@string/seventh_letter"
-            android:background="@android:color/transparent"/>
-
-    </LinearLayout>
-
     <!-- Letters Start -->
     <!-- Images Start -->
 
@@ -103,7 +42,7 @@
         app:layout_constraintGuide_percent="0.5"/>
 
     <LinearLayout
-        android:id="@+id/objects_container"
+        android:id="@+id/images"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -113,14 +52,14 @@
         app:layout_constraintBottom_toBottomOf="@id/images_g_h">
 
         <ImageView
-            android:id="@+id/item1"
+            android:id="@+id/image_01"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:contentDescription="@string/Image_01"
             android:background="@android:color/transparent"/>
 
         <ImageView
-            android:id="@+id/item2"
+            android:id="@+id/image_02"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:layout_marginStart="50dp"
@@ -128,7 +67,7 @@
             android:background="@android:color/transparent"/>
 
         <ImageView
-            android:id="@+id/item3"
+            android:id="@+id/image_03"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:layout_marginStart="50dp"

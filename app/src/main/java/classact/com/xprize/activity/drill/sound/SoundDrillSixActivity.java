@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.constraint.Guideline;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -180,6 +181,9 @@ public class SoundDrillSixActivity extends DrillActivity {
         try{
 
             ez.hide(item1, item2, item3, item4, item5, item6, item7, item8);
+
+            ez.sizeDpi(leftBoxLetter, 196, 175);
+            ez.sizeDpi(rightBoxLetter, 196, 175);
 
             Random rnd = new Random();
             List<Integer> indexes = new ArrayList<>();
