@@ -13,8 +13,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONObject;
-
 import java.util.Date;
 
 import butterknife.BindView;
@@ -26,12 +24,9 @@ import classact.com.xprize.view.WriteView;
 
 public class SoundDrillNineActivity extends DrillActivity {
 
-    @BindView(R.id.activity_sound_drill_nine) RelativeLayout rootView;
+    @BindView(R.id.activity_sound_drill_nine) RelativeLayout writingContainer;
 
     CustomWriteView view;
-    private RelativeLayout writingContainer;
-    private JSONObject params;
-    private String data;
     private boolean startedDrawing;
     private boolean drawingTimeUp;
     private TextView timer;
@@ -64,13 +59,17 @@ public class SoundDrillNineActivity extends DrillActivity {
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
 
+        initialize();
+        playLetsDraw();
+    }
+
+    private void initialize() {
         startedDrawing = false;
         drawingTimeUp = false;
         canDraw = false;
         drillComplete = false;
         view = new CustomWriteView(this, R.drawable.drawapic1, true);
-        // view.setAlpha(0.0f);
-        writingContainer = (RelativeLayout)findViewById(R.id.activity_sound_drill_nine);
+
         writingContainer.addView(view);
 
         ImageView timerClock = new ImageView(context);
@@ -86,13 +85,12 @@ public class SoundDrillNineActivity extends DrillActivity {
         timer.setPadding(16, 16, 16, 16);
         timerCounter = TIMER_MAX;
         timerReset = true;
-        lastDrawnTime = 0l;
+        lastDrawnTime = 0;
 
         timer.setText(String.valueOf(timerCounter));
         timer.setTextSize(115.0f);
         timer.setAlpha(0.8f);
         timer.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
-        // timer.setBackgroundColor(Color.argb(100, 255, 0, 0));
         timer.setX(TIMER_MID_X);
         timer.setY(TIMER_MID_Y);
         writingContainer.addView(timer);
@@ -100,17 +98,11 @@ public class SoundDrillNineActivity extends DrillActivity {
         Point textSize = Globals.TEXT_MEASURED_SIZE(timer, String.valueOf(timerCounter));
         timer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
         timer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
-
-        data = getIntent().getExtras().getString("data");
-
-        playLetsDraw();
     }
 
     private void playLetsDraw() {
         try {
-            params = new JSONObject(data);
-            //Todo: Sound
-            String sound = params.getString("lets_draw");
+            String sound = "drill9drillsound1";
             playSound(sound, () -> handler.delayed(playDrawSomethingThatStartsWithRunnable, 500));
         }
         catch (Exception ex){
@@ -119,22 +111,12 @@ public class SoundDrillNineActivity extends DrillActivity {
         }
     }
 
-    public Runnable playDrawSomethingThatStartsWithRunnable = new Runnable(){
-        @Override
-        public void run() {
-            playDrawSomethingThatStartsWith();
-        }
-    };
+    public Runnable playDrawSomethingThatStartsWithRunnable = this::playDrawSomethingThatStartsWith;
 
     private void playDrawSomethingThatStartsWith(){
         try {
-            String sound = params.getString("draw_something_that_starts_with");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    playLetterSound();
-                }
-            });
+            String sound = "drill9drillsound2";
+            playSound(sound, this::playLetterSound);
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -143,47 +125,28 @@ public class SoundDrillNineActivity extends DrillActivity {
     }
 
     private void playLetterSound(){
-        String sound = "";
+        String sound;
         try{
-            sound = params.getString("sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    handler.delayed(enableDrawing,500);
-                }
-            });
+            sound = vm.getLetter().getLetterSoundURI();
+            playSound(sound, () -> handler.delayed(enableDrawing,500));
         }
         catch (Exception ex){
             ex.printStackTrace();
             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
-            handler.delayed(new Runnable() {
-                @Override
-                public void run() {
-                    enableDrawing.run();
-                }
-            }, 1100);
+            handler.delayed(() -> enableDrawing.run(), 1100);
         }
     }
 
-    private Runnable enableDrawing = new Runnable() {
-        @Override
-        public void run() {
-            canDraw = true;
-            // view.setAlpha(0.6f);
-        }
-    };
+    private Runnable enableDrawing = () -> canDraw = true;
 
-    public Runnable playWhatDidYouDraw = new Runnable(){
-        @Override
-        public void run() {
-            try{
-                String sound = params.getString("what_did_you_draw");
-                playSound(sound, () -> handler.delayed(completeDrill, 4550));
-            }
-            catch (Exception ex){
-                ex.printStackTrace();
-                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
+    public Runnable playWhatDidYouDraw = () -> {
+        try{
+            String sound = "drill9drillsound3";
+            playSound(sound, () -> handler.delayed(this.completeDrill, 4550));
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     };
 
@@ -192,39 +155,36 @@ public class SoundDrillNineActivity extends DrillActivity {
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     };
 
-    private Runnable countDown = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                long currentTime = new Date().getTime();
+    private Runnable countDown = () -> {
+        try {
+            long currentTime = new Date().getTime();
 
-                if (!(startedDrawing || drawingTimeUp || lastDrawnTime == 0l || (currentTime - lastDrawnTime) < DRAW_WAIT_TIME )) {
-                    if (timerReset) {
-                        timerReset = false;
-                        timerCounter = TIMER_MAX;
-                        timer.setTextColor(Color.DKGRAY);
-                    }
-
-                    Point textSize = Globals.TEXT_MEASURED_SIZE(timer, String.valueOf(timerCounter));
-                    System.out.println(textSize.x + ", " + textSize.y);
-                    timer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
-                    timer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
-
-                    if (timerCounter > 0) {
-                        timerCounter--;
-                        timer.setVisibility(View.VISIBLE);
-                        handler.delayed(countDown, 1000);
-                    } else {
-                        canDraw = false;
-                        drillComplete = true;
-                        timer.setTextColor(Color.parseColor("#33ccff"));
-                        drawingTimeUp = true;
-                        handler.delayed(playWhatDidYouDraw, 500);
-                    }
+            if (!(startedDrawing || drawingTimeUp || lastDrawnTime == 0 || (currentTime - lastDrawnTime) < DRAW_WAIT_TIME )) {
+                if (timerReset) {
+                    timerReset = false;
+                    timerCounter = TIMER_MAX;
+                    timer.setTextColor(Color.DKGRAY);
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+
+                Point textSize = Globals.TEXT_MEASURED_SIZE(timer, String.valueOf(timerCounter));
+                System.out.println(textSize.x + ", " + textSize.y);
+                timer.setX(TIMER_MID_X - ((float) (textSize.x) / 2));
+                timer.setY(TIMER_MID_Y - ((float) (textSize.y) / 2));
+
+                if (timerCounter > 0) {
+                    timerCounter--;
+                    timer.setVisibility(View.VISIBLE);
+                    handler.delayed(this.countDown, 1000);
+                } else {
+                    canDraw = false;
+                    drillComplete = true;
+                    timer.setTextColor(Color.parseColor("#33ccff"));
+                    drawingTimeUp = true;
+                    handler.delayed(playWhatDidYouDraw, 500);
+                }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     };
 

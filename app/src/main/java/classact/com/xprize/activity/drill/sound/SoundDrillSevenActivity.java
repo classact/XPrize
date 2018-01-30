@@ -25,11 +25,11 @@ public class SoundDrillSevenActivity extends DrillActivity {
 
     @BindView(R.id.activity_sound_drill_seven) ConstraintLayout rootView;
 
-    @BindView(R.id.objects_container) LinearLayout objectsContainer;
+    @BindView(R.id.images) LinearLayout objectsContainer;
 
-    @BindView(R.id.item1) ImageView item1;
-    @BindView(R.id.item2) ImageView item2;
-    @BindView(R.id.item3) ImageView item3;
+    @BindView(R.id.image_01) ImageView item1;
+    @BindView(R.id.image_02) ImageView item2;
+    @BindView(R.id.image_03) ImageView item3;
 
     @BindView(R.id.letters_g_h) Guideline ghLetters;
     @BindView(R.id.letters_g_v) Guideline gvLetters;

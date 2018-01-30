@@ -3,14 +3,12 @@ package classact.com.xprize.di;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.media.AudioManager;
-import android.util.Log;
 
 import javax.inject.Singleton;
 
 import classact.com.xprize.activity.menu.controller.DatabaseController;
 import classact.com.xprize.controller.DrillFetcher;
 import classact.com.xprize.controller.catalogue.MathDrills;
-import classact.com.xprize.controller.catalogue.PhonicsDrills;
 import classact.com.xprize.controller.catalogue.StoryDrills;
 import classact.com.xprize.controller.catalogue.WordDrills;
 import classact.com.xprize.database.DbHelper;
@@ -27,6 +25,7 @@ import dagger.Provides;
 
 /**
  * Created by hcdjeong on 2017/08/31.
+ * App Module for Dependency Injection via Dagger 2
  */
 
 @Module(includes = {
@@ -54,11 +53,6 @@ class AppModule {
             ex.printStackTrace();
         }
         return dbHelper;
-    }
-
-    @Provides
-    PhonicsDrills phonicsDrills(LetterHelper letterHelper) {
-        return new PhonicsDrills(letterHelper);
     }
 
     @Provides
@@ -123,14 +117,14 @@ class AppModule {
             Context context,
             DatabaseController databaseController,
             DbHelper dbHelper,
-            PhonicsDrills phonicsDrills, WordDrills wordDrills,
+            WordDrills wordDrills,
             StoryDrills storyDrills, MathDrills mathDrills,
             LetterHelper letterHelper) {
         return new DrillFetcher(
                 context,
                 databaseController,
                 dbHelper,
-                phonicsDrills, wordDrills,
+                wordDrills,
                 storyDrills, mathDrills,
                 letterHelper);
     }

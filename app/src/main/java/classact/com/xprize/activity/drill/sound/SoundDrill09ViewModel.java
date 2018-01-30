@@ -17,6 +17,7 @@ import classact.com.xprize.viewmodel.DrillViewModel;
 
 /**
  * Created by hcdjeong on 2017/12/27.
+ * View Model for Sound Drill Nine
  */
 
 public class SoundDrill09ViewModel extends DrillViewModel {
