@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,6 +111,8 @@ public class StarsMenu extends MenuActivity {
     private Handler mHandler;
     private Intent mIntent;
     private boolean mFinishActivity;
+
+    private boolean[] isGoldStar;
     
     @Inject DatabaseController mDb;
 
@@ -120,7 +123,6 @@ public class StarsMenu extends MenuActivity {
         ButterKnife.bind(this);
 
         setupStarGraphics();
-        setupStarColours();
 
         mHandler = new Handler();
         mIntent = getIntent();
@@ -213,7 +215,10 @@ public class StarsMenu extends MenuActivity {
         String chapterText = "Chapter " + mCurrentStar;
         mChapterText.setText(chapterText);
 
+        isGoldStar = new boolean[20];
+        Arrays.fill(isGoldStar, false);
         for (int i = 0; i < mCurrentStarLimit; i++) {
+            isGoldStar[i] = true;
             ImageView starButton = stars.get(i);
             final int chapter = i + 1;
             starButton.setOnClickListener((v) -> {
@@ -222,6 +227,8 @@ public class StarsMenu extends MenuActivity {
                     placeMonkey(chapter);
             });
         }
+
+        setupStarColours();
 
         mChapterBookButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -427,26 +434,26 @@ public class StarsMenu extends MenuActivity {
     }
 
     public void setupStarColours() {
-        loadFadeImage(star01, R.drawable.star_gold_01, (int) (Math.random() * 1500));
-        loadFadeImage(star02, R.drawable.star_gold_02, (int) (Math.random() * 1500));
-        loadFadeImage(star03, R.drawable.star_gold_03, (int) (Math.random() * 1500));
-        loadFadeImage(star04, R.drawable.star_gold_04, (int) (Math.random() * 1500));
-        loadFadeImage(star05, R.drawable.star_gold_05, (int) (Math.random() * 1500));
-        loadFadeImage(star06, R.drawable.star_gold_06, (int) (Math.random() * 1500));
-        loadFadeImage(star07, R.drawable.star_blue_07, (int) (Math.random() * 1500));
-        loadFadeImage(star08, R.drawable.star_blue_08, (int) (Math.random() * 1500));
-        loadFadeImage(star09, R.drawable.star_blue_09, (int) (Math.random() * 1500));
-        loadFadeImage(star10, R.drawable.star_blue_10, (int) (Math.random() * 1500));
-        loadFadeImage(star11, R.drawable.star_blue_11, (int) (Math.random() * 1500));
-        loadFadeImage(star12, R.drawable.star_blue_12, (int) (Math.random() * 1500));
-        loadFadeImage(star13, R.drawable.star_blue_13, (int) (Math.random() * 1500));
-        loadFadeImage(star14, R.drawable.star_blue_14, (int) (Math.random() * 1500));
-        loadFadeImage(star15, R.drawable.star_blue_15, (int) (Math.random() * 1500));
-        loadFadeImage(star16, R.drawable.star_blue_16, (int) (Math.random() * 1500));
-        loadFadeImage(star17, R.drawable.star_blue_17, (int) (Math.random() * 1500));
-        loadFadeImage(star18, R.drawable.star_blue_18, (int) (Math.random() * 1500));
-        loadFadeImage(star19, R.drawable.star_blue_19, (int) (Math.random() * 1500));
-        loadFadeImage(star20, R.drawable.star_blue_20, (int) (Math.random() * 1500));
+        loadFadeImage(star01, (isGoldStar[0]) ? R.drawable.star_gold_01 : R.drawable.star_blue_01, (int) (Math.random() * 1500));
+        loadFadeImage(star02, (isGoldStar[1]) ? R.drawable.star_gold_02 : R.drawable.star_blue_02, (int) (Math.random() * 1500));
+        loadFadeImage(star03, (isGoldStar[2]) ? R.drawable.star_gold_03 : R.drawable.star_blue_03, (int) (Math.random() * 1500));
+        loadFadeImage(star04, (isGoldStar[3]) ? R.drawable.star_gold_04 : R.drawable.star_blue_04, (int) (Math.random() * 1500));
+        loadFadeImage(star05, (isGoldStar[4]) ? R.drawable.star_gold_05 : R.drawable.star_blue_05, (int) (Math.random() * 1500));
+        loadFadeImage(star06, (isGoldStar[5]) ? R.drawable.star_gold_06 : R.drawable.star_blue_06, (int) (Math.random() * 1500));
+        loadFadeImage(star07, (isGoldStar[6]) ? R.drawable.star_gold_07 : R.drawable.star_blue_07, (int) (Math.random() * 1500));
+        loadFadeImage(star08, (isGoldStar[7]) ? R.drawable.star_gold_08 : R.drawable.star_blue_08, (int) (Math.random() * 1500));
+        loadFadeImage(star09, (isGoldStar[8]) ? R.drawable.star_gold_09 : R.drawable.star_blue_09, (int) (Math.random() * 1500));
+        loadFadeImage(star10, (isGoldStar[9]) ? R.drawable.star_gold_10 : R.drawable.star_blue_10, (int) (Math.random() * 1500));
+        loadFadeImage(star11, (isGoldStar[10]) ? R.drawable.star_gold_11 : R.drawable.star_blue_11, (int) (Math.random() * 1500));
+        loadFadeImage(star12, (isGoldStar[11]) ? R.drawable.star_gold_12 : R.drawable.star_blue_12, (int) (Math.random() * 1500));
+        loadFadeImage(star13, (isGoldStar[12]) ? R.drawable.star_gold_13 : R.drawable.star_blue_13, (int) (Math.random() * 1500));
+        loadFadeImage(star14, (isGoldStar[13]) ? R.drawable.star_gold_14 : R.drawable.star_blue_14, (int) (Math.random() * 1500));
+        loadFadeImage(star15, (isGoldStar[14]) ? R.drawable.star_gold_15 : R.drawable.star_blue_15, (int) (Math.random() * 1500));
+        loadFadeImage(star16, (isGoldStar[15]) ? R.drawable.star_gold_16 : R.drawable.star_blue_16, (int) (Math.random() * 1500));
+        loadFadeImage(star17, (isGoldStar[16]) ? R.drawable.star_gold_17 : R.drawable.star_blue_17, (int) (Math.random() * 1500));
+        loadFadeImage(star18, (isGoldStar[17]) ? R.drawable.star_gold_18 : R.drawable.star_blue_18, (int) (Math.random() * 1500));
+        loadFadeImage(star19, (isGoldStar[18]) ? R.drawable.star_gold_19 : R.drawable.star_blue_19, (int) (Math.random() * 1500));
+        loadFadeImage(star20, (isGoldStar[19]) ? R.drawable.star_gold_20 : R.drawable.star_blue_20, (int) (Math.random() * 1500));
     }
 
     public void placeMonkey(int chapter) {
