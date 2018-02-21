@@ -55,10 +55,11 @@ public class MathsDrillOneActivity extends DrillActivity {
             isRepeat = false;
             numCurrent = 0;
             numMax = Math.min(vm.getNumberCount(), rootView.getChildCount());
-            positions = FisherYates.shuffle(numMax);
+            positions = new int[numMax];
             for (int i = 0; i < numMax; i++) {
+                positions[i] = i;
                 ImageView iv = (ImageView) rootView.getChildAt(i);
-                iv.setImageResource(fetch.imageId(vm.getNumber(positions[i]).getBlackImage()));
+                iv.setImageResource(fetch.imageId(vm.getNumber(i).getBlackImage()));
                 iv.setVisibility(View.VISIBLE);
             }
         }
@@ -97,7 +98,7 @@ public class MathsDrillOneActivity extends DrillActivity {
                             sayTheNumbersWithMeAsTheySparkle();
                         }
                     }
-                }, Math.max(0, 1000 - mp.getDuration())); // Wait for duration difference
+                }, Math.max(0, 1100 - mp.getDuration())); // Wait for duration difference
             }));
             mediaPlayer.prepare();
         } catch (Exception ex) {
@@ -109,7 +110,18 @@ public class MathsDrillOneActivity extends DrillActivity {
     private void sayTheNumbersWithMeAsTheySparkle() {
         isRepeat = true;
         numCurrent = 0;
-        playSound(vm.getInstruction(1), this::countNumber);
+        scramble();
+        handler.delayed(() -> playSound(vm.getInstruction(1), this::countNumber), 500);
+    }
+
+    private void scramble() {
+        do {
+            positions = FisherYates.shuffle(numMax); // Ensure it's scrambled different
+        } while (positions[0] == 0);
+        for (int i = 0; i < numMax; i++) {
+            ImageView iv = (ImageView) rootView.getChildAt(i);
+            iv.setImageResource(fetch.imageId(vm.getNumber(positions[i]).getBlackImage()));
+        }
     }
 
     private void end() {
