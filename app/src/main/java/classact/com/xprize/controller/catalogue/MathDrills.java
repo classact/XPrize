@@ -20,7 +20,6 @@ import javax.inject.Inject;
 import classact.com.xprize.activity.drill.math.MathsDrillFiveActivity;
 import classact.com.xprize.activity.drill.math.MathsDrillFiveAndOneActivity;
 import classact.com.xprize.activity.drill.math.MathsDrillFourActivity;
-import classact.com.xprize.activity.drill.math.MathsDrillOneActivity;
 import classact.com.xprize.activity.drill.math.MathsDrillSevenActivity;
 import classact.com.xprize.activity.drill.math.MathsDrillSevenAndOneActivity;
 import classact.com.xprize.activity.drill.math.MathsDrillSixActivity;
@@ -33,7 +32,6 @@ import classact.com.xprize.activity.drill.math.MathsDrillTwoActivity;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.control.DraggableImage;
 import classact.com.xprize.control.MathDrillJsonBuilder;
-import classact.com.xprize.control.Numeral;
 import classact.com.xprize.control.ObjectAndSound;
 import classact.com.xprize.database.DbHelper;
 import classact.com.xprize.database.helper.MathDrillFlowWordsHelper;
@@ -47,44 +45,7 @@ import classact.com.xprize.locale.Languages;
 public class MathDrills {
 
     @Inject
-    public MathDrills() {
-
-    }
-
-    public Intent D1(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
-        Intent intent;
-
-        try {
-            // Debug
-            System.out.println("MathDrills.D1 > Debug: PREPARING");
-
-            MathDrillFlowWords mathDrillFlowWord = MathDrillFlowWordsHelper.getMathDrillFlowWords(dbHelper.getReadableDatabase(), mathDrillId, subId, languageId);
-
-            limit = 5 * (int) Math.ceil((double) unitId / 5);
-
-            ArrayList<Integer> numeralsFromDB = NumeralHelper.getNumeralsBelowLimit(dbHelper.getReadableDatabase(), languageId, limit, boyGirl);
-            ArrayList<Numeral> numerals = new ArrayList<>();
-
-            for (int i = 0; i < numeralsFromDB.size(); i++) {
-                Numerals numeralFromDB = NumeralHelper.getNumeral(dbHelper.getReadableDatabase(), numeralsFromDB.get(i));
-                Numeral numeral = new Numeral(numeralFromDB.getSound(), numeralFromDB.getBlackImage(), numeralFromDB.getSparklingImage());
-                numerals.add(numeral);
-            }
-            String drillData = MathDrillJsonBuilder.getDrillOneJson(
-                    context,
-                    mathDrillFlowWord.getDrillSound1(),
-                    mathDrillFlowWord.getDrillSound2(),
-                    numerals);
-            intent = new Intent(context, MathsDrillOneActivity.class);
-            intent.putExtra("data", drillData);
-
-        } catch (SQLiteException sqlex) {
-            throw new SQLiteException("D1: " + sqlex.getMessage());
-        } catch (Exception ex) {
-            throw new Exception("D1: " + ex.getMessage());
-        }
-        return intent;
-    }
+    public MathDrills() {}
 
     public Intent D2(Context context, DbHelper dbHelper, int unitId, int drillId, int languageId, int mathDrillId, int subId, int limit, int boyGirl) throws SQLiteException, Exception  {
         Intent intent;

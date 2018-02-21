@@ -6,38 +6,15 @@ import android.util.SparseArray;
 import java.util.ArrayList;
 import java.util.List;
 
-import classact.com.xprize.common.Code;
 import classact.com.xprize.database.model.MathImages;
 import classact.com.xprize.database.model.Numerals;
 import classact.com.xprize.utils.FisherYates;
-import classact.com.xprize.utils.ResourceDecoder;
 
 /**
  * Created by Tseliso on 12/22/2016.
  */
 
 public class MathDrillJsonBuilder {
-    public static String getDrillOneJson(Context context,
-                                         String itsTimeToCount,
-                                         String sayNumbersWithMe,
-                                         ArrayList<Numeral> numerals) {
-        String drillData = "{\"its_time_to_count\":\"" + itsTimeToCount + "\"," +
-                "\"say_numbers_with_me\":\"" + sayNumbersWithMe + "\"," +
-                "\"numerals\":[";
-        for (int i = 0; i < numerals.size(); i++) {
-            if (i > 0) { // add comma in front logic
-                drillData += ",";
-            }
-            Numeral numeral = numerals.get(i);
-            drillData +=  "{\"sound\":\"" + numeral.getSound() + "\"," +
-                    "\"numeral\":\"" + numeral.getBlackImage() + "\"," +
-                    "\"numeral_sparkling\":\"" + numeral.getSparklingImage() + "\"" +
-                    "}";
-        }
-        drillData += "]}";
-
-        return drillData;
-    }
 
     public static String getDrillTwoJson(Context context,
                                          String monkeyHasSound,
