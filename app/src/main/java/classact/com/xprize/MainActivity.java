@@ -80,11 +80,22 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
         ButterKnife.bind(this);
 
         mDb.setLanguage(Languages.ENGLISH);
-        appEmblem.setImageResource(0);
-        rootView.setBackgroundColor(Color.WHITE);
-        background.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        loadImage(background, R.drawable.bg_landscape);
+        appEmblem.setImageResource(R.drawable.app_emblem);
+//        rootView.setBackgroundColor(Color.WHITE);
+//        background.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//        loadImage(background, R.drawable.bg_landscape);
 
+        mNewActivity = false;
+
+        setupGraphics();
+        setupButtons();
+        // preloadImages();
+        addListeners();
+
+        Globals.PLAY_BACKGROUND_MUSIC(context);
+    }
+
+    public void addSpecialSauce() {
         Guideline ghVillage = ez.guide.create(true, 0.75f);
         Guideline gvVillage = ez.guide.create(false, 0.5f);
 
@@ -212,54 +223,13 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
         vege02.setScaleX(1.45f);
         vege02.setScaleY(1.45f);
 
-//        vm = ViewModelProviders.of(this, vmFactory).get(MainActivityViewModel.class);
-
-        mNewActivity = false;
-
-        setupGraphics();
-        setupButtons();
-        // preloadImages();
-        addListeners();
-
-        /* SENSORS */
-//        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-//        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-//        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-
         LiveObjectAnimator windmillAnimator = new LiveObjectAnimator(
-        getLifecycle(),
-        ObjectAnimator.ofFloat(windmillBlades, "rotation", 0f, 360f))
-            .setDuration(60)
-            .setRepeatCount(Animation.INFINITE).setInterpolator(new LinearInterpolator());
-
-//        LiveObjectAnimator cloud1Animator = new LiveObjectAnimator(
-//                getLifecycle(),
-//                ObjectAnimator.ofFloat(clouds1, "translationX", 2500).setA)
-//                    .setDuration(60000)
-//                    .setRepeatCount(Animation.INFINITE)
-//                    .setRepeatMode(Animation.REVERSE);
-//
-//        LiveObjectAnimator cloud2Animator = new LiveObjectAnimator(
-//                getLifecycle(),
-//                ObjectAnimator.ofFloat(clouds2, "translationX", 1000f))
-//                .setDuration(96000)
-//                .setRepeatCount(Animation.INFINITE)
-//                .setRepeatMode(Animation.REVERSE);
-//
-//        LiveObjectAnimator cloud3Animator = new LiveObjectAnimator(
-//                getLifecycle(),
-//                ObjectAnimator.ofFloat(clouds3, "translationX", -2500f))
-//                .setDuration(75000)
-//                .setRepeatCount(Animation.INFINITE)
-//                .setRepeatMode(Animation.REVERSE);
-
-//        cloud1Animator.start();
-//        cloud2Animator.start();
-//        cloud3Animator.start();
+                getLifecycle(),
+                ObjectAnimator.ofFloat(windmillBlades, "rotation", 0f, 360f))
+                .setDuration(60)
+                .setRepeatCount(Animation.INFINITE).setInterpolator(new LinearInterpolator());
 
         windmillAnimator.start();
-
-        Globals.PLAY_BACKGROUND_MUSIC(context);
     }
 
     public void setupGraphics() {
@@ -281,31 +251,6 @@ public class MainActivity extends MenuActivity implements SensorEventListener {
         setTouchListener(readButton, R.drawable.read_button_up, R.drawable.read_button_down);
         setTouchListener(starsButton, R.drawable.stars_button_up, R.drawable.stars_button_down);
         setTouchListener(helpButton, R.drawable.help_button_up, R.drawable.help_button_down);
-    }
-
-    public void preloadImages() {
-        preloadImage(
-                R.drawable.star_blue_01,
-                R.drawable.star_blue_02,
-                R.drawable.star_blue_03,
-                R.drawable.star_blue_04,
-                R.drawable.star_blue_05,
-                R.drawable.star_blue_06,
-                R.drawable.star_blue_07,
-                R.drawable.star_blue_08,
-                R.drawable.star_blue_09,
-                R.drawable.star_blue_10,
-                R.drawable.star_blue_11,
-                R.drawable.star_blue_12,
-                R.drawable.star_blue_13,
-                R.drawable.star_blue_14,
-                R.drawable.star_blue_15,
-                R.drawable.star_blue_16,
-                R.drawable.star_blue_17,
-                R.drawable.star_blue_18,
-                R.drawable.star_blue_19,
-                R.drawable.star_blue_20
-        );
     }
 
     public void addListeners() {

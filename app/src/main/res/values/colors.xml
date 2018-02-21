@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="deepGray">#202020</color>
+    <color name="deepDarkGray">#151515</color>
+    <color name="backgroundBlue">#35B8EA</color>
     <color name="black">#000000</color>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#ff4081</color>
+    <color name="correct">#33ccff</color>
+    <color name="incorrect">#FF0000</color>
+    <color name="lose">#CC0000</color>
+    <color name="lose_transparent">#80CC0000</color>
+    <color name="gold">#FFCD00</color>
+    <color name="gold_transparent">#80FFCD00</color>
 </resources>

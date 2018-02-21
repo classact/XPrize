@@ -16,6 +16,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.MenuActivity;
+import classact.com.xprize.activity.drill.tutorial.Tutorial;
+import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import dagger.android.support.DaggerAppCompatActivity;
 
@@ -52,13 +54,12 @@ public class HelpMenu extends MenuActivity {
         mTutorialButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*
-                Intent intent = new Intent(THIS, DemoStory.class);
                 mFinishActivity = true;
-                Globals.STOP_BACKGROUND_MUSIC(THIS);
-                startActivityForResult(intent, 0);
+                Globals.STOP_BACKGROUND_MUSIC(context);
+                Intent intent = new Intent(context, Tutorial.class);
+                intent.putExtra("requestCode", Code.TO_HELP);
+                startActivityForResult(intent, Code.TO_HELP);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                */
             }
         });
 
@@ -82,6 +83,9 @@ public class HelpMenu extends MenuActivity {
                 mFinishActivity = true;
                 finish();
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                break;
+            case Code.TO_HELP:
+                Globals.RESUME_BACKGROUND_MUSIC(context);
                 break;
             default:
                 break;
