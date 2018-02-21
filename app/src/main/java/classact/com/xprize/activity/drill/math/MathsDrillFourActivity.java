@@ -2,6 +2,7 @@ package classact.com.xprize.activity.drill.math;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -119,6 +120,9 @@ public class MathsDrillFourActivity extends DrillActivity {
     private void clicked(View view, boolean left){
         if (touchEnabled && !drillComplete) {
             try {
+                String sound = (left) ?
+                        allData.getString("number_of_left_items_sound") :
+                        allData.getString("number_of_right_items_sound");
                 unHighlight(lastWrongView);
 
                 ImageView iv = null;
@@ -146,27 +150,27 @@ public class MathsDrillFourActivity extends DrillActivity {
                         iv = rightNumber;
                     }
                 }
-
                 if (isRight) {
                     touchEnabled = false;
                     drillComplete = true;
 
-                    if (iv != null) {
-                        starWorks.play(this, iv);
-                    }
+                    final ImageView fIV = iv;
 
-                    playSound(FetchResource.positiveAffirmation(context),
+                    playSound(sound,
                             () -> highlightCorrect(view),
+                            () -> playSound(FetchResource.positiveAffirmation(context),
+                            () -> starWorks.play(this, fIV),
                             () -> {
                                 finish();
                                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                            }
+                            })
                         );
                 } else {
                     lastWrongView = view;
-                    playSound(FetchResource.negativeAffirmation(context),
+                    playSound(sound,
                             () -> highlightWrong(view),
-                            () -> unHighlight(view));
+                            () -> playSound(FetchResource.negativeAffirmation(context),
+                            () -> unHighlight(view)));
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
