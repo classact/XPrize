@@ -372,8 +372,13 @@ public class EZ {
 
     /**
      * Visibility function
-     * @param views views to show
+     * @param view to show
      */
+
+    public void show(View view) {
+        view.setVisibility(View.VISIBLE);
+    }
+
     public void show(View... views) {
         for (View view : views) {
             view.setVisibility(View.VISIBLE);

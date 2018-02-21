@@ -118,10 +118,6 @@ public class MathDrill01ViewModel extends DrillViewModel {
         return this.numbers.get(index);
     }
 
-    public int getInstructionCount() {
-        return this.instructions.size();
-    }
-
     public String getInstruction(int index) {
         return this.instructions.get(index);
     }
