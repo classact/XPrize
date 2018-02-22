@@ -1,17 +1,9 @@
 package classact.com.xprize.activity.drill.math;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.ClipData;
-import android.content.ClipDescription;
-import android.content.Context;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
 import android.view.DragEvent;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -24,42 +16,40 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.Random;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
-import classact.com.xprize.common.Code;
-import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 
 public class MathsDrillSixAndFourActivity extends DrillActivity implements View.OnTouchListener, View.OnDragListener {
+
+    @BindView(R.id.activity_maths_drill_six_and_four) RelativeLayout parentView;
+    @BindView(R.id.equation_one) ImageView equationNumberOne;
+    @BindView(R.id.equation_two) ImageView equationNumberTwo;
+    @BindView(R.id.equation_answer) ImageView equationAnswer;
+    @BindView(R.id.equation_sign) ImageView equationSign;
+    @BindView(R.id.equation_equals) ImageView equationEqualsSign;
+    @BindView(R.id.damasItems) RelativeLayout objectsContainer;
+    @BindView(R.id.numbers_container) RelativeLayout numbersContainer;
+    @BindView(R.id.numeral_1) ImageView numberOne;
+    @BindView(R.id.numeral_2) ImageView numberTwo;
+    @BindView(R.id.numeral_3) ImageView numberThree;
+    @BindView(R.id.monkeysReceptable) RelativeLayout itemsReceptacle;
+
     private JSONObject allData;
-    private ImageView numberOne;
-    private ImageView numberTwo;
-    private ImageView numberThree;
     private JSONArray numbers;
-    private RelativeLayout objectsContainer;
-    private RelativeLayout numbersContainer;
+
     private int[] positions;
     private int draggedItems = 0;
-    private RelativeLayout itemsReceptacle;
     private int targetItems = 0;
     private int itemResId;
-    private boolean isInReceptacle;
-    private ImageView equationNumberOne;
-    private ImageView equationNumberTwo;
-    private ImageView equationAnswer;
-    private ImageView equationSign;
-    private ImageView equationEqualsSign;
     private int segment = 0;
 
     private SparseArray<NumberObject> numberObjects;
 
-    private RelativeLayout monkey;
-
     private boolean dragEnabled;
     private boolean touchEnabled;
-
-    private RelativeLayout parentView;
 
     private MathDrill06EViewModel vm;
 
@@ -78,44 +68,17 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
 
-        parentView = (RelativeLayout) findViewById(R.id.activity_maths_drill_six_and_four);
-
-        equationNumberOne = (ImageView)findViewById(R.id.equation_one);
-        equationNumberTwo = (ImageView)findViewById(R.id.equation_two);
-        equationAnswer = (ImageView)findViewById(R.id.equation_answer);
-        equationSign = (ImageView) findViewById(R.id.equation_sign);
-        equationEqualsSign = (ImageView)findViewById(R.id.equation_equals);
         equationNumberOne.setVisibility(View.INVISIBLE);
         equationNumberTwo.setVisibility(View.INVISIBLE);
         equationAnswer.setVisibility(View.INVISIBLE);
         equationSign.setVisibility(View.INVISIBLE);
         equationEqualsSign.setVisibility(View.INVISIBLE);
-        objectsContainer = (RelativeLayout)findViewById(R.id.damasItems);
-        numbersContainer = (RelativeLayout)findViewById(R.id.numbers_container);
-        numberOne = (ImageView)findViewById(R.id.numeral_1);
-        numberOne.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                numberClicked(1);
-            }
-        });
-        numberTwo = (ImageView)findViewById(R.id.numeral_2);
-        numberTwo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                numberClicked(2);
-            }
-        });
-        numberThree = (ImageView)findViewById(R.id.numeral_3);
-        numberThree.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                numberClicked(3);
-            }
-        });
-        itemsReceptacle = (RelativeLayout)findViewById(R.id.monkeysReceptable);
 
-        monkey = new RelativeLayout(context);
+        numberOne.setOnClickListener((v) -> numberClicked(1));
+        numberTwo.setOnClickListener((v) -> numberClicked(2));
+        numberThree.setOnClickListener((v) -> numberClicked(3));
+
+        RelativeLayout monkey = new RelativeLayout(context);
         // monkey.setBackgroundColor(Color.argb(100, 255, 0, 0));
         parentView.addView(monkey);
         RelativeLayout.LayoutParams monkeyLP = (RelativeLayout.LayoutParams) monkey.getLayoutParams();
@@ -124,7 +87,6 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
         monkeyLP.topMargin = 400;
         monkeyLP.leftMargin = 1200;
         monkey.setLayoutParams(monkeyLP);
-
         monkey.setOnDragListener(this);
         initialiseData();
     }
@@ -147,12 +109,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
             dragEnabled = false;
 
             String sound = allData.getString("dama_has_sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    sayNumber();
-                }
-            });
+            playSound(sound, this::sayNumber);
         }
         catch (Exception ex){
             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
@@ -215,26 +172,20 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
                     case 0:
                         JSONObject number = numbers.getJSONObject(i);
                         String numberImage = number.getString("image");
-                        int value = number.getInt("value");
                         int numberImageId = FetchResource.imageId(context, numberImage);
                         loadImage(numberOne, numberImageId);
-                        // numberOne.setTag(String.valueOf(value));
                         break;
                     case 1:
                         number = numbers.getJSONObject(i);
                         numberImage = number.getString("image");
-                        value = number.getInt("value");
                         numberImageId = FetchResource.imageId(context, numberImage);
                         loadImage(numberTwo, numberImageId);
-                        // numberTwo.setTag(String.valueOf(value));
                         break;
                     case 2:
                         number = numbers.getJSONObject(i);
                         numberImage = number.getString("image");
-                        value = number.getInt("value");
                         numberImageId = FetchResource.imageId(context, numberImage);
                         loadImage(numberThree, numberImageId);
-                        // numberThree.setTag(String.valueOf(value));
                         break;
                     default:
                         break;
@@ -257,25 +208,14 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
                 if (numberValue == (count - targetItems)) {
                     touchEnabled = false;
                     equationAnswer.setVisibility(View.VISIBLE);
-                    playSound(numberSound, new Runnable() {
-                        @Override
-                        public void run() {
-                            playSound(FetchResource.positiveAffirmation(context), new Runnable() {
-                                @Override
-                                public void run() {
-                                    finish();
-                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                                }
-                            });
-                        }
-                    });
+                    playSound(numberSound, () ->
+                            playSound(FetchResource.positiveAffirmation(context), () -> {
+                                finish();
+                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                            }));
                 } else {
-                    playSound(numberSound, new Runnable() {
-                        @Override
-                        public void run() {
-                            playSound(FetchResource.negativeAffirmation(context), null);
-                        }
-                    });
+                    playSound(numberSound,
+                            () -> playSound(FetchResource.negativeAffirmation(context), null));
                 }
             } catch (Exception ex) {
                 Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
@@ -287,12 +227,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
     private void sayNumber(){
         try{
             String sound = allData.getString("number_of_objects_sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    sayHeGives();
-                }
-            });
+            playSound(sound, this::sayHeGives);
         }
         catch (Exception ex){
             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
@@ -304,12 +239,9 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
     private void sayHeGives(){
         try{
             String sound = allData.getString("he_gives_sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    segment = 2;
-                    sayNumberToGive();
-                }
+            playSound(sound, () -> {
+                segment = 2;
+                sayNumberToGive();
             });
         }
         catch (Exception ex){
@@ -321,14 +253,11 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
     private void sayNumberToGive(){
         try{
             String sound = allData.getString("number_of_given_object_sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    if (segment == 2) {
-                        sayToMonkey();
-                    } else {
-                        sayToMonkeySpace();
-                    }
+            playSound(sound, () -> {
+                if (segment == 2) {
+                    sayToMonkey();
+                } else {
+                    sayToMonkeySpace();
                 }
             });
         }
@@ -341,12 +270,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
     private void sayToMonkey(){
         try{
             String sound = allData.getString("to_monkey_sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    sayDrag();
-                }
-            });
+            playSound(sound, this::sayDrag);
         }
         catch (Exception ex){
             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
@@ -357,12 +281,9 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
     private void sayDrag(){
         try{
             String sound = allData.getString("drag_sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    segment = 3;
-                    sayNumberToGive();
-                }
+            playSound(sound, () -> {
+                segment = 3;
+                sayNumberToGive();
             });
         }
         catch (Exception ex){
@@ -374,12 +295,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
     private void sayToMonkeySpace(){
         try{
             String sound = allData.getString("to_the_monkey_sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    dragEnabled = true;
-                }
-            });
+            playSound(sound, () -> dragEnabled = true);
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -401,12 +317,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
             equationSign.setVisibility(View.VISIBLE);
             equationEqualsSign.setVisibility(View.VISIBLE);
             String sound = allData.getString("equation_sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    playTouch();
-                }
-            });
+            playSound(sound, this::playTouch);
         }
         catch (Exception ex){
             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
@@ -418,12 +329,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
         try{
             numbersContainer.setVisibility(View.VISIBLE);
             String sound = allData.getString("touch_sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    touchEnabled = true;
-                }
-            });
+            playSound(sound, () -> touchEnabled = true);
         }
         catch (Exception ex){
             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
@@ -437,7 +343,6 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
         try {
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
-                    // ClipData dragData = new ClipData(tag, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
                     View.DragShadowBuilder dragShadow = new View.DragShadowBuilder(v);
                     v.startDragAndDrop(null, dragShadow, v, 0);
                     v.setVisibility(View.INVISIBLE);
@@ -492,17 +397,7 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
 
                         if (draggedItems >= targetItems) {
                             dragEnabled = false;
-                            playSound(numberSound, new Runnable() {
-                                @Override
-                                public void run() {
-                                    playSound(FetchResource.positiveAffirmation(context), new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            showEquation();
-                                        }
-                                    });
-                                }
-                            });
+                            playSound(numberSound, () -> playSound(FetchResource.positiveAffirmation(context), this::showEquation));
                         } else {
                             playSound(numberSound, null);
                         }
