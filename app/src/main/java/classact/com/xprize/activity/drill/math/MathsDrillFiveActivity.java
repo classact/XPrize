@@ -52,9 +52,11 @@ public class MathsDrillFiveActivity extends DrillActivity {
     private int targetItems = 0;
     private int itemResId;
     private boolean isInReceptacle;
-    boolean dragEnabled;
-    boolean drillComplete;
-    boolean endDrill;
+    private boolean dragEnabled;
+    private boolean drillComplete;
+    private boolean endDrill;
+
+    private ImageView dummyView;
 
     private float itemWidth, itemHeight;
     private float ix = -1, iy = -1, nx = -1, ny = -1;
@@ -185,7 +187,7 @@ public class MathsDrillFiveActivity extends DrillActivity {
                     float x = ((nx - ix) / 2) + ix;
                     float y = ((ny - iy) / 2) + iy;
 
-                    ImageView dummyView = new ImageView(context);
+                    dummyView = new ImageView(context);
                     MarginLayoutParams dummyViewLayoutParmas = new MarginLayoutParams(
                             MarginLayoutParams.WRAP_CONTENT,
                             MarginLayoutParams.WRAP_CONTENT
@@ -195,7 +197,6 @@ public class MathsDrillFiveActivity extends DrillActivity {
                     dummyView.setY(y);
 
                     itemsReceptacle.addView(dummyView);
-                    starWorks.play(this, dummyView);
                 }, 100);
             }
         }
@@ -357,6 +358,7 @@ public class MathsDrillFiveActivity extends DrillActivity {
     private Runnable placementRunnable = () -> {
         if (drillComplete && !endDrill) {
             endDrill = true;
+            starWorks.play(this, dummyView);
             handler.delayed(() -> playSound(FetchResource.positiveAffirmation(context), this::endDrill), 0);
         }
     };
