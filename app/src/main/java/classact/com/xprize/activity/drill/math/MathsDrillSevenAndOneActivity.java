@@ -87,6 +87,12 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
 
     private void initialiseData(){
         try {
+            ez.hide(filler1, filler2, filler3);
+            ez.unclickable(filler1, filler2, filler3);
+            filler1.setAlpha(.4f);
+            filler2.setAlpha(.4f);
+            filler3.setAlpha(.4f);
+
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
             setupNumberObjects();
@@ -236,16 +242,8 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
 
     private void sayHelpMonkey() {
         try {
-            filler1.setVisibility(View.VISIBLE);
-            filler2.setVisibility(View.VISIBLE);
-            filler3.setVisibility(View.VISIBLE);
             String sound = allData.getString("help_monkey_sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    sayDrag();
-                }
-            });
+            playSound(sound, this::sayDrag);
         } catch (Exception ex) {
             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
             ex.printStackTrace();
@@ -254,15 +252,14 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
 
     private void sayDrag(){
         try{
-            filler1.setVisibility(View.VISIBLE);
-            filler2.setVisibility(View.VISIBLE);
-            filler3.setVisibility(View.VISIBLE);
+            ez.show(filler1, filler2, filler3);
             String sound = allData.getString("drag_sound");
-            playSound(sound, new Runnable() {
-                @Override
-                public void run() {
-                    dragEnabled = true;
-                }
+            playSound(sound, () -> {
+                ez.clickable(filler1, filler2, filler3);
+                filler1.setAlpha(1f);
+                filler2.setAlpha(1f);
+                filler3.setAlpha(1f);
+                dragEnabled = true;
             });
         }
         catch (Exception ex){
@@ -294,13 +291,9 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
                     currentValue = draggableViewValues.get(v);
-//                    String tag = (String) v.getTag();
-//                    ClipData.Item item = new ClipData.Item(tag);
-//                    ClipData dragData = new ClipData(tag, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
                     View.DragShadowBuilder dragShadow = new View.DragShadowBuilder(v);
                     v.startDragAndDrop(null, dragShadow, v, 0);
                     v.setVisibility(View.INVISIBLE);
-                    System.out.println("Turn invisible");
                     if (dragEnabled) {
                         String numberSound = numberObjects.get(currentValue).getSound();
                         playSound(numberSound, null);
@@ -309,7 +302,6 @@ public class MathsDrillSevenAndOneActivity extends DrillActivity implements View
                 case MotionEvent.ACTION_UP:
                     if (!isDragging) {
                         v.setVisibility(View.VISIBLE);
-                        System.out.println("Turning back visible (Touch-based)");
                     }
                     return true;
                 default:
