@@ -10,6 +10,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import classact.com.xprize.activity.drill.books.StoryActivity;
+import classact.com.xprize.activity.drill.math.MathsDrillOneActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillEightActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillFiveActivity;
 import classact.com.xprize.activity.drill.sound.SoundDrillFourActivity;
@@ -479,13 +480,7 @@ public class DrillFetcher extends DbAccessor {
 
                 switch (mathDrillId) {
                     case 1: {
-                        limit = 5;
-                        subId = 0;
-                        if (languageId == Languages.ENGLISH) {
-                            boyGirl = 2;
-                        }
-                        // Fetch D1
-                        intent = mathDrills.D1(context, dbHelper, unitId, drillId, languageId, mathDrillId, subId, limit, boyGirl);
+                        intent = new Intent(context, MathsDrillOneActivity.class);
                         break;
                     }
                     case 2: {

@@ -24,6 +24,7 @@ import com.bumptech.glide.request.RequestOptions;
 
 import javax.inject.Inject;
 
+import classact.com.xprize.common.Code;
 import classact.com.xprize.common.Globals;
 import classact.com.xprize.event.PauseEvent;
 import classact.com.xprize.event.ResumeEvent;
@@ -58,6 +59,7 @@ public abstract class DrillActivity extends DaggerAppCompatActivity {
 
     protected View container;
     protected View pauseScreen;
+    protected int requestCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -344,7 +346,11 @@ public abstract class DrillActivity extends DaggerAppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        setResult(Globals.TO_MAIN);
+        if (requestCode == Code.TO_HELP) {
+            setResult(Code.TO_HELP);
+        } else {
+            setResult(Globals.TO_MAIN);
+        }
         if (compositeDisposable != null) {
             compositeDisposable.clear();
         }

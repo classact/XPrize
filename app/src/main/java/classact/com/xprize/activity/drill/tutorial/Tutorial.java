@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -153,6 +154,7 @@ public class Tutorial extends DrillActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial);
+        super.requestCode = getIntent().getIntExtra("requestCode", 0);
 
         // View Model
         vm = ViewModelProviders.of(this, viewModelFactory)
@@ -1080,6 +1082,9 @@ public class Tutorial extends DrillActivity {
         overridePendingTransition(0, android.R.anim.fade_out);
         */
 
+        if (super.requestCode == Code.TO_HELP) {
+            setResult(super.requestCode);
+        }
         finish();
         overridePendingTransition(0, android.R.anim.fade_out);
     }

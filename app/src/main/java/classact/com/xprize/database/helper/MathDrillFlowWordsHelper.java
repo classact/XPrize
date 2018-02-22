@@ -24,13 +24,13 @@ public class MathDrillFlowWordsHelper {
                 drillFlowWord.setLanguageID(cursor.getInt(1));
                 drillFlowWord.setDrillID(cursor.getInt(2));
                 drillFlowWord.setSubID(cursor.getInt(3));
-                drillFlowWord.setDrillSound1(cursor.getString(4));
-                drillFlowWord.setDrillSound2(cursor.getString(5));
-                drillFlowWord.setDrillSound3(cursor.getString(6));
-                drillFlowWord.setDrillSound4(cursor.getString(7));
-                drillFlowWord.setDrillSound5(cursor.getString(8));
-                drillFlowWord.setDrillSound6(cursor.getString(9));
-                drillFlowWord.setDrillSound7(cursor.getString(10));
+                drillFlowWord.setDrillSound1(cursor.getString(4).trim());
+                drillFlowWord.setDrillSound2(cursor.getString(5).trim());
+                drillFlowWord.setDrillSound3(cursor.getString(6).trim());
+                drillFlowWord.setDrillSound4(cursor.getString(7).trim());
+                drillFlowWord.setDrillSound5(cursor.getString(8).trim());
+                drillFlowWord.setDrillSound6(cursor.getString(9).trim());
+                drillFlowWord.setDrillSound7(cursor.getString(10).trim());
             }
             return drillFlowWord;
 

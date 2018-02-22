@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.widget.Toast;
 
 import java.io.Closeable;
 import java.io.File;
@@ -42,7 +43,7 @@ public class Fetch {
             path = "android.resource://" + packageName + "/" + resourceId;
 
         } catch (Exception ex) {
-            System.err.println("FetchResource.video > Exception: " + ex.getMessage());
+            Toast.makeText(context, "Error getting raw: " + name, Toast.LENGTH_LONG).show();
             path = null;
         }
 
@@ -50,15 +51,15 @@ public class Fetch {
     }
 
     public int rawId(String name) {
-        int resourceId;
+        int resourceId = 0;
 
         try {
             String packageName = context.getPackageName();
             resourceId = context.getResources().getIdentifier(name, "raw", packageName);
 
         } catch (Exception ex) {
-            System.err.println("FetchResource.video > Exception: " + ex.getMessage());
-            resourceId = 0;
+            ex.printStackTrace();
+            Toast.makeText(context, "Error getting raw Id: " + name, Toast.LENGTH_LONG).show();
         }
 
         return resourceId;
@@ -73,9 +74,22 @@ public class Fetch {
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            Globals.bugBar(((Activity) context).findViewById(android.R.id.content), "image", name).show();
+            Toast.makeText(context, "Error getting drawable: " + name, Toast.LENGTH_LONG).show();
         }
         return path;
+    }
+
+    public int imageId(String name) {
+        int resourceId = 0;
+        try {
+            String packageName = context.getPackageName();
+            resourceId = context.getResources().getIdentifier(name, "drawable", packageName);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Toast.makeText(context, "Error getting drawable Id: " + name, Toast.LENGTH_LONG).show();
+        }
+        return resourceId;
     }
 
     public Typeface font() {

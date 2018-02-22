@@ -2,16 +2,9 @@ package classact.com.xprize.activity.drill.math;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -31,8 +24,6 @@ import java.util.Random;
 import butterknife.ButterKnife;
 import classact.com.xprize.R;
 import classact.com.xprize.activity.DrillActivity;
-import classact.com.xprize.common.Code;
-import classact.com.xprize.common.Globals;
 import classact.com.xprize.utils.FetchResource;
 import classact.com.xprize.utils.FisherYates;
 import classact.com.xprize.utils.Square;
@@ -52,9 +43,11 @@ public class MathsDrillFiveActivity extends DrillActivity {
     private int targetItems = 0;
     private int itemResId;
     private boolean isInReceptacle;
-    boolean dragEnabled;
-    boolean drillComplete;
-    boolean endDrill;
+    private boolean dragEnabled;
+    private boolean drillComplete;
+    private boolean endDrill;
+
+    private ImageView dummyView;
 
     private float itemWidth, itemHeight;
     private float ix = -1, iy = -1, nx = -1, ny = -1;
@@ -185,7 +178,7 @@ public class MathsDrillFiveActivity extends DrillActivity {
                     float x = ((nx - ix) / 2) + ix;
                     float y = ((ny - iy) / 2) + iy;
 
-                    ImageView dummyView = new ImageView(context);
+                    dummyView = new ImageView(context);
                     MarginLayoutParams dummyViewLayoutParmas = new MarginLayoutParams(
                             MarginLayoutParams.WRAP_CONTENT,
                             MarginLayoutParams.WRAP_CONTENT
@@ -195,7 +188,6 @@ public class MathsDrillFiveActivity extends DrillActivity {
                     dummyView.setY(y);
 
                     itemsReceptacle.addView(dummyView);
-                    starWorks.play(this, dummyView);
                 }, 100);
             }
         }
@@ -357,6 +349,7 @@ public class MathsDrillFiveActivity extends DrillActivity {
     private Runnable placementRunnable = () -> {
         if (drillComplete && !endDrill) {
             endDrill = true;
+            starWorks.play(this, dummyView);
             handler.delayed(() -> playSound(FetchResource.positiveAffirmation(context), this::endDrill), 0);
         }
     };

@@ -9,6 +9,7 @@ import android.util.SparseArray;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -31,21 +32,21 @@ import classact.com.xprize.utils.RandomExcluding;
 
 public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.OnTouchListener, View.OnDragListener {
 
+    @BindView(R.id.numbers_container) RelativeLayout numbersContainer;
+    @BindView(R.id.itemsContainer) RelativeLayout objectsContainer;
+    @BindView(R.id.itemsReceptacle) RelativeLayout itemsReceptacle;
+    @BindView(R.id.equation_one) ImageView equationNumberOne;
+    @BindView(R.id.equation_two) ImageView equationNumberTwo;
+    @BindView(R.id.equation_answer) ImageView equationAnswer;
+    @BindView(R.id.equation_sign) ImageView equationSign;
+    @BindView(R.id.equation_equals) ImageView equationEqualsSign;
+    @BindView(R.id.numeral_1) ImageView numberOne;
+    @BindView(R.id.numeral_2) ImageView numberTwo;
+    @BindView(R.id.numeral_3) ImageView numberThree;
+
     private JSONObject allData;
     private JSONArray things;
     private JSONArray numbers;
-
-    private ImageView numberOne;
-    private ImageView numberTwo;
-    private ImageView numberThree;
-    private RelativeLayout objectsContainer;
-    private RelativeLayout numbersContainer;
-    private int[] positions;
-    private int draggedItems = 0;
-    private RelativeLayout itemsReceptacle;
-    private int targetItems = 0;
-    private int itemResId;
-    private boolean isInReceptacle;
 
     private SparseArray<ImageView> objectContainerImageViews;
     private SparseArray<CustomObject> numberObjects;
@@ -55,18 +56,14 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
     private LinkedHashMap<String, Integer> collectedObjects;
     private LinkedHashMap<String, ImageView> equationNumbers;
 
-    private ImageView equationNumberOne;
-    private ImageView equationNumberTwo;
-    private ImageView equationAnswer;
-    @BindView(R.id.equation_sign) ImageView equationSign;
-    @BindView(R.id.equation_equals) ImageView equationEqualsSign;
-
     private boolean dragEnabled;
     private boolean touchNumbersEnabled;
 
     private int currentDragIndex;
 
     private MathDrill05BViewModel vm;
+
+    private View lastWrongNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,56 +80,35 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
 
-        equationNumberOne = (ImageView)findViewById(R.id.equation_one);
-        // equationNumberOne.setBackgroundColor(Color.argb(100, 255, 0, 0));
         equationNumberOne.setColorFilter(Color.argb(255, 255, 255, 255));
         equationNumberOne.setVisibility(View.VISIBLE);
 
         loadImage(equationSign, R.drawable.w_plus);
         equationSign.setVisibility(View.VISIBLE);
 
-        equationNumberTwo = (ImageView)findViewById(R.id.equation_two);
-        // equationNumberTwo.setBackgroundColor(Color.argb(100, 255, 0, 0));
         equationNumberTwo.setColorFilter(Color.argb(255, 255, 255, 255));
         equationNumberTwo.setVisibility(View.VISIBLE);
 
         loadImage(equationEqualsSign, R.drawable.w_equals);
         equationEqualsSign.setVisibility(View.VISIBLE);
 
-        equationAnswer = (ImageView)findViewById(R.id.equation_answer);
-        // equationAnswer.setBackgroundColor(Color.argb(100, 0, 0, 255));
         equationAnswer.setColorFilter(Color.argb(255, 255, 255, 255));
         equationAnswer.setVisibility(View.VISIBLE);
 
-        numbersContainer = (RelativeLayout)findViewById(R.id.numbers_container);
-        // numbersContainer.setBackgroundColor(Color.argb(100, 0, 255, 255));
         numbersContainer.setVisibility(View.VISIBLE);
 
-        numberOne = (ImageView)findViewById(R.id.numeral_1);
-        // numberOne.setBackgroundColor(Color.argb(100, 255, 0, 255));
-        numberOne.setVisibility(View.INVISIBLE);
+//        numberOne.setVisibility(View.INVISIBLE);
+//        numberTwo.setVisibility(View.INVISIBLE);
+//        numberThree.setVisibility(View.INVISIBLE);
 
-        numberTwo = (ImageView)findViewById(R.id.numeral_2);
-        // numberTwo.setBackgroundColor(Color.argb(100, 255, 0, 255));
-        numberTwo.setVisibility(View.INVISIBLE);
-
-        numberThree = (ImageView)findViewById(R.id.numeral_3);
-        // numberThree.setBackgroundColor(Color.argb(100, 255, 0, 255));
-        numberThree.setVisibility(View.INVISIBLE);
-
-        objectsContainer = (RelativeLayout)findViewById(R.id.itemsContainer);
-        // objectsContainer.setBackgroundColor(Color.argb(100, 0, 255, 0));
         objectsContainer.setVisibility(View.VISIBLE);
 
         for (int i = 0; i < objectsContainer.getChildCount(); i++) {
             ImageView iv = (ImageView) objectsContainer.getChildAt(i);
             iv.setImageResource(0);
-            // iv.setBackgroundColor(Color.argb(150, 0, 0, (255 * (i+1)/objectsContainer.getChildCount())));
             iv.setVisibility(View.VISIBLE);
         }
 
-        itemsReceptacle = (RelativeLayout)findViewById(R.id.itemsReceptacle);
-        // itemsReceptacle.setBackgroundColor(Color.argb(100, 255, 100, 0));
         itemsReceptacle.setVisibility(View.VISIBLE);
         itemsReceptacle.setOnDragListener(this);
 
@@ -144,11 +120,18 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
         for (int i = 0; i < itemsReceptacle.getChildCount(); i++) {
             ImageView iv = (ImageView) itemsReceptacle.getChildAt(i);
             iv.setImageResource(0);
-            // iv.setBackgroundColor(Color.argb(150, 0, 0, (255 * (i+1)/itemsReceptacle.getChildCount())));
             iv.setVisibility(View.VISIBLE);
         }
 
+        float density = getResources().getDisplayMetrics().density;
+        ViewGroup.MarginLayoutParams numbersContainerLP = (ViewGroup.MarginLayoutParams) numbersContainer.getLayoutParams();
+        numbersContainerLP.topMargin = (int) (50 * density);
+        numbersContainerLP.leftMargin = (int) ((940 + 16) * density);
+        numbersContainer.setLayoutParams(numbersContainerLP);
+
         initializeData();
+        prepareNumbers();
+        handler.post(helpDamaWithMathsPrompt);
     }
 
     private void addItemReceptacleA(int[] indexes) {
@@ -244,10 +227,12 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
 
                 if (i < aCount) {
                     co = new CustomObject(aObjectImage, aObjectSound);
-                    loadImage(iv, aObjectImageId);
+//                    loadImage(iv, aObjectImageId);
+                    iv.setImageResource(aObjectImageId);
                 } else if (i < abCount) {
                     co = new CustomObject(bObjectImage, bObjectSound);
-                    loadImage(iv, bObjectImageId);
+//                    loadImage(iv, bObjectImageId);
+                    iv.setImageResource(bObjectImageId);
                 }
                 objectContainerObjects.put(index, co);
                 iv.setTag("" + index);
@@ -275,8 +260,72 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
 
             // Disable touch
             touchNumbersEnabled = false; // stage 2
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
-            handler.post(helpDamaWithMathsPrompt);
+    private void prepareNumbers() {
+        try {
+            ez.unclickable(numberOne, numberTwo, numberThree);
+            int answerValue = allData.getJSONObject("answer").getInt("value");
+            List<Integer> rndValues = RandomExcluding.nextInt(new ArrayList<>(), 9, answerValue, 21, 2);
+            rndValues.add(answerValue);
+
+            int[] s = FisherYates.shuffle(rndValues.size());
+
+            for (int i = 0; i < s.length; i++) {
+                int si = s[i];
+                final int chosenValue = rndValues.get(si);
+                ImageView iv = (ImageView) numbersContainer.getChildAt(i);
+                CustomObject number = numberObjects.get(chosenValue); // scrambled order
+                int numberImageId = FetchResource.imageId(this, number.getImage());
+                loadImage(iv, numberImageId);
+
+                final String numberSound = number.getSound();
+                iv.setOnClickListener((v) -> {
+                    if (touchNumbersEnabled) {
+
+                        // Uncolor last wrong number
+                        if (lastWrongNumber != null && v != lastWrongNumber) {
+                            unHighlight(lastWrongNumber);
+                        }
+
+                        if (chosenValue == answerValue) {
+                            touchNumbersEnabled = false;
+                            ez.unclickable(numberOne, numberTwo, numberThree);
+
+                            LinearLayout.LayoutParams equationAnswerLP = (LinearLayout.LayoutParams) equationAnswer.getLayoutParams();
+                            float sd = getResources().getDisplayMetrics().density;
+                            equationAnswerLP.width = (int) (sd * 100);
+                            equationAnswerLP.height = (int) (sd * 100);
+                            equationAnswerLP.leftMargin = equationAnswerLP.leftMargin + 25;
+                            equationAnswer.setLayoutParams(equationAnswerLP);
+
+                            String answerImage = numberObjects.get(answerValue).getImage();
+                            int answerImageId = FetchResource.imageId(context, answerImage);
+                            loadImage(equationAnswer, answerImageId);
+
+                            highlightCorrect(v);
+                            playSound(numberSound, () -> {
+                                starWorks.play(this, v);
+                                playSound(FetchResource.positiveAffirmation(context), () -> {
+                                    handler.delayed(() -> endingSequence(v), 250);
+                                });
+                            });
+
+                        } else {
+                            lastWrongNumber = v;
+                            highlightWrong(v);
+                            playSound(numberSound,
+                                    () -> playSound(FetchResource.negativeAffirmation(context),
+                                    () -> unHighlight(lastWrongNumber)));
+                        }
+                    }
+                });
+                iv.setAlpha(0.2f);
+                iv.setVisibility(View.INVISIBLE);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -441,12 +490,13 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
         }
     };
 
-    private void endingSequence() {
+    private void endingSequence(View view) {
         try {
             String equationSound = allData.getString("equation_sound");
             int answerValue = allData.getJSONObject("answer").getInt("value");
             final String answerSound = numberObjects.get(answerValue).getSound();
             playSound(equationSound, () -> {
+                starWorks.play(this, view);
                 playSound(answerSound, () -> {
                     finish();
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -459,65 +509,14 @@ public class MathsDrillFiveAndOneActivity extends DrillActivity implements View.
 
     private void nextStage() {
         try {
-            final int answerValue = allData.getJSONObject("answer").getInt("value");
-            List<Integer> rndValues = RandomExcluding.nextInt(new ArrayList<Integer>(), 9, answerValue, 21, 2);
-            rndValues.add(answerValue);
-
-            int[] s = FisherYates.shuffle(rndValues.size());
-
-            for (int i = 0; i < s.length; i++) {
-                int si = s[i];
-                final int chosenValue = rndValues.get(si);
-                ImageView iv = (ImageView) numbersContainer.getChildAt(i);
-                CustomObject number = numberObjects.get(chosenValue); // scrambled order
-                int numberImageId = FetchResource.imageId(this, number.getImage());
-                loadImage(iv, numberImageId);
-
-                final String numberSound = number.getSound();
-                iv.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (touchNumbersEnabled) {
-                            if (chosenValue == answerValue) {
-                                touchNumbersEnabled = false;
-
-                                LinearLayout.LayoutParams equationAnswerLP = (LinearLayout.LayoutParams) equationAnswer.getLayoutParams();
-                                float sd = getResources().getDisplayMetrics().density;
-                                equationAnswerLP.width = (int) (sd * 100);
-                                equationAnswerLP.height = (int) (sd * 100);
-                                equationAnswerLP.leftMargin = equationAnswerLP.leftMargin + 25;
-                                equationAnswer.setLayoutParams(equationAnswerLP);
-
-                                String answerImage = numberObjects.get(answerValue).getImage();
-                                int answerImageId = FetchResource.imageId(context, answerImage);
-                                loadImage(equationAnswer, answerImageId);
-
-                                playSound(numberSound, () -> {
-                                    playSound(FetchResource.positiveAffirmation(context), () -> {
-                                        handler.delayed(() -> endingSequence(), 250);
-                                    });
-                                });
-
-                            } else {
-                                playSound(numberSound, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        playSound(FetchResource.negativeAffirmation(context), null);
-                                    }
-                                });
-                            }
-                        }
-                    }
-                });
-                iv.setVisibility(View.VISIBLE);
-            }
-
+            ez.show(numberOne, numberTwo, numberThree);
             String promptSound = allData.getString("can_you_find_and_touch");
-            playSound(promptSound, new Runnable() {
-                @Override
-                public void run() {
-                    touchNumbersEnabled = true;
-                }
+            playSound(promptSound, () -> {
+                numberOne.setAlpha(1.0f);
+                numberTwo.setAlpha(1.0f);
+                numberThree.setAlpha(1.0f);
+                ez.clickable(numberOne, numberTwo, numberThree);
+                touchNumbersEnabled = true;
             });
 
         } catch (Exception ex) {
