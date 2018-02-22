@@ -78,6 +78,7 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
 
     private void initialise(){
         try {
+            ez.hide(numberOne, numberTwo, numberThree);
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);
             setupObjects();
@@ -120,7 +121,6 @@ public class MathsDrillSixAndThreeActivity extends DrillActivity implements View
 
     private void setupNumbers(){
         try {
-            ez.hide(numberOne, numberTwo, numberThree);
             positions = new int[3];
             Arrays.fill(positions, -1);
             Random rand = new Random();
