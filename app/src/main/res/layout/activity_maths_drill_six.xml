@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/background_shapes"
-    tools:context="classact.com.xprize.activity.drill.math.MathsDrillSixActivity">
+    tools:context="classact.com.clever_little_monkey.activity.drill.math.MathsDrillSixActivity">
 
     <ImageView
         android:id="@+id/demo_shape"

@@ -4,7 +4,7 @@
     android:id="@+id/activity_sound_drill_fourteen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="classact.com.xprize.activity.drill.sound.SoundDrillFourteenActivity">
+    tools:context="classact.com.clever_little_monkey.activity.drill.sound.SoundDrillFourteenActivity">
 
     <LinearLayout
         android:id="@+id/layout1"

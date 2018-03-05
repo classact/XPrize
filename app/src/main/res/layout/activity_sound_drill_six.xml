@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/backgroundletterbox"
-    tools:context="classact.com.xprize.activity.drill.sound.SoundDrillSixActivity">
+    tools:context="classact.com.clever_little_monkey.activity.drill.sound.SoundDrillSixActivity">
 
     <!-- Base Guidelines START -->
 

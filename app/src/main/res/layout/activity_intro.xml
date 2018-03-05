@@ -7,7 +7,7 @@
     android:padding="0dp"
     android:layout_margin="0dp"
     android:background="@drawable/tutorial_bg_empty"
-    tools:context="classact.com.xprize.activity.movie.Intro">
+    tools:context="classact.com.clever_little_monkey.activity.movie.Intro">
 
     <VideoView
         android:id="@+id/intro_video"

@@ -5,6 +5,6 @@
     android:id="@+id/activity_sound_drill_nine"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="classact.com.xprize.activity.drill.sound.SoundDrillNineActivity"
+    tools:context="classact.com.clever_little_monkey.activity.drill.sound.SoundDrillNineActivity"
     android:background="@drawable/background_drawapic3">
 </RelativeLayout>

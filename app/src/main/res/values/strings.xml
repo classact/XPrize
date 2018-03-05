@@ -25,6 +25,8 @@
     <string name="Right_Letter">Right Letter</string>
     <string name="Left_Box">Left Box</string>
     <string name="Right_Box">Right Box</string>
+    <string name="Left_Number">Left Number</string>
+    <string name="Right_Number">Right Number</string>
 
     <string name="Image_to_Match">Image to Match</string>
 
@@ -139,6 +141,8 @@
     <string name="Star_19">Star 19</string>
     <string name="Star_20">Star 20</string>
 
+    <string name="Monkey">Monkey</string>
+
     <string name="Monkey_01">Monkey 01</string>
     <string name="Monkey_02">Monkey 02</string>
     <string name="Monkey_03">Monkey 03</string>
@@ -159,6 +163,45 @@
     <string name="Monkey_18">Monkey 18</string>
     <string name="Monkey_19">Monkey 19</string>
     <string name="Monkey_20">Monkey 20</string>
+
+    <string name="Damas_Item_01">Dama\'s Item 01</string>
+    <string name="Damas_Item_02">Dama\'s Item 02</string>
+    <string name="Damas_Item_03">Dama\'s Item 03</string>
+    <string name="Damas_Item_04">Dama\'s Item 04</string>
+    <string name="Damas_Item_05">Dama\'s Item 05</string>
+    <string name="Damas_Item_06">Dama\'s Item 06</string>
+    <string name="Damas_Item_07">Dama\'s Item 07</string>
+    <string name="Damas_Item_08">Dama\'s Item 08</string>
+    <string name="Damas_Item_09">Dama\'s Item 09</string>
+    <string name="Damas_Item_10">Dama\'s Item 10</string>
+    <string name="Damas_Item_11">Dama\'s Item 11</string>
+    <string name="Damas_Item_12">Dama\'s Item 12</string>
+    <string name="Damas_Item_13">Dama\'s Item 13</string>
+    <string name="Damas_Item_14">Dama\'s Item 14</string>
+    <string name="Damas_Item_15">Dama\'s Item 15</string>
+
+    <string name="Monkeys_Item_01">Monkey\'s Item 01</string>
+    <string name="Monkeys_Item_02">Monkey\'s Item 02</string>
+    <string name="Monkeys_Item_03">Monkey\'s Item 03</string>
+    <string name="Monkeys_Item_04">Monkey\'s Item 04</string>
+    <string name="Monkeys_Item_05">Monkey\'s Item 05</string>
+    <string name="Monkeys_Item_06">Monkey\'s Item 06</string>
+    <string name="Monkeys_Item_07">Monkey\'s Item 07</string>
+    <string name="Monkeys_Item_08">Monkey\'s Item 08</string>
+    <string name="Monkeys_Item_09">Monkey\'s Item 09</string>
+    <string name="Monkeys_Item_10">Monkey\'s Item 10</string>
+    <string name="Monkeys_Item_11">Monkey\'s Item 11</string>
+    <string name="Monkeys_Item_12">Monkey\'s Item 12</string>
+    <string name="Monkeys_Item_13">Monkey\'s Item 13</string>
+    <string name="Monkeys_Item_14">Monkey\'s Item 14</string>
+    <string name="Monkeys_Item_15">Monkey\'s Item 15</string>
+
+
+    <string name="plus_sign">+</string>
+    <string name="minus_sign">-</string>
+    <string name="equals_sign">=</string>
+    <string name="Answer">Answer</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

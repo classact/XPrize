@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context="classact.com.xprize.activity.movie.MoviePausable">
+    tools:context="classact.com.clever_little_monkey.activity.movie.MoviePausable">
 
     <VideoView
         android:id="@+id/movie_pausable_video"

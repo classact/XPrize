@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/background_monkey_wants_to_eat"
-    tools:context="classact.com.xprize.activity.drill.math.MathsDrillThreeActivity">
+    tools:context="classact.com.clever_little_monkey.activity.drill.math.MathsDrillThreeActivity">
 
     <RelativeLayout
         android:layout_width="wrap_content"

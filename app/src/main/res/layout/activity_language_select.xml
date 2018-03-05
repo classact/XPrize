@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:padding="0dp"
     android:layout_margin="0dp"
-    tools:context="classact.com.xprize.activity.menu.LanguageSelect">
+    tools:context="classact.com.clever_little_monkey.activity.menu.LanguageSelect">
 
     <RelativeLayout
         android:id="@+id/language_select_container"

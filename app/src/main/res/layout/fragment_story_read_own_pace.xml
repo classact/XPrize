@@ -5,6 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/fragment_container"
-    tools:context="classact.com.xprize.fragment.drill.book.StoryReadOwnPace">
+    tools:context="classact.com.clever_little_monkey.fragment.drill.book.StoryReadOwnPace">
 
 </android.support.constraint.ConstraintLayout>

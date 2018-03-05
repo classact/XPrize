@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_blue"
-    tools:context="classact.com.xprize.activity.menu.MusicMenu">
+    tools:context="classact.com.clever_little_monkey.activity.menu.MusicMenu">
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"

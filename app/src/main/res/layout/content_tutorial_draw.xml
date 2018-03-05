@@ -33,7 +33,7 @@
         android:layout_height="350dp"
         android:layout_centerInParent="true" />
 
-    <classact.com.xprize.view.TouchView
+    <classact.com.clever_little_monkey.view.TouchView
         android:id="@+id/tutorial_draw_surface"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

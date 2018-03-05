@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_star_level"
-    tools:context="classact.com.xprize.activity.menu.StarsMenu">
+    tools:context="classact.com.clever_little_monkey.activity.menu.StarsMenu">
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"

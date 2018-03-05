@@ -1,370 +1,485 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_maths_drill_six_and_four"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="0dip"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/background_dama_monkey_outside"
-    tools:context="classact.com.xprize.activity.drill.math.MathsDrillSixAndFourActivity">
+    tools:context="classact.com.clever_little_monkey.activity.drill.math.MathsDrillSixAndFourActivity">
+
+    <!-- Base Guidelines START -->
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_mid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_mid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+    <!-- Base Guidelines END -->
+
+    <!-- Monkey START -->
+    <!-- Monkey Guidelines START -->
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_monkey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.425" />
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_monkey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.535" />
+    <!-- Monkey Guidelines END -->
+    <ImageView
+        android:layout_width="240dp"
+        android:layout_height="260dp"
+        android:contentDescription="@string/Monkey"
+        android:id="@+id/monkey"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/g_h_monkey"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_monkey"
+        app:layout_constraintRight_toRightOf="@id/g_v_monkey"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_monkey" />
+    <!-- Monkey END -->
+
+    <!-- Damas Items START -->
+    <!-- Damas Items Guidelines START -->
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_damas_items"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.775" />
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_damas_items"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.185" />
+    <!-- Damas Items Guidelines END -->
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_marginTop="500dip"
-        android:id="@+id/damasItems"
-        android:layout_height="wrap_content">
+        android:layout_marginTop="500dp"
+        android:id="@+id/damas_items"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/g_h_damas_items"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_damas_items"
+        app:layout_constraintRight_toRightOf="@id/g_v_damas_items"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_damas_items">
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_one"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_01"
+            android:id="@+id/damas_item_01"
             android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_two"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_02"
+            android:id="@+id/damas_item_02"
             android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/item_one" />
+            android:layout_toEndOf="@id/damas_item_01" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_three"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_03"
+            android:id="@+id/damas_item_03"
             android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/item_two" />
+            android:layout_toEndOf="@id/damas_item_02" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_four"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_04"
+            android:id="@+id/damas_item_04"
             android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/item_three" />
+            android:layout_toEndOf="@id/damas_item_03" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_five"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_05"
+            android:id="@+id/damas_item_05"
             android:background="@android:color/transparent"
-            android:layout_toEndOf="@+id/item_four"/>
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/damas_item_04" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:visibility="invisible"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_six"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_06"
+            android:id="@+id/damas_item_06"
             android:background="@android:color/transparent"
-            android:layout_below="@id/item_one"/>
+            android:layout_below="@id/damas_item_01"
+            android:layout_toStartOf="@id/damas_item_01" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_seven"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_07"
+            android:id="@+id/damas_item_07"
             android:background="@android:color/transparent"
-            android:layout_below="@id/item_one"
-            android:layout_toEndOf="@+id/item_six"/>
+            android:layout_below="@id/damas_item_02"
+            android:layout_toEndOf="@id/damas_item_06"/>
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_eight"
-            android:visibility="invisible"
-            android:layout_below="@id/item_one"
-            android:layout_toRightOf="@id/item_seven"
-            android:background="@android:color/transparent" />
-        <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_nine"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_08"
+            android:id="@+id/damas_item_08"
             android:background="@android:color/transparent"
-            android:layout_below="@id/item_one"
-            android:layout_toEndOf="@+id/item_eight" />
+            android:layout_below="@id/damas_item_03"
+            android:layout_toEndOf="@id/damas_item_07" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_ten"
-            android:visibility="invisible"
-            android:layout_below="@id/item_one"
-            android:layout_toEndOf="@+id/item_nine"
-            android:background="@android:color/transparent" />
-        <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_eleven"
-            android:visibility="invisible"
-            android:layout_below="@id/item_six"
-            android:background="@android:color/transparent" />
-        <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_twelve"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_09"
+            android:id="@+id/damas_item_09"
             android:background="@android:color/transparent"
-            android:layout_toEndOf="@+id/item_eleven"
-            android:layout_below="@id/item_six"
-             />
+            android:layout_below="@id/damas_item_04"
+            android:layout_toEndOf="@+id/damas_item_08" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_thirteen"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_10"
+            android:id="@+id/damas_item_10"
             android:background="@android:color/transparent"
-            android:layout_toEndOf="@+id/item_twelve"
-            android:layout_below="@id/item_six" />
+            android:layout_below="@id/damas_item_05"
+            android:layout_toEndOf="@+id/damas_item_09" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_fourteen"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_11"
+            android:id="@+id/damas_item_11"
             android:background="@android:color/transparent"
-            android:layout_toEndOf="@+id/item_thirteen"
-            android:layout_below="@id/item_six"/>
+            android:layout_below="@id/damas_item_06"
+            android:layout_toStartOf="@id/damas_item_06" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/item_fifteen"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_12"
+            android:id="@+id/damas_item_12"
             android:background="@android:color/transparent"
-            android:layout_below="@id/item_six"
-            android:layout_toEndOf="@+id/item_fourteen" />
+            android:layout_below="@id/damas_item_07"
+            android:layout_toEndOf="@+id/damas_item_11" />
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_13"
+            android:id="@+id/damas_item_13"
+            android:background="@android:color/transparent"
+            android:layout_below="@id/damas_item_08"
+            android:layout_toEndOf="@+id/damas_item_12" />
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_14"
+            android:id="@+id/damas_item_14"
+            android:background="@android:color/transparent"
+            android:layout_below="@id/damas_item_09"
+            android:layout_toEndOf="@+id/damas_item_13" />
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Damas_Item_15"
+            android:id="@+id/damas_item_15"
+            android:background="@android:color/transparent"
+            android:layout_below="@id/damas_item_10"
+            android:layout_toEndOf="@+id/damas_item_14" />
     </RelativeLayout>
+
+    <!-- Equation START -->
+    <!-- Equation Guidelines START -->
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_equation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.8925" />
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_equation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.4195" />
+    <!-- Equation Guidelines END -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="500dip"
-        android:paddingLeft="50px"
-        android:id="@+id/equation_container"
-        android:layout_toEndOf="@+id/damasItems"
-        android:orientation="horizontal">
+        android:layout_marginTop="500dp"
+        android:id="@+id/equation"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="@id/g_h_equation"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_equation"
+        app:layout_constraintRight_toRightOf="@id/g_v_equation"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_equation">
         <ImageView
-            android:layout_width="50dip"
-            android:layout_height="50dip"
-            android:contentDescription="@string/app_name"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:contentDescription="@string/Left_Number"
             android:id="@+id/equation_one"
-            android:visibility="invisible"
             android:background="@android:color/transparent" />
         <ImageView
-            android:layout_width="50dip"
-            android:layout_height="50dip"
-            android:contentDescription="@string/app_name"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:contentDescription="@string/minus_sign"
             android:id="@+id/equation_sign"
-            android:visibility="invisible"
             android:background="@android:color/transparent" />
         <ImageView
-            android:layout_width="50dip"
-            android:layout_height="50dip"
-            android:contentDescription="@string/app_name"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:contentDescription="@string/Right_Number"
             android:id="@+id/equation_two"
-            android:visibility="invisible"
             android:background="@android:color/transparent" />
         <ImageView
-            android:layout_width="50dip"
-            android:layout_height="50dip"
-            android:contentDescription="@string/app_name"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:contentDescription="@string/equals_sign"
             android:id="@+id/equation_equals"
-            android:visibility="invisible"
             android:background="@android:color/transparent" />
         <ImageView
-            android:layout_width="50dip"
-            android:layout_height="50dip"
-            android:contentDescription="@string/app_name"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:contentDescription="@string/Answer"
             android:id="@+id/equation_answer"
-            android:visibility="invisible"
             android:background="@android:color/transparent" />
     </LinearLayout>
+
+
+    <!-- Monkeys Items START -->
+    <!-- Monkeys Items Guidelines START -->
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_monkeys_items"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.735" />
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_monkeys_items"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.55" />
+    <!-- Monkeys Items Guidelines END -->
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_marginTop="500dip"
-        android:paddingLeft="50px"
-        android:id="@+id/monkeysReceptable"
-        android:layout_toEndOf="@+id/equation_container"
-        android:layout_height="wrap_content">
+        android:layout_marginTop="500dp"
+        android:id="@+id/monkeys_items"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/g_h_monkeys_items"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_monkeys_items"
+        app:layout_constraintRight_toRightOf="@id/g_v_monkeys_items"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_monkeys_items">
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_one"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_01"
+            android:id="@+id/monkeys_item_01"
             android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_two"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_02"
+            android:id="@+id/monkeys_item_02"
             android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/space_one" />
+            android:layout_toEndOf="@+id/monkeys_item_01" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_three"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_03"
+            android:id="@+id/monkeys_item_03"
             android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/space_two" />
+            android:layout_toEndOf="@+id/monkeys_item_02" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_four"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_04"
+            android:id="@+id/monkeys_item_04"
             android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/space_three" />
+            android:layout_toEndOf="@+id/monkeys_item_03" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_five"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_05"
+            android:id="@+id/monkeys_item_05"
             android:background="@android:color/transparent"
-            android:layout_toEndOf="@+id/space_four"/>
+            android:layout_toEndOf="@+id/monkeys_item_04"/>
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:visibility="invisible"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_six"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_06"
+            android:id="@+id/monkeys_item_06"
             android:background="@android:color/transparent"
-            android:layout_below="@id/space_one"/>
+            android:layout_below="@id/monkeys_item_01"/>
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_seven"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_07"
+            android:id="@+id/monkeys_item_07"
             android:background="@android:color/transparent"
-            android:layout_below="@id/space_one"
-            android:layout_toEndOf="@+id/space_six"/>
+            android:layout_below="@id/monkeys_item_01"
+            android:layout_toEndOf="@+id/monkeys_item_06"/>
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_eight"
-            android:visibility="invisible"
-            android:layout_below="@id/space_one"
-            android:layout_toRightOf="@id/space_seven"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_08"
+            android:id="@+id/monkeys_item_08"
+            android:layout_below="@id/monkeys_item_01"
+            android:layout_toEndOf="@id/monkeys_item_07"
             android:background="@android:color/transparent" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_nine"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_09"
+            android:id="@+id/monkeys_item_09"
             android:background="@android:color/transparent"
-            android:layout_below="@id/space_one"
-            android:layout_toEndOf="@+id/space_eight" />
+            android:layout_below="@id/monkeys_item_01"
+            android:layout_toEndOf="@+id/monkeys_item_08" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_ten"
-            android:visibility="invisible"
-            android:layout_below="@id/space_one"
-            android:layout_toEndOf="@+id/space_nine"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_10"
+            android:id="@+id/monkeys_item_10"
+            android:layout_below="@id/monkeys_item_01"
+            android:layout_toEndOf="@+id/monkeys_item_09"
             android:background="@android:color/transparent" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_eleven"
-            android:visibility="invisible"
-            android:layout_below="@id/space_six"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_11"
+            android:id="@+id/monkeys_item_11"
+            android:layout_below="@id/monkeys_item_06"
             android:background="@android:color/transparent" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_twelve"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_12"
+            android:id="@+id/monkeys_item_12"
             android:background="@android:color/transparent"
-            android:layout_toEndOf="@+id/space_eleven"
-            android:layout_below="@id/space_six"
-            />
+            android:layout_toEndOf="@+id/monkeys_item_11"
+            android:layout_below="@id/monkeys_item_06" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_thirteen"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_13"
+            android:id="@+id/monkeys_item_13"
             android:background="@android:color/transparent"
-            android:layout_toEndOf="@+id/space_twelve"
-            android:layout_below="@id/space_six" />
+            android:layout_toEndOf="@+id/monkeys_item_12"
+            android:layout_below="@id/monkeys_item_06" />
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_fourteen"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_14"
+            android:id="@+id/monkeys_item_14"
             android:background="@android:color/transparent"
-            android:layout_toEndOf="@+id/space_thirteen"
-            android:layout_below="@id/space_six"/>
+            android:layout_toEndOf="@+id/monkeys_item_13"
+            android:layout_below="@id/monkeys_item_06"/>
         <ImageView
-            android:layout_width="60dip"
-            android:layout_height="60dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/space_fifteen"
-            android:visibility="invisible"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/Monkeys_Item_15"
+            android:id="@+id/monkeys_item_15"
             android:background="@android:color/transparent"
-            android:layout_below="@id/space_six"
-            android:layout_toEndOf="@+id/space_fourteen" />
+            android:layout_below="@id/monkeys_item_06"
+            android:layout_toEndOf="@+id/monkeys_item_14" />
     </RelativeLayout>
-    <RelativeLayout
+    <!-- Monkeys Items END -->
+
+    <!-- Numbers START -->
+    <!-- Number 01 START -->
+    <!-- Number 01 Guidelines START -->
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_number_01"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/numbers_container"
-        android:layout_toEndOf="@+id/monkeysReceptable"
-        android:visibility="invisible"
-        android:layout_marginTop="360dip"
-        android:layout_marginLeft="50dip"
-        android:layout_width="wrap_content">
-        <ImageView
-            android:layout_width="100dip"
-            android:layout_height="100dip"
-            android:contentDescription="@string/app_name"
-            android:layout_gravity="center_vertical"
-            android:id="@+id/numeral_1"
-            android:background="@android:color/transparent" />
-        <ImageView
-            android:layout_width="100dip"
-            android:layout_height="100dip"
-            android:contentDescription="@string/app_name"
-            android:id="@+id/numeral_2"
-            android:background="@android:color/transparent"
-            android:layout_gravity="center_vertical"
-            android:layout_below="@+id/numeral_1"
-            android:layout_marginTop="20dp"/>
-        <ImageView
-            android:layout_width="100dip"
-            android:layout_height="100dip"
-            android:contentDescription="@string/app_name"
-            android:layout_gravity="center_vertical"
-            android:id="@+id/numeral_3"
-            android:background="@android:color/transparent"
-            android:layout_below="@+id/numeral_2"/>
-    </RelativeLayout>
-</RelativeLayout>
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.675" />
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_number_01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75" />
+    <!-- Number 01 Guidelines END -->
+    <ImageView
+        android:id="@+id/number_01"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:contentDescription="@string/first_number"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/g_h_number_01"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_number_01"
+        app:layout_constraintRight_toRightOf="@id/g_v_number_01"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_number_01" />
+    <!-- Number 01 END -->
+
+    <!-- Number 02 START -->
+    <!-- Number 02 Guidelines START -->
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_number_02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.85" />
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_number_02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.835" />
+    <!-- Number 02 Guidelines END -->
+    <ImageView
+        android:id="@+id/number_02"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:contentDescription="@string/second_number"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/g_h_number_02"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_number_02"
+        app:layout_constraintRight_toRightOf="@id/g_v_number_02"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_number_02" />
+    <!-- Number 02 END -->
+
+    <!-- Number 03 START -->
+    <!-- Number 03 Guidelines START -->
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_number_03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.65" />
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_number_03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.9" />
+    <!-- Number 03 Guidelines END -->
+    <ImageView
+        android:id="@+id/number_03"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:contentDescription="@string/third_number"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/g_h_number_03"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_number_03"
+        app:layout_constraintRight_toRightOf="@id/g_v_number_03"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_number_03" />
+    <!-- Number 03 END -->
+    <!-- Numbers END -->
+
+</android.support.constraint.ConstraintLayout >

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="classact.com.xprize.activity.movie.MovieActivity">
+    tools:context="classact.com.clever_little_monkey.activity.movie.MovieActivity">
 
     <!-- Base Guidelines START -->
 

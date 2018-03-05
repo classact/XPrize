@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/backgroundwriteletters"
-    tools:context="classact.com.xprize.activity.drill.sound.SoundDrillThirteenActivity">
+    tools:context="classact.com.clever_little_monkey.activity.drill.sound.SoundDrillThirteenActivity">
 
     <LinearLayout
         android:id="@+id/container1"

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:id="@+id/activity_sound_drill_two"
     android:background="@drawable/background_twoframedrill1"
-    tools:context="classact.com.xprize.activity.drill.sound.SoundDrillTwoActivity">
+    tools:context="classact.com.clever_little_monkey.activity.drill.sound.SoundDrillTwoActivity">
 
     <!-- Base Guidelines START -->
 

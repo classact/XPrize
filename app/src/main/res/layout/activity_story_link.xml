@@ -7,5 +7,5 @@
     android:background="@drawable/en_story_link_bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="classact.com.xprize.activity.link.StoryLink">
+    tools:context="classact.com.clever_little_monkey.activity.link.StoryLink">
 </RelativeLayout>

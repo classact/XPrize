@@ -5,6 +5,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/fragment_container"
-    tools:context="classact.com.xprize.fragment.drill.book.StoryComprehension">
+    tools:context="classact.com.clever_little_monkey.fragment.drill.book.StoryComprehension">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_h_mid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/g_v_mid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:contentDescription="@string/Background_Image"
+        android:src="@drawable/backgound_comprehension"
+        app:layout_constraintTop_toTopOf="@id/g_h_mid"
+        app:layout_constraintLeft_toLeftOf="@id/g_v_mid"
+        app:layout_constraintRight_toRightOf="@id/g_v_mid"
+        app:layout_constraintBottom_toBottomOf="@id/g_h_mid"/>
 
 </android.support.constraint.ConstraintLayout>
