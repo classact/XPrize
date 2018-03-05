@@ -1,17 +1,13 @@
 package classact.com.clever_little_monkey.activity.drill.math;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
-import android.support.constraint.Guideline;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.DragEvent;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -45,22 +41,6 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
     @BindView(R.id.number_02) ImageView numberTwo;
     @BindView(R.id.number_03) ImageView numberThree;
 
-    @BindView(R.id.g_h_monkey) Guideline ghMonkey;
-    @BindView(R.id.g_v_monkey) Guideline gvMonkey;
-    @BindView(R.id.g_h_damas_items) Guideline ghDamasItems;
-    @BindView(R.id.g_v_damas_items) Guideline gvDamasItems;
-    @BindView(R.id.g_v_monkeys_items) Guideline gvMonkeysItems;
-    @BindView(R.id.g_h_monkeys_items) Guideline ghMonkeysItems;
-    @BindView(R.id.g_v_equation) Guideline gvEquation;
-    @BindView(R.id.g_h_equation) Guideline ghEquation;
-
-    @BindView(R.id.g_v_number_01) Guideline gvNumber01;
-    @BindView(R.id.g_v_number_02) Guideline gvNumber02;
-    @BindView(R.id.g_v_number_03) Guideline gvNumber03;
-    @BindView(R.id.g_h_number_01) Guideline ghNumber01;
-    @BindView(R.id.g_h_number_02) Guideline ghNumber02;
-    @BindView(R.id.g_h_number_03) Guideline ghNumber03;
-
     private JSONObject allData;
     private JSONArray numbers;
 
@@ -91,47 +71,25 @@ public class MathsDrillSixAndFourActivity extends DrillActivity implements View.
 
         handler = vm.getHandler();
         mediaPlayer = vm.getMediaPlayer();
-
-        ez.hide(equationNumberOne, equationSign, equationNumberTwo, equationEqualsSign, equationAnswer);
-        ez.hide(numberOne, numberTwo, numberThree);
-
-//        ez.guide.setPercentage(ghDamasItems, 0.775f);
-//        ez.guide.setPercentage(gvDamasItems, 0.185f);
-//        ez.guide.setPercentage(ghMonkeysItems, 0.735f);
-//        ez.guide.setPercentage(gvMonkeysItems, 0.55f);
-//        ez.guide.setPercentage(ghMonkey, 0.425f);
-//        ez.guide.setPercentage(gvMonkey, 0.535f);
-//        ez.guide.setPercentage(ghEquation, 0.8925f);
-//        ez.guide.setPercentage(gvEquation, 0.4195f);
-//
-//        ez.guide.setPercentage(ghNumber01, 0.675f);
-//        ez.guide.setPercentage(gvNumber01, 0.75f);
-//        ez.guide.setPercentage(ghNumber02, 0.85f);
-//        ez.guide.setPercentage(gvNumber02, 0.835f);
-//        ez.guide.setPercentage(ghNumber03, 0.65f);
-
-        numberOne.setOnClickListener((v) -> numberClicked(1));
-        numberTwo.setOnClickListener((v) -> numberClicked(2));
-        numberThree.setOnClickListener((v) -> numberClicked(3));
-
-//        float density = getResources().getDisplayMetrics().density;
-//        ViewGroup.MarginLayoutParams monkeyLP = (ViewGroup.MarginLayoutParams) monkey.getLayoutParams();
-//        monkeyLP.width = (int) (240 * density);
-//        monkeyLP.height = (int) (260 * density);
-//        monkey.setLayoutParams(monkeyLP);
-//
-//        ez.sizeDpi(equationNumberOne, 90, 90);
-//        ez.sizeDpi(equationNumberTwo, 90, 90);
-//        ez.sizeDpi(equationAnswer, 90, 90);
-//
-//        equation.setGravity(Gravity.CENTER_VERTICAL);
-
-        monkey.setOnDragListener(this);
-        initialiseData();
+        init();
     }
 
-    private void initialiseData(){
+    private void init(){
         try {
+            // Hide equation components
+            ez.hide(equationNumberOne, equationSign, equationNumberTwo, equationEqualsSign, equationAnswer);
+
+            // Hide numbers
+            ez.hide(numberOne, numberTwo, numberThree);
+
+            // Add click listener to numbers
+            numberOne.setOnClickListener((v) -> numberClicked(1));
+            numberTwo.setOnClickListener((v) -> numberClicked(2));
+            numberThree.setOnClickListener((v) -> numberClicked(3));
+
+            // Add on drag listener to Monkey
+            monkey.setOnDragListener(this);
+
             segment = 1;
             String drillData = getIntent().getExtras().getString("data");
             allData = new JSONObject(drillData);

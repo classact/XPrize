@@ -150,6 +150,75 @@ public class NumeralHelper {
         return numerals;
     }
 
+    public static List<Numerals> getRandomNumeralsByInclusiveBoundsExcluding(SQLiteDatabase db, int languageID, int boyGirl, int lower, int upper, int limit, int excluding) {
+
+        List<Numerals> numerals = null;
+
+        Cursor cursor = db.rawQuery("" +
+                "SELECT DISTINCT _id, " +
+                "LanguageID, " +
+                "Number, " +
+                "BoyGirl, " +
+                "NumberSound, " +
+                "NumberBlackPicture, " +
+                "NumberSparklePicture " +
+                "FROM tbl_Numerals " +
+                "WHERE LanguageID = " + languageID + " " +
+                "AND BoyGirl = " + boyGirl + " " +
+                "AND Number <> " + excluding + " " +
+                "AND Number >= " + lower + " " +
+                "AND Number <= " + upper + " " +
+                "ORDER by RANDOM() LIMIT " + limit + ";", null);
+
+        if (cursor.getCount() > 0) {
+            numerals = new ArrayList<>();
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                Numerals numeral = new Numerals();
+                numeral.setNumeralID(cursor.getInt(cursor.getColumnIndex("_id")));
+                numeral.setLanguageID(cursor.getInt(cursor.getColumnIndex("LanguageID")));
+                numeral.setNumber(cursor.getInt(cursor.getColumnIndex("Number")));
+                numeral.setBoyGirl(cursor.getInt(cursor.getColumnIndex("BoyGirl")));
+                numeral.setSound(cursor.getString(cursor.getColumnIndex("NumberSound")));
+                numeral.setBlackImage(cursor.getString(cursor.getColumnIndex("NumberBlackPicture")));
+                numeral.setSparklingImage(cursor.getString(cursor.getColumnIndex("NumberSparklePicture")));
+                numerals.add(numeral);
+            }
+        }
+        cursor.close();
+        return numerals;
+    }
+
+    public static Numerals getNumeralByNumber(SQLiteDatabase db, int languageID, int boyGirl, int number) {
+
+        Cursor cursor = db.rawQuery("" +
+                "SELECT DISTINCT _id, " +
+                "LanguageID, " +
+                "Number, " +
+                "BoyGirl, " +
+                "NumberSound, " +
+                "NumberBlackPicture, " +
+                "NumberSparklePicture " +
+                "FROM tbl_Numerals " +
+                "WHERE LanguageID = " + languageID + " " +
+                "AND BoyGirl = " + boyGirl + " " +
+                "AND Number = " + number + " LIMIT 1;", null);
+
+        Numerals numeral = null;
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            numeral = new Numerals();
+            numeral.setNumeralID(cursor.getInt(cursor.getColumnIndex("_id")));
+            numeral.setLanguageID(cursor.getInt(cursor.getColumnIndex("LanguageID")));
+            numeral.setNumber(cursor.getInt(cursor.getColumnIndex("Number")));
+            numeral.setBoyGirl(cursor.getInt(cursor.getColumnIndex("BoyGirl")));
+            numeral.setSound(cursor.getString(cursor.getColumnIndex("NumberSound")));
+            numeral.setBlackImage(cursor.getString(cursor.getColumnIndex("NumberBlackPicture")));
+            numeral.setSparklingImage(cursor.getString(cursor.getColumnIndex("NumberSparklePicture")));
+        }
+        cursor.close();
+        return numeral;
+    }
+
     public static ArrayList<Integer> getNumeralsBelowLimitRandom(SQLiteDatabase db, int languageID, int limitBelow, int limit, int numberToExclude,  int boyGirl){
         ArrayList<Integer> numerals = new ArrayList<Integer>();
         Cursor cursor = db.rawQuery("SELECT _id FROM tbl_Numerals where LanguageID = "+languageID+ " and BoyGirl = " + boyGirl + " and number > 0 AND Number <= "+ limitBelow + " AND Number <> " + numberToExclude +" ORDER BY RANDOM() LIMIT "+ limit + ";", null);
@@ -170,41 +239,6 @@ public class NumeralHelper {
     public static ArrayList<Integer> getNumeralsBelowLimitFromZero(SQLiteDatabase db, int languageID, int limit,  int boyGirl){
         ArrayList<Integer> numerals = new ArrayList<Integer>();
         Cursor cursor = db.rawQuery("SELECT _id FROM tbl_Numerals where LanguageID = "+languageID+ " and BoyGirl = " + boyGirl + " AND Number <= " + limit + " order by Number;", null);
-        int numeral = 0;
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    // numeral = new Numerals();
-                    numeral = cursor.getInt(0);
-                    numerals.add(numeral);
-                } while (cursor.moveToNext());
-            }
-            return numerals;
-        }finally {
-            cursor.close();
-        }
-    }
-
-    public static ArrayList<Integer> getNumeralsBelowLimit235(SQLiteDatabase db, int languageID, int limit,  int boyGirl){
-        ArrayList<Integer> numerals = new ArrayList<Integer>();
-        Cursor cursor = db.rawQuery("SELECT _id FROM tbl_Numerals where LanguageID = "+languageID+ " and BoyGirl = " + boyGirl + " AND Number in (2,3,5) order by _id;", null);
-        int numeral = 0;
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    // numeral = new Numerals();
-                    numeral = cursor.getInt(0);
-                    numerals.add(numeral);
-                } while (cursor.moveToNext());
-            }
-            return numerals;
-        }finally {
-            cursor.close();
-        }
-    }
-    public static ArrayList<Integer> getNumeralsBelowLimit12358(SQLiteDatabase db, int languageID, int limit,  int boyGirl){
-        ArrayList<Integer> numerals = new ArrayList<Integer>();
-        Cursor cursor = db.rawQuery("SELECT _id FROM tbl_Numerals where LanguageID = "+languageID+ " and BoyGirl = " + boyGirl + " AND Number in (1,2,3,5,8) orderr by _id;", null);
         int numeral = 0;
         try {
             if (cursor.moveToFirst()) {
