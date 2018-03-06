@@ -2,14 +2,14 @@ package classact.com.clever_little_monkey.activity.drill.math;
 
 import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
-import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import classact.com.clever_little_monkey.database.DbHelper;
-import classact.com.clever_little_monkey.database.helper.LetterHelper;
+import classact.com.clever_little_monkey.database.helper.MathDrillFlowWordsHelper;
 import classact.com.clever_little_monkey.database.helper.MathImageHelper;
 import classact.com.clever_little_monkey.database.helper.NumeralHelper;
 import classact.com.clever_little_monkey.database.helper.UnitSectionDrillHelper;
@@ -32,14 +32,17 @@ public class MathDrill06EViewModel extends DrillViewModel {
     private final UnitSectionDrillHelper unitSectionDrillHelper;
     private final UnitSectionHelper unitSectionHelper;
 
+    private List<String> instructions;
     private MathImages largerNumber;
     private MathImages smallerNumber;
     private String equationSound;
     private Numerals correctNumber;
-    private List<Numerals> incorrectNumbers;
+    private int correctIndex;
+    private List<Numerals> numbers;
+    private List<Numerals> numberPool;
 
     @Inject
-    public MathDrill06EViewModel(
+    MathDrill06EViewModel(
             Bus bus, DbHelper dbHelper,
             UnitSectionDrillHelper unitSectionDrillHelper,
             UnitSectionHelper unitSectionHelper) {
@@ -47,6 +50,10 @@ public class MathDrill06EViewModel extends DrillViewModel {
         this.dbHelper = dbHelper;
         this.unitSectionDrillHelper = unitSectionDrillHelper;
         this.unitSectionHelper = unitSectionHelper;
+
+        this.instructions = new ArrayList<>();
+        this.numbers = new ArrayList<>();
+        this.numberPool = new ArrayList<>();
     }
 
     @Override
@@ -71,7 +78,10 @@ public class MathDrill06EViewModel extends DrillViewModel {
         // Get language id (custom value atm) TODO: FIX TO BEING DB OR SETTINGS / META-DATA BASED
         int unitId = unitSection.getUnitId();
         int drillId = 6;
+        int subId = 4; // TODO: FIX TO BEING DB-BASED
         int languageId = 1;
+
+        instructions = MathDrillFlowWordsHelper.getInstructions(dbHelper.getReadableDatabase(), languageId, drillId, subId);
 
         List<MathImages> mathImages = MathImageHelper.getMathImages(dbHelper.getReadableDatabase(), languageId, unitId, drillId);
         int largestNumber = 0;
@@ -100,13 +110,15 @@ public class MathDrill06EViewModel extends DrillViewModel {
         int lower = 0;
         int upper = 20;
         int limit = 2;
-        incorrectNumbers = NumeralHelper.getRandomNumeralsByInclusiveBoundsExcluding(
+        numbers = NumeralHelper.getRandomNumeralsByInclusiveBoundsExcluding(
                 dbHelper.getReadableDatabase(), languageId, boyGirl, lower, upper, limit, ans);
 
-        Log.d("Correct Number", String.valueOf(correctNumber.getNumber()));
-        for (Numerals numeral: incorrectNumbers) {
-            Log.d("Wrong Number", String.valueOf(numeral.getNumber()));
-        }
+        correctIndex = (int) (Math.random() * 3);
+        numbers.add(correctIndex, correctNumber);
+
+        // Get number pool
+        numberPool = NumeralHelper.getNumeralsBelowAndEqualToLimit(
+                dbHelper.getReadableDatabase(), languageId, 20, boyGirl, true);
 
         // Close database
         dbHelper.close();
@@ -114,23 +126,31 @@ public class MathDrill06EViewModel extends DrillViewModel {
         return this;
     }
 
-    public MathImages getLargerNumber() {
+    List<String> getInstructions() { return this.instructions; }
+
+    MathImages getLargerNumber() {
         return this.largerNumber;
     }
 
-    public MathImages getSmallerNumber() {
+    MathImages getSmallerNumber() {
         return this.smallerNumber;
     }
 
-    public String getEquationSound() {
+    String getEquationSound() {
         return this.equationSound;
     }
 
-    public Numerals getCorrectNumber() {
+    Numerals getCorrectNumber() {
         return this.correctNumber;
     }
 
-    public List<Numerals> getIncorrectNumber() {
-        return this.incorrectNumbers;
+    int getCorrectIndex() { return this.correctIndex; }
+
+    List<Numerals> getNumbers() {
+        return this.numbers;
     }
+
+    Numerals getNumber(int index) { return this.numbers.get(index); }
+
+    List<Numerals> getNumberPool() { return this.numberPool; }
 }

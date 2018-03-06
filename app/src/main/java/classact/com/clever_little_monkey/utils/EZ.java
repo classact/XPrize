@@ -309,6 +309,17 @@ public class EZ {
         }
     }
 
+    /**
+     * Opacity function
+     * @param alpha percentage
+     * @param views views to alpha-change
+     */
+    public void alpha(float alpha, View... views) {
+        for (View view : views) {
+            view.setAlpha(alpha);
+        }
+    }
+
     public LiveObjectAnimator fadeShow(Lifecycle lifecycle, long millis, View view) {
         if (view.getAlpha() != 1f) {
             show(view);
